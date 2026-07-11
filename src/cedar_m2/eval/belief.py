@@ -201,9 +201,13 @@ def summarize_belief(
     }
     if tuple(conditions) == ("uncapped",):
         trajectory = condition_metrics["uncapped"]["trajectory_accuracy"]["overall"]
+        bu_accuracy = condition_metrics["uncapped"]["time_t1_accuracy"]["BU"]
+        has_bu_headroom = bu_accuracy is not None and bu_accuracy >= 0.10
         summary["development_gate"] = {
             "uncapped_trajectory_accuracy_at_least_50pct": trajectory >= 0.50,
-            "prompt_valid": trajectory >= 0.50,
+            "uncapped_bu_accuracy_at_least_10pct": has_bu_headroom,
+            "primary_delta_bu_is_identifiable": has_bu_headroom,
+            "prompt_valid": trajectory >= 0.50 and has_bu_headroom,
         }
     elif "p25" in comparisons:
         p25 = comparisons["p25"]

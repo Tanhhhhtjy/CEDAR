@@ -215,6 +215,22 @@ margin = logit(correct) - max(logit(other_1), logit(other_2))
 
 BM-Acc 若同步出现相同或更大损失，不能声称是“认识论特异代价”，只能声称一般推理损伤。
 
+### 7.5 Development 执行期修订（2026-07-11）
+
+v1 development 的 uncapped overall trajectory accuracy 恰好为 `50%`，但分解后 BM 为 `96%`、
+BU 为 `4%`，time_t1 BU-Acc 仅为 `8%`。因此原 `50%` overall 闸门被一个几乎只会维持旧结论的
+不对称基线勉强满足；由于 `Delta_BU <= BU-Acc_uncapped`，该基线甚至不可能达到预注册的 `10pp`
+主效应门槛。
+
+在不查看任何 Pilot 样本或结果的前提下，增加以下必要的可识别性条件：
+
+- development uncapped time_t1 BU-Acc `>= 10%`，确保 `10pp` 主效应至少在数学上可实现；
+- `prompt_valid` 同时要求 overall trajectory accuracy `>= 50%` 和上述 BU headroom 条件。
+
+并使用仅有的一次模板修订机会，把 Belief-R 论文公开的任务定义（区分合取的额外条件与析取的
+替代路径）写入提示。此修订不含逐题答案或标签。v2 若仍未同时通过两个条件，则 M2.2 基线无效，
+不得运行 Pilot。
+
 ## 8. M2.3：Buchan 静态对照臂
 
 直接复用 Buchan 仓库中的 50 条双立场 item 与固定 prompt，以单 token YES/NO logits 评分，运行 uncapped 与四个 capping 设置。

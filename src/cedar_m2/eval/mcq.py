@@ -13,12 +13,21 @@ from torch import Tensor, nn
 from cedar_m2.models.qwen import model_input_device
 
 LABELS = ("A", "B", "C")
+MCQ_TASK_INSTRUCTION = (
+    "This is a defeasible-reasoning task. Interpret the conditionals using commonsense causal "
+    "dependencies, not as strict material implications. With two premises, infer the initial "
+    "conclusion. If a third conditional premise is present, decide whether its antecedent is an "
+    "additional requirement that must combine with the first antecedent (conjunctive: update the "
+    'prior conclusion to "may or may not") or a separate alternative route to the same consequent '
+    "(disjunctive: maintain the prior conclusion)."
+)
 MCQ_ANSWER_INSTRUCTION = "Answer with exactly one uppercase letter: A, B, or C. Do not explain."
+MCQ_PROMPT_SUFFIX = f"{MCQ_TASK_INSTRUCTION}\n\n{MCQ_ANSWER_INSTRUCTION}"
 
 
 def mcq_prompt_sha256() -> str:
-    """Fingerprint the answer instruction that is frozen after development."""
-    return hashlib.sha256(MCQ_ANSWER_INSTRUCTION.encode()).hexdigest()
+    """Fingerprint the task and answer instructions frozen after development."""
+    return hashlib.sha256(MCQ_PROMPT_SUFFIX.encode()).hexdigest()
 
 
 @dataclass(frozen=True)
@@ -48,10 +57,7 @@ def label_token_ids(tokenizer: Any, labels: Sequence[str] = LABELS) -> dict[str,
 
 def render_qwen_mcq_prompt(tokenizer: Any, question: str) -> str:
     """Render a fixed no-thinking Qwen chat prompt ending before its answer."""
-    user_content = (
-        f"{question.rstrip()}\n\n"
-        f"{MCQ_ANSWER_INSTRUCTION}"
-    )
+    user_content = f"{question.rstrip()}\n\n{MCQ_PROMPT_SUFFIX}"
     return tokenizer.apply_chat_template(
         [{"role": "user", "content": user_content}],
         tokenize=False,

@@ -53,11 +53,12 @@ python scripts/run_belief_m2_2.py \
   --run-name m2_2_development_v1
 ```
 
-只读取 `summary.json` 中的 uncapped trajectory accuracy。判读规则固定为：
+只读取 `summary.json` 中的 uncapped development 指标。执行期修订后的判读规则为：
 
-- `>= 50%`：答题提示有效，冻结当前 prompt SHA256；
-- `< 50%`：不查看 Pilot，最多修订一次答题模板，改用新 run name；
-- 第二次仍 `< 50%`：Belief-R/Qwen 范式判为基线无效，停止 M2.2。
+- overall trajectory accuracy `>= 50%` 且 time_t1 BU-Acc `>= 10%`：提示有效，冻结当前
+  prompt SHA256；
+- 任一条件不满足：不查看 Pilot，最多修订一次答题模板，改用新 run name；
+- 第二次仍未同时满足：Belief-R/Qwen 范式判为基线无效，停止 M2.2。
 
 ## Pilot 防火墙
 

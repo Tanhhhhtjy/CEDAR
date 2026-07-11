@@ -28,6 +28,8 @@ class MCQTest(unittest.TestCase):
         tokenizer = FakeTokenizer()
         prompt = render_qwen_mcq_prompt(tokenizer, "Question text")
         self.assertIn("exactly one uppercase letter", prompt)
+        self.assertIn("defeasible-reasoning task", prompt)
+        self.assertIn("conjunctive", prompt)
         self.assertFalse(tokenizer.template_kwargs["enable_thinking"])
         self.assertTrue(tokenizer.template_kwargs["add_generation_prompt"])
 

@@ -68,7 +68,7 @@ class BeliefSummaryTest(unittest.TestCase):
         )
         self.assertTrue(summary["pilot_gate"]["cost_established"])
 
-    def test_development_gate_uses_paired_trajectory_accuracy(self) -> None:
+    def test_development_gate_rejects_average_without_bu_headroom(self) -> None:
         records = [
             score_record("one", "BU", "uncapped", "time_t", correct=True, margin=1),
             score_record("one", "BU", "uncapped", "time_t1", correct=False, margin=-1),
@@ -80,6 +80,19 @@ class BeliefSummaryTest(unittest.TestCase):
         self.assertEqual(
             summary["conditions"]["uncapped"]["trajectory_accuracy"]["overall"], 0.5
         )
+        self.assertFalse(summary["development_gate"]["primary_delta_bu_is_identifiable"])
+        self.assertFalse(summary["development_gate"]["prompt_valid"])
+
+    def test_development_gate_passes_with_trajectory_and_bu_headroom(self) -> None:
+        records = [
+            score_record("one", "BU", "uncapped", "time_t", correct=True, margin=1),
+            score_record("one", "BU", "uncapped", "time_t1", correct=True, margin=1),
+            score_record("two", "BM", "uncapped", "time_t", correct=True, margin=1),
+            score_record("two", "BM", "uncapped", "time_t1", correct=True, margin=1),
+        ]
+        summary = summarize_belief(records, ("uncapped",), bootstrap_samples=10)
+
+        self.assertTrue(summary["development_gate"]["primary_delta_bu_is_identifiable"])
         self.assertTrue(summary["development_gate"]["prompt_valid"])
 
     def test_rejects_incomplete_duplicate_or_nonfinite_scores(self) -> None:
