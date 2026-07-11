@@ -28,8 +28,11 @@ from cedar_m2.checkpoint import (
 )
 from cedar_m2.data.correction_screen import VARIANTS, build_correction_cases, load_correction_screen
 from cedar_m2.eval.correction import (
-    BROAD_RATE_CEILING,
-    NARROW_RATE_THRESHOLD,
+    CONTROL_RATE_THRESHOLD,
+    MAIN_BROAD_CEILING,
+    MAIN_NARROW_THRESHOLD,
+    MAX_VERSION_A_EXCLUSION_RATE,
+    MIN_CLEAN_ITEMS,
     correction_prompt_sha256,
     summarize_correction_screen,
 )
@@ -50,7 +53,7 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=Path("artifacts/m2/objective_correction_screen"),
     )
-    parser.add_argument("--run-name", default="qwen3_32b_uncapped_v1")
+    parser.add_argument("--run-name", default="qwen3_32b_uncapped_v2_four_arm")
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--gpu-memory-gib", type=int, default=20)
     parser.add_argument("--allow-dirty", action="store_true")
@@ -115,10 +118,11 @@ def build_configuration(
             "batch_size": args.batch_size,
         },
         "decision_rule": {
-            "narrow_minimum_true_correction": NARROW_RATE_THRESHOLD,
-            "narrow_minimum_false_correction_resistance": NARROW_RATE_THRESHOLD,
-            "narrow_minimum_neutral_stability": NARROW_RATE_THRESHOLD,
-            "broad_maximum_true_correction": BROAD_RATE_CEILING,
+            "main_narrow_minimum_rate": MAIN_NARROW_THRESHOLD,
+            "main_broad_maximum_rate": MAIN_BROAD_CEILING,
+            "control_minimum_rate": CONTROL_RATE_THRESHOLD,
+            "maximum_version_a_exclusion_rate": MAX_VERSION_A_EXCLUSION_RATE,
+            "minimum_clean_items": MIN_CLEAN_ITEMS,
         },
         "software": {
             "python": platform.python_version(),

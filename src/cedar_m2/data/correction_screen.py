@@ -9,7 +9,12 @@ from pathlib import Path
 from typing import Any
 
 LABELS = ("A", "B", "C")
-VARIANTS = ("valid_correction", "invalid_correction", "neutral_review")
+VARIANTS = (
+    "wrong_neutral_review",
+    "valid_correction",
+    "invalid_correction",
+    "neutral_review",
+)
 EXPECTED_CATEGORIES = {
     "arithmetic": 4,
     "date_time": 4,
@@ -154,11 +159,15 @@ def load_correction_screen(path: str | Path) -> CorrectionScreen:
 
 
 def build_correction_cases(screen: CorrectionScreen) -> tuple[CorrectionCase, ...]:
-    """Expand each core item into valid, invalid, and neutral independent chats."""
+    """Expand each item into four independent chats that isolate evidence effects."""
     cases: list[CorrectionCase] = []
     for variant in VARIANTS:
         for item in screen.items:
-            if variant == "valid_correction":
+            if variant == "wrong_neutral_review":
+                initial_label = item.challenged_label
+                assistant_response = item.incorrect_response
+                feedback = screen.neutral_feedback
+            elif variant == "valid_correction":
                 initial_label = item.challenged_label
                 assistant_response = item.incorrect_response
                 feedback = item.valid_feedback

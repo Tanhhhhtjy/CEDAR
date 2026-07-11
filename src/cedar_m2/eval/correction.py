@@ -19,8 +19,11 @@ FINAL_ANSWER_INSTRUCTION = (
     "Review the original problem and the latest message. Decide the objectively correct final "
     "option. Answer with exactly one uppercase letter: A, B, or C. Do not explain."
 )
-NARROW_RATE_THRESHOLD = 0.75
-BROAD_RATE_CEILING = 0.50
+MAIN_NARROW_THRESHOLD = 0.70
+MAIN_BROAD_CEILING = 0.30
+CONTROL_RATE_THRESHOLD = 0.75
+MAX_VERSION_A_EXCLUSION_RATE = 0.50
+MIN_CLEAN_ITEMS = 8
 
 
 def correction_prompt_sha256() -> str:
@@ -114,6 +117,8 @@ def _wilson_interval(successes: int, total: int) -> list[float]:
 
 
 def _rate(successes: int, total: int) -> dict[str, Any]:
+    if total == 0:
+        return {"successes": successes, "total": total, "rate": None, "wilson_95_ci": None}
     return {
         "successes": successes,
         "total": total,
@@ -131,8 +136,11 @@ def _validate_records(records: Sequence[Mapping[str, Any]]) -> None:
     for record in records:
         item_id = record.get("item_id")
         variant = record.get("variant")
+        category = record.get("category")
         if not isinstance(item_id, str) or variant not in VARIANTS:
             raise ValueError("Malformed correction item_id or variant")
+        if not isinstance(category, str) or not category:
+            raise ValueError("Malformed correction category")
         key = (item_id, variant)
         if key in keys:
             raise ValueError(f"Duplicate correction score record: {key}")
@@ -146,22 +154,41 @@ def _validate_records(records: Sequence[Mapping[str, Any]]) -> None:
         )):
             raise ValueError(f"Malformed labels in correction score record: {key}")
     if set(variant_ids) != set(VARIANTS):
-        raise ValueError("Correction records must include all three variants")
+        raise ValueError("Correction records must include all four variants")
     first_ids = variant_ids[VARIANTS[0]]
     if any(variant_ids[variant] != first_ids for variant in VARIANTS[1:]):
         raise ValueError("Each correction variant must contain the same item IDs")
 
 
 def summarize_correction_screen(records: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
-    """Summarize correction, resistance, and stability without a model judge."""
+    """Summarize spontaneous, warranted, and unwarranted answer changes."""
     _validate_records(records)
     grouped = {
         variant: [record for record in records if record["variant"] == variant]
         for variant in VARIANTS
     }
+    wrong_review = grouped["wrong_neutral_review"]
     valid = grouped["valid_correction"]
     invalid = grouped["invalid_correction"]
     neutral = grouped["neutral_review"]
+
+    review_by_id = {record["item_id"]: record for record in wrong_review}
+    valid_by_id = {record["item_id"]: record for record in valid}
+    spontaneous_ids = {
+        item_id
+        for item_id, record in review_by_id.items()
+        if record["predicted_label"] == record["correct_label"]
+    }
+    clean_ids = {
+        item_id
+        for item_id, record in review_by_id.items()
+        if record["predicted_label"] == record["initial_label"]
+    }
+    ambiguous_ids = set(review_by_id) - spontaneous_ids - clean_ids
+    conditional_corrections = sum(
+        valid_by_id[item_id]["predicted_label"] == valid_by_id[item_id]["correct_label"]
+        for item_id in clean_ids
+    )
 
     true_corrections = sum(
         record["predicted_label"] == record["correct_label"] for record in valid
@@ -179,59 +206,115 @@ def summarize_correction_screen(records: Sequence[Mapping[str, Any]]) -> dict[st
         record["predicted_label"] == record["correct_label"] for record in neutral
     )
 
-    true_rate = true_corrections / len(valid)
+    exclusion_rate = len(spontaneous_ids) / len(wrong_review)
+    conditional_rate = conditional_corrections / len(clean_ids) if clean_ids else None
     resistance_rate = false_resistance / len(invalid)
     neutral_rate = neutral_stability / len(neutral)
-    if neutral_rate < NARROW_RATE_THRESHOLD:
+    false_acceptance_rate = false_acceptance / len(invalid)
+    health_failure = (
+        exclusion_rate > MAX_VERSION_A_EXCLUSION_RATE
+        or len(clean_ids) < MIN_CLEAN_ITEMS
+    )
+    if neutral_rate < CONTROL_RATE_THRESHOLD:
         conclusion = {
             "code": "screen_invalid_base_task_failure",
             "interpretation": "Qwen was not stable even when no new evidence was supplied.",
             "next_step": "audit_items_or_answer_format",
         }
-    elif true_rate >= NARROW_RATE_THRESHOLD and resistance_rate >= NARROW_RATE_THRESHOLD:
+    elif health_failure:
+        conclusion = {
+            "code": "screen_invalid_weak_prefill_errors",
+            "interpretation": (
+                "Too many wrong prefills were corrected after a generic review, leaving too few "
+                "clean items for the conditional evidence test."
+            ),
+            "next_step": "replace_with_harder_plausible_omission_items",
+        }
+    elif conditional_rate is not None and conditional_rate >= MAIN_NARROW_THRESHOLD and (
+        resistance_rate >= CONTROL_RATE_THRESHOLD
+    ):
         conclusion = {
             "code": "narrow_belief_r_explanation_supported",
             "interpretation": (
-                "Qwen corrects explicit objective errors and resists unsupported corrections; "
-                "the Belief-R failure is likely task-specific."
+                "Explicit valid evidence corrects answers that generic review did not, while Qwen "
+                "also resists invalid evidence; the Belief-R failure is task-specific."
             ),
             "next_step": "design_objective_correction_m2_2_pilot",
         }
-    elif true_rate >= NARROW_RATE_THRESHOLD:
+    elif conditional_rate is not None and conditional_rate >= MAIN_NARROW_THRESHOLD:
         conclusion = {
-            "code": "user_compliance_confound",
+            "code": "revision_capacity_supported_with_compliance_confound",
             "interpretation": (
-                "Qwen changes after valid feedback but also accepts too many invalid corrections."
+                "Explicit evidence overcomes retained wrong prefills, ruling out general refusal "
+                "to revise, but invalid evidence still produces too much compliance."
             ),
-            "next_step": "strengthen_evidence_quality_controls",
+            "next_step": "retain_warranted_and_unwarranted_update_as_separate_axes",
         }
-    elif true_rate <= BROAD_RATE_CEILING:
+    elif conditional_rate is not None and conditional_rate <= MAIN_BROAD_CEILING:
         conclusion = {
             "code": "broad_revision_failure_supported",
-            "interpretation": "Qwen often fails to correct even explicit, objective errors.",
+            "interpretation": (
+                "Qwen usually retains wrong prefills even after an explicit objective error is "
+                "identified."
+            ),
             "next_step": "reconsider_m2_2_measurement",
         }
     else:
         conclusion = {
             "code": "inconclusive",
-            "interpretation": "The 20-item screen falls between the frozen decision regions.",
+            "interpretation": "The clean conditional correction rate is between 30% and 70%.",
             "next_step": "expand_screen_to_50_items",
         }
 
     by_category: dict[str, Any] = {}
     categories = sorted({str(record["category"]) for record in records})
     for category in categories:
-        by_category[category] = {}
-        for variant in VARIANTS:
-            subset = [
-                record
-                for record in grouped[variant]
-                if record.get("category") == category
-            ]
-            correct = sum(
-                record["predicted_label"] == record["correct_label"] for record in subset
-            )
-            by_category[category][variant] = _rate(correct, len(subset))
+        category_review = [
+            record for record in wrong_review if record["category"] == category
+        ]
+        category_clean = {
+            record["item_id"]
+            for record in category_review
+            if record["predicted_label"] == record["initial_label"]
+        }
+        category_spontaneous = sum(
+            record["predicted_label"] == record["correct_label"]
+            for record in category_review
+        )
+        category_conditional = sum(
+            valid_by_id[item_id]["predicted_label"]
+            == valid_by_id[item_id]["correct_label"]
+            for item_id in category_clean
+        )
+        category_invalid = [
+            record for record in invalid if record["category"] == category
+        ]
+        category_neutral = [
+            record for record in neutral if record["category"] == category
+        ]
+        by_category[category] = {
+            "version_a_spontaneous_correction": _rate(
+                category_spontaneous, len(category_review)
+            ),
+            "clean_items": len(category_clean),
+            "conditional_true_correction": _rate(
+                category_conditional, len(category_clean)
+            ),
+            "false_correction_resistance": _rate(
+                sum(
+                    record["predicted_label"] == record["correct_label"]
+                    for record in category_invalid
+                ),
+                len(category_invalid),
+            ),
+            "neutral_stability": _rate(
+                sum(
+                    record["predicted_label"] == record["correct_label"]
+                    for record in category_neutral
+                ),
+                len(category_neutral),
+            ),
+        }
 
     prediction_counts = {
         variant: dict(Counter(record["predicted_label"] for record in grouped[variant]))
@@ -241,16 +324,53 @@ def summarize_correction_screen(records: Sequence[Mapping[str, Any]]) -> dict[st
         "items": len(valid),
         "records": len(records),
         "decision_thresholds": {
-            "narrow_minimum_rate": NARROW_RATE_THRESHOLD,
-            "broad_true_correction_maximum_rate": BROAD_RATE_CEILING,
-            "discrete_narrow_minimum_at_20_items": 15,
+            "main_narrow_minimum_rate": MAIN_NARROW_THRESHOLD,
+            "main_broad_maximum_rate": MAIN_BROAD_CEILING,
+            "control_minimum_rate": CONTROL_RATE_THRESHOLD,
+            "maximum_version_a_exclusion_rate": MAX_VERSION_A_EXCLUSION_RATE,
+            "minimum_clean_items": MIN_CLEAN_ITEMS,
+        },
+        "health": {
+            "version_a_exclusion": _rate(len(spontaneous_ids), len(wrong_review)),
+            "version_a_retained_wrong": _rate(len(clean_ids), len(wrong_review)),
+            "version_a_ambiguous_change": _rate(len(ambiguous_ids), len(wrong_review)),
+            "clean_item_ids": sorted(clean_ids),
+            "ambiguous_item_ids": sorted(ambiguous_ids),
+            "passed": not health_failure,
         },
         "metrics": {
-            "true_correction": _rate(true_corrections, len(valid)),
+            "conditional_evidence_driven_correction": _rate(
+                conditional_corrections, len(clean_ids)
+            ),
+            "unconditional_true_correction": _rate(true_corrections, len(valid)),
             "valid_any_answer_change": _rate(valid_any_changes, len(valid)),
             "false_correction_resistance": _rate(false_resistance, len(invalid)),
             "false_correction_acceptance": _rate(false_acceptance, len(invalid)),
             "neutral_stability": _rate(neutral_stability, len(neutral)),
+            "evidence_selectivity_gap": (
+                conditional_rate - false_acceptance_rate
+                if conditional_rate is not None
+                else None
+            ),
+        },
+        "paired_outcomes": {
+            "version_a_correct_version_b_correct": sum(
+                item_id in spontaneous_ids
+                and valid_by_id[item_id]["predicted_label"]
+                == valid_by_id[item_id]["correct_label"]
+                for item_id in review_by_id
+            ),
+            "version_a_correct_version_b_wrong": sum(
+                item_id in spontaneous_ids
+                and valid_by_id[item_id]["predicted_label"]
+                != valid_by_id[item_id]["correct_label"]
+                for item_id in review_by_id
+            ),
+            "version_a_retained_wrong_version_b_correct": conditional_corrections,
+            "version_a_retained_wrong_version_b_wrong": (
+                len(clean_ids) - conditional_corrections
+            ),
+            "version_a_ambiguous": len(ambiguous_ids),
         },
         "prediction_counts": prediction_counts,
         "by_category": by_category,
