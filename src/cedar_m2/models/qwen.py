@@ -43,7 +43,7 @@ def model_input_device(model: nn.Module) -> torch.device:
 
 
 def load_qwen_model(
-    spec: QwenModelSpec = QwenModelSpec(),
+    spec: QwenModelSpec | None = None,
     *,
     device_map: str | dict[str, int | str] = "auto",
     max_memory: dict[int | str, str] | None = None,
@@ -55,6 +55,7 @@ def load_qwen_model(
     """
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
+    spec = spec or QwenModelSpec()
     tokenizer = AutoTokenizer.from_pretrained(
         spec.repo_id,
         revision=spec.revision,
@@ -76,4 +77,3 @@ def load_qwen_model(
     )
     model.eval()
     return model, tokenizer
-
