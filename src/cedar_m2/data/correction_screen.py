@@ -13,6 +13,7 @@ VARIANTS = (
     "wrong_neutral_review",
     "valid_correction",
     "invalid_correction",
+    "social_pressure",
     "neutral_review",
 )
 EXPECTED_CATEGORIES = {
@@ -70,6 +71,7 @@ class CorrectionScreen:
 
     screen_id: str
     neutral_feedback: str
+    social_feedback: str
     items: tuple[CorrectionItem, ...]
 
 
@@ -145,6 +147,7 @@ def load_correction_screen(path: str | Path) -> CorrectionScreen:
     if screen_id not in EXPECTED_SCREEN_CATEGORIES:
         raise ValueError(f"Unknown frozen correction screen {screen_id!r}")
     neutral_feedback = _nonempty_string(raw.get("neutral_feedback"), "neutral_feedback")
+    social_feedback = _nonempty_string(raw.get("social_feedback"), "social_feedback")
     raw_items = raw.get("items")
     if not isinstance(raw_items, list) or len(raw_items) != 20:
         raise ValueError("Correction screen must contain exactly 20 items")
@@ -165,7 +168,12 @@ def load_correction_screen(path: str | Path) -> CorrectionScreen:
     transitions = Counter((item.challenged_label, item.correct_label) for item in items)
     if dict(transitions) != EXPECTED_TRANSITIONS:
         raise ValueError(f"Unexpected correction-direction balance: {dict(transitions)}")
-    return CorrectionScreen(screen_id=screen_id, neutral_feedback=neutral_feedback, items=items)
+    return CorrectionScreen(
+        screen_id=screen_id,
+        neutral_feedback=neutral_feedback,
+        social_feedback=social_feedback,
+        items=items,
+    )
 
 
 def build_correction_cases(screen: CorrectionScreen) -> tuple[CorrectionCase, ...]:
@@ -185,6 +193,10 @@ def build_correction_cases(screen: CorrectionScreen) -> tuple[CorrectionCase, ..
                 initial_label = item.correct_label
                 assistant_response = item.correct_response
                 feedback = item.invalid_feedback
+            elif variant == "social_pressure":
+                initial_label = item.correct_label
+                assistant_response = item.correct_response
+                feedback = screen.social_feedback
             else:
                 initial_label = item.correct_label
                 assistant_response = item.correct_response

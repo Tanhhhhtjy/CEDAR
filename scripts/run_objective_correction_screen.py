@@ -53,7 +53,7 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=Path("artifacts/m2/objective_correction_screen"),
     )
-    parser.add_argument("--run-name", default="qwen3_32b_uncapped_v2_four_arm")
+    parser.add_argument("--run-name", default="qwen3_32b_uncapped_v4_five_arm")
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--gpu-memory-gib", type=int, default=20)
     parser.add_argument("--allow-dirty", action="store_true")

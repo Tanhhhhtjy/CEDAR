@@ -39,6 +39,7 @@ def result_records(
     spontaneous_correct: int,
     valid_correct: int,
     invalid_resistant: int,
+    social_stable: int,
     neutral_stable: int,
 ):
     screen = load_correction_screen(DATA_PATH)
@@ -47,6 +48,7 @@ def result_records(
         "wrong_neutral_review": spontaneous_correct,
         "valid_correction": valid_correct,
         "invalid_correction": invalid_resistant,
+        "social_pressure": social_stable,
         "neutral_review": neutral_stable,
     }
     seen = Counter()
@@ -74,7 +76,7 @@ class CorrectionDataTest(unittest.TestCase):
         cases = build_correction_cases(screen)
 
         self.assertEqual(len(screen.items), 20)
-        self.assertEqual(len(cases), 80)
+        self.assertEqual(len(cases), 100)
         self.assertEqual(
             Counter(case.variant for case in cases),
             Counter({name: 20 for name in VARIANTS}),
@@ -86,11 +88,14 @@ class CorrectionDataTest(unittest.TestCase):
         wrong_review = [case for case in cases if case.variant == "wrong_neutral_review"]
         valid = [case for case in cases if case.variant == "valid_correction"]
         invalid = [case for case in cases if case.variant == "invalid_correction"]
+        social = [case for case in cases if case.variant == "social_pressure"]
         neutral = [case for case in cases if case.variant == "neutral_review"]
         self.assertTrue(
             all(case.initial_label != case.correct_label for case in wrong_review + valid)
         )
-        self.assertTrue(all(case.initial_label == case.correct_label for case in invalid + neutral))
+        self.assertTrue(
+            all(case.initial_label == case.correct_label for case in invalid + social + neutral)
+        )
 
     def test_loader_rejects_label_imbalance(self) -> None:
         raw = json.loads(DATA_PATH.read_text())
@@ -129,7 +134,7 @@ class CorrectionDataTest(unittest.TestCase):
         }
 
         self.assertEqual(len(screen.items), 20)
-        self.assertEqual(len(build_correction_cases(screen)), 80)
+        self.assertEqual(len(build_correction_cases(screen)), 100)
         self.assertEqual(
             {item.item_id: item.options[item.correct_label] for item in screen.items},
             expected_answers,
@@ -155,7 +160,7 @@ class CorrectionPromptTest(unittest.TestCase):
 
 class CorrectionSummaryTest(unittest.TestCase):
     def test_narrow_explanation_requires_clean_items_and_controls(self) -> None:
-        summary = summarize_correction_screen(result_records(4, 20, 16, 20))
+        summary = summarize_correction_screen(result_records(4, 20, 16, 20, 20))
 
         self.assertEqual(summary["health"]["version_a_exclusion"]["rate"], 0.2)
         self.assertEqual(
@@ -169,21 +174,28 @@ class CorrectionSummaryTest(unittest.TestCase):
         )
 
     def test_accepting_true_and_false_feedback_is_flagged_as_compliance(self) -> None:
-        summary = summarize_correction_screen(result_records(4, 20, 10, 20))
+        summary = summarize_correction_screen(result_records(4, 20, 10, 20, 20))
         self.assertEqual(
             summary["conclusion"]["code"],
-            "revision_capacity_supported_with_compliance_confound",
+            "revision_capacity_supported_with_argument_compliance_confound",
         )
 
     def test_low_true_correction_supports_broad_failure(self) -> None:
-        summary = summarize_correction_screen(result_records(2, 6, 20, 20))
+        summary = summarize_correction_screen(result_records(2, 6, 20, 20, 20))
         self.assertEqual(summary["conclusion"]["code"], "broad_revision_failure_supported")
 
     def test_too_many_spontaneous_corrections_fail_health_gate(self) -> None:
-        summary = summarize_correction_screen(result_records(11, 20, 20, 20))
+        summary = summarize_correction_screen(result_records(11, 20, 20, 20, 20))
         self.assertFalse(summary["health"]["passed"])
         self.assertEqual(
             summary["conclusion"]["code"], "screen_invalid_weak_prefill_errors"
+        )
+
+    def test_bare_pressure_and_false_arguments_are_distinguished(self) -> None:
+        summary = summarize_correction_screen(result_records(4, 20, 10, 10, 20))
+        self.assertEqual(
+            summary["conclusion"]["code"],
+            "revision_capacity_supported_with_general_compliance_confound",
         )
 
 
