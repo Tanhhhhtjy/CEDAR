@@ -68,7 +68,7 @@ def load_qwen_model(
     model = AutoModelForCausalLM.from_pretrained(
         spec.repo_id,
         revision=spec.revision,
-        torch_dtype=resolve_dtype(spec.dtype),
+        dtype=resolve_dtype(spec.dtype),
         device_map=device_map,
         max_memory=max_memory,
         low_cpu_mem_usage=True,

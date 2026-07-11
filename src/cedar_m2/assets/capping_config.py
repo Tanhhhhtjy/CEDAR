@@ -11,6 +11,26 @@ from torch.nn import functional as F
 
 from cedar_m2.interventions.capping import LayerCap
 
+ASSISTANT_AXIS_REPO = "lu-christina/assistant-axis-vectors"
+ASSISTANT_AXIS_REVISION = "3b3b788432ad33e3a28d9ff08e88a530c0740814"
+QWEN_AXIS_FILE = "qwen-3-32b/assistant_axis.pt"
+QWEN_CAPPING_CONFIG_FILE = "qwen-3-32b/capping_config.pt"
+
+
+def download_qwen_capping_assets(*, cache_dir: str | Path | None = None) -> tuple[Path, Path]:
+    """Download the pinned Qwen Assistant Axis and capping config."""
+    from huggingface_hub import hf_hub_download
+
+    kwargs = {
+        "repo_id": ASSISTANT_AXIS_REPO,
+        "repo_type": "dataset",
+        "revision": ASSISTANT_AXIS_REVISION,
+        "cache_dir": str(cache_dir) if cache_dir is not None else None,
+    }
+    axis_path = hf_hub_download(filename=QWEN_AXIS_FILE, **kwargs)
+    config_path = hf_hub_download(filename=QWEN_CAPPING_CONFIG_FILE, **kwargs)
+    return Path(axis_path), Path(config_path)
+
 
 def _load_weights(path: str | Path) -> Any:
     """Load tensor-only upstream artifacts without enabling pickle execution."""
