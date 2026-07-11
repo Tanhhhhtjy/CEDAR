@@ -89,9 +89,7 @@ def verify_axis_orientation(
             raise ValueError(f"Hidden-size mismatch at layer {layer}")
 
         cosine = float(
-            F.cosine_similarity(
-                cap.direction.float(), assistant_axis[layer].float(), dim=0
-            ).item()
+            F.cosine_similarity(cap.direction.float(), assistant_axis[layer].float(), dim=0).item()
         )
         similarities[layer] = cosine
         if cosine > maximum_cosine:
@@ -100,4 +98,3 @@ def verify_axis_orientation(
                 f"expected <= {maximum_cosine:.6f}"
             )
     return similarities
-

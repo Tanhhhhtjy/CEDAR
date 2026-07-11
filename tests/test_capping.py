@@ -50,12 +50,10 @@ class ApplyUpperCapTest(unittest.TestCase):
         output, _ = apply_upper_cap(activations, direction, threshold=0.0)
 
         unit = direction / direction.norm()
-        before_orthogonal = activations - torch.einsum(
-            "...d,d->...", activations, unit
-        ).unsqueeze(-1) * unit
-        after_orthogonal = output - torch.einsum(
-            "...d,d->...", output, unit
-        ).unsqueeze(-1) * unit
+        before_orthogonal = (
+            activations - torch.einsum("...d,d->...", activations, unit).unsqueeze(-1) * unit
+        )
+        after_orthogonal = output - torch.einsum("...d,d->...", output, unit).unsqueeze(-1) * unit
         torch.testing.assert_close(after_orthogonal, before_orthogonal)
 
     def test_last_position_does_not_touch_prefix(self) -> None:
@@ -101,9 +99,7 @@ class CappingConfigTest(unittest.TestCase):
             torch.save(torch.tensor([[-1.0, 0.0], [0.0, -1.0]]), axis_path)
             torch.save(
                 {
-                    "vectors": {
-                        "layer_1/test": {"vector": torch.tensor([0.0, 3.0]), "layer": 1}
-                    },
+                    "vectors": {"layer_1/test": {"vector": torch.tensor([0.0, 3.0]), "layer": 1}},
                     "experiments": [
                         {
                             "id": "test-exp",
