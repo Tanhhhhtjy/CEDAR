@@ -67,15 +67,21 @@ export CUDA_VISIBLE_DEVICES=0,1,3,4
 
 ruff check src tests scripts
 pytest -q
-python scripts/run_objective_correction_screen.py --stage prepare
-python scripts/run_objective_correction_screen.py --stage all
+python scripts/run_objective_correction_screen.py \
+  --stage prepare \
+  --data data/development/m2_objective_correction_screen_v2_hard.json \
+  --run-name qwen3_32b_uncapped_v4_hard_five_arm
+python scripts/run_objective_correction_screen.py \
+  --stage all \
+  --data data/development/m2_objective_correction_screen_v2_hard.json \
+  --run-name qwen3_32b_uncapped_v4_hard_five_arm
 ```
 
 正式运行拒绝脏工作区。默认每张可见 GPU 最多使用 20 GiB，固定模型为 BF16
 `Qwen/Qwen3-32B` revision `9216db5781bf21249d130ec9da846c4624c16137`。
 
-最终扩展运行默认输出位于
-`artifacts/m2/objective_correction_screen/qwen3_32b_uncapped_v4_five_arm/`：
+最终扩展运行输出位于
+`artifacts/m2/objective_correction_screen/qwen3_32b_uncapped_v4_hard_five_arm/`：
 
 - `manifest.json`：题库、提示、模型、环境、硬件和 Git 指纹；
 - `scores/`：100 个可断点续跑的逐题原子记录；
@@ -141,3 +147,42 @@ Belief-R 的 8% BU 不能外推成 Qwen 缺乏一般改错能力。但加入必�
 最后加入不含任何计算或事实理由的 `social_pressure` 对照，区分模型是面对任何用户质疑都乱改，
 还是主要会被看似具体的论证（无论真假）带动。较难题四臂 `summary.json` SHA256 为
 `654486bdbe0dff143673f5150798410e99217e3b231042f954fb9210b7cd3378`。
+
+## 五臂最终闭环
+
+最终运行使用干净 commit `2e729e6939c485736657a4645244995f56670180`，run fingerprint 为
+`e298e0185c2d947c39443d64ecee446088c373a90336047e036dcf2963a91319`。重复执行完整命令时
+100/100 条均从 checkpoint 恢复，没有重新加载模型或改变结果。
+
+| 行为问题 | 结果 | 解释 |
+|---|---:|---|
+| 错误 prefill 后仅复核便自然改对 | 5/20（25%） | 健康门通过；另有 4 题跳到第三个错误答案 |
+| 干净题中，真实证据使其改对 | 8/11（72.7%） | 越过冻结 70% 线，排除普遍拒绝修正 |
+| 全部题中，真实证据最终答对 | 16/20（80%） | 相比仅复核的 25% 准确率提高 55pp |
+| 错误论证下守住正确答案 | 6/20（30%） | 14/20 被具体但错误的论证带偏 |
+| 纯社会压力下守住正确答案 | 20/20（100%） | 没有事实理由的质疑不会使其乱改 |
+| 无压力、无新证据时守住正确答案 | 20/20（100%） | 基础答案与评分格式稳定 |
+| Belief-R BU 锚点 | 2/25（8%） | 原任务的 `may or may not` 地板复现 |
+
+最终诊断码为 `revision_capacity_supported_with_argument_compliance_confound`。原“窄/宽”问题中，
+**宽解释被否定**：Qwen 不是普遍不改答案，明示有效论证在预先冻结的干净题上达到 72.7%。但
+“8% 完全只是 hedge 措辞、模型本身能可靠做合理更新”也过强：它对具体论证的真实性选择很弱，
+真实论证带来的准确率增益为 55pp，错误论证造成的准确率损失为 70pp；纯社会压力则造成 0pp 损失。
+
+因此项目不需要换模型或推翻“存在更新 headroom”的测量前提，但必须更换 Belief-R 测量。正式
+形式域任务应使用互相匹配的五臂最小对，并同时报告两个主轴：
+
+- **有根据更新增益**：`valid_correction accuracy - wrong_neutral_review accuracy`；
+- **无根据论证伤害**：`neutral_review accuracy - invalid_correction accuracy`；
+- 社会压力伤害 `neutral_review - social_pressure` 作为辅助轴。
+
+未来 capping 只有在降低无根据论证伤害的同时又降低有根据更新增益时，才构成 CEDAR 所说的
+“减害—认识论代价”权衡。只看改答率会把好更新和坏迎合混在一起。当前 20 题及所有开发变体永久
+排除在正式 Pilot 外；M2.2 Belief-R Pilot 继续封闭，下一步是按该五臂结构另建独立形式域题库，
+而不是在现有开发题上直接跑 capping。
+
+最终 `summary.json` SHA256 为
+`ebdcc7da83bfd380a467d02e00ba1fb586525ac8ee3999ff5bec8f6d40c2367d`，逐题 Parquet SHA256 为
+`e00f0b0841b2028f9c99220ccd60820b5058e558158dc8742e4e38a55405d93a`。Belief-R v2 锚点
+`summary.json` SHA256 为
+`66666d7c146589df7da210df8af9dcb0c83f9f1a0857d0e624e724244d3981b4`。
