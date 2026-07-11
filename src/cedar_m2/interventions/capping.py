@@ -1,0 +1,190 @@
+"""Minimal multi-layer activation capping for Transformers decoder models."""
+
+from __future__ import annotations
+
+from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
+from typing import Literal
+
+import torch
+from torch import Tensor, nn
+
+
+@dataclass(frozen=True)
+class LayerCap:
+    """One upper cap applied along a direction at one decoder layer."""
+
+    layer: int
+    direction: Tensor
+    threshold: float
+
+
+@dataclass
+class CapStats:
+    """Aggregated intervention dose for one layer."""
+
+    total_positions: int = 0
+    triggered_positions: int = 0
+    projection_correction_sum: float = 0.0
+
+    @property
+    def trigger_rate(self) -> float:
+        return self.triggered_positions / self.total_positions if self.total_positions else 0.0
+
+    @property
+    def mean_projection_correction(self) -> float:
+        if not self.total_positions:
+            return 0.0
+        return self.projection_correction_sum / self.total_positions
+
+    def update(self, other: CapStats) -> None:
+        self.total_positions += other.total_positions
+        self.triggered_positions += other.triggered_positions
+        self.projection_correction_sum += other.projection_correction_sum
+
+
+def apply_upper_cap(
+    activations: Tensor,
+    direction: Tensor,
+    threshold: float,
+    *,
+    positions: Literal["all", "last"] = "all",
+) -> tuple[Tensor, CapStats]:
+    """Apply ``h <- h - v * max(<h,v> - threshold, 0)``.
+
+    The final dimension is interpreted as hidden size. ``positions='last'``
+    only changes the final sequence position; ``positions='all'`` changes all
+    leading positions. The implementation is out-of-place to avoid corrupting
+    cached tensors retained by Transformers.
+    """
+    if activations.ndim < 1:
+        raise ValueError("Activations must have a hidden dimension")
+    if direction.ndim != 1 or direction.numel() != activations.shape[-1]:
+        raise ValueError("Direction must be rank 1 and match activation hidden size")
+    if positions not in {"all", "last"}:
+        raise ValueError("positions must be 'all' or 'last'")
+    if positions == "last" and activations.ndim < 2:
+        raise ValueError("positions='last' requires a sequence dimension")
+    if not torch.isfinite(torch.tensor(threshold)):
+        raise ValueError("Threshold must be finite")
+
+    vector = direction.to(device=activations.device, dtype=activations.dtype)
+    norm = torch.linalg.vector_norm(vector)
+    if not torch.isfinite(norm) or float(norm.detach()) == 0.0:
+        raise ValueError("Direction must have a finite, non-zero norm")
+    vector = vector / norm
+
+    selected = activations if positions == "all" else activations[..., -1, :]
+    projections = torch.einsum("...d,d->...", selected, vector)
+    excess = torch.clamp(projections - threshold, min=0.0)
+    corrected = selected - excess.unsqueeze(-1) * vector
+
+    if positions == "all":
+        output = corrected
+    else:
+        output = activations.clone()
+        output[..., -1, :] = corrected
+
+    detached_excess = excess.detach().float()
+    stats = CapStats(
+        total_positions=detached_excess.numel(),
+        triggered_positions=int(torch.count_nonzero(detached_excess > 0).item()),
+        projection_correction_sum=float(detached_excess.sum().item()),
+    )
+    return output, stats
+
+
+class ActivationCapper:
+    """Context manager that installs upper-cap hooks on decoder blocks."""
+
+    _LAYER_PATHS: Sequence[str] = (
+        "model.layers",  # Qwen, Llama, Gemma
+        "transformer.h",
+        "language_model.layers",
+        "gpt_neox.layers",
+    )
+
+    def __init__(
+        self,
+        model: nn.Module,
+        caps: Mapping[int, LayerCap],
+        *,
+        positions: Literal["all", "last"] = "all",
+    ) -> None:
+        if not caps:
+            raise ValueError("At least one layer cap is required")
+        self.model = model
+        self.caps = dict(caps)
+        self.positions = positions
+        self.stats = {layer: CapStats() for layer in self.caps}
+        self._handles: list[torch.utils.hooks.RemovableHandle] = []
+
+        for layer, cap in self.caps.items():
+            if layer != cap.layer:
+                raise ValueError(f"Cap key {layer} does not match LayerCap.layer {cap.layer}")
+
+    def _locate_layers(self) -> Sequence[nn.Module]:
+        for path in self._LAYER_PATHS:
+            current: object = self.model
+            for component in path.split("."):
+                if not hasattr(current, component):
+                    break
+                current = getattr(current, component)
+            else:
+                if isinstance(current, Sequence | nn.ModuleList):
+                    return current
+        raise ValueError("Could not locate decoder layers on model")
+
+    def _hook(self, layer: int):
+        def apply_cap(_module: nn.Module, _inputs: tuple[object, ...], output: object):
+            if isinstance(output, Tensor):
+                tensor = output
+                container = "tensor"
+            elif isinstance(output, tuple) and output and isinstance(output[0], Tensor):
+                tensor = output[0]
+                container = "tuple"
+            elif isinstance(output, list) and output and isinstance(output[0], Tensor):
+                tensor = output[0]
+                container = "list"
+            else:
+                raise TypeError(f"Unsupported decoder output type at layer {layer}: {type(output)}")
+
+            cap = self.caps[layer]
+            modified, batch_stats = apply_upper_cap(
+                tensor, cap.direction, cap.threshold, positions=self.positions
+            )
+            self.stats[layer].update(batch_stats)
+
+            if container == "tensor":
+                return modified
+            if container == "tuple":
+                return (modified, *output[1:])
+            return [modified, *output[1:]]
+
+        return apply_cap
+
+    def __enter__(self) -> ActivationCapper:
+        if self._handles:
+            raise RuntimeError("ActivationCapper is already active")
+        layers = self._locate_layers()
+        try:
+            for layer in sorted(self.caps):
+                if not 0 <= layer < len(layers):
+                    raise IndexError(f"Layer {layer} is outside model range [0, {len(layers)})")
+                self._handles.append(layers[layer].register_forward_hook(self._hook(layer)))
+        except Exception:
+            self.remove()
+            raise
+        return self
+
+    def __exit__(self, *_exc: object) -> None:
+        self.remove()
+
+    def reset_stats(self) -> None:
+        self.stats = {layer: CapStats() for layer in self.caps}
+
+    def remove(self) -> None:
+        for handle in self._handles:
+            handle.remove()
+        self._handles.clear()
+

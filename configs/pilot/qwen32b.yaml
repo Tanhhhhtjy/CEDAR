@@ -1,0 +1,32 @@
+model:
+  repo_id: Qwen/Qwen3-32B
+  revision: 9216db5781bf21249d130ec9da846c4624c16137
+  dtype: bfloat16
+  enable_thinking: false
+  device_group: [0, 1, 2, 3]
+
+assistant_axis:
+  repo_id: lu-christina/assistant-axis-vectors
+  repo_type: dataset
+  revision: 3b3b788432ad33e3a28d9ff08e88a530c0740814
+  axis_file: qwen-3-32b/assistant_axis.pt
+  capping_config_file: qwen-3-32b/capping_config.pt
+  layer_start: 46
+  layer_end_exclusive: 54
+  primary_experiment: layers_46:54-p0.25
+  sweep_experiments:
+    - layers_46:54-p0.01
+    - layers_46:54-p0.25
+    - layers_46:54-p0.5
+    - layers_46:54-p0.75
+
+generation:
+  temperature: 0.7
+  top_p: 0.9
+  max_new_tokens: 256
+  seeds: [20260711, 20260712, 20260713]
+
+paths:
+  hf_home: /data1/WuMingrui/HF_HOME
+  artifacts: artifacts/m2
+
