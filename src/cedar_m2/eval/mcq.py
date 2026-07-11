@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 from collections.abc import Sequence
 from dataclasses import asdict, dataclass
 from typing import Any
@@ -12,6 +13,12 @@ from torch import Tensor, nn
 from cedar_m2.models.qwen import model_input_device
 
 LABELS = ("A", "B", "C")
+MCQ_ANSWER_INSTRUCTION = "Answer with exactly one uppercase letter: A, B, or C. Do not explain."
+
+
+def mcq_prompt_sha256() -> str:
+    """Fingerprint the answer instruction that is frozen after development."""
+    return hashlib.sha256(MCQ_ANSWER_INSTRUCTION.encode()).hexdigest()
 
 
 @dataclass(frozen=True)
@@ -43,7 +50,7 @@ def render_qwen_mcq_prompt(tokenizer: Any, question: str) -> str:
     """Render a fixed no-thinking Qwen chat prompt ending before its answer."""
     user_content = (
         f"{question.rstrip()}\n\n"
-        "Answer with exactly one uppercase letter: A, B, or C. Do not explain."
+        f"{MCQ_ANSWER_INSTRUCTION}"
     )
     return tokenizer.apply_chat_template(
         [{"role": "user", "content": user_content}],

@@ -3,16 +3,24 @@
 from __future__ import annotations
 
 import csv
+import json
 import math
 import random
 from collections import defaultdict
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TypeVar
 
 BELIEF_R_REPO = "CAiRE/belief_r"
 BELIEF_R_REVISION = "3719f5804c63318037465fecf298a7fd78d99121"
+PROTOCOL_SEED = 20260711
+PROTOCOL_SPLIT_COUNTS = {
+    "development": 50,
+    "pilot_bu": 100,
+    "pilot_bm": 100,
+    "extension_bu": 100,
+}
 
 
 @dataclass(frozen=True)
@@ -25,6 +33,7 @@ class BeliefRow:
     agreement_level: str
     atomic_idx: str
     dataset_id: str
+    options: tuple[str, str, str] = ("", "", "")
 
     @property
     def key(self) -> str:
@@ -90,7 +99,11 @@ class BeliefSplits:
         }
 
 
-def download_belief_r(*, cache_dir: str | Path | None = None) -> Path:
+def download_belief_r(
+    *,
+    cache_dir: str | Path | None = None,
+    local_files_only: bool = False,
+) -> Path:
     """Download only the pinned Belief-R CSV and return its local path."""
     from huggingface_hub import hf_hub_download
 
@@ -100,6 +113,7 @@ def download_belief_r(*, cache_dir: str | Path | None = None) -> Path:
         filename="test.csv",
         revision=BELIEF_R_REVISION,
         cache_dir=str(cache_dir) if cache_dir is not None else None,
+        local_files_only=local_files_only,
     )
     return Path(path)
 
@@ -122,6 +136,7 @@ def read_belief_rows(path: str | Path) -> list[BeliefRow]:
                     agreement_level=record["agreement_lv"],
                     atomic_idx=record["atomic_idx"],
                     dataset_id=record["dataset_id"],
+                    options=(record["a"], record["b"], record["c"]),
                 )
             )
     return rows
@@ -202,7 +217,9 @@ def _eligible_protocol_pairs(
     )
 
 
-def build_protocol_splits(pairs: Sequence[BeliefPair], *, seed: int = 20260711) -> BeliefSplits:
+def build_protocol_splits(
+    pairs: Sequence[BeliefPair], *, seed: int = PROTOCOL_SEED
+) -> BeliefSplits:
     """Build the frozen 50-dev, 100-BU, 100-BM, and 100-extension split."""
     bu, bm = _eligible_protocol_pairs(pairs)
 
@@ -257,4 +274,88 @@ def build_protocol_splits(pairs: Sequence[BeliefPair], *, seed: int = 20260711) 
     ids = splits.all_sample_ids()
     if len(ids) != len(set(ids)):
         raise AssertionError("Protocol splits overlap")
+    return splits
+
+
+def load_protocol_splits(
+    path: str | Path,
+    pairs: Sequence[BeliefPair],
+) -> BeliefSplits:
+    """Load and strictly validate a frozen split manifest against source pairs."""
+    document = json.loads(Path(path).read_text(encoding="utf-8"))
+    source = document.get("source")
+    expected_source = {"repo_id": BELIEF_R_REPO, "revision": BELIEF_R_REVISION}
+    if source != expected_source:
+        raise ValueError(f"Belief-R split source differs from pinned source: {source!r}")
+    if document.get("seed") != PROTOCOL_SEED:
+        raise ValueError(f"Belief-R split seed must be {PROTOCOL_SEED}")
+
+    pair_by_id = {pair.sample_id: pair for pair in pairs}
+    if len(pair_by_id) != len(pairs):
+        raise ValueError("Belief-R source pairs contain duplicate sample IDs")
+
+    def load_group(name: str, *, expected_target: str | None) -> tuple[BeliefPair, ...]:
+        records = document.get(name)
+        if not isinstance(records, list):
+            raise ValueError(f"Belief-R split manifest field {name!r} must be a list")
+        selected: list[BeliefPair] = []
+        for record in records:
+            if not isinstance(record, Mapping):
+                raise ValueError(f"Belief-R split {name!r} contains a malformed record")
+            sample_id = record.get("sample_id")
+            if not isinstance(sample_id, str) or sample_id not in pair_by_id:
+                raise ValueError(f"Belief-R split {name!r} has unknown sample {sample_id!r}")
+            pair = pair_by_id[sample_id]
+            expected = {
+                "sample_id": pair.sample_id,
+                "target": pair.target,
+                "modus": pair.time_t1.modus,
+                "relation_type": pair.time_t1.relation_type,
+                "agreement_level": pair.time_t1.agreement_level,
+                "ground_truth_t": pair.time_t.ground_truth,
+                "ground_truth_t1": pair.time_t1.ground_truth,
+            }
+            if dict(record) != expected:
+                raise ValueError(f"Belief-R split metadata mismatch for {sample_id}")
+            if expected_target is not None and pair.target != expected_target:
+                raise ValueError(
+                    f"Belief-R split {name!r} expected target {expected_target}, "
+                    f"found {pair.target} for {sample_id}"
+                )
+            selected.append(pair)
+        return tuple(selected)
+
+    development = load_group("development", expected_target=None)
+    pilot_bu = load_group("pilot_bu", expected_target="BU")
+    pilot_bm = load_group("pilot_bm", expected_target="BM")
+    extension_bu = load_group("extension_bu", expected_target="BU")
+    splits = BeliefSplits(
+        development=development,
+        pilot_bu=pilot_bu,
+        pilot_bm=pilot_bm,
+        extension_bu=extension_bu,
+    )
+
+    counts = document.get("counts")
+    expected_counts = {
+        "paired_items": len(pairs),
+        **PROTOCOL_SPLIT_COUNTS,
+    }
+    if not isinstance(counts, Mapping) or any(
+        counts.get(name) != count for name, count in expected_counts.items()
+    ):
+        raise ValueError("Belief-R split manifest counts do not match its records")
+
+    ids = splits.all_sample_ids()
+    if len(ids) != len(set(ids)):
+        raise ValueError("Belief-R frozen splits overlap")
+
+    rebuilt = build_protocol_splits(pairs, seed=PROTOCOL_SEED)
+    for name in PROTOCOL_SPLIT_COUNTS:
+        loaded_ids = [pair.sample_id for pair in getattr(splits, name)]
+        rebuilt_ids = [pair.sample_id for pair in getattr(rebuilt, name)]
+        if loaded_ids != rebuilt_ids:
+            raise ValueError(
+                f"Belief-R frozen split {name!r} differs from the preregistered selection"
+            )
     return splits

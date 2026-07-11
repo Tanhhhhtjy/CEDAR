@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import json
 import tempfile
 import unittest
 from collections import Counter
@@ -10,6 +11,7 @@ from cedar_m2.data.belief_r import (
     BeliefPair,
     BeliefRow,
     build_protocol_splits,
+    load_protocol_splits,
     pair_belief_rows,
     read_belief_rows,
 )
@@ -120,6 +122,50 @@ class ProtocolSplitTest(unittest.TestCase):
         splits = build_protocol_splits(self.pairs)
         counts = Counter(item.time_t1.modus for item in splits.pilot_bu)
         self.assertLessEqual(abs(counts["ponens"] - counts["tollens"]), 1)
+
+    def _manifest(self) -> dict[str, object]:
+        splits = build_protocol_splits(self.pairs)
+        manifest = splits.manifest()
+        manifest["seed"] = 20260711
+        manifest["counts"] = {
+            "paired_items": len(self.pairs),
+            "development": 50,
+            "pilot_bu": 100,
+            "pilot_bm": 100,
+            "extension_bu": 100,
+        }
+        return manifest
+
+    def test_frozen_manifest_is_loaded_only_when_it_matches_selection(self) -> None:
+        manifest = self._manifest()
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "splits.json"
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            loaded = load_protocol_splits(path, self.pairs)
+
+        self.assertEqual(
+            loaded.all_sample_ids(), build_protocol_splits(self.pairs).all_sample_ids()
+        )
+
+    def test_frozen_manifest_rejects_metadata_and_order_changes(self) -> None:
+        manifest = self._manifest()
+        manifest["pilot_bu"][0]["target"] = "BM"
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "tampered.json"
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "metadata mismatch"):
+                load_protocol_splits(path, self.pairs)
+
+        manifest = self._manifest()
+        manifest["development"][0], manifest["development"][1] = (
+            manifest["development"][1],
+            manifest["development"][0],
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "reordered.json"
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "preregistered selection"):
+                load_protocol_splits(path, self.pairs)
 
 
 if __name__ == "__main__":
