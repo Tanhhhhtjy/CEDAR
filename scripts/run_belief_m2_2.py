@@ -228,11 +228,13 @@ def build_configuration(
         "software": {
             "python": platform.python_version(),
             "torch": torch.__version__,
+            "cuda": torch.version.cuda,
             "transformers": transformers.__version__,
         },
         "hardware": {
             "visible_gpu_count": visible_gpus,
             "visible_gpu_names": [torch.cuda.get_device_name(i) for i in range(visible_gpus)],
+            "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
             "qwen_max_memory_per_gpu_gib": args.gpu_memory_gib,
         },
         "environment": {
