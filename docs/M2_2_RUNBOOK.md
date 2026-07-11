@@ -4,6 +4,10 @@ M2.2 用固定的 Qwen3-32B 和官方 Assistant Axis capping 配置，测量 act
 对形式域合理信念更新的影响。所有运行均使用 `cedar` Conda 环境、离线模型缓存和 BF16，结果写入
 Git 忽略的 `artifacts/`。
 
+执行状态：development v1 与唯一一次模板修订 v2 均未建立可识别的 BU 基线，M2.2 已按
+`Belief-R/Qwen baseline invalid` 收口。Pilot 与 extension 保持封闭；以下命令保留作审计说明，
+不得在当前协议下继续执行后续阶段。
+
 ## 冻结数据与运行规模
 
 - 来源：Belief-R revision `3719f5804c63318037465fecf298a7fd78d99121`；

@@ -231,6 +231,9 @@ BU 为 `4%`，time_t1 BU-Acc 仅为 `8%`。因此原 `50%` overall 闸门被一�
 替代路径）写入提示。此修订不含逐题答案或标签。v2 若仍未同时通过两个条件，则 M2.2 基线无效，
 不得运行 Pilot。
 
+执行结果：v2 time_t1 BU-Acc 仍为 `8%`，overall trajectory 降至 `48%`，两个条件均未通过。
+因此 M2.2 已按基线无效收口，Pilot 和 extension 不运行；该结果不用于判断 capping 的认识论代价。
+
 ## 8. M2.3：Buchan 静态对照臂
 
 直接复用 Buchan 仓库中的 50 条双立场 item 与固定 prompt，以单 token YES/NO logits 评分，运行 uncapped 与四个 capping 设置。
