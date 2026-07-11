@@ -105,3 +105,18 @@ Belief-R 的 8% BU 不能外推成 Qwen 缺乏一般改错能力。但加入必�
 
 审计文件位于默认输出目录；`summary.json` SHA256 为
 `551d82d2896b03d0f73790d0e17996a63c84c9d66fb4236572d91586e89ed661`。
+
+## 四臂简单题健康门结果
+
+运行使用干净 commit `c7dea94f479d61b61e917c73f5188297c06feffe`，run fingerprint 为
+`53a1ebd2ece7a3af0c537e7818610221802ee0fe8c5a8faf95c558fa618fa7ba`。
+
+错误 prefill 后只要求复核时，20 题中 13 题自然改对、1 题跳到第三个错误选项，只有 6 题精确保留
+原错误。版本 A 剔除率为 13/20（65%），干净题数为 6；两项分别越过 50% 上限和低于 8 题下限，
+因此健康门失败。六道干净题在有效证据下虽为 6/6 改对，但不据此判窄解释。
+
+该结果触发冻结的 `replace_with_harder_plausible_omission_items` 分支。替代题库
+`data/development/m2_objective_correction_screen_v2_hard.json` 保持四臂、标签平衡、模型和评分方法
+不变，只把一眼可见的简单错误换成算术、单位换算和逻辑题中更可信的多步漏项。简单题四臂
+`summary.json` SHA256 为
+`79025a395cb1f889c4e77d95e8f8080067f5ff9a0c348a36f12cf4e10186f9b5`。

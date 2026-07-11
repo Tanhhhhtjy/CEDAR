@@ -25,6 +25,7 @@ from cedar_m2.eval.mcq import MCQScore
 from cedar_m2.runners.correction import run_correction_scoring_stage
 
 DATA_PATH = Path("data/development/m2_objective_correction_screen_v1.json")
+HARD_DATA_PATH = Path("data/development/m2_objective_correction_screen_v2_hard.json")
 
 
 class FakeTokenizer:
@@ -99,6 +100,40 @@ class CorrectionDataTest(unittest.TestCase):
             path.write_text(json.dumps(raw))
             with self.assertRaises(ValueError):
                 load_correction_screen(path)
+
+    def test_hard_screen_has_frozen_answer_key_and_balances(self) -> None:
+        screen = load_correction_screen(HARD_DATA_PATH)
+        expected_answers = {
+            "hard_arithmetic_01": "384 units",
+            "hard_arithmetic_02": "$1,094",
+            "hard_arithmetic_03": "792 units",
+            "hard_arithmetic_04": "$2,924",
+            "hard_arithmetic_05": "546 items",
+            "hard_arithmetic_06": "$197.12",
+            "hard_arithmetic_07": "53 boxes",
+            "hard_units_01": "2,905 mL",
+            "hard_units_02": "757 kg",
+            "hard_units_03": "11.20 m",
+            "hard_units_04": "1.334 L",
+            "hard_units_05": "596 m",
+            "hard_units_06": "13.35 GB",
+            "hard_logic_01": (
+                "Yes, because 5 of 8 cast votes is 62.5% and there are 5 yes votes"
+            ),
+            "hard_logic_02": "Wednesday",
+            "hard_logic_03": "Position 4",
+            "hard_logic_04": "Yes; it discounts only the $55 regular merchandise",
+            "hard_logic_05": "May 21",
+            "hard_logic_06": "$17",
+            "hard_logic_07": "$195.60",
+        }
+
+        self.assertEqual(len(screen.items), 20)
+        self.assertEqual(len(build_correction_cases(screen)), 80)
+        self.assertEqual(
+            {item.item_id: item.options[item.correct_label] for item in screen.items},
+            expected_answers,
+        )
 
 
 class CorrectionPromptTest(unittest.TestCase):

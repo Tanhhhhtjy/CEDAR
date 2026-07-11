@@ -31,6 +31,14 @@ EXPECTED_TRANSITIONS = {
     ("C", "A"): 3,
     ("C", "B"): 3,
 }
+EXPECTED_SCREEN_CATEGORIES = {
+    "m2_objective_correction_screen_v1": EXPECTED_CATEGORIES,
+    "m2_objective_correction_screen_v2_hard": {
+        "arithmetic_omission": 7,
+        "logical_multistep": 7,
+        "unit_conversion": 6,
+    },
+}
 
 
 @dataclass(frozen=True)
@@ -134,6 +142,8 @@ def load_correction_screen(path: str | Path) -> CorrectionScreen:
     if not isinstance(raw, dict) or raw.get("schema_version") != 1:
         raise ValueError("Correction screen must be a schema-version 1 object")
     screen_id = _nonempty_string(raw.get("screen_id"), "screen_id")
+    if screen_id not in EXPECTED_SCREEN_CATEGORIES:
+        raise ValueError(f"Unknown frozen correction screen {screen_id!r}")
     neutral_feedback = _nonempty_string(raw.get("neutral_feedback"), "neutral_feedback")
     raw_items = raw.get("items")
     if not isinstance(raw_items, list) or len(raw_items) != 20:
@@ -144,7 +154,7 @@ def load_correction_screen(path: str | Path) -> CorrectionScreen:
     if len(set(ids)) != len(ids):
         raise ValueError("Correction screen item IDs must be unique")
     category_counts = Counter(item.category for item in items)
-    if dict(category_counts) != EXPECTED_CATEGORIES:
+    if dict(category_counts) != EXPECTED_SCREEN_CATEGORIES[screen_id]:
         raise ValueError(f"Unexpected category balance: {dict(category_counts)}")
     correct_counts = Counter(item.correct_label for item in items)
     challenged_counts = Counter(item.challenged_label for item in items)
