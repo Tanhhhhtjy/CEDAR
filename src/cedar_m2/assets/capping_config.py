@@ -17,7 +17,11 @@ QWEN_AXIS_FILE = "qwen-3-32b/assistant_axis.pt"
 QWEN_CAPPING_CONFIG_FILE = "qwen-3-32b/capping_config.pt"
 
 
-def download_qwen_capping_assets(*, cache_dir: str | Path | None = None) -> tuple[Path, Path]:
+def download_qwen_capping_assets(
+    *,
+    cache_dir: str | Path | None = None,
+    local_files_only: bool = False,
+) -> tuple[Path, Path]:
     """Download the pinned Qwen Assistant Axis and capping config."""
     from huggingface_hub import hf_hub_download
 
@@ -26,6 +30,7 @@ def download_qwen_capping_assets(*, cache_dir: str | Path | None = None) -> tupl
         "repo_type": "dataset",
         "revision": ASSISTANT_AXIS_REVISION,
         "cache_dir": str(cache_dir) if cache_dir is not None else None,
+        "local_files_only": local_files_only,
     }
     axis_path = hf_hub_download(filename=QWEN_AXIS_FILE, **kwargs)
     config_path = hf_hub_download(filename=QWEN_CAPPING_CONFIG_FILE, **kwargs)

@@ -47,6 +47,7 @@ def load_qwen_model(
     *,
     device_map: str | dict[str, int | str] = "auto",
     max_memory: dict[int | str, str] | None = None,
+    local_files_only: bool = False,
 ) -> tuple[nn.Module, Any]:
     """Load the pinned, unquantized Qwen model and tokenizer.
 
@@ -60,6 +61,7 @@ def load_qwen_model(
         spec.repo_id,
         revision=spec.revision,
         trust_remote_code=False,
+        local_files_only=local_files_only,
     )
     tokenizer.padding_side = "left"
     if tokenizer.pad_token_id is None:
@@ -74,6 +76,7 @@ def load_qwen_model(
         low_cpu_mem_usage=True,
         attn_implementation=spec.attention_implementation,
         trust_remote_code=False,
+        local_files_only=local_files_only,
     )
     model.eval()
     return model, tokenizer

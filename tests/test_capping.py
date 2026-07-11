@@ -89,6 +89,17 @@ class ActivationCapperTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "does not match"):
             ActivationCapper(model, {0: cap})
 
+    def test_generation_mode_can_disable_synchronous_stats(self) -> None:
+        model = DummyCausalLM()
+        cap = LayerCap(layer=0, direction=torch.tensor([1.0, 0.0]), threshold=0.0)
+        activations = torch.tensor([[[2.0, 1.0]]])
+
+        with ActivationCapper(model, {0: cap}, track_stats=False) as capper:
+            output, _ = model.model.layers[0](activations)
+
+        torch.testing.assert_close(output, torch.tensor([[[0.0, 1.0]]]))
+        self.assertEqual(capper.stats[0].total_positions, 0)
+
 
 class CappingConfigTest(unittest.TestCase):
     def test_load_and_verify_opposite_axis(self) -> None:
