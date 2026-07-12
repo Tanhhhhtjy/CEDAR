@@ -8,6 +8,7 @@ from pathlib import Path
 
 from scripts.run_m2_2b_v3_calibration import (
     ARMS,
+    FORMAL_ARMS,
     atomic_write_results,
     load_calibration_rows,
     load_existing_results,
@@ -67,6 +68,41 @@ class CalibrationV3RunnerTest(unittest.TestCase):
             ),
         )
         self.assertEqual(len({row["base_id"] for row in rows}), 12)
+
+    def test_formal_pilot_profile_requires_sixty_complete_five_arm_units(self) -> None:
+        rows = []
+        for index in range(60):
+            base_id = f"SYNTH-{index:03d}"
+            for arm in FORMAL_ARMS:
+                rows.append(
+                    {
+                        "id": f"{base_id}-{arm}",
+                        "base_id": base_id,
+                        "dataset_version": "synthetic-formal-pilot",
+                        "arm": arm,
+                        "system": "system",
+                        "initial_user": "initial user",
+                        "initial_assistant": '{"answer":"A"}',
+                        "followup_user": "follow-up user",
+                        "initial_answer_id": "A",
+                    }
+                )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "formal.jsonl"
+            path.write_text(
+                "".join(json.dumps(row) + "\n" for row in rows),
+                encoding="utf-8",
+            )
+
+            loaded = load_calibration_rows(path, profile="formal_pilot")
+
+        self.assertEqual(len(loaded), 300)
+        self.assertEqual(
+            Counter(row["arm"] for row in loaded),
+            Counter({arm: 60 for arm in FORMAL_ARMS}),
+        )
+        self.assertEqual(len({row["base_id"] for row in loaded}), 60)
 
     def test_results_are_ordered_resumable_and_strictly_validated(self) -> None:
         rows = load_calibration_rows(DATA)

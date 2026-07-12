@@ -28,6 +28,7 @@ from cedar_m2.checkpoint import (
 from cedar_m2.models.qwen import QwenModelSpec, load_qwen_model, model_input_device
 
 ARMS = ("N", "R", "V", "F", "S", "AO")
+FORMAL_ARMS = ("N", "R", "V", "F", "S")
 S_STRENGTHS = ("S1_tentative", "S2_confident_preference", "S3_coercive")
 PROFILES = {
     "v3": {"rows": 72, "group_field": "arm", "groups": ARMS},
@@ -35,6 +36,11 @@ PROFILES = {
         "rows": 36,
         "group_field": "social_pressure_strength",
         "groups": S_STRENGTHS,
+    },
+    "formal_pilot": {
+        "rows": 300,
+        "group_field": "arm",
+        "groups": FORMAL_ARMS,
     },
 }
 MESSAGE_FIELDS = ("system", "initial_user", "initial_assistant", "followup_user")
@@ -90,10 +96,17 @@ def load_calibration_rows(
         raise ValueError("Calibration row IDs must be unique")
     group_field = str(specification["group_field"])
     groups = tuple(str(value) for value in specification["groups"])
-    group_counts = Counter(row.get(group_field) for row in rows)
-    if group_counts != Counter({group: 12 for group in groups}):
+    expected_base_units, remainder = divmod(expected_rows, len(groups))
+    if remainder:
         raise ValueError(
-            f"Expected 12 rows per {group_field}, found {dict(group_counts)}"
+            f"Profile {profile!r} has {expected_rows} rows that cannot be divided "
+            f"across {len(groups)} groups"
+        )
+    group_counts = Counter(row.get(group_field) for row in rows)
+    if group_counts != Counter({group: expected_base_units for group in groups}):
+        raise ValueError(
+            f"Expected {expected_base_units} rows per {group_field}, "
+            f"found {dict(group_counts)}"
         )
     base_groups: dict[str, set[str]] = {}
     for row in rows:
@@ -110,10 +123,13 @@ def load_calibration_rows(
             raise ValueError(f"Row {row['id']} has invalid initial_assistant JSON") from error
         if initial.get("answer") != row.get("initial_answer_id"):
             raise ValueError(f"Row {row['id']} initial transcript answer does not match metadata")
-    if len(base_groups) != 12 or any(
+    if len(base_groups) != expected_base_units or any(
         observed != set(groups) for observed in base_groups.values()
     ):
-        raise ValueError(f"Expected 12 base units, each containing all {group_field} values")
+        raise ValueError(
+            f"Expected {expected_base_units} base units, each containing all "
+            f"{group_field} values"
+        )
     return rows
 
 
@@ -211,9 +227,18 @@ def build_configuration(
 ) -> dict[str, Any]:
     visible_gpus = torch.cuda.device_count()
     specification = PROFILES[args.profile]
+    is_formal_pilot = args.profile == "formal_pilot"
     return {
-        "kind": f"M2.2b {args.profile} uncapped Qwen calibration",
-        "scope": "development calibration only; capping prohibited",
+        "kind": (
+            "M2.2b formal pilot uncapped Qwen gate"
+            if is_formal_pilot
+            else f"M2.2b {args.profile} uncapped Qwen calibration"
+        ),
+        "scope": (
+            "held-out development gate only; capping prohibited"
+            if is_formal_pilot
+            else "development calibration only; capping prohibited"
+        ),
         "dataset": {
             "path": str(args.data),
             "sha256": file_sha256(args.data),
