@@ -28,12 +28,22 @@ from cedar_m2.checkpoint import (
 from cedar_m2.models.qwen import QwenModelSpec, load_qwen_model, model_input_device
 
 ARMS = ("N", "R", "V", "F", "S", "AO")
+S_STRENGTHS = ("S1_tentative", "S2_confident_preference", "S3_coercive")
+PROFILES = {
+    "v3": {"rows": 72, "group_field": "arm", "groups": ARMS},
+    "s_strength": {
+        "rows": 36,
+        "group_field": "social_pressure_strength",
+        "groups": S_STRENGTHS,
+    },
+}
 MESSAGE_FIELDS = ("system", "initial_user", "initial_assistant", "followup_user")
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--stage", choices=("prepare", "generate", "all"), default="all")
+    parser.add_argument("--profile", choices=tuple(PROFILES), default="v3")
     parser.add_argument(
         "--data",
         type=Path,
@@ -48,6 +58,7 @@ def parse_args() -> argparse.Namespace:
         default=Path("artifacts/m2/m2_2b_v3_calibration"),
     )
     parser.add_argument("--run-name", default="qwen3_32b_greedy_seed0")
+    parser.add_argument("--results-filename", default="qwen_results.jsonl")
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--max-new-tokens", type=int, default=192)
     parser.add_argument("--gpu-memory-gib", type=int, default=20)
@@ -55,28 +66,41 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def load_calibration_rows(path: str | Path) -> list[dict[str, Any]]:
+def load_calibration_rows(
+    path: str | Path,
+    *,
+    profile: str = "v3",
+) -> list[dict[str, Any]]:
+    try:
+        specification = PROFILES[profile]
+    except KeyError as error:
+        raise ValueError(f"Unknown calibration profile {profile!r}") from error
     rows = [
         json.loads(line)
         for line in Path(path).read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
-    if len(rows) != 72:
-        raise ValueError(f"Expected 72 calibration rows, found {len(rows)}")
+    expected_rows = int(specification["rows"])
+    if len(rows) != expected_rows:
+        raise ValueError(f"Expected {expected_rows} calibration rows, found {len(rows)}")
     ids = [row.get("id") for row in rows]
     if any(not isinstance(item_id, str) or not item_id for item_id in ids):
         raise ValueError("Every calibration row needs a non-empty string ID")
     if len(set(ids)) != len(ids):
         raise ValueError("Calibration row IDs must be unique")
-    arm_counts = Counter(row.get("arm") for row in rows)
-    if arm_counts != Counter({arm: 12 for arm in ARMS}):
-        raise ValueError(f"Expected 12 rows per arm, found {dict(arm_counts)}")
-    base_arms: dict[str, set[str]] = {}
+    group_field = str(specification["group_field"])
+    groups = tuple(str(value) for value in specification["groups"])
+    group_counts = Counter(row.get(group_field) for row in rows)
+    if group_counts != Counter({group: 12 for group in groups}):
+        raise ValueError(
+            f"Expected 12 rows per {group_field}, found {dict(group_counts)}"
+        )
+    base_groups: dict[str, set[str]] = {}
     for row in rows:
         base_id = row.get("base_id")
         if not isinstance(base_id, str) or not base_id:
             raise ValueError(f"Row {row['id']} has a malformed base_id")
-        base_arms.setdefault(base_id, set()).add(str(row["arm"]))
+        base_groups.setdefault(base_id, set()).add(str(row[group_field]))
         for field in MESSAGE_FIELDS:
             if not isinstance(row.get(field), str) or not row[field].strip():
                 raise ValueError(f"Row {row['id']} has malformed {field}")
@@ -86,8 +110,10 @@ def load_calibration_rows(path: str | Path) -> list[dict[str, Any]]:
             raise ValueError(f"Row {row['id']} has invalid initial_assistant JSON") from error
         if initial.get("answer") != row.get("initial_answer_id"):
             raise ValueError(f"Row {row['id']} initial transcript answer does not match metadata")
-    if len(base_arms) != 12 or any(arms != set(ARMS) for arms in base_arms.values()):
-        raise ValueError("Expected 12 base units, each containing all six arms")
+    if len(base_groups) != 12 or any(
+        observed != set(groups) for observed in base_groups.values()
+    ):
+        raise ValueError(f"Expected 12 base units, each containing all {group_field} values")
     return rows
 
 
@@ -184,8 +210,9 @@ def build_configuration(
     rows: list[dict[str, Any]],
 ) -> dict[str, Any]:
     visible_gpus = torch.cuda.device_count()
+    specification = PROFILES[args.profile]
     return {
-        "kind": "M2.2b v3 uncapped Qwen paradigm calibration",
+        "kind": f"M2.2b {args.profile} uncapped Qwen calibration",
         "scope": "development calibration only; capping prohibited",
         "dataset": {
             "path": str(args.data),
@@ -194,7 +221,9 @@ def build_configuration(
             "row_ids_sha256": object_sha256([row["id"] for row in rows]),
             "rows": len(rows),
             "base_units": len({row["base_id"] for row in rows}),
-            "arms": ARMS,
+            "profile": args.profile,
+            "group_field": specification["group_field"],
+            "groups": specification["groups"],
         },
         "model": asdict(QwenModelSpec()),
         "intervention": "uncapped",
@@ -325,11 +354,11 @@ def main() -> None:
     if args.batch_size <= 0 or args.max_new_tokens <= 0 or args.gpu_memory_gib <= 0:
         raise ValueError("Batch size, max new tokens, and GPU memory must be positive")
 
-    rows = load_calibration_rows(args.data)
+    rows = load_calibration_rows(args.data, profile=args.profile)
     run_dir = args.output_root / args.run_name
     configuration = build_configuration(args, rows)
     manifest = initialize_run(run_dir, configuration)
-    output_path = run_dir / "qwen_results.jsonl"
+    output_path = run_dir / args.results_filename
     results = load_existing_results(output_path, valid_ids={row["id"] for row in rows})
 
     if args.stage == "prepare":
@@ -339,7 +368,8 @@ def main() -> None:
                     "stage": "prepare",
                     "rows": len(rows),
                     "base_units": len({row["base_id"] for row in rows}),
-                    "arms": ARMS,
+                    "profile": args.profile,
+                    "groups": PROFILES[args.profile]["groups"],
                     "existing_results": len(results),
                     "run_fingerprint": manifest["fingerprint"],
                 }

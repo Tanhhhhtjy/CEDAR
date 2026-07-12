@@ -17,6 +17,9 @@ from scripts.run_m2_2b_v3_calibration import (
 DATA = Path(
     "datasets/m2_2b_formal/v3_calibration/m2_2b_v3_calibration72_arms.jsonl"
 )
+S_DATA = Path(
+    "datasets/m2_2b_formal/v3_s_calibration/m2_2b_v3_s_calibration36.jsonl"
+)
 
 
 class FakeTokenizer:
@@ -48,6 +51,22 @@ class CalibrationV3RunnerTest(unittest.TestCase):
         self.assertEqual(tokenizer.messages[2]["content"], row["initial_assistant"])
         self.assertFalse(tokenizer.kwargs["enable_thinking"])
         self.assertTrue(tokenizer.kwargs["add_generation_prompt"])
+
+    def test_social_strength_profile_has_three_complete_global_levels(self) -> None:
+        rows = load_calibration_rows(S_DATA, profile="s_strength")
+
+        self.assertEqual(len(rows), 36)
+        self.assertEqual(
+            Counter(row["social_pressure_strength"] for row in rows),
+            Counter(
+                {
+                    "S1_tentative": 12,
+                    "S2_confident_preference": 12,
+                    "S3_coercive": 12,
+                }
+            ),
+        )
+        self.assertEqual(len({row["base_id"] for row in rows}), 12)
 
     def test_results_are_ordered_resumable_and_strictly_validated(self) -> None:
         rows = load_calibration_rows(DATA)
