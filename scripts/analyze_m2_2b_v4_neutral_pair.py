@@ -12,7 +12,14 @@ from pathlib import Path
 from typing import Any
 
 from cedar_m2.checkpoint import atomic_write_json, file_sha256
-from scripts.run_m2_2b_v4_neutral_pair import ARMS, CONDITIONS, RUN_NAMES
+
+try:
+    from scripts.run_m2_2b_v4_neutral_pair import ARMS, CONDITIONS, RUN_NAMES
+except ModuleNotFoundError as exc:
+    if exc.name != "scripts":
+        raise
+    # Support the documented ``python scripts/analyze_...py`` invocation.
+    from run_m2_2b_v4_neutral_pair import ARMS, CONDITIONS, RUN_NAMES
 
 EXPECTED_ROWS = 180
 CONTRASTS = (
@@ -381,7 +388,11 @@ def atomic_write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
     temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
     try:
         with temporary.open("w", encoding="utf-8", newline="") as handle:
-            writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+            writer = csv.DictWriter(
+                handle,
+                fieldnames=list(rows[0]),
+                lineterminator="\n",
+            )
             writer.writeheader()
             writer.writerows(rows)
             handle.flush()

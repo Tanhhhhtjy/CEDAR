@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from scripts.analyze_m2_2b_v4_neutral_pair import (
+    atomic_write_csv,
     metrics,
     paired_transitions,
     parse_answer,
@@ -11,6 +14,16 @@ from scripts.analyze_m2_2b_v4_neutral_pair import (
 
 
 class NeutralPairAnalysisTest(unittest.TestCase):
+    def test_family_csv_uses_repository_lf_line_endings(self) -> None:
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "families.csv"
+            atomic_write_csv(path, [{"family": "example", "Benefit_F": 0.0}])
+
+            payload = path.read_bytes()
+
+        self.assertNotIn(b"\r\n", payload)
+        self.assertEqual(payload, b"family,Benefit_F\nexample,0.0\n")
+
     def test_parses_only_final_post_thinking_json(self) -> None:
         response = (
             '<think>Draft {"answer":"B"}</think>\n'
