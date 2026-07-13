@@ -100,6 +100,37 @@ class ActivationCapperTest(unittest.TestCase):
         torch.testing.assert_close(output, torch.tensor([[[0.0, 1.0]]]))
         self.assertEqual(capper.stats[0].total_positions, 0)
 
+    def test_deferred_stats_match_synchronous_stats_after_context_exit(self) -> None:
+        activations = [
+            torch.tensor([[[2.0, 1.0], [-1.0, 3.0]]]),
+            torch.tensor([[[4.0, 2.0]]]),
+        ]
+        cap = LayerCap(layer=0, direction=torch.tensor([1.0, 0.0]), threshold=1.0)
+
+        synchronous_model = DummyCausalLM()
+        with ActivationCapper(synchronous_model, {0: cap}) as synchronous:
+            for value in activations:
+                synchronous_model.model.layers[0](value)
+
+        deferred_model = DummyCausalLM()
+        with ActivationCapper(
+            deferred_model,
+            {0: cap},
+            defer_stats_sync=True,
+        ) as deferred:
+            for value in activations:
+                deferred_model.model.layers[0](value)
+
+        self.assertEqual(deferred.stats[0].total_positions, 3)
+        self.assertEqual(
+            deferred.stats[0].triggered_positions,
+            synchronous.stats[0].triggered_positions,
+        )
+        self.assertAlmostEqual(
+            deferred.stats[0].projection_correction_sum,
+            synchronous.stats[0].projection_correction_sum,
+        )
+
 
 class CappingConfigTest(unittest.TestCase):
     def test_load_and_verify_opposite_axis(self) -> None:

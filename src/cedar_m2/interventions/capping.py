@@ -127,6 +127,7 @@ class ActivationCapper:
         *,
         positions: Literal["all", "last"] = "all",
         track_stats: bool = True,
+        defer_stats_sync: bool = False,
     ) -> None:
         if not caps:
             raise ValueError("At least one layer cap is required")
@@ -134,9 +135,13 @@ class ActivationCapper:
         self.caps = dict(caps)
         self.positions = positions
         self.track_stats = track_stats
+        self.defer_stats_sync = defer_stats_sync
         self.stats = {layer: CapStats() for layer in self.caps}
         self._handles: list[torch.utils.hooks.RemovableHandle] = []
         self._direction_cache: dict[tuple[int, torch.device, torch.dtype], Tensor] = {}
+        self._deferred_total_positions = {layer: 0 for layer in self.caps}
+        self._deferred_triggered: dict[int, Tensor] = {}
+        self._deferred_correction: dict[int, Tensor] = {}
 
         for layer, cap in self.caps.items():
             if layer != cap.layer:
@@ -176,7 +181,19 @@ class ActivationCapper:
                 self._direction_cache[cache_key] = vector
             modified, excess = _apply_unit_upper_cap(tensor, vector, cap.threshold, self.positions)
             if self.track_stats:
-                self.stats[layer].update(_stats_from_excess(excess))
+                if self.defer_stats_sync:
+                    detached = excess.detach().float()
+                    self._deferred_total_positions[layer] += detached.numel()
+                    triggered = torch.count_nonzero(detached > 0)
+                    correction = detached.sum()
+                    if layer not in self._deferred_triggered:
+                        self._deferred_triggered[layer] = triggered
+                        self._deferred_correction[layer] = correction
+                    else:
+                        self._deferred_triggered[layer].add_(triggered)
+                        self._deferred_correction[layer].add_(correction)
+                else:
+                    self.stats[layer].update(_stats_from_excess(excess))
 
             if container == "tensor":
                 return modified
@@ -205,8 +222,34 @@ class ActivationCapper:
 
     def reset_stats(self) -> None:
         self.stats = {layer: CapStats() for layer in self.caps}
+        self._deferred_total_positions = {layer: 0 for layer in self.caps}
+        self._deferred_triggered.clear()
+        self._deferred_correction.clear()
+
+    def _materialize_deferred_stats(self) -> None:
+        if not self.defer_stats_sync:
+            return
+        for layer in self.caps:
+            total = self._deferred_total_positions[layer]
+            triggered = self._deferred_triggered.get(layer)
+            correction = self._deferred_correction.get(layer)
+            if not total:
+                continue
+            if triggered is None or correction is None:
+                raise RuntimeError(f"Deferred capping stats are incomplete at layer {layer}")
+            self.stats[layer].update(
+                CapStats(
+                    total_positions=total,
+                    triggered_positions=int(triggered.item()),
+                    projection_correction_sum=float(correction.item()),
+                )
+            )
+        self._deferred_total_positions = {layer: 0 for layer in self.caps}
+        self._deferred_triggered.clear()
+        self._deferred_correction.clear()
 
     def remove(self) -> None:
+        self._materialize_deferred_stats()
         for handle in self._handles:
             handle.remove()
         self._handles.clear()
