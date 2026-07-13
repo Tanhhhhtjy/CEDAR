@@ -42,6 +42,11 @@ PROFILES = {
         "group_field": "arm",
         "groups": FORMAL_ARMS,
     },
+    "formal_pilot_provisional": {
+        "rows": 300,
+        "group_field": "arm",
+        "groups": FORMAL_ARMS,
+    },
 }
 MESSAGE_FIELDS = ("system", "initial_user", "initial_assistant", "followup_user")
 
@@ -153,6 +158,7 @@ def load_existing_results(
     path: str | Path,
     *,
     valid_ids: set[str],
+    required_cap: str | None = None,
 ) -> dict[str, dict[str, Any]]:
     source = Path(path)
     if not source.exists():
@@ -167,13 +173,20 @@ def load_existing_results(
             raise ValueError(f"Unknown result ID on line {number}: {item_id!r}")
         if item_id in results:
             raise ValueError(f"Duplicate result ID on line {number}: {item_id!r}")
-        if row.get("seed") != 0 or not isinstance(row.get("response"), str):
+        if (
+            row.get("seed") != 0
+            or not isinstance(row.get("response"), str)
+            or (required_cap is not None and row.get("cap") != required_cap)
+        ):
             raise ValueError(f"Malformed result on line {number}: {item_id!r}")
-        results[item_id] = {
+        normalized = {
             "id": item_id,
             "seed": 0,
             "response": row["response"],
         }
+        if row.get("cap") is not None:
+            normalized["cap"] = row["cap"]
+        results[item_id] = normalized
     return results
 
 
@@ -227,18 +240,23 @@ def build_configuration(
 ) -> dict[str, Any]:
     visible_gpus = torch.cuda.device_count()
     specification = PROFILES[args.profile]
-    is_formal_pilot = args.profile == "formal_pilot"
-    return {
-        "kind": (
-            "M2.2b formal pilot uncapped Qwen gate"
-            if is_formal_pilot
-            else f"M2.2b {args.profile} uncapped Qwen calibration"
-        ),
-        "scope": (
-            "held-out development gate only; capping prohibited"
-            if is_formal_pilot
-            else "development calibration only; capping prohibited"
-        ),
+    is_formal_pilot = args.profile in {"formal_pilot", "formal_pilot_provisional"}
+    is_provisional = args.profile == "formal_pilot_provisional"
+    if is_provisional:
+        kind = "M2.2b formal pilot provisional uncapped Qwen diagnostic"
+        scope = (
+            "AI-provisional engineering diagnostic only; human review not passed; "
+            "capping prohibited"
+        )
+    elif is_formal_pilot:
+        kind = "M2.2b formal pilot uncapped Qwen gate"
+        scope = "held-out development gate only; capping prohibited"
+    else:
+        kind = f"M2.2b {args.profile} uncapped Qwen calibration"
+        scope = "development calibration only; capping prohibited"
+    configuration = {
+        "kind": kind,
+        "scope": scope,
         "dataset": {
             "path": str(args.data),
             "sha256": file_sha256(args.data),
@@ -290,6 +308,11 @@ def build_configuration(
         },
         "git": git_provenance(allow_dirty=args.allow_dirty),
     }
+    if is_provisional:
+        configuration["review_boundary"] = (
+            "AI provisional review only; not dual-blind human review"
+        )
+    return configuration
 
 
 def update_runtime(run_dir: Path, values: dict[str, Any]) -> None:
@@ -308,6 +331,7 @@ def generate_responses(
     *,
     batch_size: int,
     max_new_tokens: int,
+    cap: str | None = None,
 ) -> int:
     missing = [row for row in rows if row["id"] not in results]
     if not missing:
@@ -344,11 +368,14 @@ def generate_responses(
             skip_special_tokens=True,
         )
         for row, response in zip(batch, responses, strict=True):
-            results[row["id"]] = {
+            result = {
                 "id": row["id"],
                 "seed": 0,
                 "response": response.strip(),
             }
+            if cap is not None:
+                result["cap"] = cap
+            results[row["id"]] = result
             generated_count += 1
         atomic_write_results(output_path, rows, results)
         print(
@@ -384,7 +411,15 @@ def main() -> None:
     configuration = build_configuration(args, rows)
     manifest = initialize_run(run_dir, configuration)
     output_path = run_dir / args.results_filename
-    results = load_existing_results(output_path, valid_ids={row["id"] for row in rows})
+    result_cap = "uncapped" if args.profile in {
+        "formal_pilot",
+        "formal_pilot_provisional",
+    } else None
+    results = load_existing_results(
+        output_path,
+        valid_ids={row["id"] for row in rows},
+        required_cap=result_cap,
+    )
 
     if args.stage == "prepare":
         print(
@@ -423,6 +458,7 @@ def main() -> None:
                 output_path,
                 batch_size=args.batch_size,
                 max_new_tokens=args.max_new_tokens,
+                cap=result_cap,
             )
             del model, tokenizer
             release_cuda_cache()

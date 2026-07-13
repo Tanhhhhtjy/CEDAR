@@ -96,8 +96,13 @@ class CalibrationV3RunnerTest(unittest.TestCase):
             )
 
             loaded = load_calibration_rows(path, profile="formal_pilot")
+            provisional = load_calibration_rows(
+                path,
+                profile="formal_pilot_provisional",
+            )
 
         self.assertEqual(len(loaded), 300)
+        self.assertEqual(provisional, loaded)
         self.assertEqual(
             Counter(row["arm"] for row in loaded),
             Counter({arm: 60 for arm in FORMAL_ARMS}),
@@ -121,6 +126,37 @@ class CalibrationV3RunnerTest(unittest.TestCase):
             path.write_text(json.dumps({**first, "seed": 1}) + "\n")
             with self.assertRaisesRegex(ValueError, "Malformed result"):
                 load_existing_results(path, valid_ids={row["id"] for row in rows})
+
+    def test_formal_results_require_and_preserve_uncapped_label(self) -> None:
+        item_id = "SYNTH-000-N"
+        row = {
+            "id": item_id,
+            "seed": 0,
+            "cap": "uncapped",
+            "response": '{"answer":"A"}',
+        }
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "results.jsonl"
+            path.write_text(json.dumps(row) + "\n", encoding="utf-8")
+
+            loaded = load_existing_results(
+                path,
+                valid_ids={item_id},
+                required_cap="uncapped",
+            )
+            self.assertEqual(loaded[item_id], row)
+
+            path.write_text(
+                json.dumps({**row, "cap": "p75"}) + "\n",
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "Malformed result"):
+                load_existing_results(
+                    path,
+                    valid_ids={item_id},
+                    required_cap="uncapped",
+                )
 
 
 if __name__ == "__main__":
