@@ -27,8 +27,8 @@ SOURCE_ARMS = V4 / "m2_2b_v4_public_poc180_neutral_prompt_arms.jsonl"
 SOURCE_AUDIT = V4 / "construction_audit36.jsonl"
 SOURCE_CARDS = V4 / "family_cards18.jsonl"
 
-OUTPUT = HERE / "m2_2b_v5_dose_response_candidate432.jsonl"
-AUDIT_OUTPUT = HERE / "m2_2b_v5_candidate_construction_audit432.jsonl"
+OUTPUT = HERE / "m2_2b_v5_dose_response_candidate468.jsonl"
+AUDIT_OUTPUT = HERE / "m2_2b_v5_candidate_construction_audit468.jsonl"
 CARDS_OUTPUT = HERE / "m2_2b_v5_candidate_family_cards18.jsonl"
 MANIFEST = HERE / "manifest.json"
 
@@ -37,7 +37,7 @@ SPLIT = "development_dose_response_candidate_bank"
 STATUS = "candidate_bank_unselected_no_v5_model_outputs"
 SOURCE_RESULT_COMMIT = "61c504d"
 CAP_ORDER = ("uncapped", "p75", "p50", "p25", "p1")
-ARMS = ("V", "F", "S")
+ARMS = ("N", "V", "F", "S")
 VF_LEVELS = (
     {
         "level": 0,
@@ -164,8 +164,8 @@ SUBTLE_F_CANDIDATES = {
 
 DELIVERABLES = (
     "build_m2_2b_v5_dose_response_bank.py",
-    "m2_2b_v5_dose_response_candidate432.jsonl",
-    "m2_2b_v5_candidate_construction_audit432.jsonl",
+    "m2_2b_v5_dose_response_candidate468.jsonl",
+    "m2_2b_v5_candidate_construction_audit468.jsonl",
     "m2_2b_v5_candidate_family_cards18.jsonl",
     "validate_m2_2b_v5_dose_response_bank.py",
     "select_m2_2b_v5_dose_curve.py",
@@ -179,6 +179,7 @@ DELIVERABLES = (
 
 EXTERNAL_DELIVERABLES = (
     REPO_ROOT / "scripts" / "run_m2_2b_v5_dose_bank.py",
+    REPO_ROOT / "scripts" / "audit_m2_2b_v5_primary_runs.py",
     REPO_ROOT / "tests" / "test_m2_2b_v5_dose_response_bank.py",
 )
 
@@ -376,7 +377,7 @@ def common_row(
     source: dict[str, Any],
     *,
     arm: str,
-    level: int,
+    level: int | None,
     level_name: str,
     initial_user: str,
 ) -> dict[str, Any]:
@@ -615,6 +616,62 @@ def build_s_candidates(
     return rows, audits
 
 
+def build_n_candidate(
+    source_n: dict[str, Any],
+    source_audit: dict[str, Any],
+    initial_user: str,
+    ambiguity_fixed: bool,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Build one unique maintain control per base, without fake gradient replicas."""
+    base_id = source_n["base_id"]
+    row = common_row(
+        source_n,
+        arm="N",
+        level=None,
+        level_name="maintain_control",
+        initial_user=initial_user,
+    )
+    row_id = f"{candidate_base_id(base_id)}-N"
+    row.update(
+        {
+            "id": row_id,
+            "candidate_axis": "maintain_control",
+            "condition": "no_new_information_maintain",
+            "followup_user": source_n["followup_user"],
+            "gradient_contract": {
+                "level": None,
+                "name": "maintain_control",
+                "graded": False,
+                "unique_per_base": True,
+                "new_task_information": False,
+            },
+        }
+    )
+    audit = {
+        "id": row_id,
+        "arm": "N",
+        "review_type": "author_candidate_construction_audit",
+        "independent_human_review": False,
+        "human_review_status": "not_started",
+        "model_output_used_for_v5_item_selection": False,
+        "prior_development_results_informed_gradient_design": True,
+        "source_base_id": base_id,
+        "candidate_base_id": candidate_base_id(base_id),
+        "gradient_level": None,
+        "gradient_level_name": "maintain_control",
+        "initial_task_ambiguity_repaired": ambiguity_fixed,
+        "initial_gold": source_audit["initial_gold"],
+        "N_gold": source_n["initial_answer_id"],
+        "new_task_information_added": False,
+        "normative_action": "maintain initial answer",
+        "interpretation_limit": (
+            "A flat N curve detects stability but cannot by itself rule out "
+            "general answer inertia."
+        ),
+    }
+    return row, audit
+
+
 def build_family_cards(source_cards: list[dict[str, Any]]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for source in source_cards:
@@ -632,6 +689,7 @@ def build_family_cards(source_cards: list[dict[str, Any]]) -> list[dict[str, Any
                 "F_clarity_contract": source["F_clarity_contract"],
                 "second_failure_point_absent": source["second_failure_point_absent"],
                 "source_variant_count": 2,
+                "n_control_count_per_base": 1,
                 "vf_pack_count_per_base": 4,
                 "s_level_count_per_base": 4,
                 "vf_gradient_levels": copy.deepcopy(VF_LEVELS),
@@ -683,13 +741,18 @@ def build_manifest(rows: list[dict[str, Any]], cards: list[dict[str, Any]]) -> d
             "V": sum(row["arm"] == "V" for row in rows),
             "F": sum(row["arm"] == "F" for row in rows),
             "S": sum(row["arm"] == "S" for row in rows),
+            "N": sum(row["arm"] == "N" for row in rows),
             "vf_packs": len({row.get("vf_pack_id") for row in rows if row["arm"] == "V"}),
             "cap_conditions": len(CAP_ORDER),
             "planned_generations": len(rows) * len(CAP_ORDER),
         },
         "cap_order": list(CAP_ORDER),
         "construction_contract_sha256": object_sha256(
-            {"vf_levels": VF_LEVELS, "s_levels": S_LEVELS}
+            {
+                "n_control": "one unique ungraded maintain record per base",
+                "vf_levels": VF_LEVELS,
+                "s_levels": S_LEVELS,
+            }
         ),
         "selection": {
             "performed": False,
@@ -716,6 +779,8 @@ def main() -> None:
 
     candidate_rows: list[dict[str, Any]] = []
     audit_rows: list[dict[str, Any]] = []
+    n_rows: list[dict[str, Any]] = []
+    n_audits: list[dict[str, Any]] = []
     for base_id in sorted(grouped):
         arms = grouped[base_id]
         if set(arms) != {"N", "R", "V", "F", "S"}:
@@ -731,14 +796,26 @@ def main() -> None:
         s_rows, s_audits = build_s_candidates(
             arms["S"], source_audits[base_id], initial_user, ambiguity_fixed
         )
+        n_row, n_audit = build_n_candidate(
+            arms["N"], source_audits[base_id], initial_user, ambiguity_fixed
+        )
         candidate_rows.extend((*vf_rows, *s_rows))
         audit_rows.extend((*vf_audits, *s_audits))
+        n_rows.append(n_row)
+        n_audits.append(n_audit)
+
+    # Preserve the original 432 V/F/S rows and their batch composition exactly;
+    # append the 36 new controls only after the original bank.
+    candidate_rows.extend(n_rows)
+    audit_rows.extend(n_audits)
 
     cards = build_family_cards(source_cards)
-    if len(candidate_rows) != 432:
-        raise ValueError(f"Expected 432 candidates, found {len(candidate_rows)}")
-    if Counter(row["arm"] for row in candidate_rows) != Counter({"V": 144, "F": 144, "S": 144}):
-        raise ValueError("Candidate arm counts are not balanced")
+    if len(candidate_rows) != 468:
+        raise ValueError(f"Expected 468 candidates, found {len(candidate_rows)}")
+    if Counter(row["arm"] for row in candidate_rows) != Counter(
+        {"N": 36, "V": 144, "F": 144, "S": 144}
+    ):
+        raise ValueError("Candidate arm counts are not N=36 and V=F=S=144")
 
     atomic_write_jsonl(OUTPUT, candidate_rows)
     atomic_write_jsonl(AUDIT_OUTPUT, audit_rows)

@@ -2,7 +2,7 @@
 
 ## Input
 
-`m2_2b_v5_dose_response_candidate432.jsonl`
+`m2_2b_v5_dose_response_candidate468.jsonl`
 
 Validate before loading Qwen:
 
@@ -12,11 +12,12 @@ python -B datasets/m2_2b_formal/v5_dose_response_bank/validate_m2_2b_v5_dose_res
 
 ## Required scan
 
-Run all 432 candidates under each condition:
+Run all 468 candidates under each condition:
 
 `uncapped`, `p75`, `p50`, `p25`, `p1`
 
-Total expected generations: 2,160. Use Qwen3-32B revision
+Total expected generations: 2,340. The bank contains 36 unique N controls and
+144 records for each of V, F, and S. Use Qwen3-32B revision
 `9216db5781bf21249d130ec9da846c4624c16137`, BF16, thinking enabled,
 greedy decoding, seed 0, batch 2, and 2,048 new tokens. Preserve complete raw
 thinking output.
@@ -44,11 +45,21 @@ python scripts/run_m2_2b_v5_dose_bank.py --condition p1 --stage all
 
 For every condition return:
 
-- raw result JSONL with exactly 432 IDs;
+- raw result JSONL with exactly 468 IDs;
 - manifest and runtime configuration;
 - rendered-prompt and tokenized-input hashes;
 - per-layer and pooled cap trigger statistics;
 - missing, duplicate, invalid-JSON, missing-thinking, and truncation counts.
+
+After all five runs, but before inspecting or selecting response patterns, run:
+
+```bash
+python scripts/audit_m2_2b_v5_primary_runs.py
+```
+
+It must pass. This checks identical left-padding, batch membership, rendered
+prompts, tokenized input IDs, model configuration, and generation settings
+across conditions.
 
 Do not select candidates on the experiment machine. After all five result
 files are pushed, the data owner runs:
@@ -59,3 +70,7 @@ python -B datasets/m2_2b_formal/v5_dose_response_bank/select_m2_2b_v5_dose_curve
 ```
 
 The default selector stops if the exact family-grouped curve is unavailable.
+N is reported as a maintain-control curve and is never used to choose prompt
+levels. The selector evaluates the predeclared cliff criterion before level
+optimization; if it fires, the selector stops without selecting anything and
+the complete primary artifacts must be returned for refinement.

@@ -25,13 +25,22 @@ def load_jsonl(path: Path) -> list[dict]:
 
 
 def test_candidate_bank_shapes_and_gradient() -> None:
-    rows = load_jsonl(BANK / "m2_2b_v5_dose_response_candidate432.jsonl")
-    assert len(rows) == 432
-    assert Counter(row["arm"] for row in rows) == {"V": 144, "F": 144, "S": 144}
+    rows = load_jsonl(BANK / "m2_2b_v5_dose_response_candidate468.jsonl")
+    assert len(rows) == 468
+    assert Counter(row["arm"] for row in rows) == {
+        "N": 36,
+        "V": 144,
+        "F": 144,
+        "S": 144,
+    }
     assert len({row["source_base_id"] for row in rows}) == 36
     assert len({row["template_family"] for row in rows}) == 18
     for base_id in {row["source_base_id"] for row in rows}:
         group = [row for row in rows if row["source_base_id"] == base_id]
+        n_rows = [row for row in group if row["arm"] == "N"]
+        assert len(n_rows) == 1
+        assert n_rows[0]["gradient_level"] is None
+        assert n_rows[0]["gold_final_answer_id"] == n_rows[0]["initial_answer_id"]
         for arm in ("V", "F", "S"):
             arm_rows = [row for row in group if row["arm"] == arm]
             assert {row["gradient_level"] for row in arm_rows} == {0, 1, 2, 3}
@@ -82,12 +91,33 @@ def test_family_beam_selector_can_hit_frozen_curve_exactly() -> None:
     assert distance == 0
 
 
+def test_preselection_cliff_rule_stops_before_level_optimization() -> None:
+    module = load_module(
+        "select_m2_2b_v5_dose_curve_cliff",
+        BANK / "select_m2_2b_v5_dose_curve.py",
+    )
+    patterns = [
+        {
+            "arm": arm,
+            "complete": True,
+            "monotone_nonincreasing": True,
+            "response_bits": [1, 0, 0, 0, 0],
+        }
+        for arm in ("V", "F", "S")
+        for _ in range(12)
+    ]
+    report = module.cliff_diagnostic(patterns)
+    assert report["status"] == "refinement_required"
+    assert report["chosen_refinement_interval"]["interval"] == "uncapped->p75"
+    assert report["evaluated_before_level_selection"] is True
+
+
 def test_selected_form_assembly_restores_five_arms() -> None:
     module = load_module(
         "select_m2_2b_v5_dose_curve_assembly",
         BANK / "select_m2_2b_v5_dose_curve.py",
     )
-    candidates = load_jsonl(BANK / "m2_2b_v5_dose_response_candidate432.jsonl")
+    candidates = load_jsonl(BANK / "m2_2b_v5_dose_response_candidate468.jsonl")
     families = {row["template_family"] for row in candidates}
     selected = module.assemble_selected(
         candidates,
@@ -110,7 +140,13 @@ def test_five_condition_runner_accepts_the_frozen_bank() -> None:
         "run_m2_2b_v5_dose_bank",
         ROOT / "scripts" / "run_m2_2b_v5_dose_bank.py",
     )
-    rows = module.load_rows(BANK / "m2_2b_v5_dose_response_candidate432.jsonl")
-    assert len(rows) == 432
+    rows = module.load_rows(BANK / "m2_2b_v5_dose_response_candidate468.jsonl")
+    assert len(rows) == 468
+    assert Counter(row["arm"] for row in rows) == {
+        "N": 36,
+        "V": 144,
+        "F": 144,
+        "S": 144,
+    }
     assert module.CONDITIONS == ("uncapped", "p75", "p50", "p25", "p1")
     assert module.CONDITION_EXPERIMENTS["p1"] == "layers_46:54-p0.01"

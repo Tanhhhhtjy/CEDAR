@@ -43,13 +43,14 @@ def main() -> None:
     manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
     failures: list[str] = []
 
-    require(len(rows) == 432, f"candidate rows={len(rows)}", failures)
-    require(len(audits) == 432, f"audit rows={len(audits)}", failures)
+    require(len(rows) == 468, f"candidate rows={len(rows)}", failures)
+    require(len(audits) == 468, f"audit rows={len(audits)}", failures)
     require(len(cards) == 18, f"family cards={len(cards)}", failures)
-    require(len({row["id"] for row in rows}) == 432, "candidate IDs are not unique", failures)
+    require(len({row["id"] for row in rows}) == 468, "candidate IDs are not unique", failures)
     require(
-        Counter(row["arm"] for row in rows) == Counter({"V": 144, "F": 144, "S": 144}),
-        "arm balance is not V=F=S=144",
+        Counter(row["arm"] for row in rows)
+        == Counter({"N": 36, "V": 144, "F": 144, "S": 144}),
+        "arm balance is not N=36 and V=F=S=144",
         failures,
     )
     require(
@@ -77,7 +78,7 @@ def main() -> None:
 
     local_cue_removals = 0
     for source_base_id, group in sorted(grouped.items()):
-        require(len(group) == 12, f"{source_base_id}: candidates={len(group)}", failures)
+        require(len(group) == 13, f"{source_base_id}: candidates={len(group)}", failures)
         by_arm = {arm: [row for row in group if row["arm"] == arm] for arm in ("V", "F", "S")}
         for arm in by_arm:
             require(len(by_arm[arm]) == 4, f"{source_base_id}: {arm} count", failures)
@@ -92,6 +93,33 @@ def main() -> None:
                 failures,
             )
 
+        n_rows = [row for row in group if row["arm"] == "N"]
+        require(len(n_rows) == 1, f"{source_base_id}: N count", failures)
+        if n_rows:
+            n_row = n_rows[0]
+            source_n = source_by_base[source_base_id]["N"]
+            require(n_row["gradient_level"] is None, f"{n_row['id']}: N has level", failures)
+            require(
+                n_row["gradient_level_name"] == "maintain_control",
+                f"{n_row['id']}: N control name",
+                failures,
+            )
+            require(
+                n_row["followup_user"] == source_n["followup_user"],
+                f"{n_row['id']}: N prompt changed",
+                failures,
+            )
+            require(
+                n_row["gold_final_answer_id"] == n_row["initial_answer_id"],
+                f"{n_row['id']}: N gold mapping",
+                failures,
+            )
+            require(
+                n_row["normative_should_update"] is False
+                and n_row["normative_answer_action"] == "maintain",
+                f"{n_row['id']}: N normative action",
+                failures,
+            )
         reference = source_by_base[source_base_id]["V"]
         shared_fields = (
             "initial_assistant",
@@ -206,7 +234,7 @@ def main() -> None:
                 f"{row['id']}: second flaw",
                 failures,
             )
-        if row["gradient_level"] >= 2 and row["arm"] in {"V", "F"}:
+        if row["arm"] in {"V", "F"} and row["gradient_level"] >= 2:
             transform = audit.get(f"{row['arm']}_observation_transform", {})
             local_cue_removals += int(bool(transform.get("local_safeguard_removed")))
 
@@ -306,7 +334,7 @@ def main() -> None:
         failures,
     )
     require(
-        manifest.get("counts", {}).get("planned_generations") == 2160,
+        manifest.get("counts", {}).get("planned_generations") == 2340,
         "planned generation count",
         failures,
     )

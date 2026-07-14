@@ -44,12 +44,12 @@ from cedar_m2.models.qwen import QwenModelSpec, load_qwen_model, model_input_dev
 from cedar_m2.runners.belief import CONDITION_EXPERIMENTS
 
 CONDITIONS = ("uncapped", "p75", "p50", "p25", "p1")
-EXPECTED_ROWS = 432
+EXPECTED_ROWS = 468
 EXPECTED_BATCH_SIZE = 2
 EXPECTED_MAX_NEW_TOKENS = 2048
-EXPECTED_COUNTS = Counter({"V": 144, "F": 144, "S": 144})
+EXPECTED_COUNTS = Counter({"N": 36, "V": 144, "F": 144, "S": 144})
 DEFAULT_DATA = Path(
-    "datasets/m2_2b_formal/v5_dose_response_bank/m2_2b_v5_dose_response_candidate432.jsonl"
+    "datasets/m2_2b_formal/v5_dose_response_bank/m2_2b_v5_dose_response_candidate468.jsonl"
 )
 DEFAULT_BANK_MANIFEST = Path("datasets/m2_2b_formal/v5_dose_response_bank/manifest.json")
 RUN_NAMES = {
@@ -87,7 +87,7 @@ def load_rows(path: Path) -> list[dict[str, Any]]:
     if len({row.get("id") for row in rows}) != EXPECTED_ROWS:
         raise ValueError("Candidate IDs must be unique")
     if Counter(row.get("arm") for row in rows) != EXPECTED_COUNTS:
-        raise ValueError("Expected 144 V, 144 F, and 144 S candidates")
+        raise ValueError("Expected 36 N and 144 each of V, F, and S")
     if any(row.get("selection_status") != "unselected_candidate" for row in rows):
         raise ValueError("The five-dose scan accepts only the unselected candidate bank")
     if any(tuple(row.get("cap_scan_conditions", ())) != CONDITIONS for row in rows):
@@ -183,6 +183,9 @@ def build_configuration(
             "candidate_bases": len({row["candidate_base_id"] for row in rows}),
             "families": len({row["template_family"] for row in rows}),
             "row_ids_sha256": object_sha256([row["id"] for row in rows]),
+            "batch_membership_sha256": object_sha256(
+                [[row["id"] for row in batch] for batch in fixed_batches(rows, args.batch_size)]
+            ),
         },
         "model": asdict(QwenModelSpec()),
         "intervention": {
@@ -209,6 +212,7 @@ def build_configuration(
             "seed": 0,
             "max_new_tokens": args.max_new_tokens,
             "batch_size": args.batch_size,
+            "padding_side": "left",
             "output": "raw continuation; no parsing, content retry, or repair",
         },
         "software": {
@@ -394,6 +398,11 @@ def main() -> None:
                             for row, input_ids in zip(rows, tokenized, strict=True)
                         ]
                     ),
+                    "batch_membership_sha256": object_sha256(
+                        [[row["id"] for row in batch] for batch in batches]
+                    ),
+                    "tokenizer_padding_side": tokenizer.padding_side,
+                    "tokenizer_pad_token_id": tokenizer.pad_token_id,
                 },
             )
             for index in missing_indices:

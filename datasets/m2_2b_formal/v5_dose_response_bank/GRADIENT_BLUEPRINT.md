@@ -62,7 +62,14 @@ from the main monotone curve by an explicit deterministic rule.
 
 For F and S, the 36-base selected form targets counts
 `18,14,10,6,2` across uncapped, p75, p50, p25, and p1. For V it targets
-`36,32,28,24,20`. N/R are added after selection and should remain near zero.
+`36,32,28,24,20`. The 36 unique N controls are scanned at every dose and
+should remain correct and flat; they are descriptive controls and never enter
+the level-selection objective. R is added only to the final selected form.
+
+N detects intervention-associated instability or unintended answer changes.
+It cannot, by itself, distinguish correct maintenance from a general tendency
+to freeze the previous answer. V remains the direct measure of lost valid
+revision behavior.
 
 If these exact quotas are unavailable, the selector stops by default. It does
 not relax the targets or conceal missing threshold bins.

@@ -36,18 +36,22 @@ information and adds no authority, consensus, threat, or reward.
 - Two parameter variants per family.
 - Four paired V/F packs per base: 144 V plus 144 F records.
 - Four S levels per base: 144 records.
-- 432 candidate records in total.
+- One unique, ungraded N maintain control per base: 36 records.
+- 468 candidate records in total.
 - Five conditions: uncapped, p75, p50, p25, p1.
-- Planned scan: 2,160 generations.
+- Planned primary scan: 2,340 generations.
 
 The candidate records are arms of 36 clustered tasks with alternate prompt
-levels. They are not 432 independent questions.
+levels. They are not 468 independent questions. N is not replicated across
+the four prompt levels and is not used to choose a level. Its curve reports
+unintended changes under capping; a flat N curve does not by itself rule out
+general answer inertia.
 
 ## Files
 
 - `build_m2_2b_v5_dose_response_bank.py`: deterministic builder.
-- `m2_2b_v5_dose_response_candidate432.jsonl`: model-run candidates.
-- `m2_2b_v5_candidate_construction_audit432.jsonl`: author audit, never human review.
+- `m2_2b_v5_dose_response_candidate468.jsonl`: model-run candidates.
+- `m2_2b_v5_candidate_construction_audit468.jsonl`: author audit, never human review.
 - `m2_2b_v5_candidate_family_cards18.jsonl`: family-level gradient contract.
 - `validate_m2_2b_v5_dose_response_bank.py`: static validation.
 - `select_m2_2b_v5_dose_curve.py`: five-dose pattern classifier and family-group selector.
@@ -57,6 +61,7 @@ levels. They are not 432 independent questions.
 - `RUN_CONTRACT.md`: frozen scan instructions.
 - `manifest.json`: hashes, counts, provenance, and status.
 - `scripts/run_m2_2b_v5_dose_bank.py`: resumable five-condition runner.
+- `scripts/audit_m2_2b_v5_primary_runs.py`: required cross-condition input audit.
 
 ## Rebuild and validate
 
@@ -77,9 +82,14 @@ which must remain at or below 0.65.
 
 ## Selection boundary
 
-Run all 432 candidates under all five conditions before selection. The selector
+Run all 468 candidates under all five conditions before selection. The selector
 requires complete results, excludes non-monotone candidate patterns, and uses
 the family as the selection unit: both parameter variants receive the same V/F
 level and the same S level. If exact curve quotas are unavailable, the default
 behavior is to stop and identify missing bins rather than silently relax the
 target.
+
+The predeclared development-only cliff refinement rule is in `RUN_CONTRACT.md`.
+It never permits prompt rewriting or item deletion after seeing the primary
+scan. This repository revision makes no commitment about any later dataset or
+experiment beyond delivery of the selected development form.

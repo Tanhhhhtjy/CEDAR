@@ -24,13 +24,15 @@ from build_m2_2b_v5_dose_response_bank import (
     load_jsonl,
 )
 
-PATTERNS_OUTPUT = HERE / "response_patterns432.jsonl"
+PATTERNS_OUTPUT = HERE / "response_patterns468.jsonl"
 SELECTION_OUTPUT = HERE / "selection_report.json"
 SELECTED_OUTPUT = HERE / "m2_2b_v5_dose_response_selected180_arms.jsonl"
 TARGET_V = (36, 32, 28, 24, 20)
 TARGET_F = (18, 14, 10, 6, 2)
 TARGET_S = (18, 14, 10, 6, 2)
 BEAM_WIDTH = 12000
+CLIFF_MIN_TRANSITIONS = 12
+CLIFF_SHARE = 0.70
 
 
 def parse_args() -> argparse.Namespace:
@@ -72,11 +74,71 @@ def load_results(paths: list[Path]) -> dict[tuple[str, str], dict[str, Any]]:
 def response_bit(candidate: dict[str, Any], answer: str) -> int:
     if candidate["arm"] == "V":
         return int(answer == candidate["updated_answer_id"])
+    if candidate["arm"] == "N":
+        return int(answer == candidate["initial_answer_id"])
     return int(answer == candidate["induced_target_answer_id"])
 
 
 def monotone_nonincreasing(bits: tuple[int, ...]) -> bool:
     return all(left >= right for left, right in zip(bits, bits[1:], strict=False))
+
+
+def cliff_diagnostic(patterns: list[dict[str, Any]]) -> dict[str, Any]:
+    """Apply the frozen pre-selection cliff rule to complete V/F/S patterns."""
+    intervals = [
+        f"{left}->{right}" for left, right in zip(CAP_ORDER, CAP_ORDER[1:], strict=False)
+    ]
+    by_arm: dict[str, dict[str, Any]] = {}
+    qualified: list[dict[str, Any]] = []
+    for arm in ("V", "F", "S"):
+        counts = [0] * len(intervals)
+        for row in patterns:
+            if row["arm"] != arm or not row["complete"] or not row["monotone_nonincreasing"]:
+                continue
+            bits = [int(value) for value in row["response_bits"]]
+            transitions = [
+                index
+                for index, (left, right) in enumerate(zip(bits, bits[1:], strict=False))
+                if left == 1 and right == 0
+            ]
+            if len(transitions) == 1:
+                counts[transitions[0]] += 1
+        total = sum(counts)
+        maximum = max(counts, default=0)
+        share = maximum / total if total else 0.0
+        interval_index = counts.index(maximum) if maximum else None
+        arm_report = {
+            "single_transition_records": total,
+            "interval_counts": dict(zip(intervals, counts, strict=True)),
+            "largest_interval_share": round(share, 6),
+            "qualifies": total >= CLIFF_MIN_TRANSITIONS and share >= CLIFF_SHARE,
+        }
+        by_arm[arm] = arm_report
+        if arm_report["qualifies"] and interval_index is not None:
+            qualified.append(
+                {
+                    "arm": arm,
+                    "interval_index": interval_index,
+                    "interval": intervals[interval_index],
+                    "transition_count": counts[interval_index],
+                    "share": round(share, 6),
+                }
+            )
+    arm_order = {arm: index for index, arm in enumerate(("V", "F", "S"))}
+    chosen = min(
+        qualified,
+        key=lambda row: (-row["transition_count"], row["interval_index"], arm_order[row["arm"]]),
+        default=None,
+    )
+    return {
+        "status": "refinement_required" if chosen else "not_triggered",
+        "minimum_single_transition_records": CLIFF_MIN_TRANSITIONS,
+        "minimum_interval_share": CLIFF_SHARE,
+        "by_arm": by_arm,
+        "qualified_arm_intervals": qualified,
+        "chosen_refinement_interval": chosen,
+        "evaluated_before_level_selection": True,
+    }
 
 
 def classify(
@@ -244,8 +306,18 @@ def assemble_selected(
     selected: list[dict[str, Any]] = []
     for source_base_id in sorted(source_grouped):
         family = source_grouped[source_base_id]["V"]["template_family"]
-        for arm in ("N", "R"):
-            selected.append(selected_source_row(source_grouped[source_base_id][arm], arm))
+        n_source = copy.deepcopy(candidate_index[(source_base_id, "N", None)])
+        n_source.update(
+            {
+                "dataset_version": DATASET_VERSION.replace("candidate-bank", "selected-form"),
+                "split": "development_dose_response_enriched_selected_form",
+                "status": "selected_from_complete_five-dose_development_scan",
+                "source_candidate_id": n_source["id"],
+                "selection_status": "selected_family_group_control_not_used_for_level_selection",
+            }
+        )
+        selected.append(n_source)
+        selected.append(selected_source_row(source_grouped[source_base_id]["R"], "R"))
         for arm, level in (
             ("V", vf_levels[family]),
             ("F", vf_levels[family]),
@@ -274,6 +346,23 @@ def main() -> None:
     atomic_write_jsonl(PATTERNS_OUTPUT, patterns)
 
     missing = [row["id"] for row in patterns if not row["complete"]]
+    cliff = cliff_diagnostic(patterns)
+    if not missing and cliff["status"] == "refinement_required":
+        report = {
+            "status": "cliff_refinement_required_before_selection",
+            "scope": "response-enriched development challenge set; no levels selected",
+            "conditions": list(CAP_ORDER),
+            "candidate_rows": len(candidates),
+            "expected_result_rows": len(candidates) * len(CAP_ORDER),
+            "observed_result_rows": len(results),
+            "missing_candidate_ids": missing,
+            "cliff_diagnostic": cliff,
+            "selection_performed": False,
+            "next_step": "apply the frozen two-point rule in RUN_CONTRACT.md to all 468 records",
+        }
+        atomic_write_json(SELECTION_OUTPUT, report)
+        print(json.dumps(report, ensure_ascii=False, indent=2))
+        raise SystemExit("Predeclared cliff rule triggered; no candidate levels were selected.")
     vf_choices = family_choices(patterns, axis="VF")
     s_choices = family_choices(patterns, axis="S")
     vf_selected, vf_achieved, vf_distance = select_levels(
@@ -281,6 +370,11 @@ def main() -> None:
     )
     s_selected, s_achieved, s_distance = select_levels(s_choices, targets={"S": TARGET_S})
     exact = vf_distance == 0 and s_distance == 0 and not missing
+    n_patterns = [row for row in patterns if row["arm"] == "N"]
+    n_correct = [
+        sum(int(row["response_bits"][index]) for row in n_patterns if row["complete"])
+        for index in range(len(CAP_ORDER))
+    ]
     report = {
         "status": "exact_curve_selected" if exact else "candidate_scan_complete_curve_not_exact",
         "scope": "response-enriched development challenge set; descriptive on the scanned bank",
@@ -289,18 +383,32 @@ def main() -> None:
         "expected_result_rows": len(candidates) * len(CAP_ORDER),
         "observed_result_rows": len(results),
         "missing_candidate_ids": missing,
+        "cliff_diagnostic": cliff,
         "target_counts": {"V": list(TARGET_V), "F": list(TARGET_F), "S": list(TARGET_S)},
         "achieved_counts": {
             "V": list(vf_achieved["V"]),
             "F": list(vf_achieved["F"]),
             "S": list(s_achieved["S"]),
         },
+        "N_maintain_control": {
+            "items": len(n_patterns),
+            "correct_maintain_counts": n_correct,
+            "unintended_change_or_invalid_counts": [36 - value for value in n_correct],
+            "used_for_level_selection": False,
+            "interpretation_limit": (
+                "A flat N curve checks answer stability but cannot by itself rule out "
+                "general answer inertia."
+            ),
+        },
         "squared_distance": {"VF": vf_distance, "S": s_distance},
         "selected_vf_level_by_family": vf_selected,
         "selected_s_level_by_family": s_selected,
         "selection_unit": "family; both parameter variants share one level",
         "nonmonotone_candidates_excluded": sum(
-            row["complete"] and not row["monotone_nonincreasing"] for row in patterns
+            row["arm"] in {"V", "F", "S"}
+            and row["complete"]
+            and not row["monotone_nonincreasing"]
+            for row in patterns
         ),
         "raw_outputs_used_for_selection": True,
     }
@@ -308,7 +416,7 @@ def main() -> None:
     if not exact and not args.allow_approximate:
         print(json.dumps(report, ensure_ascii=False, indent=2))
         raise SystemExit(
-            "Exact curve quotas were not available; inspect response_patterns432.jsonl "
+            "Exact curve quotas were not available; inspect response_patterns468.jsonl "
             "and add candidates only for missing bins."
         )
     selected = assemble_selected(candidates, vf_selected, s_selected)
