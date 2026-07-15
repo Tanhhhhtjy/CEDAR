@@ -1,0 +1,105 @@
+{
+  "configuration": {
+    "condition": "uncapped",
+    "condition_order": [
+      "uncapped",
+      "p75",
+      "p50",
+      "p25",
+      "p1"
+    ],
+    "dataset": {
+      "batch_membership_sha256": "9941a0c2a5dac6f572b5a10b5c3c4433822df85b24ecb980ee03106d34623f2f",
+      "candidate_bases": 36,
+      "construction_contract_sha256": "80637356c9924996d4e68a03195878543160869020b9c6def1282c2684e041e7",
+      "families": 18,
+      "manifest_path": "datasets/m2_2b_formal/v5_dose_response_bank/manifest.json",
+      "manifest_sha256": "87b2dc10422c2a94bdb56c82fe54b6c0dbb845e8ce44baca5c9fe988da9c7108",
+      "path": "datasets/m2_2b_formal/v5_dose_response_bank/m2_2b_v5_dose_response_candidate468.jsonl",
+      "row_ids_sha256": "8842adb2ed56f30a2a4353912cb0a3cdd4b860a1384a94898b0fd58481042e25",
+      "rows": 468,
+      "sha256": "d88a45c842c689b176f4d904efb4a0d366ef949c26addf3fb4db11eba2fe8cbf"
+    },
+    "environment": {
+      "conda_default_env": "cedar",
+      "hf_home": "/data1/WuMingrui/HF_HOME",
+      "hf_hub_offline": "1",
+      "python_environment_name": "cedar",
+      "python_prefix": "/home/WuMingrui/miniconda3/envs/cedar",
+      "transformers_offline": "1"
+    },
+    "generation": {
+      "batch_size": 2,
+      "decoding": "greedy",
+      "do_sample": false,
+      "max_new_tokens": 2048,
+      "num_beams": 1,
+      "output": "raw continuation; no parsing, content retry, or repair",
+      "padding_side": "left",
+      "seed": 0,
+      "temperature": 0.0
+    },
+    "git": {
+      "branch": "",
+      "commit": "03681e89ef24e1a4c498c0db83e5e5a9e1afaf19",
+      "dirty": false,
+      "status": [],
+      "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "hardware": {
+      "cuda_visible_devices": "2,4,6,7",
+      "qwen_max_memory_per_gpu_gib": 18,
+      "visible_gpu_count": 4,
+      "visible_gpu_names": [
+        "NVIDIA GeForce RTX 4090",
+        "NVIDIA GeForce RTX 4090",
+        "NVIDIA GeForce RTX 4090",
+        "NVIDIA GeForce RTX 4090"
+      ]
+    },
+    "intervention": {
+      "active": false,
+      "condition": "uncapped",
+      "implementation": "ActivationCapper on decoder block outputs",
+      "official_contract": {
+        "axis_file": "qwen-3-32b/assistant_axis.pt",
+        "axis_sha256": "a207fe7a36563280b7b29010880aa0082bd8e3113c141cb4a2eed6b46c140211",
+        "capping_config_file": "qwen-3-32b/capping_config.pt",
+        "capping_config_sha256": "6aec1220487473aaeab80b05d5d960ac54b5dd9080b51ac4bb0bbd1f4330db24",
+        "experiment_id": null,
+        "layers": {},
+        "positions": "all decoder-block output positions",
+        "repo_id": "lu-christina/assistant-axis-vectors",
+        "revision": "3b3b788432ad33e3a28d9ff08e88a530c0740814"
+      },
+      "stats_definition": "hook-visible layer-token positions; fixed batch-2 padding positions are included in recorded exposure"
+    },
+    "kind": "M2.2b v5 five-dose candidate-bank scan",
+    "messages": {
+      "complete_raw_continuation": true,
+      "enable_thinking": true,
+      "initial_assistant": "fixed transcript from dataset; never regenerated",
+      "role_order": [
+        "system",
+        "user",
+        "assistant",
+        "user"
+      ]
+    },
+    "model": {
+      "attention_implementation": "sdpa",
+      "dtype": "bfloat16",
+      "repo_id": "Qwen/Qwen3-32B",
+      "revision": "9216db5781bf21249d130ec9da846c4624c16137"
+    },
+    "scope": "response-enriched development calibration; not held-out or confirmatory",
+    "software": {
+      "cuda": "12.4",
+      "python": "3.11.15",
+      "torch": "2.6.0+cu124",
+      "transformers": "4.56.1"
+    }
+  },
+  "created_at": "2026-07-14T12:57:52.229432+08:00",
+  "fingerprint": "dde49aba7ae79bbdf42e8c7271946f46ef96f28785221e7e679837c9225a34d2"
+}
