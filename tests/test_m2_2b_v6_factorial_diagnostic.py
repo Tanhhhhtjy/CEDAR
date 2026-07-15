@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import sys
@@ -29,6 +30,15 @@ def load_module(name: str, path: Path):
 
 def read_jsonl(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
+
+
+def test_v6_manifest_hashes_match_portable_lf_files() -> None:
+    manifest = json.loads((DATA / "manifest.json").read_text(encoding="utf-8"))
+    for filename, expected in manifest["files"].items():
+        payload = (DATA / filename).read_bytes()
+        assert b"\r\n" not in payload
+        assert len(payload) == expected["bytes"]
+        assert hashlib.sha256(payload).hexdigest() == expected["sha256"]
 
 
 def test_v6_formal_data_are_balanced_and_response_independent() -> None:

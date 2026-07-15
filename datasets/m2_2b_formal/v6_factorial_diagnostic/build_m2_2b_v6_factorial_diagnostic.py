@@ -58,9 +58,10 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
 
 
 def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
-    path.write_text(
-        "".join(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n" for row in rows),
-        encoding="utf-8",
+    path.write_bytes(
+        "".join(
+            json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n" for row in rows
+        ).encode("utf-8")
     )
 
 
@@ -257,9 +258,10 @@ def main() -> None:
     }
     for path in (FORMAL_OUT, AXIS_OUT):
         manifest["files"][path.name] = {"bytes": path.stat().st_size, "sha256": sha256(path)}
-    MANIFEST_OUT.write_text(
-        json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
+    MANIFEST_OUT.write_bytes(
+        (
+            json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+        ).encode("utf-8")
     )
     print(json.dumps(manifest["counts"], ensure_ascii=False, sort_keys=True))
 
