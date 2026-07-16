@@ -1,0 +1,43 @@
+{
+  "status": "completed_with_reported_truncations",
+  "planned_generations": 96,
+  "completed_generations": 96,
+  "missing_records": 0,
+  "duplicate_records": 0,
+  "mode_integrity_failures": 0,
+  "empty_responses": 0,
+  "generation_interruptions": 0,
+  "content_retries": 0,
+  "answer_repairs": 0,
+  "max_token_truncations": {
+    "count": 4,
+    "definition": "response_tokens reached max_new_tokens=512 and response text ended mid-word",
+    "records": [
+      {
+        "cell": "thinking_sampling/uncapped",
+        "id": "M22B-V6-AX-01-P"
+      },
+      {
+        "cell": "thinking_sampling/uncapped",
+        "id": "M22B-V6-AX-03-P"
+      },
+      {
+        "cell": "thinking_sampling/uncapped",
+        "id": "M22B-V6-AX-11-P"
+      },
+      {
+        "cell": "thinking_sampling/p25",
+        "id": "M22B-V6-AX-03-P"
+      }
+    ],
+    "interpretation": "All four records retained non-empty reasoning and final-answer text and passed the frozen thinking-integrity check. Truncation does not affect the primary uncapped prefill analysis; decode analyses remain secondary."
+  },
+  "pre_generation_events": [
+    {
+      "event": "The initial resource waiter self-matched its duplicate-process guard and exited before model loading or generation.",
+      "effect_on_scientific_run": "none",
+      "resolution": "Confirmed zero completed axis records, selected available GPUs 3,5,6,7, rebuilt all four empty prepare manifests, and launched the frozen four-cell sequence from a clean worktree."
+    }
+  ],
+  "expected_incomplete_status_note": "v6_factorial_report_seed0.json has top-level status=incomplete because the unrequested formal greedy and p1 factorial cells are absent. The dedicated axis cross-cell audit passed and all four planned axis cells are complete."
+}

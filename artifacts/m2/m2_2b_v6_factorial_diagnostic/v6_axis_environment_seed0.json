@@ -1,0 +1,74 @@
+{
+  "status": "recorded_after_completed_run",
+  "experiment": "M2.2b v6 Assistant Axis positive control",
+  "branch": "agent/m2-2b-v6-factorial-diagnostic",
+  "commit": "3139cf08dcdf9cb4df2f7c71ebe28719ea5acc16",
+  "host": "user-ESC8000A-E11",
+  "platform": "Linux 6.8.0-111-generic x86_64 GNU/Linux",
+  "run_started_at": "2026-07-16T14:23:08.502148+08:00",
+  "run_completed_at": "2026-07-16T14:53:58.611735+08:00",
+  "software": {
+    "python": "3.11.15",
+    "pytorch": "2.6.0+cu124",
+    "pytorch_cuda": "12.4",
+    "transformers": "4.56.1",
+    "nvidia_driver": "580.159.03",
+    "nvidia_smi_cuda": "13.0",
+    "conda_environment": "cedar"
+  },
+  "gpu": {
+    "cuda_visible_devices": "3,5,6,7",
+    "visible_count": 4,
+    "model": "NVIDIA GeForce RTX 4090",
+    "physical_devices": [
+      {
+        "physical_index": 3,
+        "visible_index": 0,
+        "uuid": "GPU-a3e80e73-1c73-9dd9-94e3-77a23af8eb27"
+      },
+      {
+        "physical_index": 5,
+        "visible_index": 1,
+        "uuid": "GPU-3a7c3a9a-2534-fdf2-1494-1aaf0408a4c5"
+      },
+      {
+        "physical_index": 6,
+        "visible_index": 2,
+        "uuid": "GPU-fc0010a7-ed12-fa23-508c-22ba19ee46fd"
+      },
+      {
+        "physical_index": 7,
+        "visible_index": 3,
+        "uuid": "GPU-bc61ccf3-eeff-7916-0044-1f0602c12012"
+      }
+    ],
+    "max_memory_per_visible_device": "18GiB",
+    "co_residency_note": "Physical GPU 3 hosted pre-existing low-utilization services and had about 26 GiB free before launch; physical GPUs 5, 6, and 7 were otherwise idle. No OOM or runtime interruption occurred."
+  },
+  "model": {
+    "id": "Qwen/Qwen3-32B",
+    "revision": "9216db5781bf21249d130ec9da846c4624c16137",
+    "dtype": "bfloat16",
+    "attention": "sdpa",
+    "quantization": null,
+    "local_files_only": true
+  },
+  "assistant_axis": {
+    "repo": "lu-christina/assistant-axis-vectors",
+    "revision": "3b3b788432ad33e3a28d9ff08e88a530c0740814",
+    "p25_experiment": "layers_46:54-p0.25",
+    "intervention_layers": [46, 47, 48, 49, 50, 51, 52, 53],
+    "axis_cosine_min": -1.0000016689300537,
+    "axis_cosine_max": -1.000001072883606
+  },
+  "generation": {
+    "temperature": 0.6,
+    "top_p": 0.95,
+    "top_k": 20,
+    "num_beams": 1,
+    "batch_size": 1,
+    "max_new_tokens": 512,
+    "seed": 0,
+    "thinking_modes": [true, false]
+  }
+}
