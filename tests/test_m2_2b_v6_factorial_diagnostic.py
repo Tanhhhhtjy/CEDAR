@@ -153,3 +153,81 @@ def test_analyzer_parses_only_the_final_answer_json() -> None:
     )
     response = '<think>{"answer":"A"}</think>\n{"answer":"B","reason":"final"}'
     assert analyzer.parse_final_answer(response) == "B"
+
+
+def test_axis_pair_report_uses_pairs_and_equal_layer_weights() -> None:
+    analyzer = load_module(
+        "analyze_m2_2b_v6_pair_report_test",
+        ROOT / "scripts" / "analyze_m2_2b_v6_factorial_diagnostic.py",
+    )
+
+    dataset = {}
+    results = []
+    for pair_index, projection_delta in ((1, 2.0), (2, 4.0)):
+        pair_id = f"PAIR-{pair_index}"
+        for condition in ("default_assistant", "persona"):
+            result_id = f"{pair_id}-{condition}"
+            dataset[result_id] = {
+                "id": result_id,
+                "pair_id": pair_id,
+                "condition": condition,
+                "role_name": f"role-{pair_index}",
+                "question": "Who are you?",
+            }
+            projection = 10.0 if condition == "default_assistant" else 10.0 - projection_delta
+            exposure = 0.2 if condition == "default_assistant" else 0.5
+            phases = {}
+            for phase in ("prefill", "decode"):
+                phases[phase] = {
+                    "assistant_axis_projection": {
+                        str(layer): {"count": 1, "mean": projection}
+                        for layer in range(46, 54)
+                    },
+                    "reference_cap_exposure": {
+                        "p25": {
+                            str(layer): {"count": 1, "trigger_rate": exposure}
+                            for layer in range(46, 54)
+                        }
+                    },
+                }
+            results.append({"id": result_id, "axis_telemetry": {"phases": phases}})
+
+    report = analyzer.axis_pair_level_report(dataset, results, repetitions=200)
+    prefill = report["phases"]["prefill"]
+    projection = prefill["projection_default_minus_persona"]
+    exposure = prefill["p25_exposure_persona_minus_default"]
+    assert projection["paired_n"] == 2
+    assert projection["positive_pairs"] == 2
+    assert projection["mean"] == 3.0
+    assert exposure["positive_pairs"] == 2
+    assert abs(exposure["mean"] - 0.3) < 1e-12
+
+
+def test_telemetry_summary_weights_actual_cap_by_positions() -> None:
+    analyzer = load_module(
+        "analyze_m2_2b_v6_cap_summary_test",
+        ROOT / "scripts" / "analyze_m2_2b_v6_factorial_diagnostic.py",
+    )
+    rows = [
+        {
+            "cap_stats": {
+                "pooled": {
+                    "total_positions": 10,
+                    "trigger_rate": 0.5,
+                    "mean_projection_correction": 0.2,
+                }
+            }
+        },
+        {
+            "cap_stats": {
+                "pooled": {
+                    "total_positions": 30,
+                    "trigger_rate": 1.0,
+                    "mean_projection_correction": 0.6,
+                }
+            }
+        },
+    ]
+    summary = analyzer.telemetry_summary(rows)
+    assert summary["actual_cap"]["trigger_rate"] == 0.875
+    assert abs(summary["actual_cap"]["mean_projection_correction"] - 0.5) < 1e-12

@@ -8,6 +8,7 @@ import json
 import random
 from collections import defaultdict
 from pathlib import Path
+from statistics import median
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,6 +21,7 @@ MODES = (
 )
 CAPS = ("uncapped", "p25", "p1")
 ARMS = ("N", "V", "F", "S")
+AXIS_LAYERS = tuple(str(layer) for layer in range(46, 54))
 
 
 def parse_args() -> argparse.Namespace:
@@ -80,8 +82,20 @@ def weighted_metric(
     return numerator / denominator if denominator else None
 
 
+def weighted_cap_metric(rows: list[dict[str, Any]], field: str) -> float | None:
+    numerator = 0.0
+    denominator = 0
+    for row in rows:
+        pooled = (row.get("cap_stats") or {}).get("pooled", {})
+        count = int(pooled.get("total_positions", 0))
+        if count:
+            numerator += float(pooled.get(field, 0.0)) * count
+            denominator += count
+    return numerator / denominator if denominator else None
+
+
 def telemetry_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
-    return {
+    summary = {
         phase: {
             "assistant_axis_projection_mean": weighted_metric(
                 rows,
@@ -106,6 +120,177 @@ def telemetry_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         }
         for phase in ("prefill", "decode")
     }
+    summary["actual_cap"] = {
+        "trigger_rate": weighted_cap_metric(rows, "trigger_rate"),
+        "mean_projection_correction": weighted_cap_metric(
+            rows, "mean_projection_correction"
+        ),
+    }
+    return summary
+
+
+def bootstrap_numeric_summary(
+    values: list[float],
+    repetitions: int,
+    *,
+    bootstrap_seed: int,
+) -> dict[str, Any] | None:
+    if not values:
+        return None
+    estimate = sum(values) / len(values)
+    rng = random.Random(bootstrap_seed)
+    samples = [
+        sum(rng.choice(values) for _ in values) / len(values)
+        for _ in range(repetitions)
+    ]
+    samples.sort()
+    low = samples[int(0.025 * (len(samples) - 1))]
+    high = samples[int(0.975 * (len(samples) - 1))]
+    return {
+        "mean": estimate,
+        "median": median(values),
+        "ci95": [low, high],
+        "paired_n": len(values),
+        "positive_pairs": sum(value > 0 for value in values),
+        "zero_pairs": sum(value == 0 for value in values),
+        "negative_pairs": sum(value < 0 for value in values),
+    }
+
+
+def axis_layer_value(
+    row: dict[str, Any],
+    *,
+    phase: str,
+    section: str,
+    layer: str,
+    field: str,
+    reference: str | None = None,
+) -> float:
+    values = row["axis_telemetry"]["phases"][phase][section]
+    if reference is not None:
+        values = values[reference]
+    if layer not in values or int(values[layer].get("count", 0)) <= 0:
+        raise ValueError(
+            f"Missing {phase}/{section}/{reference or '-'} layer {layer} telemetry "
+            f"for {row.get('id')}"
+        )
+    return float(values[layer][field])
+
+
+def axis_pair_level_report(
+    dataset: dict[str, dict[str, Any]],
+    results: list[dict[str, Any]],
+    repetitions: int,
+) -> dict[str, Any]:
+    by_id: dict[str, dict[str, Any]] = {}
+    for result in results:
+        result_id = result.get("id")
+        if result_id not in dataset:
+            raise ValueError(f"Unknown axis result ID: {result_id}")
+        if result_id in by_id:
+            raise ValueError(f"Duplicate axis result ID: {result_id}")
+        by_id[result_id] = result
+
+    paired_sources: dict[str, dict[str, dict[str, Any]]] = defaultdict(dict)
+    for source in dataset.values():
+        paired_sources[source["pair_id"]][source["condition"]] = source
+
+    report: dict[str, Any] = {"layers": list(AXIS_LAYERS), "phases": {}}
+    for phase_index, phase in enumerate(("prefill", "decode")):
+        pair_rows: list[dict[str, Any]] = []
+        missing_pairs: list[str] = []
+        for pair_id in sorted(paired_sources):
+            sources = paired_sources[pair_id]
+            default_source = sources.get("default_assistant")
+            persona_source = sources.get("persona")
+            if (
+                default_source is None
+                or persona_source is None
+                or default_source["id"] not in by_id
+                or persona_source["id"] not in by_id
+            ):
+                missing_pairs.append(pair_id)
+                continue
+            default = by_id[default_source["id"]]
+            persona = by_id[persona_source["id"]]
+            projection_by_layer = {
+                layer: axis_layer_value(
+                    default,
+                    phase=phase,
+                    section="assistant_axis_projection",
+                    layer=layer,
+                    field="mean",
+                )
+                - axis_layer_value(
+                    persona,
+                    phase=phase,
+                    section="assistant_axis_projection",
+                    layer=layer,
+                    field="mean",
+                )
+                for layer in AXIS_LAYERS
+            }
+            exposure_by_layer = {
+                layer: axis_layer_value(
+                    persona,
+                    phase=phase,
+                    section="reference_cap_exposure",
+                    reference="p25",
+                    layer=layer,
+                    field="trigger_rate",
+                )
+                - axis_layer_value(
+                    default,
+                    phase=phase,
+                    section="reference_cap_exposure",
+                    reference="p25",
+                    layer=layer,
+                    field="trigger_rate",
+                )
+                for layer in AXIS_LAYERS
+            }
+            pair_rows.append(
+                {
+                    "pair_id": pair_id,
+                    "role_name": default_source["role_name"],
+                    "question": default_source["question"],
+                    "projection_default_minus_persona": {
+                        "by_layer": projection_by_layer,
+                        "layer_equal_mean": sum(projection_by_layer.values())
+                        / len(AXIS_LAYERS),
+                    },
+                    "p25_exposure_persona_minus_default": {
+                        "by_layer": exposure_by_layer,
+                        "layer_equal_mean": sum(exposure_by_layer.values())
+                        / len(AXIS_LAYERS),
+                    },
+                }
+            )
+        projection_values = [
+            row["projection_default_minus_persona"]["layer_equal_mean"]
+            for row in pair_rows
+        ]
+        exposure_values = [
+            row["p25_exposure_persona_minus_default"]["layer_equal_mean"]
+            for row in pair_rows
+        ]
+        report["phases"][phase] = {
+            "statistical_unit": "default/persona pair",
+            "layer_aggregation": "equal mean over decoder layers 46-53",
+            "missing_pairs": missing_pairs,
+            "projection_default_minus_persona": bootstrap_numeric_summary(
+                projection_values,
+                repetitions,
+                bootstrap_seed=20260716 + phase_index * 2,
+            ),
+            "p25_exposure_persona_minus_default": bootstrap_numeric_summary(
+                exposure_values,
+                repetitions,
+                bootstrap_seed=20260717 + phase_index * 2,
+            ),
+            "pairs": pair_rows,
+        }
+    return report
 
 
 def paired_interval(
@@ -271,6 +456,12 @@ def axis_control_report(args: argparse.Namespace) -> dict[str, Any]:
                 }
                 for condition, rows in grouped.items()
             }
+            if cap == "uncapped":
+                report[mode]["uncapped_pair_level"] = axis_pair_level_report(
+                    dataset,
+                    read_jsonl(path),
+                    args.bootstrap_repetitions,
+                )
     return report
 
 
