@@ -1,0 +1,56 @@
+{
+  "status": "recorded_after_completed_run",
+  "experiment": "M2.2b v6 second-round matched greedy diagnostic",
+  "branch": "agent/m2-2b-v6-factorial-diagnostic",
+  "run_commit": "bb404c4abea59e3e71b087d0c9ce62ebb240e4c6",
+  "host": "user-ESC8000A-E11",
+  "platform": "Linux 6.8.0-111-generic x86_64 GNU/Linux",
+  "run_started_at": "2026-07-16T15:59:56.829414+08:00",
+  "run_completed_at": "2026-07-16T19:12:57.364631+08:00",
+  "software": {
+    "python": "3.11.15",
+    "pytorch": "2.6.0+cu124",
+    "pytorch_cuda": "12.4",
+    "transformers": "4.56.1",
+    "nvidia_driver": "580.159.03",
+    "nvidia_smi_cuda": "13.0",
+    "conda_environment": "cedar"
+  },
+  "gpu": {
+    "cuda_visible_devices": "0,5,6,7",
+    "visible_count": 4,
+    "model": "NVIDIA GeForce RTX 4090",
+    "physical_devices": [
+      {"physical_index": 0, "visible_index": 0, "uuid": "GPU-3fbd81ed-ca9d-1378-63ea-c862a3c83fcb"},
+      {"physical_index": 5, "visible_index": 1, "uuid": "GPU-3a7c3a9a-2534-fdf2-1494-1aaf0408a4c5"},
+      {"physical_index": 6, "visible_index": 2, "uuid": "GPU-fc0010a7-ed12-fa23-508c-22ba19ee46fd"},
+      {"physical_index": 7, "visible_index": 3, "uuid": "GPU-bc61ccf3-eeff-7916-0044-1f0602c12012"}
+    ],
+    "max_memory_per_visible_device": "18GiB",
+    "co_residency_note": "Physical GPU 0 hosted a pre-existing low-utilization ASR service using about 2.5 GiB; physical GPUs 5, 6, and 7 were otherwise idle. No OOM or machine interruption occurred."
+  },
+  "model": {
+    "id": "Qwen/Qwen3-32B",
+    "revision": "9216db5781bf21249d130ec9da846c4624c16137",
+    "dtype": "bfloat16",
+    "attention": "sdpa",
+    "quantization": null,
+    "local_files_only": true
+  },
+  "assistant_axis": {
+    "repo": "lu-christina/assistant-axis-vectors",
+    "revision": "3b3b788432ad33e3a28d9ff08e88a530c0740814",
+    "p25_experiment": "layers_46:54-p0.25",
+    "intervention_layers": [46, 47, 48, 49, 50, 51, 52, 53],
+    "axis_cosine_min": -1.0000016689300537,
+    "axis_cosine_max": -1.000001072883606
+  },
+  "generation": {
+    "do_sample": false,
+    "num_beams": 1,
+    "batch_size": 1,
+    "max_new_tokens": 2048,
+    "seed": 0,
+    "thinking_modes": [true, false]
+  }
+}

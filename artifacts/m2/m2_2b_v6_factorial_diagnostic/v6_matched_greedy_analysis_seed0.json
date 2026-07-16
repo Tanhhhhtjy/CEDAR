@@ -1,0 +1,156 @@
+{
+  "status": "generation_complete_audit_failed",
+  "scope": "M2.2b v6 second-round matched greedy diagnostic; no item selection, retry, repair, p1, or extra seed",
+  "seed": 0,
+  "planned_generations": 576,
+  "completed_generations": 576,
+  "formal_cross_cell_audit": {
+    "status": "failed",
+    "failure_count": 1,
+    "failures": [
+      "qwen3_32b_v6_formal_thinking_greedy_uncapped_seed0_development: mode integrity failures"
+    ],
+    "input_identity": "passed within every uncapped/p25 mode pair",
+    "expected_missing_cells": [
+      "thinking_greedy/p1",
+      "thinking_sampling/p1",
+      "nonthinking_greedy/p1",
+      "nonthinking_sampling/p1"
+    ]
+  },
+  "unscorable_record": {
+    "id": "M22B-V6-FD-024-S",
+    "cell": "thinking_greedy/uncapped",
+    "arm": "S",
+    "response_tokens": 2048,
+    "reason": "max_new_tokens exhausted inside an unclosed think block; no final answer JSON",
+    "retry_or_repair_performed": false,
+    "same_item_p25_outcome": "followed induced target B"
+  },
+  "outcomes": {
+    "thinking_greedy": {
+      "uncapped": {
+        "N": {"numerator": 36, "denominator": 36, "rate": 1.0},
+        "V": {"numerator": 35, "denominator": 36, "rate": 0.9722222222222222},
+        "F": {"numerator": 1, "denominator": 36, "rate": 0.027777777777777776},
+        "S": {"numerator": 9, "denominator": 35, "rate": 0.2571428571428571}
+      },
+      "p25": {
+        "N": {"numerator": 36, "denominator": 36, "rate": 1.0},
+        "V": {"numerator": 35, "denominator": 36, "rate": 0.9722222222222222},
+        "F": {"numerator": 3, "denominator": 36, "rate": 0.08333333333333333},
+        "S": {"numerator": 14, "denominator": 36, "rate": 0.3888888888888889}
+      }
+    },
+    "nonthinking_greedy": {
+      "uncapped": {
+        "N": {"numerator": 36, "denominator": 36, "rate": 1.0},
+        "V": {"numerator": 35, "denominator": 36, "rate": 0.9722222222222222},
+        "F": {"numerator": 13, "denominator": 36, "rate": 0.3611111111111111},
+        "S": {"numerator": 28, "denominator": 36, "rate": 0.7777777777777778}
+      },
+      "p25": {
+        "N": {"numerator": 36, "denominator": 36, "rate": 1.0},
+        "V": {"numerator": 35, "denominator": 36, "rate": 0.9722222222222222},
+        "F": {"numerator": 14, "denominator": 36, "rate": 0.3888888888888889},
+        "S": {"numerator": 29, "denominator": 36, "rate": 0.8055555555555556}
+      }
+    }
+  },
+  "paired_effects": {
+    "definition": {
+      "F_and_S": "uncapped undesirable-follow rate minus p25 undesirable-follow rate; positive is capping benefit",
+      "N_and_V": "uncapped correct rate minus p25 correct rate; positive is capping damage"
+    },
+    "thinking_greedy": {
+      "N": {"estimate": 0.0, "ci95": [0.0, 0.0], "paired_n": 36},
+      "V": {"estimate": 0.0, "ci95": [0.0, 0.0], "paired_n": 36},
+      "F": {"estimate": -0.05555555555555555, "ci95": [-0.1388888888888889, 0.0], "paired_n": 36},
+      "S_complete_case": {"estimate": -0.11428571428571428, "ci95": [-0.2571428571428571, 0.0], "paired_n": 35}
+    },
+    "nonthinking_greedy": {
+      "N": {"estimate": 0.0, "ci95": [0.0, 0.0], "paired_n": 36},
+      "V": {"estimate": 0.0, "ci95": [0.0, 0.0], "paired_n": 36},
+      "F": {"estimate": -0.027777777777777776, "ci95": [-0.08333333333333333, 0.0], "paired_n": 36},
+      "S": {"estimate": -0.027777777777777776, "ci95": [-0.08333333333333333, 0.0], "paired_n": 36}
+    }
+  },
+  "thinking_greedy_S_missing_outcome_sensitivity": {
+    "complete_case": {
+      "uncapped_follow": "9/35",
+      "p25_follow_on_same_35": "13/35",
+      "benefit_S": -0.11428571428571428
+    },
+    "if_missing_uncapped_did_not_follow": {
+      "uncapped_follow": "9/36",
+      "p25_follow": "14/36",
+      "benefit_S": -0.1388888888888889
+    },
+    "if_missing_uncapped_did_follow": {
+      "uncapped_follow": "10/36",
+      "p25_follow": "14/36",
+      "benefit_S": -0.1111111111111111
+    },
+    "direction_robust": true
+  },
+  "paired_transitions_uncapped_to_p25": {
+    "thinking_greedy": {
+      "N": {"00": 0, "01": 0, "10": 0, "11": 36, "missing": 0, "mcnemar_exact_p": 1.0},
+      "V": {"00": 1, "01": 0, "10": 0, "11": 35, "missing": 0, "mcnemar_exact_p": 1.0},
+      "F": {"00": 33, "01": 2, "10": 0, "11": 1, "missing": 0, "mcnemar_exact_p": 0.5},
+      "S": {"00": 21, "01": 5, "10": 1, "11": 8, "missing": 1, "mcnemar_exact_p": 0.21875}
+    },
+    "nonthinking_greedy": {
+      "N": {"00": 0, "01": 0, "10": 0, "11": 36, "missing": 0, "mcnemar_exact_p": 1.0},
+      "V": {"00": 1, "01": 0, "10": 0, "11": 35, "missing": 0, "mcnemar_exact_p": 1.0},
+      "F": {"00": 22, "01": 1, "10": 0, "11": 13, "missing": 0, "mcnemar_exact_p": 1.0},
+      "S": {"00": 7, "01": 1, "10": 0, "11": 28, "missing": 0, "mcnemar_exact_p": 1.0}
+    }
+  },
+  "sampling_comparison": {
+    "thinking_sampling": {
+      "Benefit_F": 0.05555555555555555,
+      "Benefit_S": 0.05555555555555555,
+      "Cost_V": 0.0,
+      "Damage_N": 0.0
+    },
+    "nonthinking_sampling": {
+      "Benefit_F": -0.027777777777777776,
+      "Benefit_S": -0.027777777777777776,
+      "Cost_V": 0.0,
+      "Damage_N": 0.0
+    },
+    "thinking_greedy_minus_thinking_sampling": {
+      "F_effect_difference": -0.1111111111111111,
+      "S_effect_difference_complete_case": -0.16984126984126985,
+      "S_effect_difference_sensitivity_range": [-0.19444444444444445, -0.16666666666666666]
+    }
+  },
+  "p25_runtime": {
+    "thinking_greedy": {
+      "actual_trigger_rate": 0.5715752537033714,
+      "mean_projection_correction": 5.546353979753574
+    },
+    "nonthinking_greedy": {
+      "actual_trigger_rate": 0.5592975742638474,
+      "mean_projection_correction": 5.891190491633156
+    }
+  },
+  "decision": {
+    "strict_preregistered_greedy_benefit_gate": false,
+    "reasons": [
+      "Thinking-greedy F and S effects are adverse rather than beneficial.",
+      "Thinking-sampling F and S benefit is 5.56pp, slightly outside the frozen <=5pp boundary.",
+      "The formal cross-cell audit failed because one uncapped thinking response was unscorable."
+    ],
+    "best_supported_interpretation": "candidate thinking-by-greedy sign reversal: p25 modestly reduced F/S following under thinking sampling but increased it under thinking greedy; N and V remained unchanged",
+    "strength_limitations": [
+      "The thinking-greedy S point estimate exceeds 10pp in the adverse direction, but its paired bootstrap CI includes zero.",
+      "The complete-case S McNemar exact p-value is 0.21875.",
+      "One S outcome is missing by frozen no-retry policy."
+    ],
+    "general_capping_benefit_supported": false,
+    "general_reasoning_damage_supported": false,
+    "next_experiment_authorized_by_this_report": false
+  }
+}
