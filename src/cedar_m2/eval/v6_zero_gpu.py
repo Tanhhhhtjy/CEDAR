@@ -96,7 +96,12 @@ def write_csv(path: str | Path, rows: Iterable[Mapping[str, Any]], fields: Seque
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
     with target.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(fields), extrasaction="raise")
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=list(fields),
+            extrasaction="raise",
+            lineterminator="\n",
+        )
         writer.writeheader()
         for row in rows:
             writer.writerow({field: row.get(field, "") for field in fields})

@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import sys
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import pytest
 
@@ -13,6 +14,7 @@ from cedar_m2.eval.v6_zero_gpu import (
     outcome_for_answer,
     strict_json_answer,
     validate_annotation_rows,
+    write_csv,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -83,6 +85,15 @@ def test_annotation_validation_requires_completed_blind_extraction() -> None:
     rows[1]["ambiguity_reason"] = ""
     with pytest.raises(ValueError, match="blank answer requires"):
         validate_annotation_rows(rows, ["V6ZR-0001", "V6ZR-0002"])
+
+
+def test_annotation_csv_uses_portable_lf_line_endings() -> None:
+    with TemporaryDirectory() as directory:
+        path = Path(directory) / "labels.csv"
+        write_csv(path, [{"blind_id": "V6ZR-0001", "answer": "A"}], ("blind_id", "answer"))
+        payload = path.read_bytes()
+    assert b"\r\n" not in payload
+    assert payload == b"blind_id,answer\nV6ZR-0001,A\n"
 
 
 def test_outcome_mapping_is_four_way_and_key_based() -> None:
