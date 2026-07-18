@@ -17,6 +17,7 @@ from cedar_m2.eval.v6_zero_gpu import (
     MODES,
     file_sha256,
     final_surface,
+    portable_text_file_sha256,
     read_jsonl,
     sha256_text,
     validate_source_answer_keys,
@@ -168,7 +169,7 @@ def other_frozen_files() -> list[FrozenFile]:
 def verify_frozen_file(spec: FrozenFile) -> list[dict[str, Any]]:
     if not spec.path.exists():
         raise FileNotFoundError(spec.path)
-    actual_hash = file_sha256(spec.path)
+    actual_hash = portable_text_file_sha256(spec.path)
     if actual_hash != spec.sha256:
         raise ValueError(f"{spec.label}: SHA-256 {actual_hash} != frozen {spec.sha256}")
     rows = read_jsonl(spec.path)

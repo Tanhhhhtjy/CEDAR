@@ -4,37 +4,45 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import math
 import random
 import statistics
 import subprocess
+import sys
 from collections import Counter, defaultdict
 from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from cedar_m2.eval.v6_zero_gpu import (
-    ANSWERS,
-    ARMS,
-    CAPS,
-    MODES,
-    OUTCOMES,
-    exposure_metrics,
-    file_sha256,
-    final_surface,
-    outcome_for_answer,
-    read_csv,
-    read_jsonl,
-    sha256_text,
-    strict_json_answer,
-    validate_annotation_rows,
-    validate_source_answer_keys,
-    write_json,
-    write_jsonl,
-)
-
 ROOT = Path(__file__).resolve().parents[1]
+HELPER_PATH = ROOT / "src" / "cedar_m2" / "eval" / "v6_zero_gpu.py"
+SPEC = importlib.util.spec_from_file_location("cedar_v6_zero_gpu_pure", HELPER_PATH)
+if SPEC is None or SPEC.loader is None:
+    raise RuntimeError(f"Cannot load frozen helper: {HELPER_PATH}")
+HELPER = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = HELPER
+SPEC.loader.exec_module(HELPER)
+ANSWERS = HELPER.ANSWERS
+ARMS = HELPER.ARMS
+CAPS = HELPER.CAPS
+MODES = HELPER.MODES
+OUTCOMES = HELPER.OUTCOMES
+exposure_metrics = HELPER.exposure_metrics
+file_sha256 = HELPER.file_sha256
+final_surface = HELPER.final_surface
+outcome_for_answer = HELPER.outcome_for_answer
+portable_text_file_sha256 = HELPER.portable_text_file_sha256
+read_csv = HELPER.read_csv
+read_jsonl = HELPER.read_jsonl
+sha256_text = HELPER.sha256_text
+strict_json_answer = HELPER.strict_json_answer
+validate_annotation_rows = HELPER.validate_annotation_rows
+validate_source_answer_keys = HELPER.validate_source_answer_keys
+write_json = HELPER.write_json
+write_jsonl = HELPER.write_jsonl
+
 DEFAULT_ROOT = ROOT / "artifacts" / "m2" / "m2_2b_v6_zero_gpu_reaudit"
 V6_ROOT = ROOT / "artifacts" / "m2" / "m2_2b_v6_factorial_diagnostic"
 DATA_DIR = ROOT / "datasets" / "m2_2b_formal" / "v6_factorial_diagnostic"
@@ -166,14 +174,14 @@ def load_revealed_records(root: Path) -> tuple[list[dict[str, Any]], dict[str, A
     key_path = root / "private" / "blind_key.jsonl"
     labels_path = root / "adjudication" / "adjudicated_labels.csv"
     agreement_path = root / "adjudication" / "agreement_report.json"
-    if file_sha256(packet_path) != manifest["packet_sha256"]:
+    if portable_text_file_sha256(packet_path) != manifest["packet_sha256"]:
         raise ValueError("Blind packet hash changed")
     if file_sha256(key_path) != manifest["blind_key_sha256"]:
         raise ValueError("Blind key hash changed")
     agreement = json.loads(agreement_path.read_text(encoding="utf-8"))
     if agreement.get("status") != "complete":
         raise ValueError("Blind annotation agreement/adjudication is incomplete")
-    if file_sha256(labels_path) != agreement.get("adjudicated_sha256"):
+    if portable_text_file_sha256(labels_path) != agreement.get("adjudicated_sha256"):
         raise ValueError("Adjudicated label hash changed")
 
     packet = {row["blind_id"]: row for row in read_jsonl(packet_path)}
@@ -238,9 +246,9 @@ def load_revealed_records(root: Path) -> tuple[list[dict[str, Any]], dict[str, A
         raise ValueError(f"Expected 2304 scored records, found {len(revealed)}")
     provenance = {
         "manifest_sha256": file_sha256(manifest_path),
-        "packet_sha256": file_sha256(packet_path),
+        "packet_sha256": portable_text_file_sha256(packet_path),
         "key_sha256": file_sha256(key_path),
-        "labels_sha256": file_sha256(labels_path),
+        "labels_sha256": portable_text_file_sha256(labels_path),
         "agreement_sha256": file_sha256(agreement_path),
         "head": git_output("rev-parse", "HEAD"),
     }

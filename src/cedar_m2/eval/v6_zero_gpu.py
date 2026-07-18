@@ -61,6 +61,18 @@ def file_sha256(path: str | Path) -> str:
     return digest.hexdigest()
 
 
+def portable_text_file_sha256(path: str | Path) -> str:
+    """Hash tracked text with Git-style LF line endings on every platform.
+
+    Git may materialize committed text as CRLF on Windows even when the frozen
+    manifest was produced from the LF blob. This helper is only for tracked
+    UTF-8 text inputs; private/untracked artifacts continue to use raw-byte
+    ``file_sha256``.
+    """
+    value = Path(path).read_bytes().replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+    return sha256_bytes(value)
+
+
 def read_jsonl(path: str | Path) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for line_number, line in enumerate(

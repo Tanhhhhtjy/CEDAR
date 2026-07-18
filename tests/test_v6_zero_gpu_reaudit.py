@@ -12,6 +12,7 @@ from cedar_m2.eval.v6_zero_gpu import (
     exposure_metrics,
     final_surface,
     outcome_for_answer,
+    portable_text_file_sha256,
     strict_json_answer,
     validate_annotation_rows,
     write_csv,
@@ -94,6 +95,15 @@ def test_annotation_csv_uses_portable_lf_line_endings() -> None:
         payload = path.read_bytes()
     assert b"\r\n" not in payload
     assert payload == b"blind_id,answer\nV6ZR-0001,A\n"
+
+
+def test_portable_text_hash_is_stable_across_lf_and_crlf() -> None:
+    with TemporaryDirectory() as directory:
+        lf = Path(directory) / "lf.jsonl"
+        crlf = Path(directory) / "crlf.jsonl"
+        lf.write_bytes(b'{"id":1}\n{"id":2}\n')
+        crlf.write_bytes(b'{"id":1}\r\n{"id":2}\r\n')
+        assert portable_text_file_sha256(lf) == portable_text_file_sha256(crlf)
 
 
 def test_outcome_mapping_is_four_way_and_key_based() -> None:
