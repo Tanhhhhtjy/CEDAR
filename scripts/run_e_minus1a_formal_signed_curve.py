@@ -21,21 +21,41 @@ import transformers
 from cedar_m2.checkpoint import RecordStore, atomic_write_json, file_sha256, object_sha256
 from cedar_m2.interventions.addition import ActivationAddition, ActivationProjectionMonitor
 from cedar_m2.models.qwen import QwenModelSpec, load_qwen_model, model_input_device
-from scripts.run_e_minus1a_philpapers import (
-    A_TOKEN_ID,
-    B_TOKEN_ID,
-    EXPECTED_LAYERS,
-    TARGET_LAYER,
-    atomic_write_jsonl,
-    git_provenance,
-    gpu_inventory,
-    load_frozen_axis,
-    render_prompt,
-    target_layer_module,
-)
-from scripts.run_e_minus1a_philpapers import (
-    validate_rows as validate_smoke_rows,
-)
+
+try:
+    from scripts.run_e_minus1a_philpapers import (
+        A_TOKEN_ID,
+        B_TOKEN_ID,
+        EXPECTED_LAYERS,
+        TARGET_LAYER,
+        atomic_write_jsonl,
+        git_provenance,
+        gpu_inventory,
+        load_frozen_axis,
+        render_prompt,
+        target_layer_module,
+    )
+    from scripts.run_e_minus1a_philpapers import (
+        validate_rows as validate_smoke_rows,
+    )
+except ModuleNotFoundError as exc:
+    if exc.name != "scripts":
+        raise
+    from run_e_minus1a_philpapers import (  # type: ignore[no-redef]
+        A_TOKEN_ID,
+        B_TOKEN_ID,
+        EXPECTED_LAYERS,
+        TARGET_LAYER,
+        atomic_write_jsonl,
+        git_provenance,
+        gpu_inventory,
+        load_frozen_axis,
+        render_prompt,
+        target_layer_module,
+    )
+    from run_e_minus1a_philpapers import (
+        validate_rows as validate_smoke_rows,
+    )
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_PATH = ROOT / "datasets" / "e_minus1a_philpapers" / "philpapers1800_all_seeds.jsonl"

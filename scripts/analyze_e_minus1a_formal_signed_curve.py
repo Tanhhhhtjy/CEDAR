@@ -15,29 +15,57 @@ from pathlib import Path
 from typing import Any
 
 from cedar_m2.checkpoint import atomic_write_json, file_sha256
-from scripts.run_e_minus1a_formal_signed_curve import (
-    DATA_PATH,
-    DEFAULT_OUTPUT,
-    EXPECTED_DATA_SHA256,
-    EXPECTED_FORMAL_FORWARDS,
-    EXPECTED_PAIRS_PER_SEED,
-    EXPECTED_TEST_PAIRS,
-    EXPECTED_TEST_ROWS,
-    FORMAL_CONDITIONS,
-    SAMPLE_SEEDS,
-    validate_formal_rows,
-)
-from scripts.run_e_minus1a_philpapers import (
-    A_TOKEN_ID,
-    ASSISTANT_AXIS_REPO,
-    ASSISTANT_AXIS_REVISION,
-    B_TOKEN_ID,
-    EXPECTED_AXIS_RAW_NORM,
-    EXPECTED_AXIS_SHA256,
-    EXPECTED_LAYERS,
-    QWEN_AXIS_FILE,
-    TARGET_LAYER,
-)
+
+try:
+    from scripts.run_e_minus1a_formal_signed_curve import (
+        DATA_PATH,
+        DEFAULT_OUTPUT,
+        EXPECTED_DATA_SHA256,
+        EXPECTED_FORMAL_FORWARDS,
+        EXPECTED_PAIRS_PER_SEED,
+        EXPECTED_TEST_PAIRS,
+        EXPECTED_TEST_ROWS,
+        FORMAL_CONDITIONS,
+        SAMPLE_SEEDS,
+        validate_formal_rows,
+    )
+    from scripts.run_e_minus1a_philpapers import (
+        A_TOKEN_ID,
+        ASSISTANT_AXIS_REPO,
+        ASSISTANT_AXIS_REVISION,
+        B_TOKEN_ID,
+        EXPECTED_AXIS_RAW_NORM,
+        EXPECTED_AXIS_SHA256,
+        EXPECTED_LAYERS,
+        QWEN_AXIS_FILE,
+        TARGET_LAYER,
+    )
+except ModuleNotFoundError as exc:
+    if exc.name != "scripts":
+        raise
+    from run_e_minus1a_formal_signed_curve import (  # type: ignore[no-redef]
+        DATA_PATH,
+        DEFAULT_OUTPUT,
+        EXPECTED_DATA_SHA256,
+        EXPECTED_FORMAL_FORWARDS,
+        EXPECTED_PAIRS_PER_SEED,
+        EXPECTED_TEST_PAIRS,
+        EXPECTED_TEST_ROWS,
+        FORMAL_CONDITIONS,
+        SAMPLE_SEEDS,
+        validate_formal_rows,
+    )
+    from run_e_minus1a_philpapers import (  # type: ignore[no-redef]
+        A_TOKEN_ID,
+        ASSISTANT_AXIS_REPO,
+        ASSISTANT_AXIS_REVISION,
+        B_TOKEN_ID,
+        EXPECTED_AXIS_RAW_NORM,
+        EXPECTED_AXIS_SHA256,
+        EXPECTED_LAYERS,
+        QWEN_AXIS_FILE,
+        TARGET_LAYER,
+    )
 
 EXPECTED_MODEL_REPO = "Qwen/Qwen3-32B"
 EXPECTED_MODEL_REVISION = "9216db5781bf21249d130ec9da846c4624c16137"
@@ -83,7 +111,12 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
 
 
 def atomic_write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
-    from scripts.run_e_minus1a_philpapers import atomic_write_jsonl as write
+    try:
+        from scripts.run_e_minus1a_philpapers import atomic_write_jsonl as write
+    except ModuleNotFoundError as exc:
+        if exc.name != "scripts":
+            raise
+        from run_e_minus1a_philpapers import atomic_write_jsonl as write
 
     write(path, rows)
 
