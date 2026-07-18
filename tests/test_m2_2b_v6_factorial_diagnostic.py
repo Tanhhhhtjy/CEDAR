@@ -118,6 +118,9 @@ def test_axis_monitor_separates_prefill_decode_and_masks_padding() -> None:
         assert report["decode"]["assistant_axis_projection"][layer]["mean"] == 2.0
         exposure = report["prefill"]["reference_cap_exposure"]["p25"][layer]
         assert exposure["trigger_rate"] == 1.0
+        assert exposure["correction_sum"] == 0.5
+        assert exposure["mean_correction_all_positions"] == 0.5
+        assert exposure["mean_correction_triggered_positions"] == 0.5
         assert exposure["mean_correction"] == 0.5
 
 

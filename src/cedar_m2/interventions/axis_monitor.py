@@ -93,15 +93,26 @@ class _Exposure:
                 "count": 0,
                 "triggered": 0,
                 "trigger_rate": 0.0,
+                "correction_sum": 0.0,
+                "mean_correction_all_positions": 0.0,
+                "mean_correction_triggered_positions": 0.0,
                 "mean_correction": 0.0,
             }
         triggered = int(self.triggered.item())
         correction = float(self.correction.item())
+        mean_all = correction / self.count
         return {
             "count": self.count,
             "triggered": triggered,
             "trigger_rate": triggered / self.count,
-            "mean_correction": correction / self.count,
+            "correction_sum": correction,
+            "mean_correction_all_positions": mean_all,
+            "mean_correction_triggered_positions": (
+                correction / triggered if triggered else 0.0
+            ),
+            # Backward-compatible alias used by frozen v6 artifacts. It has always
+            # meant the all-position mean, never the triggered-position mean.
+            "mean_correction": mean_all,
         }
 
 
