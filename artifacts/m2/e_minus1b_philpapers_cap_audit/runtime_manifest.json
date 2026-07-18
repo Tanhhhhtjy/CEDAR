@@ -1,0 +1,351 @@
+{
+  "completed_at": "2026-07-18T23:58:03.959494+08:00",
+  "completed_formal_forwards": 1800,
+  "configuration": {
+    "assets": {
+      "axis_file": "qwen-3-32b/assistant_axis.pt",
+      "axis_path": "/data1/WuMingrui/HF_HOME/hub/datasets--lu-christina--assistant-axis-vectors/snapshots/3b3b788432ad33e3a28d9ff08e88a530c0740814/qwen-3-32b/assistant_axis.pt",
+      "axis_sha256": "a207fe7a36563280b7b29010880aa0082bd8e3113c141cb4a2eed6b46c140211",
+      "axis_shape": [
+        64,
+        5120
+      ],
+      "axis_stored_dtype": "bfloat16",
+      "capping_config_file": "qwen-3-32b/capping_config.pt",
+      "capping_config_path": "/data1/WuMingrui/HF_HOME/hub/datasets--lu-christina--assistant-axis-vectors/snapshots/3b3b788432ad33e3a28d9ff08e88a530c0740814/qwen-3-32b/capping_config.pt",
+      "capping_config_sha256": "6aec1220487473aaeab80b05d5d960ac54b5dd9080b51ac4bb0bbd1f4330db24",
+      "experiment_id": "layers_46:54-p0.25",
+      "formula": "h_new = h - v_minus * max(dot(h, v_minus) - threshold, 0)",
+      "layers": {
+        "46": {
+          "axis_cosine": -1.000001311302185,
+          "direction_sha256": "a97146172423ef8e63eebaeef57c25cb83db1042d492dfd54d6425b0e32e9d96",
+          "threshold": -32.5
+        },
+        "47": {
+          "axis_cosine": -1.000001072883606,
+          "direction_sha256": "5b8b0aa74cd5ebc88bc1423170fafd478b3fe8bd81921870bbc4e9130f534548",
+          "threshold": -64.5
+        },
+        "48": {
+          "axis_cosine": -1.0000014305114746,
+          "direction_sha256": "d2d1c6b6bd65f1531990fb34459578be46d626c8ea29bbbfcecb069cfd94d5df",
+          "threshold": -35.75
+        },
+        "49": {
+          "axis_cosine": -1.0000016689300537,
+          "direction_sha256": "be9cf8536c69b6b152b7e5f5207238e1abece4eff685f828177a08b30cc6e213",
+          "threshold": -37.25
+        },
+        "50": {
+          "axis_cosine": -1.0000015497207642,
+          "direction_sha256": "998416f2cb54f1cd00ad98e4752bf1757bb91e9bbef940aa7716e5b5bdb3f5fb",
+          "threshold": -33.0
+        },
+        "51": {
+          "axis_cosine": -1.0000014305114746,
+          "direction_sha256": "8dcf9ef75125bb46dfc49730ce5784d92445200fbcce9804da542d5b36aaf66a",
+          "threshold": -28.5
+        },
+        "52": {
+          "axis_cosine": -1.0000016689300537,
+          "direction_sha256": "fba1d99ad9d46475457ea49b6a239b9c842c9daafb38a85d89761aa306ec93c8",
+          "threshold": -21.0
+        },
+        "53": {
+          "axis_cosine": -1.0000016689300537,
+          "direction_sha256": "b071f0710a24e61ba16144d6d4036092030b70e6b3b5a7fbced7db44d7aeb39b",
+          "threshold": -44.5
+        }
+      },
+      "parsed_experiment_sha256": "5562e323708ff44c98e87c63f5eff148a190f356e889ae9d0fafc19126483cd3",
+      "positions": "all valid batch-size-1 prompt token positions",
+      "repo": "lu-christina/assistant-axis-vectors",
+      "revision": "3b3b788432ad33e3a28d9ff08e88a530c0740814"
+    },
+    "cuda_visible_devices": "1,4,6,7",
+    "dataset": {
+      "all_rows": 1800,
+      "pairs_per_seed": 150,
+      "path": "/data4/WuMingrui/TianJinyu/CEDAR/datasets/e_minus1a_philpapers/philpapers1800_all_seeds.jsonl",
+      "rows_per_seed": 300,
+      "sample_seeds": [
+        42,
+        7,
+        123
+      ],
+      "sha256": "4d345d0254ba46b829c3055d854eed371bbc625d2e754aa5cdda448460f1b888",
+      "split": "test",
+      "test_pairs": 450,
+      "test_rows": 900
+    },
+    "expected_formal_forwards": 1800,
+    "expected_sentinel_forwards": 24,
+    "forced_choice": {
+      "A_token_id": 32,
+      "B_token_id": 33,
+      "batch_size": 1,
+      "enable_thinking": false,
+      "full_vocabulary_diagnostics": true,
+      "generate": false,
+      "system_prompt": null,
+      "truncation": false,
+      "use_cache": false
+    },
+    "formal_conditions": [
+      "uncapped_monitor",
+      "p25_cap"
+    ],
+    "git": {
+      "branch": "agent/e-minus1b-philpapers-cap-audit",
+      "commit": "2da028da2a48b52484e8920d9bdfb5a3001dc831",
+      "dirty": false
+    },
+    "hook_order": [
+      "AssistantAxisMonitor",
+      "ActivationCapper"
+    ],
+    "kind": "E-1b PhilPapers official-p25 capping opportunity and output audit",
+    "model": {
+      "attention_implementation": "sdpa",
+      "dtype": "bfloat16",
+      "repo_id": "Qwen/Qwen3-32B",
+      "revision": "9216db5781bf21249d130ec9da846c4624c16137"
+    },
+    "platform": "Linux-6.8.0-124-generic-x86_64-with-glibc2.35",
+    "protocol": "docs/E_MINUS1B_PHILPAPERS_CAP_AUDIT.md",
+    "python_version": "3.11.15",
+    "scope": "forced-choice prefill only; no generation, thinking, p1, E0, or mechanism tools",
+    "sentinel": {
+      "conditions": [
+        "no_hook",
+        "uncapped_monitor",
+        "p25_cap"
+      ],
+      "rows": 8,
+      "source": "/data4/WuMingrui/TianJinyu/CEDAR/datasets/e_minus1a_philpapers/smoke64.jsonl"
+    },
+    "torch_version": "2.6.0+cu124",
+    "transformers_version": "4.56.1"
+  },
+  "content_retries": 0,
+  "errors": [],
+  "expected_formal_forwards": 1800,
+  "gpu_inventory": [
+    {
+      "index": "0",
+      "memory_free_mib": "34041",
+      "memory_total_mib": "49140",
+      "memory_used_mib": "14468",
+      "name": "NVIDIA GeForce RTX 4090",
+      "uuid": "GPU-3fbd81ed-ca9d-1378-63ea-c862a3c83fcb"
+    },
+    {
+      "index": "1",
+      "memory_free_mib": "33590",
+      "memory_total_mib": "49140",
+      "memory_used_mib": "14919",
+      "name": "NVIDIA GeForce RTX 4090",
+      "uuid": "GPU-c87eb3d6-e669-8940-57cd-1f70a15866ca"
+    },
+    {
+      "index": "2",
+      "memory_free_mib": "28586",
+      "memory_total_mib": "49140",
+      "memory_used_mib": "19923",
+      "name": "NVIDIA GeForce RTX 4090",
+      "uuid": "GPU-9cc7a8c7-f1d3-a6b8-b5b9-bf736614a4a6"
+    },
+    {
+      "index": "3",
+      "memory_free_mib": "30833",
+      "memory_total_mib": "49140",
+      "memory_used_mib": "17676",
+      "name": "NVIDIA GeForce RTX 4090",
+      "uuid": "GPU-a3e80e73-1c73-9dd9-94e3-77a23af8eb27"
+    },
+    {
+      "index": "4",
+      "memory_free_mib": "31354",
+      "memory_total_mib": "49140",
+      "memory_used_mib": "17155",
+      "name": "NVIDIA GeForce RTX 4090",
+      "uuid": "GPU-6e955cff-2a97-663e-a839-d7834d98ed4a"
+    },
+    {
+      "index": "5",
+      "memory_free_mib": "28772",
+      "memory_total_mib": "49140",
+      "memory_used_mib": "19737",
+      "name": "NVIDIA GeForce RTX 4090",
+      "uuid": "GPU-3a7c3a9a-2534-fdf2-1494-1aaf0408a4c5"
+    },
+    {
+      "index": "6",
+      "memory_free_mib": "31354",
+      "memory_total_mib": "49140",
+      "memory_used_mib": "17155",
+      "name": "NVIDIA GeForce RTX 4090",
+      "uuid": "GPU-fc0010a7-ed12-fa23-508c-22ba19ee46fd"
+    },
+    {
+      "index": "7",
+      "memory_free_mib": "33590",
+      "memory_total_mib": "49140",
+      "memory_used_mib": "14919",
+      "name": "NVIDIA GeForce RTX 4090",
+      "uuid": "GPU-bc61ccf3-eeff-7916-0044-1f0602c12012"
+    }
+  ],
+  "last_resumed_at": "2026-07-18T23:50:27.386265+08:00",
+  "model_config_commit_hash": "9216db5781bf21249d130ec9da846c4624c16137",
+  "model_hf_device_map": {
+    "lm_head": 3,
+    "model.embed_tokens": 0,
+    "model.layers.0": 0,
+    "model.layers.1": 0,
+    "model.layers.10": 0,
+    "model.layers.11": 0,
+    "model.layers.12": 0,
+    "model.layers.13": 0,
+    "model.layers.14": 1,
+    "model.layers.15": 1,
+    "model.layers.16": 1,
+    "model.layers.17": 1,
+    "model.layers.18": 1,
+    "model.layers.19": 1,
+    "model.layers.2": 0,
+    "model.layers.20": 1,
+    "model.layers.21": 1,
+    "model.layers.22": 1,
+    "model.layers.23": 1,
+    "model.layers.24": 1,
+    "model.layers.25": 1,
+    "model.layers.26": 1,
+    "model.layers.27": 1,
+    "model.layers.28": 1,
+    "model.layers.29": 1,
+    "model.layers.3": 0,
+    "model.layers.30": 1,
+    "model.layers.31": 1,
+    "model.layers.32": 2,
+    "model.layers.33": 2,
+    "model.layers.34": 2,
+    "model.layers.35": 2,
+    "model.layers.36": 2,
+    "model.layers.37": 2,
+    "model.layers.38": 2,
+    "model.layers.39": 2,
+    "model.layers.4": 0,
+    "model.layers.40": 2,
+    "model.layers.41": 2,
+    "model.layers.42": 2,
+    "model.layers.43": 2,
+    "model.layers.44": 2,
+    "model.layers.45": 2,
+    "model.layers.46": 2,
+    "model.layers.47": 2,
+    "model.layers.48": 2,
+    "model.layers.49": 2,
+    "model.layers.5": 0,
+    "model.layers.50": 3,
+    "model.layers.51": 3,
+    "model.layers.52": 3,
+    "model.layers.53": 3,
+    "model.layers.54": 3,
+    "model.layers.55": 3,
+    "model.layers.56": 3,
+    "model.layers.57": 3,
+    "model.layers.58": 3,
+    "model.layers.59": 3,
+    "model.layers.6": 0,
+    "model.layers.60": 3,
+    "model.layers.61": 3,
+    "model.layers.62": 3,
+    "model.layers.63": 3,
+    "model.layers.7": 0,
+    "model.layers.8": 0,
+    "model.layers.9": 0,
+    "model.norm": 3,
+    "model.rotary_emb": 3
+  },
+  "resumed_formal_forwards": 0,
+  "row_results_sha256": "da6e01c4543173da62172b9cefa6f8512c22e1d21bbdfc51b4f4b6ca13bf00c4",
+  "run_fingerprint": "fc5f3b455978c60888a1e6202ac072690ed781b30cdc06602d8c3f02891eaba9",
+  "sentinel": {
+    "behavior_direction_used_as_gate": false,
+    "checks": {
+      "24_complete_and_ordered": true,
+      "all_finite": true,
+      "asset_hashes_and_experiment_match": true,
+      "axis_cosines_opposite": true,
+      "hooks_removed": true,
+      "monitor_does_not_modify_logits": true,
+      "monitor_registered_before_capper": true,
+      "no_decode_telemetry": true,
+      "prompt_sha_matches_frozen_e_minus1a": true,
+      "token_ids_frozen": true
+    },
+    "forwards": 24,
+    "no_hook_vs_uncapped_monitor_max_abs_AB_logit_difference": 0.0,
+    "p25_actual_triggered_positions": 5038,
+    "results_sha256": "608193f9b23773b6f391fb2dc72254f37b0bd35bd694ee5c2a2f80bddcfbd8ce",
+    "resumed_forwards": 24,
+    "rows": 8,
+    "selection": [
+      {
+        "pair_id": "seed42_base274",
+        "question_id": 548,
+        "sample_seed": 42,
+        "variant": "original"
+      },
+      {
+        "pair_id": "seed42_base274",
+        "question_id": 549,
+        "sample_seed": 42,
+        "variant": "swapped"
+      },
+      {
+        "pair_id": "seed42_base277",
+        "question_id": 554,
+        "sample_seed": 42,
+        "variant": "original"
+      },
+      {
+        "pair_id": "seed42_base277",
+        "question_id": 555,
+        "sample_seed": 42,
+        "variant": "swapped"
+      },
+      {
+        "pair_id": "seed42_base167",
+        "question_id": 334,
+        "sample_seed": 42,
+        "variant": "original"
+      },
+      {
+        "pair_id": "seed42_base167",
+        "question_id": 335,
+        "sample_seed": 42,
+        "variant": "swapped"
+      },
+      {
+        "pair_id": "seed42_base083",
+        "question_id": 166,
+        "sample_seed": 42,
+        "variant": "original"
+      },
+      {
+        "pair_id": "seed42_base083",
+        "question_id": 167,
+        "sample_seed": 42,
+        "variant": "swapped"
+      }
+    ],
+    "status": "passed",
+    "zero_trigger_is_not_a_failure": true
+  },
+  "sentinel_resumed_forwards": 24,
+  "started_at": "2026-07-18T23:50:27.386227+08:00",
+  "status": "complete"
+}
