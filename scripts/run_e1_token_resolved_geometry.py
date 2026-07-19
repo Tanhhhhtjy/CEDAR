@@ -45,6 +45,7 @@ AXIS_DATA = DATA_DIR / "m2_2b_v6_axis_controls24.jsonl"
 PROTOCOL = ROOT / "docs" / "E1_TOKEN_RESOLVED_GEOMETRY_PROTOCOL.md"
 ADDENDUM = ROOT / "docs" / "E0_AUDIT_ADDENDUM.md"
 PROTOCOL_AMENDMENT = ROOT / "docs" / "E1_PROTOCOL_AMENDMENT_01.md"
+PROTOCOL_AMENDMENT_02 = ROOT / "docs" / "E1_PROTOCOL_AMENDMENT_02.md"
 DEFAULT_OUTPUT = ROOT / "artifacts" / "m2" / "e1_token_resolved_geometry"
 
 EXPECTED_FORMAL_SHA256 = "495bb79d661e3d91d34bba435b0e92bc687da76844395673e949a430852893d4"
@@ -1001,6 +1002,8 @@ def build_input_manifest(cache_dir: Path) -> dict[str, Any]:
         "protocol_sha256": file_sha256(PROTOCOL),
         "protocol_amendment": str(PROTOCOL_AMENDMENT.relative_to(ROOT)),
         "protocol_amendment_sha256": file_sha256(PROTOCOL_AMENDMENT),
+        "protocol_amendment_02": str(PROTOCOL_AMENDMENT_02.relative_to(ROOT)),
+        "protocol_amendment_02_sha256": file_sha256(PROTOCOL_AMENDMENT_02),
         "e0_addendum": str(ADDENDUM.relative_to(ROOT)),
         "e0_addendum_sha256": file_sha256(ADDENDUM),
         "git": provenance,
@@ -1148,6 +1151,18 @@ def _correction_identity(arrays: Mapping[str, np.ndarray]) -> dict[str, Any]:
     }
 
 
+def smoke_boundary_check(result: Mapping[str, Any]) -> dict[str, Any]:
+    thinking_ok = bool(result["boundary"].get("valid_thinking_boundary"))
+    answer_required = result.get("source_kind") == "formal"
+    answer_ok = bool(result["boundary"].get("valid_answer_choice"))
+    return {
+        "passed": thinking_ok and (answer_ok if answer_required else True),
+        "thinking_boundary": thinking_ok,
+        "answer_choice_required": answer_required,
+        "answer_choice": answer_ok if answer_required else "not_applicable_by_design",
+    }
+
+
 def _smoke_audit(
     output_dir: Path,
     store: TrajectoryStore,
@@ -1192,10 +1207,8 @@ def _smoke_audit(
                 monitor_result, old_by_id[row["id"]]
             )
         identity = _correction_identity(monitor_arrays)
-        boundary_ok = bool(
-            monitor_result["boundary"].get("valid_thinking_boundary")
-            and monitor_result["boundary"].get("valid_answer_choice")
-        )
+        boundary = smoke_boundary_check(monitor_result)
+        boundary_ok = bool(boundary["passed"])
         hooks_ok = monitor_result["hook_counts_before"] == monitor_result["hook_counts_after"]
         checks = {
             "same_output": same_output,
@@ -1205,6 +1218,7 @@ def _smoke_audit(
             "old_telemetry": telemetry_match,
             "correction_identity": identity,
             "boundary_ok": boundary_ok,
+            "boundary_scope": boundary,
             "finite": monitor_result["finite"],
             "hooks_removed": hooks_ok,
         }

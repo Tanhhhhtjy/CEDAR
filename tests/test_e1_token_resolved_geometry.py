@@ -145,6 +145,20 @@ def test_strict_answer_and_behavior_classification() -> None:
     assert runner.classify_behavior(row, None, True) == "invalid_or_truncated"
 
 
+def test_axis_smoke_does_not_require_formal_json_answer() -> None:
+    axis = {
+        "source_kind": "axis",
+        "boundary": {"valid_thinking_boundary": True, "valid_answer_choice": False},
+    }
+    formal = {
+        "source_kind": "formal",
+        "boundary": {"valid_thinking_boundary": True, "valid_answer_choice": False},
+    }
+    assert runner.smoke_boundary_check(axis)["passed"] is True
+    assert runner.smoke_boundary_check(axis)["answer_choice"] == "not_applicable_by_design"
+    assert runner.smoke_boundary_check(formal)["passed"] is False
+
+
 def test_trajectory_store_is_atomic_and_hash_checked(tmp_path: Path) -> None:
     store = runner.TrajectoryStore(tmp_path, fingerprint="abc")
     key = {"stage": "sample-s", "id": "x", "seed": 0, "path": "monitor_only"}
