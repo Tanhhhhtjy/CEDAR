@@ -861,11 +861,14 @@ def generate_trajectory(
         if monitor_enabled and row.get("_source_kind") == "formal"
         else None
     )
-    finite_arrays = all(
-        np.isfinite(value).all()
-        for name, value in arrays.items()
-        if value.dtype.kind in {"f", "c"} and name != "abc_logits_by_step"
-    ) and np.isfinite(abc_logits).all()
+    finite_arrays = bool(
+        all(
+            bool(np.isfinite(value).all())
+            for name, value in arrays.items()
+            if value.dtype.kind in {"f", "c"} and name != "abc_logits_by_step"
+        )
+        and bool(np.isfinite(abc_logits).all())
+    )
     if not finite_arrays:
         raise FloatingPointError("Trajectory arrays contain NaN/Inf")
 
@@ -957,16 +960,20 @@ class TrajectoryStore:
         if metadata_path.exists() or arrays_path.exists():
             raise FileExistsError(f"Refusing to overwrite trajectory {key}")
         atomic_write_npz(arrays_path, arrays)
-        atomic_write_json(
-            metadata_path,
-            {
-                "fingerprint": self.fingerprint,
-                "key": json.loads(json.dumps(key, sort_keys=True)),
-                "arrays_file": arrays_path.name,
-                "arrays_sha256": file_sha256(arrays_path),
-                "result": result,
-            },
-        )
+        try:
+            atomic_write_json(
+                metadata_path,
+                {
+                    "fingerprint": self.fingerprint,
+                    "key": json.loads(json.dumps(key, sort_keys=True)),
+                    "arrays_file": arrays_path.name,
+                    "arrays_sha256": file_sha256(arrays_path),
+                    "result": result,
+                },
+            )
+        except Exception:
+            arrays_path.unlink(missing_ok=True)
+            raise
 
 
 def load_old_greedy_results() -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]]]:

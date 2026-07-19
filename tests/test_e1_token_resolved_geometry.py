@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
+import pytest
 import torch
 from torch import nn
 
@@ -155,6 +156,26 @@ def test_trajectory_store_is_atomic_and_hash_checked(tmp_path: Path) -> None:
     _, arrays_path = store.paths(key)
     with np.load(arrays_path, allow_pickle=False) as loaded:
         np.testing.assert_array_equal(loaded["value"], arrays["value"])
+
+
+def test_numpy_finite_flag_is_normalized_before_json() -> None:
+    value = bool(bool(np.isfinite(np.asarray([1.0])).all()))
+    assert type(value) is bool
+    json.dumps({"finite": value})
+
+
+def test_failed_metadata_serialization_removes_orphan_npz(tmp_path: Path) -> None:
+    store = runner.TrajectoryStore(tmp_path, fingerprint="abc")
+    key = {"stage": "smoke", "id": "bad", "seed": 0, "path": "no_hook"}
+    with pytest.raises(TypeError):
+        store.write(
+            key,
+            {"finite": np.bool_(True)},
+            {"value": np.asarray([1.0], dtype=np.float32)},
+        )
+    metadata_path, arrays_path = store.paths(key)
+    assert not metadata_path.exists()
+    assert not arrays_path.exists()
 
 
 def _synthetic_record(
