@@ -25,6 +25,15 @@ except ModuleNotFoundError:
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = ROOT / "artifacts" / "m2" / "e1_token_resolved_geometry"
+ANALYSIS_CORRECTION = ROOT / "docs" / "E1_POSTRUN_ANALYSIS_CORRECTION.md"
+GENERATION_COMMIT = "7dce05e226bc7624540c61857490ae2245f02781"
+ANALYSIS_CORRECTION_PATHS = frozenset(
+    {
+        "docs/E1_POSTRUN_ANALYSIS_CORRECTION.md",
+        "scripts/analyze_e1_token_resolved_geometry.py",
+        "tests/test_e1_token_resolved_geometry.py",
+    }
+)
 BOOTSTRAP_SEED = 20260719
 BOOTSTRAP_REPLICATES = 10_000
 
@@ -60,6 +69,51 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--stage", choices=("gate", "final"), default="gate")
     parser.add_argument("--run-dir", type=Path, default=DEFAULT_OUTPUT)
     return parser.parse_args()
+
+
+def validate_analysis_provenance(
+    current: Mapping[str, Any], generation: Mapping[str, Any]
+) -> dict[str, Any]:
+    """Keep generation provenance frozen while permitting the disclosed analysis fix."""
+    if current == generation:
+        return {"mode": "frozen_generation_commit", "changed_paths": []}
+    if generation.get("commit") != GENERATION_COMMIT:
+        raise RuntimeError("Unexpected E1 generation commit")
+    if current.get("branch") != generation.get("branch"):
+        raise RuntimeError("Analysis and generation branches differ")
+    if current.get("dirty") or generation.get("dirty"):
+        raise RuntimeError("Analysis and generation provenance must be clean")
+    if not ANALYSIS_CORRECTION.exists():
+        raise RuntimeError("Post-run analysis correction disclosure is missing")
+    try:
+        runner._run_git(
+            "merge-base",
+            "--is-ancestor",
+            str(generation["commit"]),
+            str(current["commit"]),
+        )
+    except Exception as error:
+        raise RuntimeError("Analysis commit is not descended from generation commit") from error
+    changed_paths = {
+        value
+        for value in str(
+            runner._run_git(
+                "diff",
+                "--name-only",
+                f"{generation['commit']}..{current['commit']}",
+            )
+        ).splitlines()
+        if value
+    }
+    unexpected = changed_paths - ANALYSIS_CORRECTION_PATHS
+    if unexpected:
+        raise RuntimeError(f"Unexpected post-generation analysis changes: {sorted(unexpected)}")
+    return {
+        "mode": "disclosed_postrun_analysis_correction",
+        "changed_paths": sorted(changed_paths),
+        "disclosure": str(ANALYSIS_CORRECTION.relative_to(ROOT)),
+        "disclosure_sha256": file_sha256(ANALYSIS_CORRECTION),
+    }
 
 
 def _atomic_write_jsonl(path: Path, rows: Sequence[Mapping[str, Any]]) -> None:
@@ -497,6 +551,8 @@ def conditional_logit(
             )
         params = np.asarray(fitted.params, dtype=float)
         standard_errors = np.asarray(fitted.bse, dtype=float)
+        optimizer_metadata = getattr(fitted, "mle_retvals", None)
+        convergence_exposed = isinstance(optimizer_metadata, Mapping)
         return {
             "status": "estimated",
             "records": len(eligible),
@@ -516,7 +572,16 @@ def conditional_logit(
                 }
                 for index, name in enumerate(names)
             },
-            "converged": bool(fitted.mle_retvals.get("converged", False)),
+            "converged": (
+                bool(optimizer_metadata.get("converged", False))
+                if convergence_exposed
+                else None
+            ),
+            "convergence_diagnostic": (
+                "optimizer_metadata_exposed"
+                if convergence_exposed
+                else "not_exposed_by_statsmodels"
+            ),
         }
     except Exception as error:  # numerical separation is a reportable assay result
         return {
@@ -958,6 +1023,7 @@ def write_summary(
     analysis: Mapping[str, Any],
     bridge: Mapping[str, Any],
     behavior: Mapping[str, Any],
+    analysis_provenance: Mapping[str, Any],
 ) -> None:
     gate = analysis["mixed_prompt_gate"]
     primary = analysis["primary"]["primary_feature"]
@@ -978,6 +1044,7 @@ def write_summary(
             f"{gate['mixed_prompts_minority_ge_3']}"
         ),
         f"- 数据充分性闸门：`{gate['status']}`",
+        f"- 分析 provenance：`{analysis_provenance['mode']}`",
         "",
         "## 同题主比较",
         "",
@@ -999,6 +1066,23 @@ def write_summary(
         (
             f"层组交互 D_50–53−D_46–49：{layer.get('point_estimate')}，"
             f"95% CI {layer.get('ci95')}；正向闸门={_ci_supports_positive(layer)}。"
+        ),
+        "",
+        "## F 控制",
+        "",
+        (
+            f"记录数：{analysis['F_control'].get('available_records')}；描述性行为闸门："
+            f"`{analysis['F_control'].get('behavior_gate_descriptive', {}).get('status')}`。"
+        ),
+        (
+            "preanswer_32 / layers50–53 的 resist−yield 修正量："
+            f"{analysis['F_control'].get('primary_feature', {}).get('point_estimate')}，95% CI "
+            f"{analysis['F_control'].get('primary_feature', {}).get('ci95')}。"
+        ),
+        (
+            "同位置 Assistant Axis 投影差："
+            f"{analysis['F_control'].get('axis_projection', {}).get('point_estimate')}，95% CI "
+            f"{analysis['F_control'].get('axis_projection', {}).get('ci95')}。"
         ),
         "",
         "## 解释边界",
@@ -1051,8 +1135,7 @@ def main() -> None:
     ):
         raise RuntimeError("Input, smoke, and bridge audits must pass before E1 analysis")
     current_git = runner.git_provenance()
-    if current_git != input_manifest["git"]:
-        raise RuntimeError("Analysis code provenance differs from INPUT_MANIFEST")
+    analysis_provenance = validate_analysis_provenance(current_git, input_manifest["git"])
 
     formal, axis_rows = runner.validate_input_rows()
     smoke_records = enrich_records(
@@ -1098,13 +1181,12 @@ def main() -> None:
         gate,
         final_requested=args.stage == "final",
     )
-    atomic_write_json(
-        args.run_dir / "primary_within_prompt_results.json", analysis["primary"]
-    )
+    primary_delivery = {**analysis["primary"], "F_control": analysis["F_control"]}
+    atomic_write_json(args.run_dir / "primary_within_prompt_results.json", primary_delivery)
     atomic_write_json(args.run_dir / "length_sensitivity.json", analysis["length_sensitivity"])
     atomic_write_json(args.run_dir / "phase_interaction.json", analysis["phase_interaction"])
     atomic_write_json(args.run_dir / "layer_interaction.json", analysis["layer_interaction"])
-    write_summary(args.run_dir, analysis, bridge, behavior)
+    write_summary(args.run_dir, analysis, bridge, behavior, analysis_provenance)
 
     output_names = (
         "INPUT_MANIFEST.json",
@@ -1133,6 +1215,9 @@ def main() -> None:
         "analysis_stage": args.stage,
         "branch": current_git["branch"],
         "commit": current_git["commit"],
+        "generation_git": input_manifest["git"],
+        "analysis_git": current_git,
+        "analysis_provenance": analysis_provenance,
         "started_from": "476c03a",
         "protocol": str(runner.PROTOCOL.relative_to(ROOT)),
         "records": {

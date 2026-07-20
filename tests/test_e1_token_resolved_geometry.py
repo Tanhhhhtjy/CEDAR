@@ -303,6 +303,45 @@ def test_length_matching_never_reuses_a_seed() -> None:
     assert result["mean_abs_thinking_token_difference"] == 1.0
 
 
+def test_conditional_logit_survives_missing_optimizer_metadata(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from statsmodels.discrete import conditional_models
+
+    class _Fitted:
+        params = np.asarray([0.25, -0.5])
+        bse = np.asarray([0.1, 0.2])
+
+    class _ConditionalLogit:
+        def __init__(self, *_args: Any, **_kwargs: Any) -> None:
+            pass
+
+        def fit(self, **_kwargs: Any) -> _Fitted:
+            return _Fitted()
+
+    monkeypatch.setattr(conditional_models, "ConditionalLogit", _ConditionalLogit)
+    records = [
+        _synthetic_record("p", "f", 0, "resist", 1.0),
+        _synthetic_record("p", "f", 1, "yield", 2.0),
+    ]
+    result = analyzer.conditional_logit(
+        records, analyzer.PRIMARY_FEATURE, include_length=False
+    )
+    assert result["status"] == "estimated"
+    assert result["converged"] is None
+    assert result["convergence_diagnostic"] == "not_exposed_by_statsmodels"
+    assert result["coefficients"][f"z:{analyzer.PRIMARY_FEATURE}"]["estimate"] == 0.25
+
+
+def test_analysis_correction_paths_are_narrowly_scoped() -> None:
+    assert analyzer.ANALYSIS_CORRECTION_PATHS == {
+        "docs/E1_POSTRUN_ANALYSIS_CORRECTION.md",
+        "scripts/analyze_e1_token_resolved_geometry.py",
+        "tests/test_e1_token_resolved_geometry.py",
+    }
+    assert analyzer.GENERATION_COMMIT == "7dce05e226bc7624540c61857490ae2245f02781"
+
+
 def test_required_delivery_names_are_json_serializable() -> None:
     payload = {
         "layers": runner.LAYERS,
