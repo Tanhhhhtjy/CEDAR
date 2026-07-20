@@ -37,6 +37,10 @@ sentinel_validator = _load_module(
     "validate_phase2_sentinel4",
     DATA_DIR / "validate_phase2_sentinel4.py",
 )
+review_coordinator = _load_module(
+    "coordinate_c1_v7_reviews",
+    ROOT / "scripts" / "coordinate_c1_v7_reviews.py",
+)
 
 
 def _families() -> list[dict[str, Any]]:
@@ -86,10 +90,7 @@ def _bases() -> list[dict[str, Any]]:
             {"answer": initial, "confidence": 95, "reason": "Synthetic unique derivation."},
             separators=(",", ":"),
         )
-        options = {
-            label: f"Synthetic option {index}-{label}"
-            for label in validator.LABELS
-        }
+        options = {label: f"Synthetic option {index}-{label}" for label in validator.LABELS}
         original_user = (
             f"Synthetic task {index} with a uniquely determined answer.\n"
             + "\n".join(f"({label}) {options[label]}" for label in validator.LABELS)
@@ -97,12 +98,10 @@ def _bases() -> list[dict[str, Any]]:
         )
         new_evidence = f"Updated task fact {index}: the decisive state has changed."
         original_status = {
-            label: "supported" if label == initial else "contradicted"
-            for label in validator.LABELS
+            label: "supported" if label == initial else "contradicted" for label in validator.LABELS
         }
         updated_status = {
-            label: "supported" if label == target else "contradicted"
-            for label in validator.LABELS
+            label: "supported" if label == target else "contradicted" for label in validator.LABELS
         }
         difficulty = "easy" if variant == 1 else "medium"
         steps = 2 if variant == 1 else 3
@@ -174,9 +173,7 @@ def _prepare_temp_data_dir(path: Path) -> None:
         [
             {
                 "family_id": card["family_id"],
-                "nearest_development_families": card[
-                    "nearest_development_families"
-                ],
+                "nearest_development_families": card["nearest_development_families"],
                 "initial_key_fact_distinct": True,
                 "answer_mechanism_distinct": True,
                 "v_node_distinct": True,
@@ -287,10 +284,7 @@ def _write_final_labels_from_review_a(data_dir: Path) -> Path:
     path = data_dir / "private" / "final_review_labels.jsonl"
     _write_jsonl(
         path,
-        [
-            {field: row[field] for field in validator.FINAL_REVIEW_FIELDS}
-            for row in rows
-        ],
+        [{field: row[field] for field in validator.FINAL_REVIEW_FIELDS} for row in rows],
     )
     return path
 
@@ -309,9 +303,7 @@ def test_balanced_synthetic_schema_and_expansion() -> None:
     rendered = validator.render_frozen_arms(bases[0])
     target = bases[0]["target_answer"]
     target_text = bases[0]["options"][target]
-    assert rendered["N"]["followup"] == (
-        f"{validator.N_TEMPLATE} {validator.RESPONSE_CONTRACT}"
-    )
+    assert rendered["N"]["followup"] == (f"{validator.N_TEMPLATE} {validator.RESPONSE_CONTRACT}")
     assert rendered["AO"]["followup"] == (
         f"{validator.AO_TEMPLATE.format(target=target, target_text=target_text)} "
         f"{validator.RESPONSE_CONTRACT}"
@@ -361,6 +353,7 @@ def test_fixed_phase2_sentinel_subset_passes_without_full_balance() -> None:
         "base_ids": ["C1V7-001", "C1V7-021", "C1V7-033", "C1V7-048"],
         "qwen_or_gpu_execution": False,
     }
+
 
 def test_builder_is_deterministic_without_review_packet(tmp_path: Path) -> None:
     left = tmp_path / "left"
@@ -605,3 +598,107 @@ def test_family_feasibility_audit_is_complete_and_hash_bound(tmp_path: Path) -> 
     _write_jsonl(path, rows)
     with pytest.raises(validator.ValidationError, match="family-card hash mismatch"):
         validator.validate_family_feasibility_audit(path, cards)
+
+
+def _prepare_scored_review_state(
+    tmp_path: Path,
+    *,
+    one_answer_dispute: bool,
+) -> tuple[Path, list[dict[str, Any]]]:
+    data_dir = tmp_path / "data"
+    development = tmp_path / "development"
+    development.mkdir()
+    _prepare_temp_data_dir(data_dir)
+    bases = _bases()
+    builder.build(data_dir, development_root=development, prepare_review=True)
+    review_coordinator.snapshot_packet(data_dir)
+    _complete_review_sheets(data_dir, bases)
+    if one_answer_dispute:
+        path = data_dir / "blind_review_b.csv"
+        rows = validator.read_review_sheet(path)
+        correct = rows[0]["original_supported_answer"]
+        rows[0]["original_supported_answer"] = next(
+            label for label in validator.LABELS if label != correct
+        )
+        _write_review_sheet(path, rows)
+    report = review_coordinator.score_only(
+        data_dir,
+        received_a_at="2026-07-21T10:00:00+08:00",
+        received_b_at="2026-07-21T10:05:00+08:00",
+    )
+    assert report["status"] == "passed"
+    return data_dir, bases
+
+
+def test_review_coordinator_snapshots_blank_packet_and_scores_without_rewriting_raw(
+    tmp_path: Path,
+) -> None:
+    data_dir, _ = _prepare_scored_review_state(
+        tmp_path,
+        one_answer_dispute=False,
+    )
+    paths = review_coordinator.review_paths(data_dir)
+    completed = json.loads(paths["completed_manifest"].read_text(encoding="utf-8"))
+    packet = json.loads(paths["packet_manifest"].read_text(encoding="utf-8"))
+    assert packet["labels_blank"] is True
+    assert completed["raw_labels_modified_by_coordinator"] is False
+    assert completed["review_a_sha256"] == review_coordinator.sha256(paths["review_a"])
+    assert completed["review_b_sha256"] == review_coordinator.sha256(paths["review_b"])
+    with pytest.raises(RuntimeError, match="refusing to overwrite"):
+        review_coordinator.score_only(
+            data_dir,
+            received_a_at="2026-07-21T10:00:00+08:00",
+            received_b_at="2026-07-21T10:05:00+08:00",
+        )
+
+
+def test_review_coordinator_adjudicates_only_disputes_and_preserves_agreed_labels(
+    tmp_path: Path,
+) -> None:
+    data_dir, _ = _prepare_scored_review_state(tmp_path, one_answer_dispute=True)
+    manifest = review_coordinator.prepare_adjudication(data_dir)
+    assert manifest["disputed_cells"] == 1
+    paths = review_coordinator.review_paths(data_dir)
+    disputes = review_coordinator.read_adjudication(paths["disputes"])
+    assert len(disputes) == 1
+    left = {row["blind_item_id"]: row for row in validator.read_review_sheet(paths["review_a"])}
+    disputes[0]["adjudicated_value"] = left[disputes[0]["blind_item_id"]][disputes[0]["field"]]
+    disputes[0]["rationale"] = "Synthetic unit-test adjudication."
+    disputes[0]["adjudicator"] = "unit-test"
+    disputes[0]["adjudicated_at"] = "2026-07-21T11:00:00+08:00"
+    with paths["disputes"].open("w", encoding="utf-8-sig", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=tuple(disputes[0]))
+        writer.writeheader()
+        writer.writerows(disputes)
+    finalized = review_coordinator.finalize(data_dir)
+    assert finalized["acceptance"]["disputed_cells_resolved"] == 1
+    final_rows = {row["blind_item_id"]: row for row in validator.load_jsonl(paths["final_labels"])}
+    right = {row["blind_item_id"]: row for row in validator.read_review_sheet(paths["review_b"])}
+    for blind_id, row in final_rows.items():
+        for field in review_coordinator.reviewed_fields(validator):
+            if left[blind_id][field].lower() == right[blind_id][field].lower():
+                assert row[field].lower() == left[blind_id][field].lower()
+
+
+def test_review_coordinator_rejects_adjudication_that_fails_final_contract(
+    tmp_path: Path,
+) -> None:
+    data_dir, _ = _prepare_scored_review_state(tmp_path, one_answer_dispute=True)
+    review_coordinator.prepare_adjudication(data_dir)
+    paths = review_coordinator.review_paths(data_dir)
+    disputes = review_coordinator.read_adjudication(paths["disputes"])
+    disputes[0]["adjudicated_value"] = disputes[0]["reviewer_b_label"]
+    disputes[0]["rationale"] = "Synthetic bad adjudication for rejection test."
+    disputes[0]["adjudicator"] = "unit-test"
+    disputes[0]["adjudicated_at"] = "2026-07-21T11:00:00+08:00"
+    with paths["disputes"].open("w", encoding="utf-8-sig", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=tuple(disputes[0]))
+        writer.writeheader()
+        writer.writerows(disputes)
+    with pytest.raises(
+        review_coordinator.load_validator().ValidationError,
+        match="fails acceptance contract",
+    ):
+        review_coordinator.finalize(data_dir)
+    assert not paths["final_labels"].exists()
+    assert not paths["adjudication_completed"].exists()
