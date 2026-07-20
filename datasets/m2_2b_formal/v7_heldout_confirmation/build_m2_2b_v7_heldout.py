@@ -34,6 +34,7 @@ from validate_m2_2b_v7_heldout import (
 HERE = Path(__file__).resolve().parent
 ROOT = Path(__file__).resolve().parents[3]
 PROTOCOL = ROOT / "docs" / "C1_V7_HELDOUT_PROTOCOL.md"
+METHOD_AUDIT = ROOT / "docs" / "C1_V7_REFERENCE_METHOD_AUDIT.md"
 
 
 def sha256(path: Path) -> str:
@@ -93,6 +94,7 @@ def construction_audit_rows(bases: list[dict[str, Any]]) -> list[dict[str, Any]]
             "distractor_answer": base["distractor_answer"],
             "original_gold_rationale": base["original_gold_rationale"],
             "updated_gold_rationale": base["updated_gold_rationale"],
+            "construction_certificate": base["construction_certificate"],
             "N_gold": base["initial_answer"],
             "AO_gold": base["initial_answer"],
             "S_gold": base["initial_answer"],
@@ -333,6 +335,8 @@ def build(
         "README.md",
         "build_m2_2b_v7_heldout.py",
         "validate_m2_2b_v7_heldout.py",
+        "validate_phase2_sentinel4.py",
+        "PHASE2_CLAUDE_CONSTRUCTION_BRIEF.md",
     )
     if prepare_review:
         hashed_names = (
@@ -350,6 +354,8 @@ def build(
         "dataset_version": VERSION,
         "protocol": str(PROTOCOL.relative_to(ROOT)),
         "protocol_sha256": sha256(PROTOCOL),
+        "construction_method_audit": str(METHOD_AUDIT.relative_to(ROOT)),
+        "construction_method_audit_sha256": sha256(METHOD_AUDIT),
         "family_report": family_report,
         "base_report": base_report,
         "structural_overlap_review": overlap_report,

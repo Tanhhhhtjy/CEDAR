@@ -1,9 +1,10 @@
 # C1/V7 held-out confirmation dataset intake
 
-状态：`awaiting_data_lead_family_and_base_content`。
+状态：`phase1_approved_awaiting_phase2_sentinel4`。
 
-本目录当前只包含零 GPU schema、确定性展开器、静态验证器和人工审核包生成逻辑。它不含
-24 个已批准 family、48 个已批准 base、人工审核结果或任何模型输出。
+24 张 family card、结构 overlap matrix 与机器可读审计已获数据负责人批准并通过 intake gate。
+当前不含 48 个 base、192 个 arm、人工审核结果或任何模型输出。下一步不是直接运行 Qwen，
+而是按 `PHASE2_CLAUDE_CONSTRUCTION_BRIEF.md` 先构建 4 个零 GPU sentinel。
 
 冻结协议见 `docs/C1_V7_HELDOUT_PROTOCOL.md`。在以下条件全部满足前禁止运行 Qwen：
 
@@ -15,6 +16,9 @@
 6. 所有分歧完成裁决且逐题最终标签满足可接受性合同；
 7. freeze validator 通过；
 8. runner/auditor/analyzer 在之后的独立提交中冻结并通过测试。
+
+公开方法审计与 Phase 2 构建修正见 `docs/C1_V7_REFERENCE_METHOD_AUDIT.md`。Claude 的逐项执行
+合同见本目录 `PHASE2_CLAUDE_CONSTRUCTION_BRIEF.md`。
 
 ## 数据负责人输入
 
@@ -45,6 +49,11 @@ development family 不同。N/AO/S 处理不追求新颖，必须保持冻结模
 target 与 option text 自动渲染冻结模板。`initial_answer`、`target_answer`、
 `distractor_answer` 必须排列 A/B/C；六种迁移各 8 条。
 
+每条还必须提供 `construction_certificate`，证明：原题与 V 后分别只有一个 supported option、
+V 只改变一个节点、不需要题外知识、distractor 前后均错误，并列出受步骤数约束的原始/更新
+推导。variant 1 固定为 easy（1–3 步），variant 2 固定为 medium（3–6 步）。完整字段见
+`PHASE2_CLAUDE_CONSTRUCTION_BRIEF.md`，validator 会硬检查这些字段。
+
 固定 system prompt：
 
 ```text
@@ -66,7 +75,8 @@ python datasets/m2_2b_formal/v7_heldout_confirmation/validate_m2_2b_v7_heldout.p
 
 该 gate 要求 family card 和 Markdown matrix 已由数据负责人批准，且 machine-readable audit
 24/24 approved、三个 distinct 字段为 true、canonical card hash 全部匹配。通过后才可展开
-base。48 个 base 齐备后运行：
+base。当前该 gate 已通过。先按 Claude 交接卡提交 4 个 sentinel 并接受数据负责人审核；不得
+对 sentinel 运行模型。sentinel 通过后一次性构建完整 48 个 base，再运行：
 
 ```bash
 python datasets/m2_2b_formal/v7_heldout_confirmation/build_m2_2b_v7_heldout.py

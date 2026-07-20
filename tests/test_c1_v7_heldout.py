@@ -32,6 +32,10 @@ builder = _load_module(
     "build_m2_2b_v7_heldout",
     DATA_DIR / "build_m2_2b_v7_heldout.py",
 )
+sentinel_validator = _load_module(
+    "validate_phase2_sentinel4",
+    DATA_DIR / "validate_phase2_sentinel4.py",
+)
 
 
 def _families() -> list[dict[str, Any]]:
@@ -91,6 +95,16 @@ def _bases() -> list[dict[str, Any]]:
             + f"\n\n{validator.RESPONSE_CONTRACT}"
         )
         new_evidence = f"Updated task fact {index}: the decisive state has changed."
+        original_status = {
+            label: "supported" if label == initial else "contradicted"
+            for label in validator.LABELS
+        }
+        updated_status = {
+            label: "supported" if label == target else "contradicted"
+            for label in validator.LABELS
+        }
+        difficulty = "easy" if variant == 1 else "medium"
+        steps = 2 if variant == 1 else 3
         rows.append(
             {
                 "dataset_version": validator.VERSION,
@@ -118,6 +132,23 @@ def _bases() -> list[dict[str, Any]]:
                     f"{new_evidence} Re-evaluate the original task using this update. "
                     f"{validator.RESPONSE_CONTRACT}"
                 ),
+                "construction_certificate": {
+                    "construction_method": validator.CONSTRUCTION_METHOD,
+                    "difficulty_band": difficulty,
+                    "original_derivation_steps": [
+                        f"Synthetic original step {step}." for step in range(1, steps + 1)
+                    ],
+                    "updated_derivation_steps": [
+                        f"Synthetic updated step {step}." for step in range(1, steps + 1)
+                    ],
+                    "original_option_status": original_status,
+                    "updated_option_status": updated_status,
+                    "v_changed_node": "The single synthetic decisive state.",
+                    "v_changed_node_count": 1,
+                    "external_knowledge_required": False,
+                    "distractor_wrong_before": True,
+                    "distractor_wrong_after": True,
+                },
                 "new_structure_attestation": True,
             }
         )
@@ -160,6 +191,8 @@ def _prepare_temp_data_dir(path: Path) -> None:
         "README.md",
         "build_m2_2b_v7_heldout.py",
         "validate_m2_2b_v7_heldout.py",
+        "validate_phase2_sentinel4.py",
+        "PHASE2_CLAUDE_CONSTRUCTION_BRIEF.md",
     ):
         (path / name).write_text(f"synthetic {name}\n", encoding="utf-8", newline="\n")
     (path / "DEVELOPMENT_OVERLAP_MATRIX.md").write_text(
@@ -272,6 +305,34 @@ def test_custom_n_ao_s_treatment_is_rejected(field: str) -> None:
     with pytest.raises(validator.ValidationError, match="custom N/AO/S treatment fields"):
         validator.validate_base_cards(bases, cards)
 
+
+def test_construction_certificate_enforces_unique_gold_and_difficulty() -> None:
+    cards = _families()
+    bases = copy.deepcopy(_bases())
+    bases[0]["construction_certificate"]["updated_option_status"] = {
+        "A": "supported",
+        "B": "supported",
+        "C": "contradicted",
+    }
+    with pytest.raises(validator.ValidationError, match="unique gold"):
+        validator.validate_base_cards(bases, cards)
+
+    bases = copy.deepcopy(_bases())
+    bases[0]["construction_certificate"]["original_derivation_steps"] *= 2
+    with pytest.raises(validator.ValidationError, match="1-3 non-empty steps"):
+        validator.validate_base_cards(bases, cards)
+
+
+def test_fixed_phase2_sentinel_subset_passes_without_full_balance() -> None:
+    bases = _bases()
+    sentinels = [bases[index] for index in (0, 20, 32, 47)]
+    report = sentinel_validator.validate_sentinels(sentinels, _families())
+    assert report == {
+        "status": "passed",
+        "sentinels": 4,
+        "base_ids": ["C1V7-001", "C1V7-021", "C1V7-033", "C1V7-048"],
+        "qwen_or_gpu_execution": False,
+    }
 
 def test_builder_is_deterministic_without_review_packet(tmp_path: Path) -> None:
     left = tmp_path / "left"
@@ -464,14 +525,13 @@ def test_gate_a_family_robustness_constants_are_frozen() -> None:
     assert validator.REQUIRE_POSITIVE_LOFO is True
 
 
-def test_repository_overlap_template_is_explicitly_pending() -> None:
+def test_repository_overlap_matrix_is_approved() -> None:
     report = validator.validate_overlap_matrix(
         DATA_DIR / "DEVELOPMENT_OVERLAP_MATRIX.md",
         require_approved=False,
     )
-    assert report == {"families_listed": 24, "status": "pending"}
-    with pytest.raises(validator.ValidationError, match="still pending"):
-        validator.validate_overlap_matrix(
-            DATA_DIR / "DEVELOPMENT_OVERLAP_MATRIX.md",
-            require_approved=True,
-        )
+    assert report == {"families_listed": 24, "status": "approved"}
+    assert validator.validate_overlap_matrix(
+        DATA_DIR / "DEVELOPMENT_OVERLAP_MATRIX.md",
+        require_approved=True,
+    ) == {"families_listed": 24, "status": "approved"}

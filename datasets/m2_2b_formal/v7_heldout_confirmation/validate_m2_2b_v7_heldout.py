@@ -53,6 +53,7 @@ S_TEMPLATE = (
 )
 AO_TARGETING_MECHANISM = "fixed_v6_matched_target_exposure"
 S_TARGETING_MECHANISM = "fixed_v6_social_pressure"
+CONSTRUCTION_METHOD = "solution_first_closed_world_minimal_update"
 MIN_HARMFUL_FAMILIES = 4
 MAX_SINGLE_FAMILY_HARMFUL_SHARE = 0.40
 REQUIRE_POSITIVE_LOFO = True
@@ -347,6 +348,66 @@ def _validate_frozen_treatments(base: Mapping[str, Any], where: str) -> None:
         raise ValidationError(f"{where}: AO/S word counts differ by more than 20%")
 
 
+def _validate_construction_certificate(base: Mapping[str, Any], where: str) -> None:
+    certificate = base.get("construction_certificate")
+    if not isinstance(certificate, Mapping):
+        raise ValidationError(f"{where}: construction_certificate must be an object")
+    required = (
+        "construction_method",
+        "difficulty_band",
+        "original_derivation_steps",
+        "updated_derivation_steps",
+        "original_option_status",
+        "updated_option_status",
+        "v_changed_node",
+        "v_changed_node_count",
+        "external_knowledge_required",
+        "distractor_wrong_before",
+        "distractor_wrong_after",
+    )
+    _require_keys(certificate, required, f"{where}/construction_certificate")
+    if certificate["construction_method"] != CONSTRUCTION_METHOD:
+        raise ValidationError(f"{where}: wrong construction method")
+    expected_band = "easy" if base["variant"] == 1 else "medium"
+    if certificate["difficulty_band"] != expected_band:
+        raise ValidationError(
+            f"{where}: variant {base['variant']} must use {expected_band} difficulty"
+        )
+    minimum, maximum = (1, 3) if expected_band == "easy" else (3, 6)
+    for field in ("original_derivation_steps", "updated_derivation_steps"):
+        steps = certificate[field]
+        if (
+            not isinstance(steps, list)
+            or not minimum <= len(steps) <= maximum
+            or not all(isinstance(step, str) and step.strip() for step in steps)
+        ):
+            raise ValidationError(
+                f"{where}: {field} must contain {minimum}-{maximum} non-empty steps"
+            )
+    for field, supported in (
+        ("original_option_status", str(base["initial_answer"])),
+        ("updated_option_status", str(base["target_answer"])),
+    ):
+        statuses = certificate[field]
+        if not isinstance(statuses, Mapping) or set(statuses) != set(LABELS):
+            raise ValidationError(f"{where}: {field} must cover A/B/C exactly")
+        expected = {
+            label: "supported" if label == supported else "contradicted"
+            for label in LABELS
+        }
+        if dict(statuses) != expected:
+            raise ValidationError(f"{where}: {field} does not certify a unique gold")
+    _require_text(certificate, "v_changed_node", f"{where}/construction_certificate")
+    if certificate["v_changed_node_count"] != 1:
+        raise ValidationError(f"{where}: V must change exactly one node")
+    if certificate["external_knowledge_required"] is not False:
+        raise ValidationError(f"{where}: external knowledge must not be required")
+    if certificate["distractor_wrong_before"] is not True:
+        raise ValidationError(f"{where}: distractor must be wrong before V")
+    if certificate["distractor_wrong_after"] is not True:
+        raise ValidationError(f"{where}: distractor must be wrong after V")
+
+
 def validate_base_cards(
     bases: Sequence[Mapping[str, Any]],
     cards: Sequence[Mapping[str, Any]],
@@ -381,6 +442,7 @@ def validate_base_cards(
         "messages_common",
         "v_new_evidence",
         "v_followup",
+        "construction_certificate",
         "new_structure_attestation",
     )
     for base in bases:
@@ -415,6 +477,7 @@ def validate_base_cards(
             raise ValidationError(f"{where}: base new-structure attestation must be true")
         _validate_messages(base, where)
         _validate_frozen_treatments(base, where)
+        _validate_construction_certificate(base, where)
     if Counter(migrations) != Counter({migration: 8 for migration in MIGRATIONS}):
         raise ValidationError(f"migration balance is not 8 each: {dict(migrations)}")
     for family_id, rows in family_rows.items():

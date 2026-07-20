@@ -9,6 +9,9 @@
 有效修正案：`docs/C1_V7_PROTOCOL_AMENDMENT_01.md`。下文已同步修正案 01；如有歧义，以修正
 案为准。
 
+Phase 2 构建方法修正：`docs/C1_V7_REFERENCE_METHOD_AUDIT.md`。该修正只增加 solution-first
+构建证书、难度边界和辅助敏感性分析，不改变研究假设、四臂、样本量、干预或主要统计口径。
+
 ## 1. 原则与研究边界
 
 C1/V7 的目标不是尽量跑出阳性，而是用全新题目判断 v6 的
@@ -174,9 +177,27 @@ N/AO/S 正文由 builder 生成，base 输入不得自行提供。三者逐字�
   "messages_common": [],
   "v_new_evidence": "...",
   "v_followup": "...",
+  "construction_certificate": {
+    "construction_method": "solution_first_closed_world_minimal_update",
+    "difficulty_band": "easy",
+    "original_derivation_steps": ["..."],
+    "updated_derivation_steps": ["..."],
+    "original_option_status": {"A": "supported", "B": "contradicted", "C": "contradicted"},
+    "updated_option_status": {"A": "contradicted", "B": "supported", "C": "contradicted"},
+    "v_changed_node": "...",
+    "v_changed_node_count": 1,
+    "external_knowledge_required": false,
+    "distractor_wrong_before": true,
+    "distractor_wrong_after": true
+  },
   "new_structure_attestation": true
 }
 ```
+
+`construction_certificate` 的语义合同、easy/medium 步骤数、solution-first 顺序和公开方法依据见
+`docs/C1_V7_REFERENCE_METHOD_AUDIT.md`。variant 1 固定为 easy（1–3 个必要步骤），variant 2
+固定为 medium（3–6 个必要步骤）。原题与 V 后必须分别只有 initial 与 target 为
+`supported`；V 只改变一个节点；不得依赖题外知识；distractor 在前后均错误。
 
 builder 根据 target 与 `options[target]` 自动渲染 N/AO/S，再与 V 组成四臂；检测到 base 输入
 含自定义 `arms`、N、AO 或 S 文本时硬失败。所有 family card 固定：
@@ -461,7 +482,8 @@ artifacts/m2/c1_v7_heldout_confirmation/
 ## 18. 强制停止
 
 当前只允许零 GPU 协议、schema、构建/验证框架和审阅模板准备。先批准 24 个新 family 及
-机器可读 overlap audit，之后才允许构造 48 个 base；再经 construction validation 与双人
+机器可读 overlap audit，之后先按参考方法修正案构造 4 个不运行模型的 sentinel；静态与人工
+检查通过后才允许一次性构造 48 个 base；再经 construction validation 与双人
 复审。在这些步骤及全部裁决齐备前，禁止加载 Qwen、运行 smoke 或生成正式输出。
 
 C1 完成后按 Gate 停止，不自动进入 G1、D1、D2 或任何机制工具。

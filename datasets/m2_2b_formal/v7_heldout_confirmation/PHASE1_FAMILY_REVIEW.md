@@ -12,6 +12,10 @@
 
 这里的 `approved` 表示数据负责人阶段的结构审核，不等于后续两名独立审核者对 base 内容的盲审通过。
 
+公开方法复审完成后，24 张 card 仍全部保留；Phase 2 改用 solution-first 构建证书与 easy/medium
+步骤边界。依据见 `docs/C1_V7_REFERENCE_METHOD_AUDIT.md`，执行合同见
+`PHASE2_CLAUDE_CONSTRUCTION_BRIEF.md`。这项修正不改变 family 名册和已绑定的 overlap hash。
+
 ## 重点风险 family
 
 下列 family 获准进入 Phase 2，但实例化时必须优先复核。若违反护栏，应删除该实例或退回 Phase 1 改卡，不能只换叙事表面。
@@ -43,8 +47,9 @@
 
 Phase 2 必须按下列顺序推进：
 
-1. 48 个 base 全部由当前 24 张卡实例化；development overlap 自动审计和作者 construction audit 通过。
-2. 冻结 builder 确定性展开 192 arms，验证每臂数量、迁移平衡、AO/S 纯度、base/dataset hash 与重复构建一致性。
-3. construction review 通过后才生成两份空白 blind review pack；private key 不得提交。
-4. 两名独立审核者完成准确性、唯一 gold、V 有效性、AO/S 纯度审核；一致率、Cohen's κ 和各自 gold accuracy 达到冻结门槛。
-5. 最终标签与逐题 base hash、完整 dataset hash 一致后才可 freeze；在此之前不得运行 Qwen 或 capping。
+1. 先构建固定 4 个 sentinel，检查 schema、唯一 gold、V 单节点更新与构建证书；不运行模型。
+2. sentinel 获数据负责人批准后，48 个 base 全部由当前 24 张卡一次性实例化；development overlap 自动审计和作者 construction audit 通过。
+3. 冻结 builder 确定性展开 192 arms，验证每臂数量、迁移平衡、AO/S 纯度、base/dataset hash 与重复构建一致性。
+4. construction review 通过后才生成两份空白 blind review pack；private key 不得提交。
+5. 两名独立审核者完成准确性、唯一 gold、V 有效性、AO/S 纯度审核；一致率、Cohen's κ 和各自 gold accuracy 达到冻结门槛。
+6. 最终标签与逐题 base hash、完整 dataset hash 一致后才可 freeze；在此之前不得运行 Qwen 或 capping。
