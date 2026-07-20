@@ -15,13 +15,19 @@ from pathlib import Path
 from typing import Any
 
 from validate_m2_2b_v7_heldout import (
+    MAX_SINGLE_FAMILY_HARMFUL_SHARE,
+    MIN_HARMFUL_FAMILIES,
+    REQUIRE_POSITIVE_LOFO,
     REVIEW_COLUMNS,
     VERSION,
+    canonical_sha256,
     expand_arms,
     load_jsonl,
+    render_frozen_arms,
     validate_base_cards,
     validate_family_cards,
     validate_flat_arms,
+    validate_overlap_audit,
     validate_overlap_matrix,
 )
 
@@ -174,7 +180,7 @@ def _blind_id(salt: bytes, base_id: str) -> str:
 
 
 def _review_row(base: dict[str, Any], blind_id: str) -> dict[str, str]:
-    arms = base["arms"]
+    arms = render_frozen_arms(base)
     return {
         "blind_item_id": blind_id,
         "original_user": base["messages_common"][1]["content"],
@@ -199,6 +205,18 @@ def _write_review_csv(path: Path, rows: list[dict[str, str]]) -> None:
 def prepare_review_packets(output_dir: Path, bases: list[dict[str, Any]]) -> dict[str, Any]:
     private_dir = output_dir / "private"
     private_dir.mkdir(parents=True, exist_ok=True)
+    protected_outputs = (
+        output_dir / "blind_review_a.csv",
+        output_dir / "blind_review_b.csv",
+        output_dir / "adjudication_template.csv",
+        private_dir / "blind_review_key.jsonl",
+    )
+    existing = [path for path in protected_outputs if path.exists()]
+    if existing:
+        raise RuntimeError(
+            "refusing to overwrite an existing review packet: "
+            + ", ".join(str(path) for path in existing)
+        )
     salt_path = private_dir / "review_salt.txt"
     if salt_path.exists():
         salt = bytes.fromhex(salt_path.read_text(encoding="utf-8").strip())
@@ -209,6 +227,7 @@ def prepare_review_packets(output_dir: Path, bases: list[dict[str, Any]]) -> dic
         (_blind_id(salt, base["base_id"]), base)
         for base in sorted(bases, key=lambda value: value["base_id"])
     ]
+    dataset_hash = sha256(output_dir / "m2_2b_v7_heldout48_base.jsonl")
     key_rows = [
         {
             "blind_item_id": blind_id,
@@ -217,6 +236,8 @@ def prepare_review_packets(output_dir: Path, bases: list[dict[str, Any]]) -> dic
             "initial_answer": base["initial_answer"],
             "target_answer": base["target_answer"],
             "distractor_answer": base["distractor_answer"],
+            "base_content_sha256": canonical_sha256(base),
+            "dataset48_sha256": dataset_hash,
         }
         for blind_id, base in keyed
     ]
@@ -254,6 +275,8 @@ def prepare_review_packets(output_dir: Path, bases: list[dict[str, Any]]) -> dic
     return {
         "review_salt_sha256": sha256(salt_path),
         "blind_key_sha256": sha256(private_dir / "blind_review_key.jsonl"),
+        "dataset48_sha256": dataset_hash,
+        "base_content_hashes_bound": 48,
         "review_a_sha256": sha256(output_dir / "blind_review_a.csv"),
         "review_b_sha256": sha256(output_dir / "blind_review_b.csv"),
         "adjudication_template_sha256": sha256(adjudication),
@@ -274,6 +297,11 @@ def build(
     family_report = validate_family_cards(cards, require_approved=True)
     overlap_report = validate_overlap_matrix(
         data_dir / "DEVELOPMENT_OVERLAP_MATRIX.md",
+        require_approved=True,
+    )
+    overlap_audit_report = validate_overlap_audit(
+        data_dir / "development_overlap_audit24.jsonl",
+        cards,
         require_approved=True,
     )
     base_report = validate_base_cards(
@@ -297,6 +325,7 @@ def build(
         "family_cards24.jsonl",
         "FAMILY_BLUEPRINT.md",
         "DEVELOPMENT_OVERLAP_MATRIX.md",
+        "development_overlap_audit24.jsonl",
         "m2_2b_v7_heldout48_base.jsonl",
         "m2_2b_v7_heldout192_arms.jsonl",
         "construction_audit48.jsonl",
@@ -324,11 +353,17 @@ def build(
         "family_report": family_report,
         "base_report": base_report,
         "structural_overlap_review": overlap_report,
+        "structural_overlap_audit": overlap_audit_report,
         "arm_rows": len(rows),
         "leakage": leakage,
         "human_review": review,
         "qwen_or_gpu_execution": False,
         "model_outputs_exist": False,
+        "gate_a_family_robustness": {
+            "min_harmful_families": MIN_HARMFUL_FAMILIES,
+            "max_single_family_harmful_share": MAX_SINGLE_FAMILY_HARMFUL_SHARE,
+            "require_positive_leave_one_family_out": REQUIRE_POSITIVE_LOFO,
+        },
         "files": files,
     }
     write_json(data_dir / "manifest.json", manifest)

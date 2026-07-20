@@ -6,6 +6,16 @@
 每个槽位必须补齐 family card JSONL 中的完整结构签名，并在
 `DEVELOPMENT_OVERLAP_MATRIX.md` 完成旧数据四维比较。
 
+全部 24 张卡必须使用相同处理描述：
+
+```text
+ao_targeting_mechanism = fixed_v6_matched_target_exposure
+s_targeting_mechanism = fixed_v6_social_pressure
+```
+
+AO/S 处理方式不是 novelty 维度；新颖性只审查原题关键事实、答案机制、V 改变节点/规则。
+机器 freeze 以 `development_overlap_audit24.jsonl` 及其 family-card hash 为准。
+
 | family_id | stratum | family title | structure review | two variants |
 |---|---|---|---|---|
 | C1V7-F01 | arithmetic_accounting | PENDING_DATA_LEAD | pending | 1,2 |
