@@ -113,6 +113,10 @@ C1V7-033 -> C1V7-F17 variant 1
 C1V7-048 -> C1V7-F24 variant 2
 ```
 
+F17 另有一项已冻结的逻辑修复：V 必须替换一名 agent 的**完整 allowed-item record**，并把该
+完整记录视为唯一 changed node；不能只增加或删除一条允许边。证明与修订范围见
+`PHASE1_1_F17_LOGIC_REPAIR.md`。
+
 ## 难度与可读性
 
 - variant 1：`easy`，1–3 个必要推理步骤；

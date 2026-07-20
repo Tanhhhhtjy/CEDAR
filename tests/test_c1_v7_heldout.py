@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import csv
 import importlib.util
+import itertools
 import json
 import sys
 from pathlib import Path
@@ -193,6 +194,7 @@ def _prepare_temp_data_dir(path: Path) -> None:
         "validate_m2_2b_v7_heldout.py",
         "validate_phase2_sentinel4.py",
         "PHASE2_CLAUDE_CONSTRUCTION_BRIEF.md",
+        "PHASE1_1_F17_LOGIC_REPAIR.md",
     ):
         (path / name).write_text(f"synthetic {name}\n", encoding="utf-8", newline="\n")
     (path / "DEVELOPMENT_OVERLAP_MATRIX.md").write_text(
@@ -535,3 +537,26 @@ def test_repository_overlap_matrix_is_approved() -> None:
         DATA_DIR / "DEVELOPMENT_OVERLAP_MATRIX.md",
         require_approved=True,
     ) == {"families_listed": 24, "status": "approved"}
+
+
+def test_f17_uses_atomic_record_replacement_and_has_a_feasible_witness() -> None:
+    cards = validator.load_jsonl(DATA_DIR / "family_cards24.jsonl")
+    card = next(value for value in cards if value["family_id"] == "C1V7-F17")
+    assert "complete allowed-item set" in card["v_changed_node"]
+    assert "single updated record node" in card["v_changed_node"]
+    assert "one allowed edge" not in card["v_changed_node"]
+
+    agents = ("A", "B", "C")
+    items = ("1", "2", "3")
+    before = {"A": {"1"}, "B": {"1", "2"}, "C": {"2", "3"}}
+    after = {**before, "A": {"3"}}
+
+    def matchings(graph: dict[str, set[str]]) -> list[tuple[str, ...]]:
+        return [
+            assignment
+            for assignment in itertools.permutations(items)
+            if all(item in graph[agent] for agent, item in zip(agents, assignment, strict=True))
+        ]
+
+    assert matchings(before) == [("1", "2", "3")]
+    assert matchings(after) == [("3", "1", "2")]

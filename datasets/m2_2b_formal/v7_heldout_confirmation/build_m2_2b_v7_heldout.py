@@ -337,6 +337,7 @@ def build(
         "validate_m2_2b_v7_heldout.py",
         "validate_phase2_sentinel4.py",
         "PHASE2_CLAUDE_CONSTRUCTION_BRIEF.md",
+        "PHASE1_1_F17_LOGIC_REPAIR.md",
     )
     if prepare_review:
         hashed_names = (

@@ -22,7 +22,7 @@
 | C1V7-F14 | axis_permutation; sensor_scope | yes | yes | yes | approved | exact protocol-port tuple lookup |
 | C1V7-F15 | parity_gate; eligibility_class | yes | yes | yes | approved | componentwise bitmask then lookup |
 | C1V7-F16 | counter_rollover; synchronization | yes | yes | yes | approved | finite nth-weekday computation |
-| C1V7-F17 | exclusive_partition; reachability | yes | yes | yes | approved | global bijective matching |
+| C1V7-F17 | exclusive_partition; reachability | yes | yes | yes | approved | global bijective matching after one atomic allowance-record replacement |
 | C1V7-F18 | boundary_inclusivity; reachability | yes | yes | yes | approved | interval-relation composition |
 | C1V7-F19 | eligibility_class; exactly_k | yes | yes | yes | approved | weighted quorum plus independent veto |
 | C1V7-F20 | reachability; adjustment_order | yes | yes | yes | approved | maximum weighted path in a DAG |

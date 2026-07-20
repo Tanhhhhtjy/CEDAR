@@ -16,6 +16,10 @@
 步骤边界。依据见 `docs/C1_V7_REFERENCE_METHOD_AUDIT.md`，执行合同见
 `PHASE2_CLAUDE_CONSTRUCTION_BRIEF.md`。这项修正不改变 family 名册和已绑定的 overlap hash。
 
+Phase 1.1 反证审计随后发现 F17 的原“单边增删”迁移不可能实现，已最小修订为原子替换一名
+agent 的完整 allowed-item record，并重新绑定 F17 hash。证明与批准范围见
+`PHASE1_1_F17_LOGIC_REPAIR.md`；其余 23 张 card 未变。
+
 ## 重点风险 family
 
 下列 family 获准进入 Phase 2，但实例化时必须优先复核。若违反护栏，应删除该实例或退回 Phase 1 改卡，不能只换叙事表面。
@@ -28,7 +32,7 @@
 | C1V7-F09 | 可能退化为 selector/priority 题 | 优先级必须由最长前缀机械产生；不得额外给出版本选择器或优先边 |
 | C1V7-F10 | 可能退化为旧 version-selector 题 | 比较对象本身的 semantic version；不得问“哪一版规则生效” |
 | C1V7-F15 | 可能退化为 parity/eligibility 题 | 保留逐位 mask 与精确 pattern lookup；不得把结果化简为奇偶性或集合成员计数 |
-| C1V7-F17 | 可能退化为 partition/reachability 题 | 必须求全局一一匹配；不得只问单条路径或单个类别归属 |
+| C1V7-F17 | 可能退化为 partition/reachability 题，且单边增删无法实现唯一匹配迁移 | 必须求全局一一匹配；V 只能把一名 agent 的完整 allowed-item record 作为单个原子记录替换，其他行保持不变；不得改写成单边增删 |
 | C1V7-F18 | 可能退化为 boundary/reachability 题 | 必须先推导两个区间，再判关系；不得以端点是否计入作为唯一难点 |
 | C1V7-F20 | 可能退化为 directed reachability 题 | 图的连通性保持不变；答案由最大加权路径决定，V 只更正 duration |
 | C1V7-F24 | 可能退化为 rule directionality/reachability 题 | 必须计算属性集合的固定点 closure 并检查 key minimality；不得只验证单条蕴含 |

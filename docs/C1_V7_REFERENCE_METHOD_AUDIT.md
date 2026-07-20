@@ -121,6 +121,11 @@
 
 本次审计改变的是 Phase 2 的实例化合同，而不是 Phase 1 的 family 名册。
 
+2026-07-21 的构建前反证检查发现 F17 原卡中“唯一完美匹配 + 单边增删 + 迁移到另一个唯一
+完美匹配”不可同时成立。F17 已做最小修复：V 原子替换一名 agent 的完整 allowance record，
+而非增删一条边；family 的全局一一匹配构念、其余 23 张卡和四臂均不变。证明、见证实例和
+重新绑定信息见 `datasets/m2_2b_formal/v7_heldout_confirmation/PHASE1_1_F17_LOGIC_REPAIR.md`。
+
 ## 4. Phase 2 新增的逐题构建合同
 
 每个 base 必须使用 `solution_first_closed_world_minimal_update` 方法，并提供机器可检查的 `construction_certificate`：
