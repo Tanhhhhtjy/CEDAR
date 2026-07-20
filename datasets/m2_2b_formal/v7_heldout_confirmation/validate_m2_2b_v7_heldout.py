@@ -985,6 +985,66 @@ def validate_overlap_matrix(path: Path, *, require_approved: bool) -> dict[str, 
     return {"families_listed": 24, "status": "pending" if pending else "approved"}
 
 
+def validate_family_feasibility_audit(
+    path: Path,
+    cards: Sequence[Mapping[str, Any]],
+) -> dict[str, Any]:
+    rows = load_jsonl(path)
+    card_by_id = {str(card["family_id"]): card for card in cards}
+    row_by_id = {str(row.get("family_id")): row for row in rows}
+    if len(rows) != 24 or len(row_by_id) != 24 or set(row_by_id) != set(card_by_id):
+        raise ValidationError("family feasibility audit must cover all 24 families once")
+    required = (
+        "family_id",
+        "family_card_sha256",
+        "original_witness",
+        "updated_witness",
+        "changed_node",
+        "original_answer",
+        "updated_answer",
+        "verification_method",
+        "original_unique",
+        "updated_unique",
+        "target_differs",
+        "changed_node_count",
+        "decision",
+        "rationale",
+    )
+    methods = {"exhaustive_enumeration", "independent_calculation", "formal_derivation"}
+    for family_id, card in card_by_id.items():
+        row = row_by_id[family_id]
+        where = f"feasibility-audit/{family_id}"
+        _require_keys(row, required, where)
+        if row["family_card_sha256"] != canonical_sha256(card):
+            raise ValidationError(f"{where}: family-card hash mismatch")
+        for field in (
+            "original_witness",
+            "updated_witness",
+            "changed_node",
+            "original_answer",
+            "updated_answer",
+            "rationale",
+        ):
+            _require_text(row, field, where)
+        if row["original_answer"] == row["updated_answer"]:
+            raise ValidationError(f"{where}: original and updated answers must differ")
+        if row["verification_method"] not in methods:
+            raise ValidationError(f"{where}: invalid verification method")
+        for field in ("original_unique", "updated_unique", "target_differs"):
+            if row[field] is not True:
+                raise ValidationError(f"{where}: {field} must be true")
+        if row["changed_node_count"] != 1:
+            raise ValidationError(f"{where}: changed_node_count must be 1")
+        if row["decision"] != "feasible":
+            raise ValidationError(f"{where}: decision must be feasible")
+    return {
+        "families": 24,
+        "family_card_hashes_matched": 24,
+        "feasible": 24,
+        "status": "passed",
+    }
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -1023,6 +1083,10 @@ def main() -> None:
         require_approved=True,
     )
     if args.stage in {"construction", "freeze"}:
+        report["family_feasibility"] = validate_family_feasibility_audit(
+            args.data_dir / "family_feasibility_audit24.jsonl",
+            cards,
+        )
         bases_path = args.data_dir / "m2_2b_v7_heldout48_base.jsonl"
         bases = load_jsonl(bases_path)
         rows = load_jsonl(args.data_dir / "m2_2b_v7_heldout192_arms.jsonl")

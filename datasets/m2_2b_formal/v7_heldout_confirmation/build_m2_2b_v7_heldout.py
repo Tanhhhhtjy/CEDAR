@@ -26,6 +26,7 @@ from validate_m2_2b_v7_heldout import (
     render_frozen_arms,
     validate_base_cards,
     validate_family_cards,
+    validate_family_feasibility_audit,
     validate_flat_arms,
     validate_overlap_audit,
     validate_overlap_matrix,
@@ -35,6 +36,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = Path(__file__).resolve().parents[3]
 PROTOCOL = ROOT / "docs" / "C1_V7_HELDOUT_PROTOCOL.md"
 METHOD_AUDIT = ROOT / "docs" / "C1_V7_REFERENCE_METHOD_AUDIT.md"
+EXECUTION_RUNBOOK = ROOT / "docs" / "C1_V7_PHASE2_TO_CONFIRMATION_RUNBOOK.md"
 
 
 def sha256(path: Path) -> str:
@@ -306,6 +308,10 @@ def build(
         cards,
         require_approved=True,
     )
+    feasibility_report = validate_family_feasibility_audit(
+        data_dir / "family_feasibility_audit24.jsonl",
+        cards,
+    )
     base_report = validate_base_cards(
         bases,
         cards,
@@ -338,6 +344,11 @@ def build(
         "validate_phase2_sentinel4.py",
         "PHASE2_CLAUDE_CONSTRUCTION_BRIEF.md",
         "PHASE1_1_F17_LOGIC_REPAIR.md",
+        "phase2_sentinel4_draft.jsonl",
+        "PHASE2_SENTINEL_REVIEW.md",
+        "CODEX_SENTINEL_APPROVAL.md",
+        "family_feasibility_audit24.jsonl",
+        "PHASE2_FAMILY_FEASIBILITY_AUDIT.md",
     )
     if prepare_review:
         hashed_names = (
@@ -357,10 +368,13 @@ def build(
         "protocol_sha256": sha256(PROTOCOL),
         "construction_method_audit": str(METHOD_AUDIT.relative_to(ROOT)),
         "construction_method_audit_sha256": sha256(METHOD_AUDIT),
+        "execution_runbook": str(EXECUTION_RUNBOOK.relative_to(ROOT)),
+        "execution_runbook_sha256": sha256(EXECUTION_RUNBOOK),
         "family_report": family_report,
         "base_report": base_report,
         "structural_overlap_review": overlap_report,
         "structural_overlap_audit": overlap_audit_report,
+        "family_feasibility": feasibility_report,
         "arm_rows": len(rows),
         "leakage": leakage,
         "human_review": review,

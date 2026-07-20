@@ -187,6 +187,28 @@ def _prepare_temp_data_dir(path: Path) -> None:
             for card in families
         ],
     )
+    _write_jsonl(
+        path / "family_feasibility_audit24.jsonl",
+        [
+            {
+                "family_id": card["family_id"],
+                "family_card_sha256": validator.canonical_sha256(card),
+                "original_witness": f"Original witness for {card['family_id']}.",
+                "updated_witness": f"Updated witness for {card['family_id']}.",
+                "changed_node": f"One changed node for {card['family_id']}.",
+                "original_answer": "original",
+                "updated_answer": "updated",
+                "verification_method": "formal_derivation",
+                "original_unique": True,
+                "updated_unique": True,
+                "target_differs": True,
+                "changed_node_count": 1,
+                "decision": "feasible",
+                "rationale": f"Synthetic feasibility rationale for {card['family_id']}.",
+            }
+            for card in families
+        ],
+    )
     for name in (
         "FAMILY_BLUEPRINT.md",
         "README.md",
@@ -195,6 +217,10 @@ def _prepare_temp_data_dir(path: Path) -> None:
         "validate_phase2_sentinel4.py",
         "PHASE2_CLAUDE_CONSTRUCTION_BRIEF.md",
         "PHASE1_1_F17_LOGIC_REPAIR.md",
+        "phase2_sentinel4_draft.jsonl",
+        "PHASE2_SENTINEL_REVIEW.md",
+        "CODEX_SENTINEL_APPROVAL.md",
+        "PHASE2_FAMILY_FEASIBILITY_AUDIT.md",
     ):
         (path / name).write_text(f"synthetic {name}\n", encoding="utf-8", newline="\n")
     (path / "DEVELOPMENT_OVERLAP_MATRIX.md").write_text(
@@ -560,3 +586,22 @@ def test_f17_uses_atomic_record_replacement_and_has_a_feasible_witness() -> None
 
     assert matchings(before) == [("1", "2", "3")]
     assert matchings(after) == [("3", "1", "2")]
+
+
+def test_family_feasibility_audit_is_complete_and_hash_bound(tmp_path: Path) -> None:
+    data_dir = tmp_path / "data"
+    _prepare_temp_data_dir(data_dir)
+    cards = validator.load_jsonl(data_dir / "family_cards24.jsonl")
+    path = data_dir / "family_feasibility_audit24.jsonl"
+    assert validator.validate_family_feasibility_audit(path, cards) == {
+        "families": 24,
+        "family_card_hashes_matched": 24,
+        "feasible": 24,
+        "status": "passed",
+    }
+
+    rows = validator.load_jsonl(path)
+    rows[0]["family_card_sha256"] = "0" * 64
+    _write_jsonl(path, rows)
+    with pytest.raises(validator.ValidationError, match="family-card hash mismatch"):
+        validator.validate_family_feasibility_audit(path, cards)

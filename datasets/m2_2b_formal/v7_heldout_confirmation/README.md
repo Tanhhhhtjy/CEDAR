@@ -1,10 +1,12 @@
 # C1/V7 held-out confirmation dataset intake
 
-状态：`phase1_approved_awaiting_phase2_sentinel4`。
+状态：`sentinel4_approved_awaiting_full48_construction`。
 
 24 张 family card、结构 overlap matrix 与机器可读审计已获数据负责人批准并通过 intake gate。
-当前不含 48 个 base、192 个 arm、人工审核结果或任何模型输出。下一步不是直接运行 Qwen，
-而是按 `PHASE2_CLAUDE_CONSTRUCTION_BRIEF.md` 先构建 4 个零 GPU sentinel。
+四条零 GPU sentinel 已构建并经 Codex 独立复算批准。当前仍不含完整 48 个 base、192 个 arm、
+人工审核结果或任何模型输出。下一步按 `docs/C1_V7_PHASE2_TO_CONFIRMATION_RUNBOOK.md` 构建
+剩余 44 条，并原样保留四条 sentinel。正式出题前先完成手册 A0 的 24/24 family 可实现性
+见证审计；这一步仍为零 GPU，不得使用模型行为筛题。
 
 冻结协议见 `docs/C1_V7_HELDOUT_PROTOCOL.md`。在以下条件全部满足前禁止运行 Qwen：
 
@@ -19,6 +21,10 @@
 
 公开方法审计与 Phase 2 构建修正见 `docs/C1_V7_REFERENCE_METHOD_AUDIT.md`。Claude 的逐项执行
 合同见本目录 `PHASE2_CLAUDE_CONSTRUCTION_BRIEF.md`。
+
+sentinel 作者报告见 `PHASE2_SENTINEL_REVIEW.md`，独立批准与 canonical hash 见
+`CODEX_SENTINEL_APPROVAL.md`。从完整构建、盲审、freeze 到确认实验的连续执行手册见
+`docs/C1_V7_PHASE2_TO_CONFIRMATION_RUNBOOK.md`。
 
 ## 数据负责人输入
 
