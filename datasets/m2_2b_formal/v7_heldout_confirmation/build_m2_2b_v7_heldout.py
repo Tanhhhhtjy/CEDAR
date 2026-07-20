@@ -350,6 +350,16 @@ def build(
         "family_feasibility_audit24.jsonl",
         "PHASE2_FAMILY_FEASIBILITY_AUDIT.md",
     )
+    optional_hashed_names = (
+        "author_m2_2b_v7_full48.py",
+        "verify_phase2_full48_solutions.py",
+        "write_phase2_construction_review.py",
+        "PHASE2_CONSTRUCTION_REVIEW.md",
+    )
+    hashed_names = (
+        *hashed_names,
+        *(name for name in optional_hashed_names if (data_dir / name).is_file()),
+    )
     if prepare_review:
         hashed_names = (
             *hashed_names,
