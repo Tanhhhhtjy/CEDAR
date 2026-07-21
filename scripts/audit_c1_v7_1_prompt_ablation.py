@@ -34,6 +34,28 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT_ROOT = ROOT / "artifacts" / "m2" / "c1_v7_1_prompt_cue_ablation"
 
 
+def p25_cap_stats_complete(row: Mapping[str, Any]) -> bool:
+    stats = row.get("cap_stats")
+    if not isinstance(stats, Mapping):
+        return False
+    by_layer = stats.get("by_layer")
+    if not isinstance(by_layer, Mapping):
+        return False
+    layer_keys = {str(layer) for layer in LAYERS}
+    return (
+        set(by_layer) == layer_keys
+        and all(
+            isinstance(by_layer[str(layer)], Mapping)
+            and int(by_layer[str(layer)].get("total_positions", 0)) > 0
+            for layer in LAYERS
+        )
+        and all(
+            float(by_layer[str(layer)].get("projection_correction_sum", -1.0)) >= 0.0
+            for layer in LAYERS
+        )
+    )
+
+
 def audit_smoke(root: Path) -> dict[str, Any]:
     nohook = load_phase(root, "smoke-nohook", 3)
     monitor = load_phase(root, "smoke-monitor", 3)
@@ -70,10 +92,9 @@ def audit_smoke(root: Path) -> dict[str, Any]:
             for row in [*nohook["results"], *monitor["results"], *capped["results"]]
         ),
     }
-    stats = capped["results"][0].get("cap_stats")
-    checks["p25_stats_complete_layers_46_53"] = isinstance(stats, Mapping) and set(stats) == {
-        str(layer) for layer in LAYERS
-    }
+    checks["p25_stats_complete_layers_46_53"] = all(
+        p25_cap_stats_complete(row) for row in capped["results"]
+    )
     failures = [name for name, passed in checks.items() if not passed]
     return {
         "status": "passed" if not failures else "failed",

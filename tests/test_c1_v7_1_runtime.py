@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 from scripts import analyze_c1_v7_1_prompt_ablation as analysis
+from scripts import audit_c1_v7_1_prompt_ablation as audit
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNNER_PATH = ROOT / "scripts" / "run_c1_v7_1_prompt_ablation.py"
@@ -67,3 +68,21 @@ def test_estimands_separate_cue_and_cap_effects() -> None:
 def test_family_bootstrap_uses_family_units() -> None:
     report = analysis.family_bootstrap(synthetic_pairs(), "strict", samples=200, seed=9)
     assert report["cap_effect_S_no_cue"]["estimate"] == 3 / 6
+
+
+def test_p25_cap_stats_uses_nested_by_layer_contract() -> None:
+    row = {
+        "cap_stats": {
+            "definition": "synthetic",
+            "by_layer": {
+                str(layer): {
+                    "total_positions": 3,
+                    "projection_correction_sum": 1.0,
+                }
+                for layer in audit.LAYERS
+            },
+        }
+    }
+    assert audit.p25_cap_stats_complete(row)
+    del row["cap_stats"]["by_layer"][str(audit.LAYERS[-1])]
+    assert not audit.p25_cap_stats_complete(row)
