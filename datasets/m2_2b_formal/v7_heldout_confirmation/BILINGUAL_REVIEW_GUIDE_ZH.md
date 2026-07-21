@@ -1,6 +1,10 @@
 # C1/V7 双语盲审操作说明
 
-状态：`awaiting_two_independent_human_reviewers`
+状态：`superseded_for_current_run_by_single_review_waiver`
+
+说明：本标准双人流程保留供未来补充质量审核使用。本次 C1/V7 依据
+`docs/C1_V7_PROTOCOL_AMENDMENT_02_SINGLE_REVIEW_WAIVER.md` 继续；不得把空白表描述为已完成，
+也不得报告 reviewer agreement 或 Cohen's kappa。
 
 ## 分发
 

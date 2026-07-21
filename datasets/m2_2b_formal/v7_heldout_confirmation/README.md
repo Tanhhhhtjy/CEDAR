@@ -1,12 +1,17 @@
 # C1/V7 held-out confirmation dataset intake
 
-状态：`sentinel4_approved_awaiting_full48_construction`。
+> 当前执行状态：数据负责人报告已完整查看 48 张双语 base card 且未发现问题，但未填写逐题
+> 标签，也没有第二名独立审核者。本次运行由
+> `docs/C1_V7_PROTOCOL_AMENDMENT_02_SINGLE_REVIEW_WAIVER.md` 透明豁免原双人门槛；标准双人
+> 审核包保留但不得记为完成。运行前必须通过
+> `python scripts/validate_c1_v7_single_review_waiver.py`。
 
-24 张 family card、结构 overlap matrix 与机器可读审计已获数据负责人批准并通过 intake gate。
-四条零 GPU sentinel 已构建并经 Codex 独立复算批准。当前仍不含完整 48 个 base、192 个 arm、
-人工审核结果或任何模型输出。下一步按 `docs/C1_V7_PHASE2_TO_CONFIRMATION_RUNBOOK.md` 构建
-剩余 44 条，并原样保留四条 sentinel。正式出题前先完成手册 A0 的 24/24 family 可实现性
-见证审计；这一步仍为零 GPU，不得使用模型行为筛题。
+状态：`full48_frozen_under_single_review_waiver_awaiting_runner`。
+
+24 张 family card、48 个 base、192 个 arm、结构 overlap matrix 与机器可读审计均已完成。
+数据负责人报告已整体检查 48 张双语 base card且未发现问题；没有逐题标签、第二审核者或一致率。
+当前没有任何 C1/V7 模型输出。下一步先冻结 runner/auditor/analyzer，再运行工程 smoke；不得使用
+模型行为改题、删题或补题。
 
 冻结协议见 `docs/C1_V7_HELDOUT_PROTOCOL.md`。在以下条件全部满足前禁止运行 Qwen：
 
@@ -14,9 +19,9 @@
 2. `development_overlap_audit24.jsonl` 通过 24/24 card-hash 绑定与 novelty 硬检查；
 3. `DEVELOPMENT_OVERLAP_MATRIX.md` 完成人类可读说明；
 4. 48 个 base 完成并通过确定性展开与静态验证；
-5. 两位真实独立审核者分别完成审核；
-6. 所有分歧完成裁决且逐题最终标签满足可接受性合同；
-7. freeze validator 通过；
+5. 标准流程要求两位真实独立审核者；本次由修正案 02 的单人整体审核豁免替代，并强制披露缺失项；
+6. `scripts/validate_c1_v7_single_review_waiver.py` 通过且当前数据哈希不变；
+7. construction validator 与其余静态门槛通过；
 8. runner/auditor/analyzer 在之后的独立提交中冻结并通过测试。
 
 公开方法审计与 Phase 2 构建修正见 `docs/C1_V7_REFERENCE_METHOD_AUDIT.md`。Claude 的逐项执行

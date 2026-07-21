@@ -2,6 +2,9 @@
 
 状态：预注册、冻结；本文件必须在任何 C1/V7 Qwen 输出产生前提交。
 
+有效审核修正：`docs/C1_V7_PROTOCOL_AMENDMENT_02_SINGLE_REVIEW_WAIVER.md`。本次运行保留全部
+计算验证，但以单一数据负责人整体审核替代双人逐题盲审；不得报告双人一致率或 Cohen's kappa。
+
 日期：2026-07-20。
 
 起点提交：`a5936b31766acb4e255ef8d6d9504e9e4e26ec3d`。
