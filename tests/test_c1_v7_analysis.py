@@ -58,3 +58,59 @@ def test_transition_table_retains_other_wrong_and_invalid() -> None:
     table = analysis.transitions(pairs, "N", "strict")
     assert table["initial->other_wrong"] == 1
     assert table["initial->invalid_or_truncated"] == 1
+
+
+def test_telemetry_summary_reads_nested_cap_stats_by_layer() -> None:
+    pairs = [
+        {
+            "arm": "S",
+            "p25": {
+                "cap_stats": {
+                    "by_layer": {
+                        "46": {
+                            "total_positions": 10,
+                            "triggered_positions": 4,
+                            "projection_correction_sum": 2.5,
+                        },
+                        "47": {
+                            "total_positions": 10,
+                            "triggered_positions": 5,
+                            "projection_correction_sum": 3.5,
+                        },
+                    },
+                    "pooled": {"total_positions": 20},
+                    "definition": "synthetic nested cap stats",
+                }
+            },
+            "uncapped": {
+                "axis_telemetry": {
+                    "phases": {
+                        "prefill": {
+                            "reference_cap_exposure": {
+                                "p25": {
+                                    "46": {
+                                        "count": 3,
+                                        "triggered": 2,
+                                        "correction_sum": 1.25,
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+        }
+    ]
+    report = analysis.telemetry_summaries(pairs)
+    assert report["actual_p25"]["S"] == {
+        "total_positions": 20,
+        "triggered_positions": 9,
+        "trigger_rate": 0.45,
+        "correction_sum": 6.0,
+    }
+    assert report["uncapped_counterfactual_p25"]["S"]["prefill"] == {
+        "total_positions": 3,
+        "triggered_positions": 2,
+        "trigger_rate": 2 / 3,
+        "correction_sum": 1.25,
+    }

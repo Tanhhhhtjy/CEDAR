@@ -322,7 +322,12 @@ def telemetry_summaries(pairs: Sequence[Mapping[str, Any]]) -> dict[str, Any]:
                 continue
             stats = pair["p25"].get("cap_stats")
             if isinstance(stats, Mapping):
-                for layer in stats.values():
+                by_layer = stats.get("by_layer")
+                if not isinstance(by_layer, Mapping):
+                    continue
+                for layer in by_layer.values():
+                    if not isinstance(layer, Mapping):
+                        continue
                     actual_total += int(layer.get("total_positions", 0))
                     actual_triggered += int(layer.get("triggered_positions", 0))
                     actual_correction += float(layer.get("projection_correction_sum", 0.0))
@@ -466,4 +471,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
