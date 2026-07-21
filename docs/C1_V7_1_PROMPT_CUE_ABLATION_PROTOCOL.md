@@ -2,6 +2,10 @@
 
 状态：零 GPU 冻结；必须等待 C1/V7 完整结束后运行。
 
+零 GPU amendment：原始字节 SHA 会受 LF/CRLF 影响。根据
+`C1_V7_1_ZERO_GPU_AMENDMENT_01.md`，数据科学身份改用解析 JSON 行数组的规范化内容 SHA；
+原始文件 SHA 仅作诊断，不再作为跨平台硬闸。
+
 ## 1. 问题与目的
 
 C1/V7 的 N、AO、S 最后一轮都含有：
@@ -18,6 +22,7 @@ No new task information is supplied.
 ## 2. 冻结变换
 
 - 来源：V7 冻结的 192-arm 文件，SHA-256 `847f5df9eeffc2ecd0a881b708f70b29abc4a3eacb2aa8ae39a9762c60211ffe`。
+- 来源规范化内容 SHA-256：`a25577a3e6dcd117254efebe44fcd274307872410438461650d2a0f4137e1a15`。
 - 只取 N/AO/S，共 144 条。
 - 每条只删除上述完整英文句子一次。
 - 不替换为新措辞，不改变标点以外的任何字符，不改变 system、原题、初始回答、答案位置、target、gold 或 family。
@@ -25,6 +30,12 @@ No new task information is supplied.
 - 不查看 V7 行为结果后改题、改提示或筛题。
 
 输出为 48 base × N/AO/S = 144 条；uncapped 与 p25 共新增 288 次正式生成。
+
+V7.1 输出规范化内容 SHA-256：
+`f416d576407ff4e237554009b20458977ff4604116852a54986afbe593c9aa91`。
+同一内容的已知原始文件 SHA 为 LF
+`c712254afe7f3093763cad9a262a5000d94cedb6a435fe91348d842caf19774c`、CRLF
+`8c34262a76c0d956e92659975c800ed951355d02944cf706f2fb45a800b7f7fa`；两者不得被解释为不同数据集。
 
 ## 3. 模型与干预
 

@@ -18,6 +18,7 @@ from build_c1_v7_1_prompt_cue_ablation import (
     SOURCE,
     VERSION,
     file_sha256,
+    jsonl_content_sha256,
     object_sha256,
     read_jsonl,
 )
@@ -72,10 +73,10 @@ def validate(source_path: Path, output_path: Path, manifest_path: Path) -> dict[
         expected["messages"][-1]["content"] = source_final.replace(CUE, "", 1)
         if comparable(row) != comparable(expected):
             failures.append(f"{row['id']}:nonminimal_change")
-    if manifest.get("source_sha256") != file_sha256(source_path):
-        failures.append("manifest_source_hash")
-    if manifest.get("output_sha256") != file_sha256(output_path):
-        failures.append("manifest_output_hash")
+    if manifest.get("source_content_sha256") != jsonl_content_sha256(source_path):
+        failures.append("manifest_source_content_hash")
+    if manifest.get("output_content_sha256") != jsonl_content_sha256(output_path):
+        failures.append("manifest_output_content_hash")
     if manifest.get("other_prompt_edits") != 0:
         failures.append("manifest_other_edits")
     return {
@@ -85,8 +86,10 @@ def validate(source_path: Path, output_path: Path, manifest_path: Path) -> dict[
         "arms": Counter(row.get("arm") for row in rows),
         "bases": len({row.get("base_id") for row in rows}),
         "families": len({row.get("family_id") for row in rows}),
-        "source_sha256": file_sha256(source_path),
-        "output_sha256": file_sha256(output_path),
+        "source_content_sha256": jsonl_content_sha256(source_path),
+        "output_content_sha256": jsonl_content_sha256(output_path),
+        "source_file_sha256_diagnostic": file_sha256(source_path),
+        "output_file_sha256_diagnostic": file_sha256(output_path),
     }
 
 

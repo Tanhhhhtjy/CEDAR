@@ -39,6 +39,11 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
 
 
+def jsonl_content_sha256(path: Path) -> str:
+    """Hash parsed JSON rows, independent of LF/CRLF checkout policy."""
+    return object_sha256(read_jsonl(path))
+
+
 def build_rows(source_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     selected = [row for row in source_rows if row.get("arm") in ARMS]
     if len(selected) != 144:
@@ -66,7 +71,8 @@ def build_rows(source_rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
-    path.write_text("".join(f"{canonical(row)}\n" for row in rows), encoding="utf-8")
+    with path.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write("".join(f"{canonical(row)}\n" for row in rows))
 
 
 def main() -> None:
@@ -77,9 +83,15 @@ def main() -> None:
         "status": "frozen_zero_gpu_prompt_ablation",
         "dataset_version": VERSION,
         "source_path": str(SOURCE.relative_to(HERE.parents[2])).replace("\\", "/"),
-        "source_sha256": file_sha256(SOURCE),
+        "source_content_sha256": jsonl_content_sha256(SOURCE),
+        "source_file_sha256_at_build": file_sha256(SOURCE),
         "output_path": str(OUTPUT.relative_to(HERE.parents[2])).replace("\\", "/"),
-        "output_sha256": file_sha256(OUTPUT),
+        "output_content_sha256": jsonl_content_sha256(OUTPUT),
+        "output_file_sha256_at_build": file_sha256(OUTPUT),
+        "hash_policy": (
+            "scientific identity uses SHA-256 of the canonical parsed JSON row array; "
+            "raw file SHA-256 is diagnostic only"
+        ),
         "rows": len(rows),
         "arms": {arm: sum(row["arm"] == arm for row in rows) for arm in ARMS},
         "bases": len({row["base_id"] for row in rows}),
@@ -89,7 +101,8 @@ def main() -> None:
         "other_prompt_edits": 0,
         "qwen_gpu_or_capping_run": False,
     }
-    MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    with MANIFEST.open("w", encoding="utf-8", newline="\n") as handle:
+        handle.write(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
     print(json.dumps(manifest, ensure_ascii=False, indent=2))
 
 

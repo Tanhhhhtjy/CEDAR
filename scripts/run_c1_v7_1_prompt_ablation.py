@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import platform
@@ -59,8 +60,12 @@ DATA_DIR = ROOT / "datasets" / "m2_2b_formal" / "v7_1_prompt_cue_ablation"
 DATA_PATH = DATA_DIR / "c1_v7_1_no_cue144_arms.jsonl"
 PREFLIGHT_PATH = DATA_DIR / "execution_preflight_manifest.json"
 DEFAULT_OUTPUT_ROOT = ROOT / "artifacts" / "m2" / "c1_v7_1_prompt_cue_ablation"
-EXPECTED_DATA_SHA256 = "8c34262a76c0d956e92659975c800ed951355d02944cf706f2fb45a800b7f7fa"
-EXPECTED_SOURCE_SHA256 = "847f5df9eeffc2ecd0a881b708f70b29abc4a3eacb2aa8ae39a9762c60211ffe"
+EXPECTED_DATA_CONTENT_SHA256 = (
+    "f416d576407ff4e237554009b20458977ff4604116852a54986afbe593c9aa91"
+)
+EXPECTED_SOURCE_CONTENT_SHA256 = (
+    "a25577a3e6dcd117254efebe44fcd274307872410438461650d2a0f4137e1a15"
+)
 SMOKE_BASE = "C1V7-001"
 PHASES = {
     "smoke-nohook": Phase("uncapped", False, "smoke_no_cue"),
@@ -69,6 +74,12 @@ PHASES = {
     "formal-uncapped": Phase("uncapped", True, "full_no_cue"),
     "formal-p25": Phase("p25", True, "full_no_cue"),
 }
+
+
+def normalized_text_sha256(path: Path) -> str:
+    """Hash UTF-8 text after normalizing platform line endings to LF."""
+    normalized = path.read_text(encoding="utf-8").replace("\r\n", "\n").replace("\r", "\n")
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
 
 
 def parse_args() -> argparse.Namespace:
@@ -86,9 +97,10 @@ def parse_args() -> argparse.Namespace:
 
 
 def validate_inputs(data_path: Path, preflight_path: Path) -> list[dict[str, Any]]:
-    if file_sha256(data_path) != EXPECTED_DATA_SHA256:
-        raise ValueError("C1/V7.1 dataset hash changed")
     rows = read_jsonl(data_path)
+    data_content_sha256 = object_sha256(rows)
+    if data_content_sha256 != EXPECTED_DATA_CONTENT_SHA256:
+        raise ValueError("C1/V7.1 canonical dataset content hash changed")
     if len(rows) != 144:
         raise ValueError(f"C1/V7.1 expected 144 rows, found {len(rows)}")
     if {row.get("arm") for row in rows} != {"N", "AO", "S"}:
@@ -101,13 +113,16 @@ def validate_inputs(data_path: Path, preflight_path: Path) -> list[dict[str, Any
     ):
         raise ValueError("C1/V7.1 still contains the removed epistemic-status cue")
     preflight = json.loads(preflight_path.read_text(encoding="utf-8"))
-    if preflight.get("status") != "data_and_execution_code_frozen_awaiting_smoke":
+    if (
+        preflight.get("status")
+        != "data_and_execution_code_frozen_awaiting_smoke_after_hash_amendment"
+    ):
         raise ValueError("C1/V7.1 preflight status changed")
-    if preflight.get("dataset_sha256") != file_sha256(data_path):
-        raise ValueError("C1/V7.1 preflight dataset hash changed")
-    if preflight.get("source_v7_sha256") != EXPECTED_SOURCE_SHA256:
+    if preflight.get("dataset_content_sha256") != data_content_sha256:
+        raise ValueError("C1/V7.1 preflight dataset content hash changed")
+    if preflight.get("source_v7_content_sha256") != EXPECTED_SOURCE_CONTENT_SHA256:
         raise ValueError("C1/V7.1 source V7 hash changed")
-    if preflight.get("runner_sha256") != file_sha256(Path(__file__)):
+    if preflight.get("runner_normalized_text_sha256") != normalized_text_sha256(Path(__file__)):
         raise ValueError("C1/V7.1 runner hash does not match preflight")
     return rows
 
@@ -152,12 +167,16 @@ def main() -> None:
         "seed": args.seed,
         "dataset": {
             "path": str(args.data),
-            "sha256": file_sha256(args.data),
+            "content_sha256": object_sha256(rows),
+            "file_sha256_diagnostic": file_sha256(args.data),
             "rows": len(rows),
             "selected_ids_sha256": object_sha256([row["id"] for row in rows]),
             "preflight_path": str(args.preflight),
             "preflight_sha256": file_sha256(args.preflight),
-            "source_v7_sha256": EXPECTED_SOURCE_SHA256,
+            "source_v7_content_sha256": EXPECTED_SOURCE_CONTENT_SHA256,
+            "hash_policy": (
+                "canonical parsed JSON content is frozen; raw file bytes are diagnostic"
+            ),
         },
         "model": asdict(model_spec),
         "generation": {

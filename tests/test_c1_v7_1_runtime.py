@@ -86,3 +86,20 @@ def test_p25_cap_stats_uses_nested_by_layer_contract() -> None:
     assert audit.p25_cap_stats_complete(row)
     del row["cap_stats"]["by_layer"][str(audit.LAYERS[-1])]
     assert not audit.p25_cap_stats_complete(row)
+
+
+def test_runner_text_hash_is_line_ending_invariant(tmp_path: Path) -> None:
+    runner = load_runner()
+    lf_path = tmp_path / "lf.py"
+    crlf_path = tmp_path / "crlf.py"
+    lf_path.write_bytes(b"x = 1\ny = 2\n")
+    crlf_path.write_bytes(b"x = 1\r\ny = 2\r\n")
+    assert runner.normalized_text_sha256(lf_path) == runner.normalized_text_sha256(crlf_path)
+
+
+def test_runner_accepts_crlf_copy_of_frozen_dataset(tmp_path: Path) -> None:
+    runner = load_runner()
+    crlf_path = tmp_path / "frozen-crlf.jsonl"
+    text = runner.DATA_PATH.read_text(encoding="utf-8")
+    crlf_path.write_bytes(text.replace("\n", "\r\n").encode("utf-8"))
+    assert len(runner.validate_inputs(crlf_path, runner.PREFLIGHT_PATH)) == 144

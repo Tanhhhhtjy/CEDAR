@@ -37,3 +37,16 @@ def test_builder_is_deterministic() -> None:
     first = builder.build_rows(source_rows)
     second = builder.build_rows(source_rows)
     assert builder.object_sha256(first) == builder.object_sha256(second)
+
+
+def test_content_hash_is_line_ending_invariant(tmp_path: Path) -> None:
+    builder = load_builder()
+    rows = builder.build_rows(builder.read_jsonl(builder.SOURCE))
+    lf_path = tmp_path / "lf.jsonl"
+    crlf_path = tmp_path / "crlf.jsonl"
+    payload = "".join(f"{builder.canonical(row)}\n" for row in rows)
+    lf_path.write_bytes(payload.encode("utf-8"))
+    crlf_path.write_bytes(payload.replace("\n", "\r\n").encode("utf-8"))
+    assert builder.file_sha256(lf_path) != builder.file_sha256(crlf_path)
+    assert builder.jsonl_content_sha256(lf_path) == builder.jsonl_content_sha256(crlf_path)
+    assert builder.object_sha256(rows) == builder.jsonl_content_sha256(lf_path)

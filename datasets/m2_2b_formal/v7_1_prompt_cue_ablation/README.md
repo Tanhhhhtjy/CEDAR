@@ -10,6 +10,8 @@ No new task information is supplied.
 
 V is unchanged and therefore is not duplicated. The 144 no-cue records comprise 48 N, 48 AO, and 48 S records paired to the frozen V7 source. Running uncapped and p25 requires 288 new generations.
 
+Dataset identity is frozen with a canonical parsed-JSON content hash, not raw file bytes. This avoids false failures when Git checks out identical JSONL with LF versus CRLF. The frozen V7.1 content hash is `f416d576407ff4e237554009b20458977ff4604116852a54986afbe593c9aa91`; see `docs/C1_V7_1_ZERO_GPU_AMENDMENT_01.md`.
+
 Build and validate without a model:
 
 ```bash
