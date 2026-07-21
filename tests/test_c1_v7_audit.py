@@ -37,3 +37,33 @@ def test_comparable_configuration_ignores_only_phase_and_condition() -> None:
     right = {**left, "phase": "formal-p25", "condition": "p25"}
     assert audit.comparable_configuration(left) == audit.comparable_configuration(right)
 
+
+def test_p25_cap_stats_complete_reads_nested_by_layer_schema() -> None:
+    by_layer = {
+        str(layer): {
+            "total_positions": 10,
+            "triggered_positions": 5,
+            "projection_correction_sum": 1.0,
+        }
+        for layer in range(46, 54)
+    }
+    row = {
+        "cap_stats": {
+            "by_layer": by_layer,
+            "pooled": {
+                "total_positions": 80,
+                "triggered_positions": 40,
+                "projection_correction_sum": 8.0,
+            },
+            "definition": "synthetic nested cap stats",
+        }
+    }
+    assert audit.p25_cap_stats_complete(row) is True
+
+
+def test_p25_cap_stats_complete_rejects_missing_layer() -> None:
+    by_layer = {
+        str(layer): {"total_positions": 10, "projection_correction_sum": 1.0}
+        for layer in range(46, 53)
+    }
+    assert audit.p25_cap_stats_complete({"cap_stats": {"by_layer": by_layer}}) is False

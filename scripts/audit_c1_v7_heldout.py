@@ -131,6 +131,29 @@ def hook_clean(row: Mapping[str, Any]) -> bool:
     return row.get("hook_counts_before") == row.get("hook_counts_after")
 
 
+def p25_cap_stats_complete(row: Mapping[str, Any]) -> bool:
+    stats = row.get("cap_stats")
+    if not isinstance(stats, Mapping):
+        return False
+    by_layer = stats.get("by_layer")
+    if not isinstance(by_layer, Mapping):
+        return False
+    layer_keys = {str(layer) for layer in LAYERS}
+    return (
+        set(by_layer) == layer_keys
+        and all(
+            isinstance(by_layer[str(layer)], Mapping)
+            and int(by_layer[str(layer)].get("total_positions", 0)) > 0
+            for layer in LAYERS
+        )
+        and all(
+            float(by_layer[str(layer)].get("projection_correction_sum", -1.0))
+            >= 0.0
+            for layer in LAYERS
+        )
+    )
+
+
 def audit_smoke(root: Path) -> dict[str, Any]:
     nohook = load_phase(root, "smoke-nohook", 8)
     monitor = load_phase(root, "smoke-monitor", 8)
@@ -170,22 +193,9 @@ def audit_smoke(root: Path) -> dict[str, Any]:
             for row in [*nohook["results"], *monitor["results"], *capped["results"]]
         ),
     }
-    cap_checks: list[bool] = []
-    for row in capped["results"]:
-        stats = row.get("cap_stats")
-        if not isinstance(stats, Mapping):
-            cap_checks.append(False)
-            continue
-        layer_keys = {str(layer) for layer in LAYERS}
-        cap_checks.append(
-            set(stats) == layer_keys
-            and all(int(stats[str(layer)].get("total_positions", 0)) > 0 for layer in LAYERS)
-            and all(
-                float(stats[str(layer)].get("projection_correction_sum", -1.0)) >= 0.0
-                for layer in LAYERS
-            )
-        )
-    paired_checks["p25_stats_complete_layers_46_53"] = all(cap_checks)
+    paired_checks["p25_stats_complete_layers_46_53"] = all(
+        p25_cap_stats_complete(row) for row in capped["results"]
+    )
     failures = [name for name, passed in paired_checks.items() if not passed]
     return {
         "status": "passed" if not failures else "failed",
@@ -299,4 +309,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
