@@ -63,3 +63,5 @@ conda run -n cedar python \
 ```
 
 Until `HUMAN_REVIEW_GATE.json` is generated with `status: passed`, no C2/V8 GPU run is authorized.
+After it passes, follow `docs/C2_V8_NATURAL_SOCIAL_CONFIRMATION_RUN_LOG.md`; the runner enforces
+the frozen smoke, direct, audit, and free-track order rather than relying on operator convention.
