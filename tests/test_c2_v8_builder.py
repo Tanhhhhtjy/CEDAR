@@ -6,10 +6,9 @@ import json
 from collections import Counter
 from pathlib import Path
 
-import pytest
-
 from cedar_m2.checkpoint import file_sha256, object_sha256
 from scripts import build_c2_v8_natural_confirmation as builder
+from scripts.c2_v8_portable_hashes import canonical_text_sha256
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_ROOT = ROOT / "datasets" / "c2_v8_natural_social_confirmation"
@@ -31,8 +30,8 @@ def load_validator():
 
 def test_pinned_source_hash_license_schema_and_duplicates_are_disclosed() -> None:
     result = built()
-    assert file_sha256(builder.SOURCE_OFFICIAL) == builder.SOURCE_SHA256
-    assert file_sha256(builder.SOURCE_LICENSE) == builder.LICENSE_SHA256
+    assert object_sha256(result["source"]) == builder.SOURCE_OBJECT_SHA256
+    assert canonical_text_sha256(builder.SOURCE_LICENSE) == builder.LICENSE_CANONICAL_SHA256
     audit = result["source_audit"]
     assert audit["status"] == "passed"
     assert audit["records"] == 600
@@ -129,14 +128,19 @@ def test_repeated_in_memory_build_has_identical_content_hashes() -> None:
         assert object_sha256(first[key]) == object_sha256(second[key])
 
 
-def test_construction_passes_but_human_review_gate_is_pending() -> None:
+def test_construction_and_disclosed_single_review_gate_pass() -> None:
     validator = load_validator()
     report = validator.validate_construction(builder)
     assert report["status"] == "passed"
     assert report["gpu_authorized"] is False
-    assert report["human_review_gate"] == "pending"
-    with pytest.raises(ValueError, match="Human review gate is pending"):
-        validator.validate_review_gate()
+    assert report["human_review_gate"] == "pending_single_review_waiver_validation"
+    gate = validator.validate_review_gate()
+    assert gate["status"] == "passed"
+    assert gate["gpu_authorized"] is True
+    assert gate["protocol_deviation"] is True
+    assert gate["review_mode"] == "single_data_lead_full_review"
+    assert gate["raw_agreement"] is None
+    assert gate["cohen_kappa"] is None
 
 
 def test_materialized_manifest_matches_deterministic_content() -> None:
@@ -144,3 +148,34 @@ def test_materialized_manifest_matches_deterministic_content() -> None:
     assert materialized["content_hashes"] == built()["manifest"]["content_hashes"]
     assert materialized["human_review_gate"].startswith("pending")
     assert materialized["gpu_authorized"] is False
+
+
+def test_canonical_text_hash_is_newline_portable_and_character_sensitive(tmp_path) -> None:
+    lf = tmp_path / "lf.txt"
+    crlf = tmp_path / "crlf.txt"
+    changed = tmp_path / "changed.txt"
+    lf.write_bytes(b"alpha\nbeta\n")
+    crlf.write_bytes(b"alpha\r\nbeta\r\n")
+    changed.write_bytes(b"alpha\nBeta\n")
+    assert canonical_text_sha256(lf) == canonical_text_sha256(crlf)
+    assert canonical_text_sha256(lf) != canonical_text_sha256(changed)
+    assert file_sha256(lf) != file_sha256(crlf)
+
+
+def test_json_object_hash_ignores_formatting_but_detects_value_changes() -> None:
+    compact = json.loads('{"a":1,"b":[2,3]}')
+    indented = json.loads('{\n  "b": [2, 3],\n  "a": 1\n}')
+    changed = json.loads('{"a":2,"b":[2,3]}')
+    assert object_sha256(compact) == object_sha256(indented)
+    assert object_sha256(compact) != object_sha256(changed)
+
+
+def test_single_review_attestation_binds_current_packet_and_data() -> None:
+    validator = load_validator()
+    gate = validator.validate_single_review_gate()
+    hashes = gate["attestation_hashes"]
+    assert hashes["review_packet_content_sha256"] == object_sha256(
+        validator.read_csv(DATA_ROOT / "review" / "review_packet_a.csv")
+    )
+    assert hashes["bases_object_sha256"] == built()["manifest"]["content_hashes"]["bases"]
+    assert hashes["arms_object_sha256"] == built()["manifest"]["content_hashes"]["arms"]

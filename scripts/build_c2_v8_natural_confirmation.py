@@ -17,7 +17,20 @@ from typing import Any
 
 from transformers import AutoTokenizer
 
-from cedar_m2.checkpoint import atomic_write_json, file_sha256, object_sha256
+from cedar_m2.checkpoint import (
+    atomic_write_json,
+    file_sha256,
+    object_sha256,
+)
+
+try:
+    from scripts.c2_v8_portable_hashes import (
+        TEXT_HASH_MODE,
+        canonical_text_sha256,
+        git_blob_id,
+    )
+except ModuleNotFoundError:
+    from c2_v8_portable_hashes import TEXT_HASH_MODE, canonical_text_sha256, git_blob_id
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_ROOT = ROOT / "datasets" / "c2_v8_natural_social_confirmation"
@@ -42,12 +55,14 @@ SOURCE_URL = (
 )
 SOURCE_SHA256 = "ae41f4b94ac46fb0109778546a091534208881cf74eea87c43ce24736bb8dd4d"
 SOURCE_BYTES = 287_224
+SOURCE_OBJECT_SHA256 = "6c02e880a1f75b1bdae53d42e7417aa5b5cf911d53daf6e8059826ebb3b689bb"
 LICENSE_BLOB = "e19dff7fed7acec666c434a63bccd397b45b8d8a"
 LICENSE_URL = (
     "https://raw.githubusercontent.com/debu-sinha/sycobench-600/"
     f"{SOURCE_COMMIT}/DATA_LICENSE"
 )
 LICENSE_SHA256 = "fd8386ca277bcf4ae78b1d1d772c04e0366f502174935b9884dbca62371b0ce6"
+LICENSE_CANONICAL_SHA256 = LICENSE_SHA256
 
 PAPER_URL = "https://aclanthology.org/2026.findings-acl.1759/"
 PAPER_DOI = "10.18653/v1/2026.findings-acl.1759"
@@ -103,6 +118,11 @@ def sha256_bytes(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def canonical_utf8_bytes(raw: bytes) -> bytes:
+    text = raw.decode("utf-8")
+    return text.replace("\r\n", "\n").replace("\r", "\n").encode("utf-8")
+
+
 def stable_hash(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
@@ -145,22 +165,25 @@ def fetch_pinned(url: str, expected_sha256: str, expected_bytes: int | None = No
 
 def obtain_source(*, allow_network: bool = True) -> tuple[bytes, bytes]:
     if SOURCE_OFFICIAL.exists():
-        source_raw = SOURCE_OFFICIAL.read_bytes()
+        source_raw = canonical_utf8_bytes(SOURCE_OFFICIAL.read_bytes())
     elif allow_network:
-        source_raw = fetch_pinned(SOURCE_URL, SOURCE_SHA256, SOURCE_BYTES)
+        source_raw = canonical_utf8_bytes(
+            fetch_pinned(SOURCE_URL, SOURCE_SHA256, SOURCE_BYTES)
+        )
     else:
         raise FileNotFoundError(f"Pinned source is absent: {SOURCE_OFFICIAL}")
-    if sha256_bytes(source_raw) != SOURCE_SHA256 or len(source_raw) != SOURCE_BYTES:
-        raise ValueError("Vendored SycoBench source does not match the frozen blob")
+    source = json.loads(source_raw)
+    if object_sha256(source) != SOURCE_OBJECT_SHA256:
+        raise ValueError("Vendored SycoBench source object content changed")
 
     if SOURCE_LICENSE.exists():
-        license_raw = SOURCE_LICENSE.read_bytes()
+        license_raw = canonical_utf8_bytes(SOURCE_LICENSE.read_bytes())
     elif allow_network:
-        license_raw = fetch_pinned(LICENSE_URL, LICENSE_SHA256)
+        license_raw = canonical_utf8_bytes(fetch_pinned(LICENSE_URL, LICENSE_SHA256))
     else:
         raise FileNotFoundError(f"Pinned source license is absent: {SOURCE_LICENSE}")
-    if sha256_bytes(license_raw) != LICENSE_SHA256:
-        raise ValueError("Vendored SycoBench license does not match the frozen blob")
+    if sha256_bytes(license_raw) != LICENSE_CANONICAL_SHA256:
+        raise ValueError("Vendored SycoBench license canonical text changed")
     return source_raw, license_raw
 
 
@@ -510,6 +533,7 @@ def review_rows(
 def source_manifest(source_audit: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "status": "passed",
+        "hash_mode": TEXT_HASH_MODE,
         "paper": {"url": PAPER_URL, "doi": PAPER_DOI},
         "repository": SOURCE_REPO,
         "commit": SOURCE_COMMIT,
@@ -517,14 +541,16 @@ def source_manifest(source_audit: Mapping[str, Any]) -> dict[str, Any]:
         "source_file": {
             "upstream_path": "data/questions.json",
             "git_blob_id": SOURCE_BLOB,
-            "bytes": SOURCE_BYTES,
-            "sha256": SOURCE_SHA256,
+            "upstream_bytes_diagnostic": SOURCE_BYTES,
+            "upstream_raw_sha256_diagnostic": SOURCE_SHA256,
+            "object_sha256": SOURCE_OBJECT_SHA256,
         },
         "license": {
             "dataset": DATA_LICENSE,
             "upstream_path": "DATA_LICENSE",
             "git_blob_id": LICENSE_BLOB,
-            "sha256": LICENSE_SHA256,
+            "upstream_raw_sha256_diagnostic": LICENSE_SHA256,
+            "canonical_text_sha256": LICENSE_CANONICAL_SHA256,
             "url": "https://creativecommons.org/licenses/by/4.0/",
         },
         "source_audit": source_audit,
@@ -581,6 +607,7 @@ def build(*, allow_network: bool = True, write: bool = True) -> dict[str, Any]:
     manifest = {
         "status": "passed",
         "dataset": "C2/V8 natural social confirmation",
+        "hash_mode": TEXT_HASH_MODE,
         "source": source_manifest(source_audit),
         "counts": {
             "bases": len(bases),
@@ -621,7 +648,8 @@ def build(*, allow_network: bool = True, write: bool = True) -> dict[str, Any]:
             "review_b": object_sha256(review_b),
             "adjudication_template": object_sha256(adjudication_template),
         },
-        "human_review_gate": "pending_two_independent_completed_review_files",
+        "human_review_gate": "pending_single_review_waiver_validation",
+        "human_review_protocol": "single_data_lead_full_review_protocol_deviation",
         "gpu_authorized": False,
     }
 
@@ -657,8 +685,11 @@ def build(*, allow_network: bool = True, write: bool = True) -> dict[str, Any]:
         )
         manifest["files"] = {
             path.relative_to(ROOT).as_posix(): {
-                "bytes": path.stat().st_size,
-                "sha256": file_sha256(path),
+                "hash_mode": TEXT_HASH_MODE,
+                "git_blob_id": git_blob_id(path, root=ROOT),
+                "canonical_text_sha256": canonical_text_sha256(path),
+                "bytes_diagnostic": path.stat().st_size,
+                "raw_sha256_diagnostic": file_sha256(path),
             }
             for path in files
         }

@@ -14,11 +14,21 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
-from cedar_m2.checkpoint import atomic_write_json, file_sha256, object_sha256
+from cedar_m2.checkpoint import (
+    atomic_write_json,
+    object_sha256,
+)
+
+try:
+    from scripts.c2_v8_portable_hashes import canonical_text_sha256, git_blob_id
+except ModuleNotFoundError:
+    from c2_v8_portable_hashes import canonical_text_sha256, git_blob_id
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
 BUILDER_PATH = ROOT / "scripts" / "build_c2_v8_natural_confirmation.py"
+AMENDMENT_PATH = ROOT / "docs" / "C2_V8_PROTOCOL_AMENDMENT_01_SINGLE_REVIEW_WAIVER.md"
+ATTESTATION_PATH = HERE / "review" / "single_review_attestation.json"
 REVIEW_FIELDS = (
     "ao_pure_target_exposure_yes_no",
     "s_social_pressure_pure_yes_no",
@@ -61,13 +71,11 @@ def validate_source(builder: ModuleType) -> dict[str, Any]:
     license_path = HERE / "SOURCE_DATA_LICENSE.txt"
     if not source_path.exists() or not license_path.exists():
         raise ValueError("Pinned source or source license is missing")
-    if file_sha256(source_path) != builder.SOURCE_SHA256:
-        raise ValueError("Pinned official source SHA-256 mismatch")
-    if source_path.stat().st_size != builder.SOURCE_BYTES:
-        raise ValueError("Pinned official source byte count mismatch")
-    if file_sha256(license_path) != builder.LICENSE_SHA256:
-        raise ValueError("Pinned source license SHA-256 mismatch")
     source = json.loads(source_path.read_text(encoding="utf-8"))
+    if object_sha256(source) != builder.SOURCE_OBJECT_SHA256:
+        raise ValueError("Pinned official source object hash mismatch")
+    if canonical_text_sha256(license_path) != builder.LICENSE_CANONICAL_SHA256:
+        raise ValueError("Pinned source license canonical text hash mismatch")
     audit = builder.validate_source(source)
     expected = read_json(HERE / "source_validation_report.json")
     if audit != expected:
@@ -78,12 +86,20 @@ def validate_source(builder: ModuleType) -> dict[str, Any]:
     source_file = manifest.get("source_file", {})
     if (
         source_file.get("git_blob_id") != builder.SOURCE_BLOB
-        or source_file.get("sha256") != builder.SOURCE_SHA256
+        or source_file.get("object_sha256") != builder.SOURCE_OBJECT_SHA256
     ):
         raise ValueError("Source manifest does not bind the frozen upstream blob")
+    license_file = manifest.get("license", {})
+    if (
+        license_file.get("git_blob_id") != builder.LICENSE_BLOB
+        or license_file.get("canonical_text_sha256")
+        != builder.LICENSE_CANONICAL_SHA256
+    ):
+        raise ValueError("Source manifest does not bind the frozen license")
     return {
         "status": "passed",
-        "source_sha256": builder.SOURCE_SHA256,
+        "source_object_sha256": builder.SOURCE_OBJECT_SHA256,
+        "source_raw_sha256_diagnostic": builder.SOURCE_SHA256,
         "source_blob": builder.SOURCE_BLOB,
         "records": audit["records"],
         "domains": audit["domains"],
@@ -97,6 +113,8 @@ def validate_source(builder: ModuleType) -> dict[str, Any]:
 
 
 def validate_file_manifest(manifest: dict[str, Any]) -> None:
+    if manifest.get("hash_mode") != "utf8_lf_canonical_v1":
+        raise ValueError("Construction manifest does not use the portable text hash mode")
     files = manifest.get("files")
     if not isinstance(files, dict) or not files:
         raise ValueError("Construction manifest has no file inventory")
@@ -104,10 +122,16 @@ def validate_file_manifest(manifest: dict[str, Any]) -> None:
         path = ROOT / relative
         if not path.is_file():
             raise ValueError(f"Manifest file is missing: {relative}")
-        if path.stat().st_size != expected.get("bytes"):
-            raise ValueError(f"Manifest byte count mismatch: {relative}")
-        if file_sha256(path) != expected.get("sha256"):
-            raise ValueError(f"Manifest SHA-256 mismatch: {relative}")
+        if expected.get("hash_mode") != "utf8_lf_canonical_v1":
+            raise ValueError(f"Manifest hash mode mismatch: {relative}")
+        if canonical_text_sha256(path) != expected.get("canonical_text_sha256"):
+            raise ValueError(f"Manifest canonical text SHA-256 mismatch: {relative}")
+        if git_blob_id(path, root=ROOT) != expected.get("git_blob_id"):
+            raise ValueError(f"Manifest Git blob mismatch: {relative}")
+        if not isinstance(expected.get("bytes_diagnostic"), int) or not isinstance(
+            expected.get("raw_sha256_diagnostic"), str
+        ):
+            raise ValueError(f"Manifest raw-byte diagnostics are absent: {relative}")
 
 
 def validate_pair_identity(bases: list[dict[str, Any]], arms: list[dict[str, Any]]) -> None:
@@ -248,7 +272,7 @@ def validate_review_packets(builder: ModuleType) -> dict[str, Any]:
         "covered_domain_difficulty_template_strata": len(coverage),
         "pairs_per_domain_difficulty": 5,
         "review_judgments_blank": True,
-        "review_gate": "pending",
+        "review_gate": "pending_single_review_waiver_validation",
     }
 
 
@@ -311,7 +335,8 @@ def validate_construction(builder: ModuleType) -> dict[str, Any]:
         "subsets": subsets,
         "review_packet": review,
         "deterministic_rebuild_hashes": object_checks,
-        "human_review_gate": "pending",
+        "human_review_gate": "pending_single_review_waiver_validation",
+        "human_review_protocol": "single_data_lead_full_review_protocol_deviation",
         "gpu_authorized": False,
     }
 
@@ -337,7 +362,7 @@ def cohen_kappa(left: list[str], right: list[str]) -> tuple[float, bool]:
     return (observed - expected) / (1 - expected), False
 
 
-def validate_review_gate() -> dict[str, Any]:
+def validate_two_reviewer_gate() -> dict[str, Any]:
     review_root = HERE / "review"
     path_a = review_root / "review_a_completed.csv"
     path_b = review_root / "review_b_completed.csv"
@@ -409,6 +434,9 @@ def validate_review_gate() -> dict[str, Any]:
                 raise ValueError(f"Adjudication rejects {review_id}/{field}; rebuild required")
     return {
         "status": "passed",
+        "review_mode": "two_independent_reviewers",
+        "protocol_deviation": False,
+        "pairs_reviewed": 120,
         "review_pairs": 120,
         "judgments": len(left),
         "raw_agreement": agreement,
@@ -419,6 +447,120 @@ def validate_review_gate() -> dict[str, Any]:
         "reviewer_b": reviewer_b,
         "model_outputs_seen": False,
         "gpu_authorized": True,
+        "limitation": None,
+    }
+
+
+def validate_single_review_gate() -> dict[str, Any]:
+    review_root = HERE / "review"
+    forbidden_dual_files = (
+        review_root / "review_a_completed.csv",
+        review_root / "review_b_completed.csv",
+        review_root / "review_metadata.json",
+        review_root / "adjudication.csv",
+    )
+    present = [path.name for path in forbidden_dual_files if path.exists()]
+    if present:
+        raise ValueError(
+            "Single-review waiver cannot be mixed with completed dual-review files: "
+            + ", ".join(present)
+        )
+    if not AMENDMENT_PATH.is_file() or not ATTESTATION_PATH.is_file():
+        raise ValueError("Single-review waiver amendment or attestation is missing")
+
+    attestation = read_json(ATTESTATION_PATH)
+    expected_scalars = {
+        "status": "approved",
+        "protocol_deviation": True,
+        "review_mode": "single_data_lead_full_review",
+        "reviewer_id": "data_lead_internal_01",
+        "review_packet": "review_packet_a.csv",
+        "pairs_reviewed": 120,
+        "all_pairs_passed": True,
+        "full_dataset_reviewed": True,
+        "bases_reviewed": 600,
+        "arms_reviewed": 1200,
+        "model_outputs_seen": False,
+        "second_reviewer_waived": True,
+        "amendment_frozen_before_gpu": True,
+    }
+    for key, expected in expected_scalars.items():
+        if attestation.get(key) != expected:
+            raise ValueError(f"Single-review attestation has invalid {key}")
+    if attestation.get("raw_agreement") is not None or attestation.get(
+        "cohen_kappa"
+    ) is not None:
+        raise ValueError("Single-review attestation must not claim agreement or kappa")
+    expected_limitations = {
+        "No independent second reviewer",
+        "No inter-annotator agreement estimate",
+        "No Cohen kappa",
+    }
+    if set(attestation.get("limitations", [])) != expected_limitations:
+        raise ValueError("Single-review attestation limitations are incomplete")
+    if not str(attestation.get("waiver_reason", "")).strip():
+        raise ValueError("Single-review attestation has no waiver reason")
+
+    packet_path = review_root / "review_packet_a.csv"
+    packet = read_csv(packet_path)
+    pair_ids = sorted(row["review_id"] for row in packet)
+    if len(packet) != 120 or len(set(pair_ids)) != 120:
+        raise ValueError("Single-review packet is not the frozen 120-pair sample")
+    bases = read_jsonl(HERE / "c2_v8_base.jsonl")
+    arms = read_jsonl(HERE / "c2_v8_ao_s_arms.jsonl")
+    observed_hashes = {
+        "hash_mode": "canonical_json_object_v1_and_utf8_lf_canonical_v1",
+        "review_packet_content_sha256": object_sha256(packet),
+        "review_packet_canonical_text_sha256": canonical_text_sha256(packet_path),
+        "review_pair_ids_sha256": object_sha256(pair_ids),
+        "bases_object_sha256": object_sha256(bases),
+        "arms_object_sha256": object_sha256(arms),
+        "protocol_amendment_canonical_text_sha256": canonical_text_sha256(
+            AMENDMENT_PATH
+        ),
+    }
+    if attestation.get("hashes") != observed_hashes:
+        raise ValueError("Single-review attestation is stale or bound to different content")
+
+    return {
+        "status": "passed",
+        "review_mode": "single_data_lead_full_review",
+        "protocol_deviation": True,
+        "pairs_reviewed": 120,
+        "review_pairs": 120,
+        "judgments": None,
+        "raw_agreement": None,
+        "cohen_kappa": None,
+        "reviewer_id": attestation["reviewer_id"],
+        "model_outputs_seen": False,
+        "gpu_authorized": True,
+        "amendment_frozen_before_gpu": True,
+        "limitation": "No independent second review",
+        "attestation_hashes": observed_hashes,
+    }
+
+
+def validate_review_gate() -> dict[str, Any]:
+    if ATTESTATION_PATH.exists():
+        return validate_single_review_gate()
+    return validate_two_reviewer_gate()
+
+
+def full_review_gate_report(builder: ModuleType | None = None) -> dict[str, Any]:
+    active_builder = builder or load_builder()
+    construction = validate_construction(active_builder)
+    review = validate_review_gate()
+    return {
+        "status": "passed",
+        "gpu_authorized": True,
+        "protocol_deviation": review["protocol_deviation"],
+        "review_mode": review["review_mode"],
+        "pairs_reviewed": review["pairs_reviewed"],
+        "raw_agreement": review["raw_agreement"],
+        "cohen_kappa": review["cohen_kappa"],
+        "limitation": review["limitation"],
+        "construction": construction,
+        "review": review,
     }
 
 
@@ -438,9 +580,7 @@ def main() -> None:
         report = validate_construction(builder)
         output = HERE / "CONSTRUCTION_AUDIT.json"
     else:
-        construction = validate_construction(builder)
-        review = validate_review_gate()
-        report = {"status": "passed", "construction": construction, "review": review}
+        report = full_review_gate_report(builder)
         output = HERE / "HUMAN_REVIEW_GATE.json"
     atomic_write_json(output, report)
     print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))

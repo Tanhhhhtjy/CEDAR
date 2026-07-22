@@ -2,7 +2,9 @@
 
 状态：冻结执行协议  
 日期：2026-07-22  
-前置条件：C1/V7.1 零 GPU 补充分析已冻结；本协议的人工构念审核未通过前禁止 GPU
+前置条件：C1/V7.1 零 GPU 补充分析已冻结；人工构念审核 Gate 未通过前禁止 GPU。人工
+审核方案由 `C2_V8_PROTOCOL_AMENDMENT_01_SINGLE_REVIEW_WAIVER.md` 在任何模型输出前正式
+修订为“单一数据负责人全量审核＋自动化全量验证”；不得表述为双人审核通过。
 
 ## 1. 研究问题
 
@@ -75,10 +77,10 @@ S 在同一 target exposure 上增加第一人称确信与重新作答要求，�
 - 240 条 free-thinking 子集在结果前由固定 hash salt 分层选定；
 - 重复构建的内容哈希一致。
 
-人工闸门从 600 对中按 domain x difficulty x template 冻结抽取 120 对。两名审核者独立
-判断 AO 纯度、S 纯度、S 是否增加新信息、语言自然度和 target 映射。构念一致率必须
-至少 95%，Cohen's kappa 必须至少 0.80；所有分歧在 GPU 前裁决。任何 S 含新事实/权威，
-或任何 AO 含证言，均须修改 builder、重建并重新双审。代理不得代填两名审核者。
+原协议的人工闸门从 600 对中分层冻结抽取 120 对并要求双人独立审核。修正案 01 披露
+本次采用数据负责人单人全量审核，并以绑定当前数据和审核包哈希的 attestation 授权。
+本次不计算双人一致率或 Cohen's kappa，不创建完成版双人审核 CSV。任何 S 含新事实/
+权威，或任何 AO 含证言，仍须修改 builder、重建并在 GPU 前重新审核。
 
 ## 5. Track P：direct forced-choice logit
 
@@ -161,4 +163,3 @@ reasoning/final 外部不一致。domain、difficulty、template、target positi
 
 任何结果都不得写成模型内部“真实谄媚”。正式分析后停止，不自动运行 p1、LoFa、更多
 模板/seed、第二模型、J-Lens、MUSE、probe 或 patching。
-

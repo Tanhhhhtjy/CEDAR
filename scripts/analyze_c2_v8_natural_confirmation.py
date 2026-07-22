@@ -23,6 +23,11 @@ import statsmodels.formula.api as smf
 from cedar_m2.checkpoint import atomic_write_json, file_sha256
 
 try:
+    from scripts.c2_v8_portable_hashes import canonical_text_sha256
+except ModuleNotFoundError:
+    from c2_v8_portable_hashes import canonical_text_sha256
+
+try:
     from scripts.audit_c2_v8_natural_confirmation import load_phase, read_json
 except ModuleNotFoundError:
     from audit_c2_v8_natural_confirmation import load_phase, read_json
@@ -81,9 +86,9 @@ def validate_audits(root: Path) -> dict[str, Any]:
         "direct": direct,
         "free": free,
         "hashes": {
-            "combined": file_sha256(combined_path),
-            "direct": file_sha256(direct_path),
-            "free": file_sha256(free_path),
+            "combined": canonical_text_sha256(combined_path),
+            "direct": canonical_text_sha256(direct_path),
+            "free": canonical_text_sha256(free_path),
         },
     }
 
@@ -935,10 +940,20 @@ def delivery_manifest(root: Path) -> dict[str, Any]:
         and "records" not in path.relative_to(root).parts
     ]
     for path in sorted(paths):
-        files[str(path.relative_to(root))] = {
-            "bytes": path.stat().st_size,
-            "sha256": file_sha256(path),
-        }
+        relative = str(path.relative_to(root))
+        if path.suffix.lower() in {".json", ".jsonl", ".csv", ".md", ".txt"}:
+            files[relative] = {
+                "hash_mode": "utf8_lf_canonical_v1",
+                "canonical_text_sha256": canonical_text_sha256(path),
+                "bytes_diagnostic": path.stat().st_size,
+                "raw_sha256_diagnostic": file_sha256(path),
+            }
+        else:
+            files[relative] = {
+                "hash_mode": "raw_bytes_sha256_v1",
+                "bytes": path.stat().st_size,
+                "sha256": file_sha256(path),
+            }
     return {
         "status": "complete",
         "files": files,
@@ -983,7 +998,10 @@ def main() -> None:
         "provenance": {
             "git_commit": git_value("rev-parse", "HEAD"),
             "git_branch": git_value("branch", "--show-current"),
-            "analysis_script_sha256": file_sha256(Path(__file__)),
+            "analysis_script_canonical_text_sha256": canonical_text_sha256(
+                Path(__file__)
+            ),
+            "analysis_script_raw_sha256_diagnostic": file_sha256(Path(__file__)),
             "python": platform.python_version(),
             "numpy": np.__version__,
             "pandas": pd.__version__,

@@ -13,6 +13,11 @@ from typing import Any
 from cedar_m2.checkpoint import atomic_write_json, file_sha256
 
 try:
+    from scripts.c2_v8_portable_hashes import canonical_text_sha256
+except ModuleNotFoundError:
+    from c2_v8_portable_hashes import canonical_text_sha256
+
+try:
     from scripts.run_c2_v8_natural_confirmation import (
         classify,
         lenient_answer,
@@ -97,9 +102,13 @@ def load_phase(root: Path, phase: str, expected_rows: int) -> dict[str, Any]:
         )
     if runtime.get("complete_results") != expected_rows or runtime.get("content_retries") != 0:
         raise ValueError(f"{phase}: runtime is incomplete or reports content retries")
-    if runtime.get("results_sha256") != file_sha256(paths["results"]):
+    if runtime.get("results_canonical_text_sha256") != canonical_text_sha256(
+        paths["results"]
+    ):
         raise ValueError(f"{phase}: results hash mismatch")
-    if runtime.get("record_runtime_sha256") != file_sha256(paths["record_runtime"]):
+    if runtime.get("record_runtime_canonical_text_sha256") != canonical_text_sha256(
+        paths["record_runtime"]
+    ):
         raise ValueError(f"{phase}: checkpoint-materialization hash mismatch")
     for index, (result, envelope) in enumerate(zip(results, envelopes, strict=True)):
         if envelope.get("index") != index or envelope.get("result") != result:
@@ -127,7 +136,8 @@ def load_phase(root: Path, phase: str, expected_rows: int) -> dict[str, Any]:
         "manifest": manifest,
         "runtime": runtime,
         "results": results,
-        "hashes": {name: file_sha256(path) for name, path in paths.items()},
+        "hashes": {name: canonical_text_sha256(path) for name, path in paths.items()},
+        "raw_hashes_diagnostic": {name: file_sha256(path) for name, path in paths.items()},
     }
 
 

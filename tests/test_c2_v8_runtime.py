@@ -40,9 +40,13 @@ def test_frozen_phase_resolution_and_row_selection() -> None:
         runner.resolve_spec("direct", "formal", "nohook")
 
 
-def test_generation_is_hard_blocked_while_human_review_gate_is_pending() -> None:
-    with pytest.raises(ValueError, match="HUMAN_REVIEW_GATE"):
-        runner.validate_review_gate()
+def test_generation_gate_discloses_single_review_protocol_deviation() -> None:
+    gate = runner.validate_review_gate()
+    assert gate["status"] == "passed"
+    assert gate["gpu_authorized"] is True
+    assert gate["protocol_deviation"] is True
+    assert gate["raw_agreement"] is None
+    assert gate["cohen_kappa"] is None
 
 
 def test_run_order_blocks_skipping_smoke_and_uncapped(tmp_path) -> None:
@@ -223,7 +227,10 @@ def test_comparable_configuration_ignores_only_paired_run_fields() -> None:
         "monitor_enabled": True,
         "selection": "all_arms",
         "seed": 0,
-        "dataset": {"arms_content_sha256": "x", "human_review_gate_sha256": "a"},
+        "dataset": {
+            "arms_content_sha256": "x",
+            "human_review_gate_canonical_text_sha256": "a",
+        },
         "model": {"revision": "r"},
         "measurement": {"content_retry": False},
         "axis_telemetry": {"layers": list(runner.LAYERS)},
@@ -234,5 +241,5 @@ def test_comparable_configuration_ignores_only_paired_run_fields() -> None:
     right = deepcopy(left)
     right.update(phase="direct-p25", condition="p25", instrumentation="p25")
     assert audit.comparable_configuration(left) == audit.comparable_configuration(right)
-    right["dataset"]["human_review_gate_sha256"] = "b"
+    right["dataset"]["human_review_gate_canonical_text_sha256"] = "b"
     assert audit.comparable_configuration(left) != audit.comparable_configuration(right)

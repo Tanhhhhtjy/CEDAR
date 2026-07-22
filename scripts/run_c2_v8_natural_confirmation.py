@@ -10,6 +10,7 @@ import math
 import os
 import platform
 import re
+import subprocess
 import sys
 from collections.abc import Mapping, Sequence
 from contextlib import nullcontext
@@ -37,6 +38,11 @@ from cedar_m2.checkpoint import (
     initialize_run,
     object_sha256,
 )
+
+try:
+    from scripts.c2_v8_portable_hashes import canonical_text_sha256, git_blob_id
+except ModuleNotFoundError:
+    from c2_v8_portable_hashes import canonical_text_sha256, git_blob_id
 from cedar_m2.interventions.axis_monitor import AssistantAxisMonitor
 from cedar_m2.interventions.capping import ActivationCapper, LayerCap
 from cedar_m2.models.qwen import QwenModelSpec, load_qwen_model, model_input_device
@@ -80,6 +86,7 @@ EXPECTED_AXIS_SHA256 = "a207fe7a36563280b7b29010880aa0082bd8e3113c141cb4a2eed6b4
 EXPECTED_CAP_CONFIG_SHA256 = "6aec1220487473aaeab80b05d5d960ac54b5dd9080b51ac4bb0bbd1f4330db24"
 
 EXPECTED_CONTENT_HASHES = {
+    "bases": "8f84467b156238362df4fe32090faca7ab9fe610996fbea6e7a9ef00e6a6e70d",
     "arms": "753d57a3714921ada2e6372d089093b03748dd63f3717e13d89179f78c5a0715",
     "free_subset": "7b7e4bb6026ec29283af0716d8a2586c047df7faee4d8bdf654758f3d1cfb030",
     "smoke_subset": "8f8051bc2456ef2c4405c37a054287c78fd9f9b397da0c2509b107b90593101c",
@@ -90,17 +97,26 @@ def validate_execution_preflight() -> dict[str, Any]:
     if not PREFLIGHT_PATH.is_file():
         raise ValueError("C2/V8 execution preflight manifest is missing")
     preflight = read_json(PREFLIGHT_PATH)
-    if preflight.get("status") != "zero_gpu_code_frozen_awaiting_human_review":
+    if preflight.get("status") != "zero_gpu_code_frozen_single_review_authorized":
         raise ValueError("C2/V8 execution preflight status changed")
     if preflight.get("gpu_or_qwen_execution_performed") is not False:
         raise ValueError("C2/V8 preflight unexpectedly reports model execution")
+    if preflight.get("zero_gpu_validation", {}).get("status") != "passed":
+        raise ValueError("C2/V8 zero-GPU validation is not frozen as passed")
     files = preflight.get("files")
     if not isinstance(files, Mapping) or not files:
         raise ValueError("C2/V8 preflight file inventory is missing")
     for relative, expected in files.items():
         path = ROOT / relative
-        if not path.is_file() or file_sha256(path) != expected.get("sha256"):
+        if not path.is_file():
+            raise ValueError(f"C2/V8 preflight file is missing: {relative}")
+        if expected.get("hash_mode") != "utf8_lf_canonical_v1":
+            raise ValueError(f"C2/V8 preflight hash mode mismatch: {relative}")
+        if canonical_text_sha256(path) != expected.get("canonical_text_sha256"):
             raise ValueError(f"C2/V8 preflight hash mismatch: {relative}")
+        blob = git_blob_id(path, root=ROOT)
+        if blob != expected.get("git_blob_id"):
+            raise ValueError(f"C2/V8 preflight Git blob mismatch: {relative}")
     if preflight.get("data_content_hashes") != EXPECTED_CONTENT_HASHES:
         raise ValueError("C2/V8 preflight data content hashes changed")
     return preflight
@@ -231,21 +247,34 @@ def validate_review_gate() -> dict[str, Any]:
     if not REVIEW_GATE_PATH.is_file():
         raise ValueError(
             "C2/V8 GPU is blocked: HUMAN_REVIEW_GATE.json does not exist; "
-            "two independent human reviews must pass first"
+            "the frozen human-review path must pass first"
         )
     validator = load_validator()
     builder = validator.load_builder()
-    expected = {
-        "status": "passed",
-        "construction": validator.validate_construction(builder),
-        "review": validator.validate_review_gate(),
-    }
+    expected = validator.full_review_gate_report(builder)
     observed = read_json(REVIEW_GATE_PATH)
     if observed != expected:
         raise ValueError("HUMAN_REVIEW_GATE.json is stale or does not match current reviews/data")
     if observed["review"].get("gpu_authorized") is not True:
         raise ValueError("C2/V8 human review gate does not authorize GPU execution")
     return observed
+
+
+def validate_clean_synced_checkout() -> dict[str, Any]:
+    """Require the GPU input checkout to be committed and equal to its upstream."""
+    provenance = git_provenance(allow_dirty=False)
+    upstream = subprocess.run(
+        ["git", "rev-parse", "@{u}"],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+    if provenance["commit"] != upstream:
+        raise RuntimeError(
+            "C2/V8 GPU is blocked: local HEAD differs from the configured remote branch"
+        )
+    return {**provenance, "upstream_commit": upstream, "head_matches_upstream": True}
 
 
 def validate_inputs(*, require_review: bool) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -316,7 +345,8 @@ def completed_phase(output_root: Path, phase_name: str, expected_rows: int) -> b
     return (
         runtime.get("complete_results") == expected_rows
         and runtime.get("content_retries") == 0
-        and runtime.get("results_sha256") == file_sha256(results_path)
+        and runtime.get("results_canonical_text_sha256")
+        == canonical_text_sha256(results_path)
     )
 
 
@@ -1207,6 +1237,7 @@ def main() -> None:
     all_rows, review_gate = validate_inputs(require_review=True)
     rows = select_rows(all_rows, spec)
     validate_run_order(spec, args.output_root)
+    git_state = validate_clean_synced_checkout()
     axis, cap_sets, cap_metadata = load_cap_assets(args.cache_dir)
     caps = cap_sets["p25"]
     model_spec = QwenModelSpec()
@@ -1223,13 +1254,18 @@ def main() -> None:
         "seed": args.seed,
         "dataset": {
             "arms_path": str(ARMS_PATH.relative_to(ROOT)),
-            "arms_file_sha256": file_sha256(ARMS_PATH),
+            "arms_canonical_text_sha256": canonical_text_sha256(ARMS_PATH),
+            "arms_raw_sha256_diagnostic": file_sha256(ARMS_PATH),
             "arms_content_sha256": object_sha256(all_rows),
             "selected_rows": len(rows),
             "selected_ids_sha256": object_sha256([row["id"] for row in rows]),
-            "manifest_sha256": file_sha256(MANIFEST_PATH),
-            "execution_preflight_sha256": file_sha256(PREFLIGHT_PATH),
-            "human_review_gate_sha256": file_sha256(REVIEW_GATE_PATH),
+            "manifest_canonical_text_sha256": canonical_text_sha256(MANIFEST_PATH),
+            "execution_preflight_canonical_text_sha256": canonical_text_sha256(
+                PREFLIGHT_PATH
+            ),
+            "human_review_gate_canonical_text_sha256": canonical_text_sha256(
+                REVIEW_GATE_PATH
+            ),
         },
         "model": asdict(model_spec),
         "measurement": {
@@ -1264,9 +1300,12 @@ def main() -> None:
         "capping": cap_metadata,
         "human_review": {
             "status": review_gate["status"],
-            "review_pairs": review_gate["review"]["review_pairs"],
+            "review_mode": review_gate["review"]["review_mode"],
+            "protocol_deviation": review_gate["review"]["protocol_deviation"],
+            "review_pairs": review_gate["review"]["pairs_reviewed"],
             "raw_agreement": review_gate["review"]["raw_agreement"],
             "cohen_kappa": review_gate["review"]["cohen_kappa"],
+            "limitation": review_gate["review"]["limitation"],
             "gpu_authorized": review_gate["review"]["gpu_authorized"],
         },
         "environment": {
@@ -1277,7 +1316,7 @@ def main() -> None:
             "cuda_visible_devices": os.environ.get("CUDA_VISIBLE_DEVICES"),
             "visible_gpu_count": torch.cuda.device_count(),
         },
-        "git": git_provenance(allow_dirty=False),
+        "git": git_state,
     }
     manifest = initialize_run(run_dir, configuration)
     store = RecordStore(run_dir / "records", run_fingerprint=manifest["fingerprint"])
@@ -1364,8 +1403,12 @@ def main() -> None:
             {
                 "execution_completed_at": datetime.now().astimezone().isoformat(),
                 "complete_results": len(results),
-                "results_sha256": file_sha256(results_path),
-                "record_runtime_sha256": file_sha256(runtime_path),
+                "results_canonical_text_sha256": canonical_text_sha256(results_path),
+                "record_runtime_canonical_text_sha256": canonical_text_sha256(
+                    runtime_path
+                ),
+                "results_raw_sha256_diagnostic": file_sha256(results_path),
+                "record_runtime_raw_sha256_diagnostic": file_sha256(runtime_path),
                 "content_retries": 0,
                 "cap_trigger_stats": aggregate_run_cap_stats(results),
             },
