@@ -97,10 +97,23 @@ def validate_execution_preflight() -> dict[str, Any]:
     if not PREFLIGHT_PATH.is_file():
         raise ValueError("C2/V8 execution preflight manifest is missing")
     preflight = read_json(PREFLIGHT_PATH)
-    if preflight.get("status") != "zero_gpu_code_frozen_single_review_authorized":
+    allowed_statuses = {
+        "zero_gpu_code_frozen_single_review_authorized",
+        "post_smoke_audit_amendment_02_frozen",
+    }
+    if preflight.get("status") not in allowed_statuses:
         raise ValueError("C2/V8 execution preflight status changed")
-    if preflight.get("gpu_or_qwen_execution_performed") is not False:
-        raise ValueError("C2/V8 preflight unexpectedly reports model execution")
+    if preflight["status"] == "zero_gpu_code_frozen_single_review_authorized":
+        if preflight.get("gpu_or_qwen_execution_performed") is not False:
+            raise ValueError("C2/V8 initial preflight unexpectedly reports model execution")
+    elif (
+        preflight.get("gpu_or_qwen_execution_performed") is not True
+        or preflight.get("smoke_performed") is not True
+        or preflight.get("formal_execution_performed") is not False
+        or preflight.get("post_smoke_amendment", {}).get("id")
+        != "C2_V8_POST_SMOKE_AMENDMENT_02"
+    ):
+        raise ValueError("C2/V8 post-smoke amendment provenance is malformed")
     if preflight.get("zero_gpu_validation", {}).get("status") != "passed":
         raise ValueError("C2/V8 zero-GPU validation is not frozen as passed")
     files = preflight.get("files")

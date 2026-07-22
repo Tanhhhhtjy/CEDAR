@@ -23,7 +23,11 @@ class FakeTokenizer:
 
 
 def test_frozen_phase_resolution_and_row_selection() -> None:
-    assert runner.validate_execution_preflight()["gpu_or_qwen_execution_performed"] is False
+    preflight = runner.validate_execution_preflight()
+    assert preflight["status"] == "post_smoke_audit_amendment_02_frozen"
+    assert preflight["gpu_or_qwen_execution_performed"] is True
+    assert preflight["smoke_performed"] is True
+    assert preflight["formal_execution_performed"] is False
     rows, gate = runner.validate_inputs(require_review=False)
     assert gate == {"status": "not_checked"}
     assert len(rows) == 1200
@@ -214,6 +218,35 @@ def test_auditor_pairs_four_option_logits_by_id() -> None:
     left = [record("b", 1.0), record("a", 2.0)]
     right = [record("a", 2.00001), record("b", 1.00002)]
     assert audit.max_logit_difference(left, right, ("answer_logits",)) < 1e-4
+
+
+def test_diagnostic_option_mass_allows_only_float32_roundoff() -> None:
+    probabilities = {"A": 0.00000198, "B": 0.0, "C": 0.0, "D": 1.0}
+    option_mass = sum(probabilities.values())
+    conditional = {label: value / option_mass for label, value in probabilities.items()}
+    record = {
+        "initial_answer": "D",
+        "target_answer": "A",
+        "answer_logits": {
+            "logits": {"A": 0.0, "B": -2.0, "C": -1.0, "D": 3.0},
+            "full_vocab_probabilities": probabilities,
+            "conditional_probabilities": conditional,
+            "option_argmax": "D",
+            "top_token_is_option": True,
+            "option_mass": option_mass,
+            "target_minus_initial": -3.0,
+            "full_vocab_entropy": 0.001,
+        },
+    }
+    assert audit.diagnostics_valid(record, "answer_logits")
+    record["answer_logits"]["full_vocab_probabilities"]["A"] = 0.0001
+    record["answer_logits"]["option_mass"] = 1.0001
+    total = record["answer_logits"]["option_mass"]
+    record["answer_logits"]["conditional_probabilities"] = {
+        label: value / total
+        for label, value in record["answer_logits"]["full_vocab_probabilities"].items()
+    }
+    assert not audit.diagnostics_valid(record, "answer_logits")
 
 
 def test_comparable_configuration_ignores_only_paired_run_fields() -> None:

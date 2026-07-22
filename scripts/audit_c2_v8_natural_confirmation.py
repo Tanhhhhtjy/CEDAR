@@ -38,6 +38,7 @@ LAYERS = tuple(range(46, 54))
 LABELS = ("A", "B", "C", "D")
 LABEL_TOKEN_IDS = {"A": 32, "B": 33, "C": 34, "D": 35}
 LOGIT_TOLERANCE = 1e-4
+FLOAT32_PROBABILITY_TOLERANCE = 64 * 2**-23
 IDENTITY_FIELDS = (
     "base_id",
     "source_id",
@@ -212,7 +213,7 @@ def diagnostics_valid(record: Mapping[str, Any], field: str) -> bool:
         and payload.get("option_argmax") == max(LABELS, key=lambda label: logits[label])
         and isinstance(payload.get("top_token_is_option"), bool)
         and finite(payload.get("option_mass"))
-        and 0.0 <= float(payload["option_mass"]) <= 1.000001
+        and 0.0 <= float(payload["option_mass"]) <= 1.0 + FLOAT32_PROBABILITY_TOLERANCE
         and math.isclose(
             float(payload["option_mass"]),
             sum(float(probabilities[label]) for label in LABELS),

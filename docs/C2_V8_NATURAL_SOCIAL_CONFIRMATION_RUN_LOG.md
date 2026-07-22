@@ -15,7 +15,8 @@
   builder、validator、runner、auditor、analyzer 和测试；原始字节哈希仅作诊断。
 - 修正案 01 将人工路径改为“单一数据负责人全量审核＋自动化全量验证”。不得写成双人
   审核通过，也不得报告一致率或 Cohen's kappa。
-- C2/V8 定向 Ruff 与 25 项定向测试通过，全仓 211 项测试通过。`ruff check .` 仍报告
+- 修正案 02 后 C2/V8 定向 Ruff 与 26 项定向测试通过，全仓 212 项测试通过。
+  `ruff check .` 仍报告
   仓库既有、位于本轮 C2/V8 文件之外的 647 项历史格式问题；本轮未批量改写无关旧数据
   构建脚本，preflight 如实记录该基线限制，不将其伪报为全仓 Ruff 通过。
 - Runner 会重新计算当前 construction 与人工审核结果，并要求其与
@@ -59,6 +60,11 @@ conda run -n cedar python scripts/audit_c2_v8_natural_confirmation.py \
 
 `SMOKE_AUDIT.json` 不是 `passed` 时，正式路径会被 runner 硬阻止。Smoke 的行为方向、
 target-follow 或 trigger 高低都不是通过条件。
+
+首次 smoke 144/144 完成后，审计仅因 float32 option mass 超出原 `1+1e-6` 上限最多
+`1.98e-6` 而停止；正式实验未开始。修正案 02 将审计上界改为
+`1 + 64 * float32_epsilon`，不修改或重跑 smoke 输出。新提交只允许先重审原 smoke，重审
+通过后再进入正式 Direct。
 
 ## 正式固定顺序
 
