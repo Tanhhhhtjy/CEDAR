@@ -68,7 +68,7 @@ F_OPERATOR_CONTRACTS = [
 
 
 def _error_class_for(family_index: int, variant_index: int, replicate_id: int) -> str:
-    matrix_index = family_index * 6 + variant_index * 3 + (replicate_id - 1)
+    matrix_index = family_index * 3 + variant_index * 3 + (replicate_id - 1)
     return ERROR_CLASSES[matrix_index % len(ERROR_CLASSES)]
 
 

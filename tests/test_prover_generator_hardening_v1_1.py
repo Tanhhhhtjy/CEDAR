@@ -69,7 +69,7 @@ def test_all_48_neighborhoods_have_one_unique_edit_and_stable_order() -> None:
         for variant_index, variant in enumerate(("easy", "medium")):
             for replicate_id in range(1, 4):
                 error_class = ERROR_CLASSES[
-                    (family_index * 6 + variant_index * 3 + replicate_id - 1) % 6
+                    (family_index * 3 + variant_index * 3 + replicate_id - 1) % 6
                 ]
                 seed = stable_seed(MASTER_SEED, blueprint["family_id"], variant, replicate_id)
                 built = proof_graph_builder(
