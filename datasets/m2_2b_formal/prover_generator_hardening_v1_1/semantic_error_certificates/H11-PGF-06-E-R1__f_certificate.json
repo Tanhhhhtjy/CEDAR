@@ -1,10 +1,10 @@
 {
-  "error_class": "cross_entity_transfer",
+  "error_class": "unsupported_bridge",
   "entailed_premises": [
     {
-      "predicate": "vek24fallsignal",
+      "predicate": "vek24fallobserved",
       "arguments": [
-        "cmiv37"
+        "cnav45"
       ],
       "negated": false
     }
@@ -12,31 +12,31 @@
   "invalid_inference": {
     "premises": [
       {
-        "predicate": "vek24fallsignal",
+        "predicate": "vek24fallobserved",
         "arguments": [
-          "cmiv37"
+          "cnav45"
         ],
         "negated": false
       }
     ],
     "claimed_conclusion": {
-      "predicate": "vek24fallsignal",
+      "predicate": "vek24fallbridge",
       "arguments": [
         "cnav45"
       ],
       "negated": false
     },
-    "operator": "cross_entity_transfer"
+    "operator": "unsupported_bridge"
   },
   "valid_downstream_steps": [
     {
       "kind": "atomic_revision_projection",
-      "claim_sha256": "c9bef76ee69984301da337a48dc7c9611dd2b3659f631236736f6872f40aa9be",
+      "claim_sha256": "f31c3d321260a51d602700184bf9d6e42acde5e52330829076f427e163e4cb00",
       "projected_edit_sha256": "b308b7a4c066d290a8813ef76589bb2aca3ef42f4c0f30dffa4b5a4d4f3c7e1c"
     },
     {
       "kind": "recompute_gold_after_authenticated_edit",
-      "updated_world_sha256": "5cf66213965529021ba96331a08cd43133338b06670002cc4c7abb8d1803f7e2",
+      "updated_world_sha256": "4c3d722827869e7b51840f14b2e1e76953883c511870c2965ef0f60f028c7195",
       "updated_label": "false"
     }
   ],
@@ -52,12 +52,12 @@
   },
   "fatal_error_count": 1,
   "semantic_error_certificate": {
-    "derived_error_class": "cross_entity_transfer",
-    "world_semantic_sha256": "b33848f6138b5ceb86bd962259bc060c3d2dce0509370564fd36b987eed8b2c0",
+    "derived_error_class": "unsupported_bridge",
+    "world_semantic_sha256": "ec6651519710241b4b654b020b9a75c56eab86bc603e4b73b991ca03734aca67",
     "entailed_premise_keys": [
-      "vek24fallsignal(cmiv37)"
+      "vek24fallobserved(cnav45)"
     ],
-    "unsupported_claim_key": "vek24fallsignal(cnav45)",
+    "unsupported_claim_key": "vek24fallbridge(cnav45)",
     "operator_checks": {
       "premises_entailed": true,
       "claim_not_entailed": true,
@@ -71,9 +71,9 @@
     "model": {
       "target_refuted": "-vek24outcome(cnav45)",
       "required_counterliteral": "vek24outcome(cnav45)",
-      "input_sha256": "73c3ffb23bb0bd47bd507f5f9075bc7df5c61c65bcb85752f5195452f6969946",
+      "input_sha256": "96225a89a17ac11631f148017e00075fb4beb7b29108357cef1b7df7269bd9c4",
       "model_found": true,
-      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nvek24noise1(cmiv37).\nvek24noise2(ctor73).\nvek24noise3(clan24).\nvek24fallsignal(cmiv37).\nvek24reach(cnav45,cmiv37) -> -vek24outcome(cnav45).\n(all x all y (vek24edge(x,y) -> vek24reach(x,y))).\n(all x all y all z (vek24reach(x,y) & vek24edge(y,z) -> vek24reach(x,z))).\nvek24outcome(cnav45).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(clan24, [ 0 ]),\n\n        function(cmiv37, [ 0 ]),\n\n        function(cnav45, [ 0 ]),\n\n        function(ctor73, [ 0 ]),\n\n        relation(vek24fallsignal(_), [ 1, 0 ]),\n\n        relation(vek24noise1(_), [ 1, 0 ]),\n\n        relation(vek24noise2(_), [ 1, 0 ]),\n\n        relation(vek24noise3(_), [ 1, 0 ]),\n\n        relation(vek24outcome(_), [ 1, 0 ]),\n\n        relation(vek24edge(_,_), [\n\t\t\t   0, 0,\n\t\t\t   0, 0 ]),\n\n        relation(vek24reach(_,_), [\n\t\t\t   0, 0,\n\t\t\t   0, 0 ])\n]).\n\nMODEL FOUND\n"
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nvek24noise1(cmiv37).\nvek24noise2(ctor73).\nvek24noise3(clan24).\nvek24fallobserved(cnav45).\nvek24reach(cnav45,cmiv37) -> -vek24outcome(cnav45).\n(all x all y (vek24edge(x,y) -> vek24reach(x,y))).\n(all x all y all z (vek24reach(x,y) & vek24edge(y,z) -> vek24reach(x,z))).\nvek24outcome(cnav45).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(clan24, [ 0 ]),\n\n        function(cmiv37, [ 0 ]),\n\n        function(cnav45, [ 0 ]),\n\n        function(ctor73, [ 0 ]),\n\n        relation(vek24fallobserved(_), [ 1, 0 ]),\n\n        relation(vek24noise1(_), [ 1, 0 ]),\n\n        relation(vek24noise2(_), [ 1, 0 ]),\n\n        relation(vek24noise3(_), [ 1, 0 ]),\n\n        relation(vek24outcome(_), [ 1, 0 ]),\n\n        relation(vek24edge(_,_), [\n\t\t\t   0, 0,\n\t\t\t   0, 0 ]),\n\n        relation(vek24reach(_,_), [\n\t\t\t   0, 0,\n\t\t\t   0, 0 ])\n]).\n\nMODEL FOUND\n"
     }
   },
   "repair_witness": {
@@ -98,7 +98,7 @@
       "candidate_id": "cand-a7d8f9dfc638d9b1",
       "rank": 19
     },
-    "updated_world_sha256": "5cf66213965529021ba96331a08cd43133338b06670002cc4c7abb8d1803f7e2",
+    "updated_world_sha256": "4c3d722827869e7b51840f14b2e1e76953883c511870c2965ef0f60f028c7195",
     "repaired_label": "false"
   },
   "second_failure_point_absent": true,

@@ -1,11 +1,10 @@
 {
-  "error_class": "scope_transfer",
+  "error_class": "converse_error",
   "entailed_premises": [
     {
-      "predicate": "sor779fallaccess",
+      "predicate": "sor779fallverified",
       "arguments": [
-        "cpax6",
-        "remote"
+        "cpax6"
       ],
       "negated": false
     }
@@ -13,33 +12,31 @@
   "invalid_inference": {
     "premises": [
       {
-        "predicate": "sor779fallaccess",
+        "predicate": "sor779fallverified",
         "arguments": [
-          "cpax6",
-          "remote"
+          "cpax6"
         ],
         "negated": false
       }
     ],
     "claimed_conclusion": {
-      "predicate": "sor779fallaccess",
+      "predicate": "sor779fallsource",
       "arguments": [
-        "cpax6",
-        "local"
+        "cpax6"
       ],
       "negated": false
     },
-    "operator": "scope_transfer"
+    "operator": "converse_error"
   },
   "valid_downstream_steps": [
     {
       "kind": "atomic_revision_projection",
-      "claim_sha256": "0c226c428b0091be612a29728673f9f874cf01f8a1a7d790d771a0c87569ba87",
-      "projected_edit_sha256": "a900fb20910507d4c3fd32b92a360657593f63ccdef7f93d71d811beba02838a"
+      "claim_sha256": "c9fd46499d821a1d7d44aed9cbef2db8b3a1607dff4967a6f12dac8a36ede1d1",
+      "projected_edit_sha256": "a7ab22eb19e3e9dc26aa55705857ea4f3dbc2779ad12a118833d37d171980953"
     },
     {
       "kind": "recompute_gold_after_authenticated_edit",
-      "updated_world_sha256": "97c11594a1faf0fa1888c97705997c7039ad12254812ec6c7595a896e8526e9d",
+      "updated_world_sha256": "c86eebf30b916b1abcce37f8613f250f37abab6ce7e34d048a12bdeef0582c38",
       "updated_label": "false"
     }
   ],
@@ -55,12 +52,12 @@
   },
   "fatal_error_count": 1,
   "semantic_error_certificate": {
-    "derived_error_class": "scope_transfer",
-    "world_semantic_sha256": "279f1d08b6ddf1280519dbdb0c61e846ecfbda457613db5daeb9ca059dfe4be4",
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "4793c2cd7df6b5ddf5071f8a2aba29522a922dbef888231dbdf479d2861b79f4",
     "entailed_premise_keys": [
-      "sor779fallaccess(cpax6,remote)"
+      "sor779fallverified(cpax6)"
     ],
-    "unsupported_claim_key": "sor779fallaccess(cpax6,local)",
+    "unsupported_claim_key": "sor779fallsource(cpax6)",
     "operator_checks": {
       "premises_entailed": true,
       "claim_not_entailed": true,
@@ -74,9 +71,9 @@
     "model": {
       "target_refuted": "-sor779outcome(cpax6)",
       "required_counterliteral": "sor779outcome(cpax6)",
-      "input_sha256": "73887e2b0ff8f90553c8242dd0d63b5cecd4b0daa899ef504c1c237597da6398",
+      "input_sha256": "d5752cd49e97362b6a279b78081594c3a0d17415fba5ee51135ccb507d507d5c",
       "model_found": true,
-      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nsor779edge(cpax6,clan61).\nsor779edge(csor779node0,csor779node1).\nsor779edge(csor779node1,csor779node2).\nsor779edge(csor779node2,csor779node3).\nsor779noise1(clan61).\nsor779noise2(ctor13).\nsor779noise3(cvek17).\nsor779noise4(cmiv39).\nsor779noise5(csor779node0).\nsor779noise6(csor779node1).\nsor779noise7(csor779node2).\nsor779noise8(csor779node3).\nsor779noise9(cpax6).\nsor779fallaccess(cpax6,remote).\nsor779reach(cpax6,csor779node3) -> -sor779outcome(cpax6).\n(all x all y (sor779edge(x,y) -> sor779reach(x,y))).\n(all x all y all z (sor779reach(x,y) & sor779edge(y,z) -> sor779reach(x,z))).\nsor779outcome(cpax6).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(clan61, [ 0 ]),\n\n        function(cmiv39, [ 0 ]),\n\n        function(cpax6, [ 0 ]),\n\n        function(csor779node0, [ 1 ]),\n\n        function(csor779node1, [ 1 ]),\n\n        function(csor779node2, [ 1 ]),\n\n        function(csor779node3, [ 1 ]),\n\n        function(ctor13, [ 0 ]),\n\n        function(cvek17, [ 0 ]),\n\n        function(remote, [ 0 ]),\n\n        relation(sor779noise1(_), [ 1, 0 ]),\n\n        relation(sor779noise2(_), [ 1, 0 ]),\n\n        relation(sor779noise3(_), [ 1, 0 ]),\n\n        relation(sor779noise4(_), [ 1, 0 ]),\n\n        relation(sor779noise5(_), [ 0, 1 ]),\n\n        relation(sor779noise6(_), [ 0, 1 ]),\n\n        relation(sor779noise7(_), [ 0, 1 ]),\n\n        relation(sor779noise8(_), [ 0, 1 ]),\n\n        relation(sor779noise9(_), [ 1, 0 ]),\n\n        relation(sor779outcome(_), [ 1, 0 ]),\n\n        relation(sor779edge(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 1 ]),\n\n        relation(sor779fallaccess(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 0 ]),\n\n        relation(sor779reach(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 1 ])\n]).\n\nMODEL FOUND\n"
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nsor779edge(cpax6,clan61).\nsor779edge(csor779node0,csor779node1).\nsor779edge(csor779node1,csor779node2).\nsor779edge(csor779node2,csor779node3).\nsor779noise2(ctor13).\nsor779noise3(cvek17).\nsor779noise4(cmiv39).\nsor779noise5(csor779node0).\nsor779noise6(csor779node1).\nsor779noise7(csor779node2).\nsor779noise8(csor779node3).\nsor779noise9(cpax6).\nsor779fallverified(cpax6).\nsor779fallsource(cpax6) -> sor779fallverified(cpax6).\nsor779reach(cpax6,csor779node3) -> -sor779outcome(cpax6).\n(all x all y (sor779edge(x,y) -> sor779reach(x,y))).\n(all x all y all z (sor779reach(x,y) & sor779edge(y,z) -> sor779reach(x,z))).\nsor779outcome(cpax6).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(clan61, [ 0 ]),\n\n        function(cmiv39, [ 0 ]),\n\n        function(cpax6, [ 0 ]),\n\n        function(csor779node0, [ 1 ]),\n\n        function(csor779node1, [ 1 ]),\n\n        function(csor779node2, [ 1 ]),\n\n        function(csor779node3, [ 1 ]),\n\n        function(ctor13, [ 0 ]),\n\n        function(cvek17, [ 0 ]),\n\n        relation(sor779fallsource(_), [ 0, 0 ]),\n\n        relation(sor779fallverified(_), [ 1, 0 ]),\n\n        relation(sor779noise2(_), [ 1, 0 ]),\n\n        relation(sor779noise3(_), [ 1, 0 ]),\n\n        relation(sor779noise4(_), [ 1, 0 ]),\n\n        relation(sor779noise5(_), [ 0, 1 ]),\n\n        relation(sor779noise6(_), [ 0, 1 ]),\n\n        relation(sor779noise7(_), [ 0, 1 ]),\n\n        relation(sor779noise8(_), [ 0, 1 ]),\n\n        relation(sor779noise9(_), [ 1, 0 ]),\n\n        relation(sor779outcome(_), [ 1, 0 ]),\n\n        relation(sor779edge(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 1 ]),\n\n        relation(sor779reach(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 1 ])\n]).\n\nMODEL FOUND\n"
     }
   },
   "repair_witness": {
@@ -99,9 +96,9 @@
       },
       "edit_count": 1,
       "candidate_id": "cand-d6c25c626260d497",
-      "rank": 8
+      "rank": 18
     },
-    "updated_world_sha256": "97c11594a1faf0fa1888c97705997c7039ad12254812ec6c7595a896e8526e9d",
+    "updated_world_sha256": "c86eebf30b916b1abcce37f8613f250f37abab6ce7e34d048a12bdeef0582c38",
     "repaired_label": "false"
   },
   "second_failure_point_absent": true,

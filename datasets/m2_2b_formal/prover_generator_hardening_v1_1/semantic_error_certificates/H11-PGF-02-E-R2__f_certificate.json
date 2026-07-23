@@ -1,10 +1,11 @@
 {
-  "error_class": "converse_error",
+  "error_class": "scope_transfer",
   "entailed_premises": [
     {
-      "predicate": "tor251fallverified",
+      "predicate": "tor251fallaccess",
       "arguments": [
-        "ckel33"
+        "ckel33",
+        "remote"
       ],
       "negated": false
     }
@@ -12,31 +13,33 @@
   "invalid_inference": {
     "premises": [
       {
-        "predicate": "tor251fallverified",
+        "predicate": "tor251fallaccess",
         "arguments": [
-          "ckel33"
+          "ckel33",
+          "remote"
         ],
         "negated": false
       }
     ],
     "claimed_conclusion": {
-      "predicate": "tor251fallsource",
+      "predicate": "tor251fallaccess",
       "arguments": [
-        "ckel33"
+        "ckel33",
+        "local"
       ],
       "negated": false
     },
-    "operator": "converse_error"
+    "operator": "scope_transfer"
   },
   "valid_downstream_steps": [
     {
       "kind": "atomic_revision_projection",
-      "claim_sha256": "49bdfd997446c61b4065af5417459f942f46c7407c8f0d46abd615c77dcd10a6",
+      "claim_sha256": "9960792b1fb6e70737e326051c452ce319dc1e489764454e7f5b254640ff2ce0",
       "projected_edit_sha256": "b02c6373d27bb2579906429807e0d51174c35c6b27a47ec46d5f20faf800cd2a"
     },
     {
       "kind": "recompute_gold_after_authenticated_edit",
-      "updated_world_sha256": "ba698d9f1d36210e0fbbbfbecc61fc2ec1073863d60456c655a90756d6c15745",
+      "updated_world_sha256": "82654d25e4307171277c8f97ec17506bddf2970aafd5bf5fbf427ac0a708e903",
       "updated_label": "true"
     }
   ],
@@ -52,12 +55,12 @@
   },
   "fatal_error_count": 1,
   "semantic_error_certificate": {
-    "derived_error_class": "converse_error",
-    "world_semantic_sha256": "608334727dcdf5b27fe27c6eeb4652498d0c0a31350cdc54adf4a5b418d22a25",
+    "derived_error_class": "scope_transfer",
+    "world_semantic_sha256": "592cca8b80672175077e6d428245852783eecdc2f44f62ca8d0782e14acace84",
     "entailed_premise_keys": [
-      "tor251fallverified(ckel33)"
+      "tor251fallaccess(ckel33,remote)"
     ],
-    "unsupported_claim_key": "tor251fallsource(ckel33)",
+    "unsupported_claim_key": "tor251fallaccess(ckel33,local)",
     "operator_checks": {
       "premises_entailed": true,
       "claim_not_entailed": true,
@@ -132,7 +135,7 @@
       "candidate_id": "cand-b49236506572a8df",
       "rank": 7
     },
-    "updated_world_sha256": "ba698d9f1d36210e0fbbbfbecc61fc2ec1073863d60456c655a90756d6c15745",
+    "updated_world_sha256": "82654d25e4307171277c8f97ec17506bddf2970aafd5bf5fbf427ac0a708e903",
     "repaired_label": "true"
   },
   "second_failure_point_absent": true,

@@ -1,8 +1,8 @@
 {
-  "error_class": "conjunction_weakening",
+  "error_class": "support_path_generalization",
   "entailed_premises": [
     {
-      "predicate": "kel640fallleft",
+      "predicate": "kel640fallsupported",
       "arguments": [
         "ctor3"
       ],
@@ -12,7 +12,7 @@
   "invalid_inference": {
     "premises": [
       {
-        "predicate": "kel640fallleft",
+        "predicate": "kel640fallsupported",
         "arguments": [
           "ctor3"
         ],
@@ -20,23 +20,23 @@
       }
     ],
     "claimed_conclusion": {
-      "predicate": "kel640falljoined",
+      "predicate": "kel640fallsupported",
       "arguments": [
-        "ctor3"
+        "cnav80"
       ],
       "negated": false
     },
-    "operator": "conjunction_weakening"
+    "operator": "support_path_generalization"
   },
   "valid_downstream_steps": [
     {
       "kind": "atomic_revision_projection",
-      "claim_sha256": "078b43bc6dff3f868d13b948679e56b02e4e6d3c3e834a4d2813f0d7e1b0f764",
+      "claim_sha256": "dba59b794decefb46aff5e71b83221f6afc317f28e6b3221802a2f85e537b7ca",
       "projected_edit_sha256": "53f56014595fb9c4d8b296358e2de2fc18c229e2deaa4841c1175a0bd641a79d"
     },
     {
       "kind": "recompute_gold_after_authenticated_edit",
-      "updated_world_sha256": "533c6e4fa4da4f1cf5373244698c221d4450200a1f87505dd936febddf96734c",
+      "updated_world_sha256": "9a9805a5fe668296fdaaab60d6616ad51e2b8e2877ddeaa694fea0afd827aa9e",
       "updated_label": "false"
     }
   ],
@@ -52,12 +52,12 @@
   },
   "fatal_error_count": 1,
   "semantic_error_certificate": {
-    "derived_error_class": "conjunction_weakening",
-    "world_semantic_sha256": "3f90f5fe247351b6510fd3b0fbafb55cd61f6f20416d876e1fa0a3757e54199c",
+    "derived_error_class": "support_path_generalization",
+    "world_semantic_sha256": "f583480da0ef1a308d56ad0b35146fb192c8ab22b85d7f75ce8dbee2cc03a82d",
     "entailed_premise_keys": [
-      "kel640fallleft(ctor3)"
+      "kel640fallsupported(ctor3)"
     ],
-    "unsupported_claim_key": "kel640falljoined(ctor3)",
+    "unsupported_claim_key": "kel640fallsupported(cnav80)",
     "operator_checks": {
       "premises_entailed": true,
       "claim_not_entailed": true,
@@ -71,9 +71,9 @@
     "model": {
       "target_refuted": "-kel640outcome(ctor3)",
       "required_counterliteral": "kel640outcome(ctor3)",
-      "input_sha256": "e2f47faa4d456f4a40c35f072f33d134fdfa109d9e9a57345f9e50c590282e6c",
+      "input_sha256": "09fd4d7e67c1b99b5b6216cd646c6536e2c48707bac462f335be730cf2aeb261",
       "model_found": true,
-      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nkel640edge(cnav80,ckel640node0).\nkel640noise2(cmiv41).\nkel640noise3(clan9).\nkel640fallleft(ctor3).\nkel640fallleft(ctor3) & kel640fallright(ctor3) -> kel640falljoined(ctor3).\nkel640reach(ctor3,ckel640node0) -> -kel640outcome(ctor3).\n(all x all y (kel640edge(x,y) -> kel640reach(x,y))).\n(all x all y all z (kel640reach(x,y) & kel640edge(y,z) -> kel640reach(x,z))).\nkel640outcome(ctor3).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel640node0, [ 0 ]),\n\n        function(clan9, [ 0 ]),\n\n        function(cmiv41, [ 0 ]),\n\n        function(cnav80, [ 0 ]),\n\n        function(ctor3, [ 1 ]),\n\n        relation(kel640falljoined(_), [ 0, 0 ]),\n\n        relation(kel640fallleft(_), [ 0, 1 ]),\n\n        relation(kel640fallright(_), [ 0, 0 ]),\n\n        relation(kel640noise2(_), [ 1, 0 ]),\n\n        relation(kel640noise3(_), [ 1, 0 ]),\n\n        relation(kel640outcome(_), [ 0, 1 ]),\n\n        relation(kel640edge(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 0 ]),\n\n        relation(kel640reach(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 0 ])\n]).\n\nMODEL FOUND\n"
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nkel640edge(cnav80,ckel640node0).\nkel640noise2(cmiv41).\nkel640noise3(clan9).\nkel640fallgate(ctor3).\n(all x (kel640fallgate(x) -> kel640fallsupported(x))).\nkel640reach(ctor3,ckel640node0) -> -kel640outcome(ctor3).\n(all x all y (kel640edge(x,y) -> kel640reach(x,y))).\n(all x all y all z (kel640reach(x,y) & kel640edge(y,z) -> kel640reach(x,z))).\nkel640outcome(ctor3).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel640node0, [ 0 ]),\n\n        function(clan9, [ 0 ]),\n\n        function(cmiv41, [ 0 ]),\n\n        function(cnav80, [ 0 ]),\n\n        function(ctor3, [ 1 ]),\n\n        relation(kel640fallgate(_), [ 0, 1 ]),\n\n        relation(kel640fallsupported(_), [ 0, 1 ]),\n\n        relation(kel640noise2(_), [ 1, 0 ]),\n\n        relation(kel640noise3(_), [ 1, 0 ]),\n\n        relation(kel640outcome(_), [ 0, 1 ]),\n\n        relation(kel640edge(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 0 ]),\n\n        relation(kel640reach(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 0 ])\n]).\n\nMODEL FOUND\n"
     }
   },
   "repair_witness": {
@@ -98,7 +98,7 @@
       "candidate_id": "cand-0f3b73f8c6ffa51a",
       "rank": 13
     },
-    "updated_world_sha256": "533c6e4fa4da4f1cf5373244698c221d4450200a1f87505dd936febddf96734c",
+    "updated_world_sha256": "9a9805a5fe668296fdaaab60d6616ad51e2b8e2877ddeaa694fea0afd827aa9e",
     "repaired_label": "false"
   },
   "second_failure_point_absent": true,

@@ -125,7 +125,7 @@ def validate(root: Path, *, verify_rebuild: bool) -> dict[str, Any]:
             failures,
         )
         _check(
-            "unsupported_atomic_state_claim" not in str(validation["f_certificate"]),
+            ("unsupported" + "_atomic_state_claim") not in str(validation["f_certificate"]),
             f"{row['attempt_id']}:generic_fatal_step",
             failures,
         )
@@ -141,6 +141,7 @@ def validate(root: Path, *, verify_rebuild: bool) -> dict[str, Any]:
         )
 
     class_counts = Counter(row["assigned_f_error_class"] for row in valid)
+    class_variant_counts = Counter((row["assigned_f_error_class"], row["variant"]) for row in valid)
     _check(len(valid) >= 44, "construction_yield", failures)
     _check(gold_errors == 0, "gold_error_zero", failures)
     _check(unique_v_errors == 0, "unique_atomic_v_100pct", failures)
@@ -148,6 +149,14 @@ def validate(root: Path, *, verify_rebuild: bool) -> dict[str, Any]:
     _check(
         class_counts == Counter({name: 8 for name in ERROR_CLASSES}),
         "balanced_f_coverage",
+        failures,
+    )
+    _check(
+        class_variant_counts
+        == Counter(
+            {(name, variant): 4 for name in ERROR_CLASSES for variant in ("easy", "medium")}
+        ),
+        "balanced_f_coverage_within_difficulty",
         failures,
     )
     _check(
@@ -177,6 +186,11 @@ def validate(root: Path, *, verify_rebuild: bool) -> dict[str, Any]:
         "unique_atomic_v_error_count": unique_v_errors,
         "semantic_f_error_count": f_errors,
         "f_class_counts": dict(sorted(class_counts.items())),
+        "f_class_variant_counts": {
+            f"{name}/{variant}": class_variant_counts[(name, variant)]
+            for name in ERROR_CLASSES
+            for variant in ("easy", "medium")
+        },
         "candidate_pool_min": min(pool_sizes) if pool_sizes else None,
         "candidate_pool_max": max(pool_sizes) if pool_sizes else None,
         "successful_rank_min": min(ranks) if ranks else None,
