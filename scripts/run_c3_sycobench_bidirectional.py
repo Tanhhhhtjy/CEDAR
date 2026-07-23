@@ -66,7 +66,7 @@ ARMS_PATH = DATA_ROOT / "c3_arms2400.jsonl"
 SMOKE_PATH = DATA_ROOT / "c3_smoke.jsonl"
 MANIFEST_PATH = DATA_ROOT / "manifest.json"
 CONSTRUCTION_AUDIT_PATH = DATA_ROOT / "construction_audit.json"
-REVIEW_GATE_PATH = DATA_ROOT / "HUMAN_REVIEW_GATE.json"
+REVIEW_GATE_PATH = DATA_ROOT / "REVIEW_GATE.json"
 PREFLIGHT_PATH = DATA_ROOT / "execution_preflight_manifest.json"
 VALIDATOR_PATH = DATA_ROOT / "validate_c3_sycobench_bidirectional.py"
 DEFAULT_OUTPUT_ROOT = ROOT / "artifacts" / "m2" / "c3_sycobench_bidirectional_selectivity"
@@ -87,15 +87,16 @@ EXPECTED_CONTENT_HASHES = {
 REQUIRED_PREFLIGHT_FILES = {
     ".gitattributes",
     "docs/C3_SYCOBENCH_BIDIRECTIONAL_SELECTIVITY_PROTOCOL.md",
+    "docs/C3_PROTOCOL_AMENDMENT_01_AGENT_SELF_REVIEW_WAIVER.md",
     "datasets/c3_sycobench_bidirectional_selectivity/manifest.json",
     "datasets/c3_sycobench_bidirectional_selectivity/construction_audit.json",
-    "datasets/c3_sycobench_bidirectional_selectivity/HUMAN_REVIEW_GATE.json",
+    "datasets/c3_sycobench_bidirectional_selectivity/REVIEW_GATE.json",
     "datasets/c3_sycobench_bidirectional_selectivity/c3_base600.jsonl",
     "datasets/c3_sycobench_bidirectional_selectivity/c3_arms2400.jsonl",
     "datasets/c3_sycobench_bidirectional_selectivity/c3_smoke.jsonl",
-    "datasets/c3_sycobench_bidirectional_selectivity/review/review_completed.csv",
-    "datasets/c3_sycobench_bidirectional_selectivity/review/template_review_completed.csv",
-    "datasets/c3_sycobench_bidirectional_selectivity/review/single_review_attestation.json",
+    "datasets/c3_sycobench_bidirectional_selectivity/review/agent_review_completed.csv",
+    "datasets/c3_sycobench_bidirectional_selectivity/review/template_agent_review_completed.csv",
+    "datasets/c3_sycobench_bidirectional_selectivity/review/agent_self_review_attestation.json",
     "scripts/run_c3_sycobench_bidirectional.py",
     "scripts/audit_c3_sycobench_bidirectional.py",
     "scripts/analyze_c3_sycobench_bidirectional.py",
@@ -159,23 +160,27 @@ def validate_execution_preflight() -> dict[str, Any]:
     if not PREFLIGHT_PATH.is_file():
         raise ValueError("C3 GPU is blocked: execution_preflight_manifest.json is missing")
     preflight = read_json(PREFLIGHT_PATH)
-    if preflight.get("status") != "zero_gpu_code_frozen_single_review_authorized":
+    if preflight.get("status") != "zero_gpu_code_frozen_agent_self_review_authorized":
         raise ValueError("C3 execution preflight is not an authorized zero-GPU freeze")
     if (
         preflight.get("gpu_or_qwen_execution_performed") is not False
         or preflight.get("formal_execution_performed") is not False
-        or preflight.get("human_review_gate") != "passed_single_data_lead_review"
+        or preflight.get("review_gate") != "passed_agent_self_review_user_waiver"
         or preflight.get("data_content_hashes") != EXPECTED_CONTENT_HASHES
         or preflight.get("zero_gpu_validation", {}).get("status") != "passed"
     ):
         raise ValueError("C3 execution preflight contract changed")
-    if preflight.get("human_review_disclosure") != {
-        "review_mode": "single_data_lead_review",
+    if preflight.get("review_disclosure") != {
+        "review_mode": "agent_self_review_user_waiver",
+        "protocol_deviation": True,
+        "human_review_performed": False,
+        "data_lead_review_performed": False,
+        "user_review_waived": True,
         "dual_independent_review": False,
         "raw_agreement": None,
         "cohen_kappa": None,
     }:
-        raise ValueError("C3 preflight human-review disclosure changed")
+        raise ValueError("C3 preflight amended-review disclosure changed")
     model = preflight.get("model_contract", {})
     expected_model = {
         "repo": "Qwen/Qwen3-32B",
@@ -204,18 +209,22 @@ def validate_execution_preflight() -> dict[str, Any]:
 
 def validate_review_gate() -> dict[str, Any]:
     if not REVIEW_GATE_PATH.is_file():
-        raise ValueError("C3 GPU is blocked: HUMAN_REVIEW_GATE.json is missing")
+        raise ValueError("C3 GPU is blocked: REVIEW_GATE.json is missing")
     validator = load_validator()
     expected = validator.validate_review_gate(validator.load_builder(), enforce_pre_artifact=False)
     observed = read_json(REVIEW_GATE_PATH)
     if observed != expected or observed.get("gpu_authorized") is not True:
-        raise ValueError("C3 human review gate is stale or does not authorize GPU")
+        raise ValueError("C3 review gate is stale or does not authorize GPU")
     if (
-        observed.get("review_mode") != "single_data_lead_review"
+        observed.get("review_mode") != "agent_self_review_user_waiver"
+        or observed.get("protocol_deviation") is not True
+        or observed.get("human_review_performed") is not False
+        or observed.get("data_lead_review_performed") is not False
+        or observed.get("user_review_waived") is not True
         or observed.get("dual_independent_review") is not False
         or observed.get("cohen_kappa") is not None
     ):
-        raise ValueError("C3 human review disclosure changed")
+        raise ValueError("C3 amended review disclosure changed")
     return observed
 
 
@@ -644,7 +653,7 @@ def main() -> None:
             "construction_audit_canonical_text_sha256": canonical_text_sha256(
                 CONSTRUCTION_AUDIT_PATH
             ),
-            "human_review_gate_canonical_text_sha256": canonical_text_sha256(REVIEW_GATE_PATH),
+            "review_gate_canonical_text_sha256": canonical_text_sha256(REVIEW_GATE_PATH),
             "execution_preflight_canonical_text_sha256": canonical_text_sha256(PREFLIGHT_PATH),
         },
         "model": asdict(model_spec),
@@ -666,9 +675,13 @@ def main() -> None:
             "reference_caps": ["p25"] if spec.monitor_enabled else [],
         },
         "capping": cap_metadata,
-        "human_review": {
+        "review_gate": {
             "status": review_gate["status"],
             "review_mode": review_gate["review_mode"],
+            "protocol_deviation": True,
+            "human_review_performed": False,
+            "data_lead_review_performed": False,
+            "user_review_waived": True,
             "direction_cases_reviewed": review_gate["direction_cases_reviewed"],
             "template_pairs_reviewed": review_gate["template_pairs_reviewed"],
             "dual_independent_review": False,

@@ -1,6 +1,6 @@
 # C3：SycoBench 双向修正选择性实验
 
-状态：冻结 exploratory diagnostic 协议；人工审核 Gate 前禁止 GPU
+状态：冻结 exploratory diagnostic 协议；Amendment 01 的代理自审 Gate 前禁止 GPU
 日期：2026-07-23
 基线提交：`364af5f797ee1eccf21c99e67570f59cbe052e5b`
 分支：`agent/c3-sycobench-bidirectional-selectivity`
@@ -135,27 +135,32 @@ arms:  edd16f21bb8f0b647bd77fb8faa50a50dc2db8c941d264145efaa2bf9a8949a6
 smoke: c1e56e7827a6c1ce20548462b8c7afc6557c51e1efd651e7a5362003073d84c2
 ```
 
-## 5. 人工最小审核
+## 5. 审核 Gate（由 Amendment 01 修订）
 
 不重新审核600道官方题。审核对象为四对模板，以及按 domain x difficulty 分层冻结的32个
 完整渲染案例；helpful/harmful 各半，覆盖 A/B/C/D target 与全部模板。
 
-审核检查 AO 纯 target exposure、S 只增加社会压力、两者均无新事实/理由、镜像正确、解释与
-真实 prompt 一致。本轮允许真实的单一数据负责人审核，但必须披露：
+原冻结方案要求单一数据负责人审核。GPU 前、且尚无任何 C3 模型输出时，用户明确放弃本人
+审核并授权代理完成冻结材料自审。该偏离由
+`C3_PROTOCOL_AMENDMENT_01_AGENT_SELF_REVIEW_WAIVER.md` 约束。审核仍检查 AO 纯 target
+exposure、S 只增加社会压力、两者均无新事实/理由、镜像正确、解释与真实 prompt 一致，但
+必须披露：
 
 ```text
-single data-lead review
-no dual independent review
+user-authorized agent self-review
+no human or data-lead review
+no independent reviewer
+no agreement estimate
 no Cohen's kappa
 ```
 
-不得由代码或模型伪造人工通过声明。真实审核 attestation 未绑定 review packet 与数据哈希前，
-runner 必须硬失败且 `gpu_authorized=false`。
+不得把代理自审写成人工或数据负责人通过。代理真实逐项阅读后填写的 attestation 未绑定
+review packet、数据、协议与修正案哈希前，runner 必须硬失败且 `gpu_authorized=false`。
 
-冻结审核材料为 `review_packet32.csv` 和 `template_review_packet.csv`。数据负责人只能在真实阅读后
-生成 `review_completed.csv`、`template_review_completed.csv` 与
-`single_review_attestation.json`。attestation helper 只负责校验全 yes 与绑定哈希，不生成或
-代填任何人工判断。
+冻结审核材料为 `review_packet32.csv` 和 `template_review_packet.csv`。代理只能在真实阅读后
+生成 `agent_review_completed.csv`、`template_agent_review_completed.csv` 与
+`agent_self_review_attestation.json`。attestation helper 只负责校验全 yes、精确用户授权和绑定
+哈希，不生成或代填判断。
 
 ## 6. Smoke
 
@@ -267,7 +272,8 @@ artifacts/m2/c3_sycobench_bidirectional_selectivity/
 
 ## 12. 固定执行命令
 
-真实审核与 execution preflight 已提交、工作区干净且 HEAD 等于 upstream 后，依次运行：
+修订后的代理自审 Gate 与 execution preflight 已提交、工作区干净且 HEAD 等于 upstream 后，
+依次运行：
 
 ```bash
 conda run -n cedar python scripts/run_c3_sycobench_bidirectional.py --scope smoke --condition nohook --stage all

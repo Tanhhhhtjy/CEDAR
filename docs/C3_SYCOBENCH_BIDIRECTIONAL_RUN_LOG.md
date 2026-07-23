@@ -1,6 +1,6 @@
 # C3 SycoBench 双向选择性实验运行日志
 
-状态：零 GPU 数据与工程已实现；真实单人审核 Gate 待完成
+状态：零 GPU 数据与工程已实现；用户授权的代理自审 Amendment 01 正在冻结
 日期：2026-07-23
 分支：`agent/c3-sycobench-bidirectional-selectivity`
 基线：`364af5f797ee1eccf21c99e67570f59cbe052e5b`
@@ -9,7 +9,8 @@
 
 - 尚未运行 Qwen、GPU 或 capping；
 - 尚未查看任何 C3 模型输出；
-- 真实单人数据负责人审核未完成，GPU Gate 必须保持关闭；
+- 用户在任何 C3 模型输出前放弃人工审核并授权代理自审；
+- 本轮无人工或数据负责人审核、无独立审核者、无一致率或 Cohen's kappa；
 - C2/V8 的模型输出不得参与 foil、模板、样本或停止规则选择。
 
 ## 零 GPU 实现记录
@@ -21,10 +22,12 @@
 - smoke24 产生每 condition 96 records，覆盖24个 domain x difficulty cells、四模板与四 target；
 - review32 为 harmful/helpful 16/16，冻结 judgment 列保持空白；
 - runner、单条件/跨条件 auditor、stem-cluster analyzer、attestation helper 与 preflight freezer 已实现；
-- targeted C3 tests 最终 22/22 passed；
+- Amendment 01 后 targeted C3 tests 最终 23/23 passed；
 - scoped Ruff check 与 Ruff format check passed；
-- 全仓 pytest 239/239 passed，只有 C2 既有 mixed-model 的2条 convergence warnings；
-- review validator 当前按设计硬失败，`gpu_authorized=false`。
+- 全仓 pytest 240/240 passed，只有 C2 既有 mixed-model 的2条 convergence warnings；
+- 代理已逐项阅读4对模板和32个冻结渲染案例，均通过既定构念与映射检查；
+- Amendment 01、完成表、绑定 attestation 与 `REVIEW_GATE.json` 已通过；execution preflight
+  在最终格式检查后冻结，并与上述文件一并提交推送后才允许 GPU。
 
 ## 后续固定记录
 

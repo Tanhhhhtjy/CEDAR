@@ -53,11 +53,15 @@ def test_runtime_revalidates_frozen_review_without_requiring_artifact_absence(
     gate = {
         "status": "passed",
         "gpu_authorized": True,
-        "review_mode": "single_data_lead_review",
+        "review_mode": "agent_self_review_user_waiver",
+        "protocol_deviation": True,
+        "human_review_performed": False,
+        "data_lead_review_performed": False,
+        "user_review_waived": True,
         "dual_independent_review": False,
         "cohen_kappa": None,
     }
-    gate_path = tmp_path / "HUMAN_REVIEW_GATE.json"
+    gate_path = tmp_path / "REVIEW_GATE.json"
     gate_path.write_text(json.dumps(gate), encoding="utf-8")
 
     class FakeValidator:

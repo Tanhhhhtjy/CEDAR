@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static construction and real single-review gates for C3."""
+"""Static construction and explicitly disclosed review gates for C3."""
 
 from __future__ import annotations
 
@@ -29,11 +29,12 @@ from scripts.c3_portable_hashes import (  # noqa: E402
 HERE = Path(__file__).resolve().parent
 BUILDER_PATH = ROOT / "scripts" / "build_c3_sycobench_bidirectional.py"
 PROTOCOL_PATH = ROOT / "docs" / "C3_SYCOBENCH_BIDIRECTIONAL_SELECTIVITY_PROTOCOL.md"
+AMENDMENT_PATH = ROOT / "docs" / "C3_PROTOCOL_AMENDMENT_01_AGENT_SELF_REVIEW_WAIVER.md"
 ARTIFACT_ROOT = ROOT / "artifacts" / "m2" / "c3_sycobench_bidirectional_selectivity"
 REVIEW_ROOT = HERE / "review"
-ATTESTATION_PATH = REVIEW_ROOT / "single_review_attestation.json"
-REVIEW_COMPLETED_PATH = REVIEW_ROOT / "review_completed.csv"
-TEMPLATE_COMPLETED_PATH = REVIEW_ROOT / "template_review_completed.csv"
+ATTESTATION_PATH = REVIEW_ROOT / "agent_self_review_attestation.json"
+REVIEW_COMPLETED_PATH = REVIEW_ROOT / "agent_review_completed.csv"
+TEMPLATE_COMPLETED_PATH = REVIEW_ROOT / "template_agent_review_completed.csv"
 
 REVIEW_FIELDS = (
     "ao_pure_target_exposure_yes_no",
@@ -299,6 +300,7 @@ def review_binding_hashes() -> dict[str, Any]:
         "bases_semantic_sha256": object_sha256(bases),
         "arms_semantic_sha256": object_sha256(arms),
         "protocol_canonical_text_sha256": canonical_text_sha256(PROTOCOL_PATH),
+        "amendment_canonical_text_sha256": canonical_text_sha256(AMENDMENT_PATH),
     }
 
 
@@ -365,7 +367,7 @@ def validate_construction(builder: ModuleType) -> dict[str, Any]:
     if any(row["followup_token_count_without_contract"] != 15 for row in arms):
         raise ValueError("C3 frozen AO/S templates are not all 15 tokens")
     if manifest.get("gpu_authorized") is not False:
-        raise ValueError("Construction manifest must not authorize GPU before human review")
+        raise ValueError("Construction manifest must not authorize GPU before the review gate")
     return {
         "status": "passed",
         "gpu_authorized": False,
@@ -380,8 +382,11 @@ def validate_construction(builder: ModuleType) -> dict[str, Any]:
         "subsets": subsets,
         "deterministic_rebuild_hashes": rebuilt_hashes,
         "review_binding_hashes": review_binding_hashes(),
-        "review_gate": "pending_real_single_data_lead_review",
-        "review_mode": "single_data_lead_review",
+        "review_gate": "separate_amended_review_gate_required",
+        "original_review_plan": "single_data_lead_review",
+        "amended_review_mode": "agent_self_review_user_waiver",
+        "protocol_deviation": True,
+        "human_review_performed": False,
         "dual_independent_review": False,
         "cohen_kappa": None,
     }
@@ -421,11 +426,11 @@ def validate_review_gate(
     active_builder = builder or load_builder()
     construction = validate_construction(active_builder)
     if enforce_pre_artifact and ARTIFACT_ROOT.exists() and any(ARTIFACT_ROOT.rglob("*")):
-        raise ValueError("C3 human review must be frozen before any C3 model artifact exists")
+        raise ValueError("C3 review gate must be frozen before any C3 model artifact exists")
     required = (ATTESTATION_PATH, REVIEW_COMPLETED_PATH, TEMPLATE_COMPLETED_PATH)
     missing = [path.name for path in required if not path.is_file()]
     if missing:
-        raise ValueError("C3 human review is pending; missing: " + ", ".join(missing))
+        raise ValueError("C3 amended review gate is pending; missing: " + ", ".join(missing))
     completed = _compare_completed(
         REVIEW_ROOT / "review_packet32.csv",
         REVIEW_COMPLETED_PATH,
@@ -441,28 +446,40 @@ def validate_review_gate(
     attestation = read_json(ATTESTATION_PATH)
     expected = {
         "status": "approved",
-        "protocol_deviation": False,
-        "review_mode": "single_data_lead_review",
+        "protocol_deviation": True,
+        "review_mode": "agent_self_review_user_waiver",
         "direction_cases_reviewed": 32,
         "template_pairs_reviewed": 4,
         "all_items_passed": True,
         "model_outputs_seen": False,
         "gpu_execution_seen": False,
+        "human_review_performed": False,
+        "data_lead_review_performed": False,
+        "user_review_waived": True,
         "dual_independent_review": False,
+        "raw_agreement": None,
         "cohen_kappa": None,
     }
     for key, value in expected.items():
         if attestation.get(key) != value:
-            raise ValueError(f"C3 single-review attestation has invalid {key}")
-    if not str(attestation.get("reviewer_id", "")).strip():
-        raise ValueError("C3 single-review attestation has no real reviewer ID")
+            raise ValueError(f"C3 agent-self-review attestation has invalid {key}")
+    if not str(attestation.get("review_agent_id", "")).strip():
+        raise ValueError("C3 agent-self-review attestation has no review agent ID")
+    authorization = attestation.get("user_authorization", {})
+    if authorization != {
+        "date": "2026-07-23",
+        "decision": "human_review_waived_agent_self_review_authorized",
+        "quoted_instruction": "不用我审核了，你直接自检一遍然后继续跑",
+    }:
+        raise ValueError("C3 agent-self-review attestation lacks the exact user waiver")
     limitations = {
-        "No independent second reviewer",
+        "No human or data-lead review",
+        "No independent reviewer",
         "No inter-annotator agreement estimate",
         "No Cohen kappa",
     }
     if set(attestation.get("limitations", [])) != limitations:
-        raise ValueError("C3 single-review limitations are incomplete")
+        raise ValueError("C3 agent-self-review limitations are incomplete")
     hashes = {
         **review_binding_hashes(),
         "review_completed_semantic_sha256": object_sha256(completed),
@@ -473,17 +490,20 @@ def validate_review_gate(
         ),
     }
     if attestation.get("hashes") != hashes:
-        raise ValueError("C3 single-review attestation is stale or bound to different content")
+        raise ValueError("C3 agent-self-review attestation is stale or bound to different content")
     return {
         "status": "passed",
         "gpu_authorized": True,
-        "review_mode": "single_data_lead_review",
-        "protocol_deviation": False,
+        "review_mode": "agent_self_review_user_waiver",
+        "protocol_deviation": True,
         "direction_cases_reviewed": 32,
         "template_pairs_reviewed": 4,
-        "reviewer_id": attestation["reviewer_id"],
+        "review_agent_id": attestation["review_agent_id"],
         "model_outputs_seen": False,
         "gpu_execution_seen": False,
+        "human_review_performed": False,
+        "data_lead_review_performed": False,
+        "user_review_waived": True,
         "dual_independent_review": False,
         "raw_agreement": None,
         "cohen_kappa": None,
@@ -510,7 +530,7 @@ def main() -> None:
         output = HERE / "construction_audit.json"
     else:
         report = validate_review_gate(builder)
-        output = HERE / "HUMAN_REVIEW_GATE.json"
+        output = HERE / "REVIEW_GATE.json"
     atomic_write_json(output, report)
     print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
 

@@ -153,13 +153,32 @@ def test_construction_passes_and_missing_review_files_are_blocked(tmp_path) -> N
     report = validator.validate_construction(validator.load_builder())
     assert report["status"] == "passed"
     assert report["gpu_authorized"] is False
-    assert report["review_gate"] == "pending_real_single_data_lead_review"
-    validator.ATTESTATION_PATH = tmp_path / "single_review_attestation.json"
-    validator.REVIEW_COMPLETED_PATH = tmp_path / "review_completed.csv"
-    validator.TEMPLATE_COMPLETED_PATH = tmp_path / "template_review_completed.csv"
+    assert report["review_gate"] == "separate_amended_review_gate_required"
+    assert report["amended_review_mode"] == "agent_self_review_user_waiver"
+    assert report["protocol_deviation"] is True
+    assert report["human_review_performed"] is False
+    validator.ATTESTATION_PATH = tmp_path / "agent_self_review_attestation.json"
+    validator.REVIEW_COMPLETED_PATH = tmp_path / "agent_review_completed.csv"
+    validator.TEMPLATE_COMPLETED_PATH = tmp_path / "template_agent_review_completed.csv"
     validator.ARTIFACT_ROOT = tmp_path / "no-model-artifacts"
-    with pytest.raises(ValueError, match="human review is pending"):
+    with pytest.raises(ValueError, match="amended review gate is pending"):
         validator.validate_review_gate(validator.load_builder())
+
+
+def test_agent_self_review_gate_is_explicit_and_not_human() -> None:
+    validator = load_validator()
+    gate = validator.validate_review_gate(validator.load_builder())
+    assert gate["status"] == "passed"
+    assert gate["gpu_authorized"] is True
+    assert gate["review_mode"] == "agent_self_review_user_waiver"
+    assert gate["protocol_deviation"] is True
+    assert gate["user_review_waived"] is True
+    assert gate["human_review_performed"] is False
+    assert gate["data_lead_review_performed"] is False
+    assert gate["dual_independent_review"] is False
+    assert gate["raw_agreement"] is None
+    assert gate["cohen_kappa"] is None
+    assert "No human or data-lead review" in gate["limitations"]
 
 
 def test_cross_platform_hashes_and_semantic_json_are_portable(tmp_path) -> None:

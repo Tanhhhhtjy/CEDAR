@@ -105,7 +105,7 @@ def load_phase(root: Path, phase: str, expected_rows: int) -> dict[str, Any]:
         if envelope.get("index") != index or envelope.get("result") != result:
             raise ValueError(f"{phase}: checkpoint materialization differs at row {index}")
     configuration = manifest.get("configuration", {})
-    human = configuration.get("human_review", {})
+    review = configuration.get("review_gate", {})
     measurement = configuration.get("measurement", {})
     capping = configuration.get("capping", {})
     axis_telemetry = configuration.get("axis_telemetry", {})
@@ -125,11 +125,15 @@ def load_phase(root: Path, phase: str, expected_rows: int) -> dict[str, Any]:
         or capping.get("capping_config_sha256") != CAP_CONFIG_SHA256
         or capping.get("experiment") != "layers_46:54-p0.25"
         or set(capping.get("layers", {})) != {str(layer) for layer in LAYERS}
-        or human.get("status") != "passed"
-        or human.get("gpu_authorized") is not True
-        or human.get("review_mode") != "single_data_lead_review"
-        or human.get("dual_independent_review") is not False
-        or human.get("cohen_kappa") is not None
+        or review.get("status") != "passed"
+        or review.get("gpu_authorized") is not True
+        or review.get("review_mode") != "agent_self_review_user_waiver"
+        or review.get("protocol_deviation") is not True
+        or review.get("human_review_performed") is not False
+        or review.get("data_lead_review_performed") is not False
+        or review.get("user_review_waived") is not True
+        or review.get("dual_independent_review") is not False
+        or review.get("cohen_kappa") is not None
     ):
         raise ValueError(f"{phase}: run manifest violates C3 execution/review contract")
     if any(
