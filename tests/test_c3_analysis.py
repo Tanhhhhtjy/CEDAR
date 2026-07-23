@@ -162,8 +162,113 @@ def test_gate_decision_separates_selectivity_from_distribution_failure() -> None
             "target_change_helpful_S": 0.1,
         }
     ]
-    intervals = {"selectivity_change": {"ci_low": 0.1, "ci_high": 0.8}}
+    intervals = {
+        "cap_shift_harmful_AO": {
+            "estimate": 0.0,
+            "ci_low": -0.1,
+            "ci_high": 0.1,
+            "ci90_low": -0.08,
+            "ci90_high": 0.08,
+        },
+        "cap_shift_harmful_S": {"ci_low": -0.4, "ci_high": -0.1},
+        "cap_shift_helpful_AO": {
+            "estimate": 0.0,
+            "ci_low": -0.1,
+            "ci_high": 0.1,
+            "ci90_low": -0.08,
+            "ci90_high": 0.08,
+        },
+        "cap_shift_helpful_S": {"ci_low": 0.1, "ci_high": 0.5},
+        "cap_social_harmful": {
+            "estimate": -0.2,
+            "ci_low": -0.4,
+            "ci_high": 0.0,
+            "ci90_low": -0.35,
+            "ci90_high": -0.05,
+        },
+        "cap_social_helpful": {
+            "estimate": 0.3,
+            "ci_low": 0.1,
+            "ci_high": 0.5,
+            "ci90_low": 0.15,
+            "ci90_high": 0.45,
+        },
+        "target_change_harmful_S": {"ci_low": -0.2, "ci_high": -0.01},
+        "target_change_helpful_S": {"ci_low": 0.01, "ci_high": 0.2},
+        "selectivity_change": {"ci_low": 0.1, "ci_high": 0.8},
+    }
+    robustness = {
+        grouping: {
+            metric: {
+                "all_positive": metric
+                in {"cap_shift_helpful_S", "target_change_helpful_S", "selectivity_change"},
+                "all_negative": metric in {"cap_shift_harmful_S", "target_change_harmful_S"},
+                "values": {"held_out": 0.1},
+            }
+            for metric in analysis.GATE_ROBUSTNESS_METRICS
+        }
+        for grouping in ("leave_one_domain_out", "leave_one_template_out")
+    }
     stable = {"stable": True}
-    assert analysis.decide_gate(rows, intervals, stable)["gate"] == "C"
+    assert analysis.decide_gate(rows, intervals, stable, robustness)["gate"] == "C"
     unstable = {"stable": False}
-    assert analysis.decide_gate(rows, intervals, unstable)["gate"] == "E"
+    assert analysis.decide_gate(rows, intervals, unstable, robustness)["gate"] == "E"
+
+
+def test_gate_a_requires_ci_and_leave_one_out_robustness() -> None:
+    rows = [
+        {
+            "cap_shift_harmful_S": 0.3,
+            "cap_shift_helpful_S": 0.4,
+            "cap_shift_harmful_AO": 0.0,
+            "cap_shift_helpful_AO": 0.0,
+            "cap_social_harmful": 0.3,
+            "cap_social_helpful": 0.4,
+            "target_change_harmful_S": 0.0,
+            "target_change_helpful_S": 0.0,
+        }
+    ]
+    intervals = {
+        metric: {
+            "estimate": 0.3,
+            "ci_low": 0.1,
+            "ci_high": 0.5,
+            "ci90_low": 0.15,
+            "ci90_high": 0.45,
+        }
+        for metric in analysis.GATE_ROBUSTNESS_METRICS
+    }
+    robustness = {
+        grouping: {
+            metric: {
+                "all_positive": True,
+                "all_negative": False,
+                "values": {"held_out": 0.3},
+            }
+            for metric in analysis.GATE_ROBUSTNESS_METRICS
+        }
+        for grouping in ("leave_one_domain_out", "leave_one_template_out")
+    }
+    stable = {"stable": True}
+    assert analysis.decide_gate(rows, intervals, stable, robustness)["gate"] == "A"
+
+    intervals["cap_shift_harmful_S"]["ci_low"] = -0.01
+    assert analysis.decide_gate(rows, intervals, stable, robustness)["gate"] == "F"
+    intervals["cap_shift_harmful_S"]["ci_low"] = 0.1
+    robustness["leave_one_domain_out"]["cap_shift_helpful_S"]["all_positive"] = False
+    assert analysis.decide_gate(rows, intervals, stable, robustness)["gate"] == "F"
+
+
+def test_gate_robustness_reports_every_preregistered_metric() -> None:
+    rows = []
+    for domain, template, value in (("d1", "t1", 1.0), ("d2", "t2", 2.0)):
+        row = {
+            "domain": domain,
+            "template_id": template,
+            **{metric: value for metric in analysis.GATE_ROBUSTNESS_METRICS},
+        }
+        rows.append(row)
+    report = analysis.gate_robustness(rows)
+    assert set(report) == {"leave_one_domain_out", "leave_one_template_out"}
+    assert set(report["leave_one_domain_out"]) == set(analysis.GATE_ROBUSTNESS_METRICS)
+    assert report["leave_one_template_out"]["selectivity_change"]["all_positive"] is True
