@@ -81,7 +81,7 @@ entropy 变化最大约0.033，均远低于 Gate E 阈值。p25 四格平均 tri
 - 仓库历史文件的全量 Ruff 仍有本轮之外的既存错误，本轮未修改这些用户文件；
 - 正式分析后已停止；未运行 p1/p50/p75、自由生成、新 seed、LoFa、J-Lens、probe、patching
   或其他机制工具；
-- results commit：将在交付提交后由最终验收更新。
+- results commit：`de3407eaf7e1077f18cbc29336fa5ca4be6f958b`。
 
 强制声明：
 
