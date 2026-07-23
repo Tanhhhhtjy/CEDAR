@@ -1,0 +1,108 @@
+{
+  "error_class": "conjunction_weakening",
+  "entailed_premises": [
+    {
+      "predicate": "vek565fallleft",
+      "arguments": [
+        "clan33"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "vek565fallleft",
+        "arguments": [
+          "clan33"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "vek565falljoined",
+      "arguments": [
+        "clan33"
+      ],
+      "negated": false
+    },
+    "operator": "conjunction_weakening"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "031bf0311d5719c2151b212dbb18c9d35426992955311aa8b19feeac411b3ba6",
+      "projected_edit_sha256": "fcfa3ad93a914f06ac60812cfd4eaa5d63cfecfc4893f82b81fc652af3692a60"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "4713cdd16ee670c1a3178b904253dafb8660a35d1a344e221b9851295bfc8cb9",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "vek565outcome",
+      "arguments": [
+        "clan33"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "conjunction_weakening",
+    "world_semantic_sha256": "ed24b8bfaa1f7c379da7c061090b289b9368806b86bc2ecf675d6351a7f8aa56",
+    "entailed_premise_keys": [
+      "vek565fallleft(clan33)"
+    ],
+    "unsupported_claim_key": "vek565falljoined(clan33)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "vek565outcome(clan33)",
+    "proof": {
+      "record_ids": [
+        "data_vek565_root",
+        "schema_vek565proof_0",
+        "schema_vek565proof_1"
+      ],
+      "depth": 2
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "data_vek565_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "vek565token",
+          "arguments": [
+            "clan33"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-92df88b873269293",
+      "rank": 22
+    },
+    "updated_world_sha256": "4713cdd16ee670c1a3178b904253dafb8660a35d1a344e221b9851295bfc8cb9",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

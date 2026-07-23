@@ -1,0 +1,105 @@
+{
+  "error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "pax866fallverified",
+      "arguments": [
+        "csor74"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "pax866fallverified",
+        "arguments": [
+          "csor74"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "pax866fallsource",
+      "arguments": [
+        "csor74"
+      ],
+      "negated": false
+    },
+    "operator": "converse_error"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "0f3006c3216455cb53e8f775df880c41ec760702ea6be9187fced0aa7fd93eb6",
+      "projected_edit_sha256": "9df0d692de93fb515eff109908c2820e4673fc0d0d2e03ad97c0cf6fda51e7a9"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "8a2ba47455727931c7158b16a1f626697ea476f4c97cca5d7856da8d04fb8359",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "pax866outcome",
+      "arguments": [
+        "csor74"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "390ea0db748b89c17bf44fd0f7619c2dd4bfc0d693036c00c4537e19f70bb3b3",
+    "entailed_premise_keys": [
+      "pax866fallverified(csor74)"
+    ],
+    "unsupported_claim_key": "pax866fallsource(csor74)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "pax866outcome(csor74)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "pax866outcome(csor74)",
+      "required_counterliteral": "-pax866outcome(csor74)",
+      "input_sha256": "9aa0c67126aa98bbabd4f94ee9e2fd783eef85c1cf06fa56daf9e62359cc70e2",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\npax866left(csor74).\npax866fallverified(csor74).\npax866fallsource(csor74) -> pax866fallverified(csor74).\npax866left(csor74) & pax866right(csor74) -> pax866joint(csor74).\npax866joint(csor74) -> pax866outcome(csor74).\n-pax866outcome(csor74).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(csor74, [ 0 ]),\n\n        relation(pax866fallsource(_), [ 0, 0 ]),\n\n        relation(pax866fallverified(_), [ 1, 0 ]),\n\n        relation(pax866joint(_), [ 0, 0 ]),\n\n        relation(pax866left(_), [ 1, 0 ]),\n\n        relation(pax866outcome(_), [ 0, 0 ]),\n\n        relation(pax866right(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "pax866right",
+          "arguments": [
+            "csor74"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-e02e0125c498b19f",
+      "rank": 14
+    },
+    "updated_world_sha256": "8a2ba47455727931c7158b16a1f626697ea476f4c97cca5d7856da8d04fb8359",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

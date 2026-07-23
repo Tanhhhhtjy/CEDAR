@@ -1,0 +1,122 @@
+{
+  "error_class": "scope_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "lan802fallaccess",
+      "arguments": [
+        "cnav84",
+        "remote"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "lan802fallaccess",
+        "arguments": [
+          "cnav84",
+          "remote"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "lan802fallaccess",
+      "arguments": [
+        "cnav84",
+        "local"
+      ],
+      "negated": false
+    },
+    "operator": "scope_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "cb5f3249cd91c655f88f48e43d339e6d4103a05ca8d41f0b4a63ac4ddc4d57a7",
+      "projected_edit_sha256": "7b1b3c86ffe3abe1e33519f959272cc22ceba2f774f6ecedee19402ffe70742f"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "66d932f365f93b540b4c925e93fcfac3bb3dfe45ee6711e4ee4c34a676de4165",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "lan802outcome",
+      "arguments": [
+        "cnav84"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "scope_transfer",
+    "world_semantic_sha256": "e811daf1c1a29930914b643c8f1f6e6360099e56be999accdc78a4c867a56add",
+    "entailed_premise_keys": [
+      "lan802fallaccess(cnav84,remote)"
+    ],
+    "unsupported_claim_key": "lan802fallaccess(cnav84,local)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-lan802outcome(cnav84)",
+    "proof": {
+      "record_ids": [
+        "data_lan802_source",
+        "policy_lan802_terminal",
+        "schema_lan802up_0",
+        "schema_lan802up_1",
+        "schema_lan802up_2"
+      ],
+      "depth": 4
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "policy_lan802_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "lan802bridge",
+            "arguments": [
+              "cnav84"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "lan802outcome",
+          "arguments": [
+            "cnav84"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-9ccd0f406454bade",
+      "rank": 12
+    },
+    "updated_world_sha256": "66d932f365f93b540b4c925e93fcfac3bb3dfe45ee6711e4ee4c34a676de4165",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

@@ -1,0 +1,111 @@
+{
+  "error_class": "unsupported_bridge",
+  "entailed_premises": [
+    {
+      "predicate": "miv809fallobserved",
+      "arguments": [
+        "ckel16"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "miv809fallobserved",
+        "arguments": [
+          "ckel16"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "miv809fallbridge",
+      "arguments": [
+        "ckel16"
+      ],
+      "negated": false
+    },
+    "operator": "unsupported_bridge"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "402f678cd528a02b1dbb6f9a7038ec0c921f36d9ee7d55a1d323dc2ebab79436",
+      "projected_edit_sha256": "9f5d79f40e941f2ff63523712c39107271e05a886c8acf769a00f233e76a399d"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "71278de197babf5aece8a3cab25659841906a82dc39d6f50beaad6e9ac1a8c92",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "miv809outcome",
+      "arguments": [
+        "ckel16"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "unsupported_bridge",
+    "world_semantic_sha256": "5d7141a3b90c4bab60d4ec12bec6beda96ebcf053d14d7ab638a6ec36f6c251c",
+    "entailed_premise_keys": [
+      "miv809fallobserved(ckel16)"
+    ],
+    "unsupported_claim_key": "miv809fallbridge(ckel16)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "miv809outcome(ckel16)",
+    "proof": {
+      "record_ids": [
+        "data_miv809_root",
+        "schema_miv809proof_0",
+        "schema_miv809proof_1",
+        "schema_miv809proof_2",
+        "schema_miv809proof_3",
+        "schema_miv809proof_4"
+      ],
+      "depth": 5
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "data_miv809_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "miv809token",
+          "arguments": [
+            "ckel16"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-85a6e61917d17e50",
+      "rank": 17
+    },
+    "updated_world_sha256": "71278de197babf5aece8a3cab25659841906a82dc39d6f50beaad6e9ac1a8c92",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

@@ -1,0 +1,115 @@
+{
+  "error_class": "scope_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "miv86fallaccess",
+      "arguments": [
+        "csor4",
+        "remote"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "miv86fallaccess",
+        "arguments": [
+          "csor4",
+          "remote"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "miv86fallaccess",
+      "arguments": [
+        "csor4",
+        "local"
+      ],
+      "negated": false
+    },
+    "operator": "scope_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "985ecfdbdc197c62a753e8127f8fd288e57fca926b27c8154dc64da70eb6f688",
+      "projected_edit_sha256": "a9d22c6ad12ab590afb241cb4c3da24232b367649894c7c33096efd80ef8e158"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "72604d32647ee8476976a9d94bc6885b5b0c3dc1fbf7255662256848fbd3e576",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "miv86outcome",
+      "arguments": [
+        "csor4"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "scope_transfer",
+    "world_semantic_sha256": "89086dd6164541bfed4cf7a8792bc42aafb1b0e78c621f0e1ba613fca3bd2da0",
+    "entailed_premise_keys": [
+      "miv86fallaccess(csor4,remote)"
+    ],
+    "unsupported_claim_key": "miv86fallaccess(csor4,local)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "miv86outcome(csor4)",
+    "proof": {
+      "record_ids": [
+        "data_miv86_root",
+        "schema_miv86proof_0",
+        "schema_miv86proof_1",
+        "schema_miv86proof_2",
+        "schema_miv86proof_3",
+        "schema_miv86proof_4",
+        "schema_miv86proof_5"
+      ],
+      "depth": 6
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "data_miv86_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "miv86token",
+          "arguments": [
+            "csor4"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-21682c2b9bc5f6f6",
+      "rank": 18
+    },
+    "updated_world_sha256": "72604d32647ee8476976a9d94bc6885b5b0c3dc1fbf7255662256848fbd3e576",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

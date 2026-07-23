@@ -1,0 +1,105 @@
+{
+  "error_class": "support_path_generalization",
+  "entailed_premises": [
+    {
+      "predicate": "pax824fallsupported",
+      "arguments": [
+        "ckel37"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "pax824fallsupported",
+        "arguments": [
+          "ckel37"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "pax824fallsupported",
+      "arguments": [
+        "csor3"
+      ],
+      "negated": false
+    },
+    "operator": "support_path_generalization"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "c5ad6ac1bf49678b7c377ab9aa68a178aaa06819d1a2ba8fa64bd0f65400863c",
+      "projected_edit_sha256": "4a8c13af315591df680bc9f0c3e726274172740cac420f3160bfa556db8029e2"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "dffbbdb0794964f24989fccef8bc6b0811caa01fcde6eaf399f0bcdcb67f8fb5",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "pax824outcome",
+      "arguments": [
+        "ckel37"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "support_path_generalization",
+    "world_semantic_sha256": "c6147134917035b9dca33d8e150c67d187d533087a95849341c9c8b09cb32936",
+    "entailed_premise_keys": [
+      "pax824fallsupported(ckel37)"
+    ],
+    "unsupported_claim_key": "pax824fallsupported(csor3)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "pax824outcome(ckel37)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "pax824outcome(ckel37)",
+      "required_counterliteral": "-pax824outcome(ckel37)",
+      "input_sha256": "68b656d3c02bca14d6a61fcc59d11cab00d9c0c5b9fff4d42d2bf565130ca764",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\npax824left(ckel37).\npax824noise2(clan77).\npax824noise3(cmiv58).\npax824noise4(cvek76).\npax824noise5(ckel37).\npax824noise6(csor3).\npax824noise7(clan77).\npax824noise8(cmiv58).\npax824fallgate(ckel37).\n(all x (pax824fallgate(x) -> pax824fallsupported(x))).\npax824left(ckel37) & pax824right(ckel37) -> pax824joint(ckel37).\npax824joint(ckel37) -> pax824proofstep0(ckel37).\npax824proofstep0(ckel37) -> pax824proofstep1(ckel37).\npax824proofstep1(ckel37) -> pax824proofstep2(ckel37).\npax824proofstep2(ckel37) -> pax824proofstep3(ckel37).\npax824proofstep3(ckel37) -> pax824outcome(ckel37).\n-pax824outcome(ckel37).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel37, [ 0 ]),\n\n        function(clan77, [ 0 ]),\n\n        function(cmiv58, [ 0 ]),\n\n        function(csor3, [ 0 ]),\n\n        function(cvek76, [ 0 ]),\n\n        relation(pax824fallgate(_), [ 1, 0 ]),\n\n        relation(pax824fallsupported(_), [ 1, 0 ]),\n\n        relation(pax824joint(_), [ 0, 0 ]),\n\n        relation(pax824left(_), [ 1, 0 ]),\n\n        relation(pax824noise2(_), [ 1, 0 ]),\n\n        relation(pax824noise3(_), [ 1, 0 ]),\n\n        relation(pax824noise4(_), [ 1, 0 ]),\n\n        relation(pax824noise5(_), [ 1, 0 ]),\n\n        relation(pax824noise6(_), [ 1, 0 ]),\n\n        relation(pax824noise7(_), [ 1, 0 ]),\n\n        relation(pax824noise8(_), [ 1, 0 ]),\n\n        relation(pax824outcome(_), [ 0, 0 ]),\n\n        relation(pax824proofstep0(_), [ 0, 0 ]),\n\n        relation(pax824proofstep1(_), [ 0, 0 ]),\n\n        relation(pax824proofstep2(_), [ 0, 0 ]),\n\n        relation(pax824proofstep3(_), [ 0, 0 ]),\n\n        relation(pax824right(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "pax824right",
+          "arguments": [
+            "ckel37"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-e3e3723be911fcca",
+      "rank": 29
+    },
+    "updated_world_sha256": "dffbbdb0794964f24989fccef8bc6b0811caa01fcde6eaf399f0bcdcb67f8fb5",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

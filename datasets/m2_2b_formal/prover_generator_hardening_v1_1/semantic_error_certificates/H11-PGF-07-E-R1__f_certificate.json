@@ -1,0 +1,122 @@
+{
+  "error_class": "cross_entity_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "tor249fallsignal",
+      "arguments": [
+        "cnav62"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "tor249fallsignal",
+        "arguments": [
+          "cnav62"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "tor249fallsignal",
+      "arguments": [
+        "ckel41"
+      ],
+      "negated": false
+    },
+    "operator": "cross_entity_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "557d735e97b82b5886e5ccd3224f82eb368a605fce8509f3619da3124ba0e1c5",
+      "projected_edit_sha256": "cdc535c912beff5c67d5fc76ad5bf4efbc942fc07d138ef89c8cd436f08cb3dd"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "da91c7f308f7820666e02706616cca36fd9b8fe1591e5913b23c1f1d6db7a0d9",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "tor249outcome",
+      "arguments": [
+        "ckel41"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "cross_entity_transfer",
+    "world_semantic_sha256": "bfd3cb1aaae676154c312d6331a306b2ad2239de947af28b55d3a5aac904452e",
+    "entailed_premise_keys": [
+      "tor249fallsignal(cnav62)"
+    ],
+    "unsupported_claim_key": "tor249fallsignal(ckel41)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "tor249outcome(ckel41)",
+    "proof": {
+      "record_ids": [
+        "data_tor249_gate",
+        "data_tor249_support_0",
+        "schema_tor249_gate_0",
+        "schema_tor249path0_0"
+      ],
+      "depth": 2
+    },
+    "refutes_induced_label": "false"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_tor249_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "tor249gate",
+          "arguments": [
+            "ckel41"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_tor249_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "tor249gate",
+          "arguments": [
+            "ckel41"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-b1ad138c6de66aad",
+      "rank": 41
+    },
+    "updated_world_sha256": "da91c7f308f7820666e02706616cca36fd9b8fe1591e5913b23c1f1d6db7a0d9",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

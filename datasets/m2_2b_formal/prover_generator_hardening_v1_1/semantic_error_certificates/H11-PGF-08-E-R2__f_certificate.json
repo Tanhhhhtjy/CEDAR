@@ -1,0 +1,123 @@
+{
+  "error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "pax334fallverified",
+      "arguments": [
+        "ckel30"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "pax334fallverified",
+        "arguments": [
+          "ckel30"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "pax334fallsource",
+      "arguments": [
+        "ckel30"
+      ],
+      "negated": false
+    },
+    "operator": "converse_error"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "7fbbce3eb9dc7eaab0b2a7a9f1ecb77cea18d5f75284ddf5c8c9531c1741d712",
+      "projected_edit_sha256": "80667ab412485fbdaebdc28bfefdaa463dd12e094eca21bf588fd5f6612c461b"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "d7a4dab52048da1bb3bc4ddaff2fd85ddd8f1f0de795da2233a1dc831f83b56d",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "pax334outcome",
+      "arguments": [
+        "ckel30"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "198665724e2093afc4783a52ae989778ab56e7bf9392457a74009dadad41bce9",
+    "entailed_premise_keys": [
+      "pax334fallverified(ckel30)"
+    ],
+    "unsupported_claim_key": "pax334fallsource(ckel30)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-pax334outcome(ckel30)",
+    "proof": {
+      "record_ids": [
+        "data_pax334_link",
+        "schema_pax334_bad",
+        "schema_pax334bad_0"
+      ],
+      "depth": 2
+    },
+    "refutes_induced_label": "true"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_pax334_link",
+        "kind": "fact",
+        "literal": {
+          "predicate": "pax334link",
+          "arguments": [
+            "ckel30",
+            "clan53"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_pax334_link",
+        "kind": "fact",
+        "literal": {
+          "predicate": "pax334link",
+          "arguments": [
+            "ckel30",
+            "csor65"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-0b9a6f8854889291",
+      "rank": 13
+    },
+    "updated_world_sha256": "d7a4dab52048da1bb3bc4ddaff2fd85ddd8f1f0de795da2233a1dc831f83b56d",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

@@ -1,0 +1,106 @@
+{
+  "error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "lan355fallverified",
+      "arguments": [
+        "ckel18"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "lan355fallverified",
+        "arguments": [
+          "ckel18"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "lan355fallsource",
+      "arguments": [
+        "ckel18"
+      ],
+      "negated": false
+    },
+    "operator": "converse_error"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "79eea574a5f5358caa36481a06482d7ad92d3a894cfcf825aa24c5ef9cf5bdba",
+      "projected_edit_sha256": "d07f15cd0d08bf11c49a5840af305fdc3651506d6c2798f848e8de7c00202362"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "e7b6c53995501d8fac6049d80a426889eeb7a0fef4c62619a99c319bd140e10f",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "lan355outcome",
+      "arguments": [
+        "ckel18"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "7971301b2f09608727e2f744a34f2d054efa0b286b7b635a06a783adc44ac545",
+    "entailed_premise_keys": [
+      "lan355fallverified(ckel18)"
+    ],
+    "unsupported_claim_key": "lan355fallsource(ckel18)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "-lan355outcome(ckel18)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "-lan355outcome(ckel18)",
+      "required_counterliteral": "lan355outcome(ckel18)",
+      "input_sha256": "87c115ab229a0ae15372d3dd0acadec1ead95f709ad18af75c0a0b496436c6d3",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nlan355noise2(csor85).\nlan355noise3(cnav74).\nlan355fallverified(ckel18).\nlan355fallsource(ckel18) -> lan355fallverified(ckel18).\nlan355reach(ckel18,cpax67) -> -lan355outcome(ckel18).\n(all x all y (lan355edge(x,y) -> lan355reach(x,y))).\n(all x all y all z (lan355reach(x,y) & lan355edge(y,z) -> lan355reach(x,z))).\nlan355outcome(ckel18).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel18, [ 0 ]),\n\n        function(cnav74, [ 0 ]),\n\n        function(cpax67, [ 0 ]),\n\n        function(csor85, [ 0 ]),\n\n        relation(lan355fallsource(_), [ 0, 0 ]),\n\n        relation(lan355fallverified(_), [ 1, 0 ]),\n\n        relation(lan355noise2(_), [ 1, 0 ]),\n\n        relation(lan355noise3(_), [ 1, 0 ]),\n\n        relation(lan355outcome(_), [ 1, 0 ]),\n\n        relation(lan355edge(_,_), [\n\t\t\t   0, 0,\n\t\t\t   0, 0 ]),\n\n        relation(lan355reach(_,_), [\n\t\t\t   0, 0,\n\t\t\t   0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "lan355edge",
+          "arguments": [
+            "ckel18",
+            "cpax67"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-0b5e43331a2a6c38",
+      "rank": 21
+    },
+    "updated_world_sha256": "e7b6c53995501d8fac6049d80a426889eeb7a0fef4c62619a99c319bd140e10f",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

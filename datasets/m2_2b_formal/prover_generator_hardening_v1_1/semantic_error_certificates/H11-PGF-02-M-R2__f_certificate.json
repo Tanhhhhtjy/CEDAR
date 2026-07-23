@@ -1,0 +1,145 @@
+{
+  "error_class": "scope_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "nav424fallaccess",
+      "arguments": [
+        "clan35",
+        "remote"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "nav424fallaccess",
+        "arguments": [
+          "clan35",
+          "remote"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "nav424fallaccess",
+      "arguments": [
+        "clan35",
+        "local"
+      ],
+      "negated": false
+    },
+    "operator": "scope_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "432ca2ede49e624f72196f2381ea49a82be66d5a55a32faf3c3f65c8970b0f05",
+      "projected_edit_sha256": "4f90aab1897814f13dacfb1ac35dee3a87b8506470c7d21bcb2f55812bf7fa94"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "3dfa3f9ab9c6661ed99bfa4bb5d51972145a0c45eb822629fce54201ee3d38d1",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "nav424outcome",
+      "arguments": [
+        "clan35"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "scope_transfer",
+    "world_semantic_sha256": "cf547cdcd43240fb4896f95398001544918a7c99e505509f7124df0e9ba6c656",
+    "entailed_premise_keys": [
+      "nav424fallaccess(clan35,remote)"
+    ],
+    "unsupported_claim_key": "nav424fallaccess(clan35,local)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-nav424outcome(clan35)",
+    "proof": {
+      "record_ids": [
+        "data_nav424_source",
+        "policy_nav424_terminal",
+        "schema_nav424up_0",
+        "schema_nav424up_1",
+        "schema_nav424up_2",
+        "schema_nav424up_3"
+      ],
+      "depth": 5
+    },
+    "refutes_induced_label": "true"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "policy_nav424_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "nav424bridge",
+            "arguments": [
+              "clan35"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "nav424outcome",
+          "arguments": [
+            "clan35"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "policy_nav424_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "nav424bridge",
+            "arguments": [
+              "clan35"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "nav424outcome",
+          "arguments": [
+            "clan35"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-093b36d2ee91c153",
+      "rank": 12
+    },
+    "updated_world_sha256": "3dfa3f9ab9c6661ed99bfa4bb5d51972145a0c45eb822629fce54201ee3d38d1",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

@@ -1,0 +1,108 @@
+{
+  "error_class": "scope_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "sor51fallaccess",
+      "arguments": [
+        "cvek14",
+        "remote"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "sor51fallaccess",
+        "arguments": [
+          "cvek14",
+          "remote"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "sor51fallaccess",
+      "arguments": [
+        "cvek14",
+        "local"
+      ],
+      "negated": false
+    },
+    "operator": "scope_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "73db4934e35d8682480e7c936d301b82f2c082fa8c125fac3ab663380090defa",
+      "projected_edit_sha256": "60789bebe4d5db124028388881cf5d5ed962fcfdad34b07d402bb322e481d267"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "233c9392c5b21574501d1899fcc8464bb71ed84873e6ca9f99187cd8752fb167",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "sor51outcome",
+      "arguments": [
+        "cvek14"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "scope_transfer",
+    "world_semantic_sha256": "830f07411e5f99f7d10f1d18375e1d962e9a729507e59966ad47d27dfb553a7c",
+    "entailed_premise_keys": [
+      "sor51fallaccess(cvek14,remote)"
+    ],
+    "unsupported_claim_key": "sor51fallaccess(cvek14,local)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "sor51outcome(cvek14)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "sor51outcome(cvek14)",
+      "required_counterliteral": "-sor51outcome(cvek14)",
+      "input_sha256": "3159a71682086d45d474fac7c925745f15305b97fcdd0873ff747d41dff7ced6",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nsor51left(cvek14).\nsor51noise1(ckel86).\nsor51noise2(cpax75).\nsor51noise3(cnav83).\nsor51noise4(cmiv27).\nsor51noise5(cvek14).\nsor51noise6(ckel86).\nsor51noise7(cpax75).\nsor51fallaccess(cvek14,remote).\nsor51left(cvek14) & sor51right(cvek14) -> sor51joint(cvek14).\nsor51joint(cvek14) -> sor51proofstep0(cvek14).\nsor51proofstep0(cvek14) -> sor51proofstep1(cvek14).\nsor51proofstep1(cvek14) -> sor51proofstep2(cvek14).\nsor51proofstep2(cvek14) -> sor51outcome(cvek14).\n-sor51outcome(cvek14).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel86, [ 0 ]),\n\n        function(cmiv27, [ 0 ]),\n\n        function(cnav83, [ 0 ]),\n\n        function(cpax75, [ 0 ]),\n\n        function(cvek14, [ 0 ]),\n\n        function(remote, [ 0 ]),\n\n        relation(sor51joint(_), [ 0, 0 ]),\n\n        relation(sor51left(_), [ 1, 0 ]),\n\n        relation(sor51noise1(_), [ 1, 0 ]),\n\n        relation(sor51noise2(_), [ 1, 0 ]),\n\n        relation(sor51noise3(_), [ 1, 0 ]),\n\n        relation(sor51noise4(_), [ 1, 0 ]),\n\n        relation(sor51noise5(_), [ 1, 0 ]),\n\n        relation(sor51noise6(_), [ 1, 0 ]),\n\n        relation(sor51noise7(_), [ 1, 0 ]),\n\n        relation(sor51outcome(_), [ 0, 0 ]),\n\n        relation(sor51proofstep0(_), [ 0, 0 ]),\n\n        relation(sor51proofstep1(_), [ 0, 0 ]),\n\n        relation(sor51proofstep2(_), [ 0, 0 ]),\n\n        relation(sor51right(_), [ 0, 0 ]),\n\n        relation(sor51fallaccess(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "sor51right",
+          "arguments": [
+            "cvek14"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-2fd9601dfae443f3",
+      "rank": 11
+    },
+    "updated_world_sha256": "233c9392c5b21574501d1899fcc8464bb71ed84873e6ca9f99187cd8752fb167",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}
