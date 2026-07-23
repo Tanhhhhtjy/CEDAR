@@ -13,3 +13,4 @@
 | 2026-07-23 | Naturalization | 12 bilingual deterministic renders | Automatic gate 12/12; human fields blank |
 | 2026-07-23 | Tests | Targeted, full repository, Ruff | See `PHASE1_1_RESULTS.md` |
 | 2026-07-23 | Amendment 02 | Renderer, leakage audit, and human finalizer only | v2 packet; symbolic hashes unchanged |
+| 2026-07-23 | Human review | Finalized the immutable completed v2 packet | Gate C; 0/12 passed; symbolic generator remains passed |

@@ -22,3 +22,11 @@ item-level quantitative human rule. Amendment 02 preserves the original packet a
 changes only the v2 renderer, leakage diagnostics, review fields, and read-only finalizer. A
 manifest-bound audit confirms that all 332 protected symbolic, proof, countermodel, and candidate
 artifacts are unchanged.
+
+## Real human review finalization
+
+The completed Amendment 02 workbook passed the immutable-packet and completeness checks but failed
+the frozen item-level naturalization gate: 0/12 rows passed, all 12 received naturalness 3 and
+condition-identity leakage `yes`, and NAT-11/12 also failed clear reference. Phase 1.1 is therefore
+closed at Gate C. The symbolic generator remains passed; no symbolic record or certificate was
+revised in response to the review.

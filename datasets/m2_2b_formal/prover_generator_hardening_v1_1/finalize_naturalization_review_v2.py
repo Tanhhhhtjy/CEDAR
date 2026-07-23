@@ -144,6 +144,36 @@ def _read_completed_rows(
     return results
 
 
+def gate_from_review_result(result: dict[str, Any]) -> dict[str, Any]:
+    """Derive the frozen Gate A/C decision from a validated human-review result."""
+
+    all_passed = result["status"] == "passed"
+    common = {
+        "symbolic_status": "symbolic_generator_passed",
+        "human_review_status": "complete",
+        "human_review_result_canonical_sha256": canonical_sha256(result),
+        "gpu_qwen_capping_run": False,
+    }
+    if all_passed:
+        return {
+            "gate": "A",
+            **common,
+            "naturalization_status": "human_review_passed",
+            "step_1_complete": True,
+            "may_prepare_development_bank_protocol": True,
+            "renderer_revision_only": False,
+        }
+    return {
+        "gate": "C",
+        **common,
+        "naturalization_status": "naturalization_failed",
+        "step_1_complete": False,
+        "may_prepare_development_bank_protocol": False,
+        "renderer_revision_only": True,
+        "failed_review_ids": result["failed_review_ids"],
+    }
+
+
 def finalize_review(
     completed_path: Path,
     *,
@@ -176,31 +206,7 @@ def finalize_review(
         "result_canonical_sha256": canonical_sha256(rows),
         "agent_filled_human_ratings": False,
     }
-    if all_passed:
-        gate = {
-            "gate": "A",
-            "symbolic_status": "symbolic_generator_passed",
-            "naturalization_status": "human_review_passed",
-            "human_review_status": "complete",
-            "step_1_complete": True,
-            "may_prepare_development_bank_protocol": True,
-            "renderer_revision_only": False,
-            "human_review_result_canonical_sha256": canonical_sha256(result),
-            "gpu_qwen_capping_run": False,
-        }
-    else:
-        gate = {
-            "gate": "C",
-            "symbolic_status": "symbolic_generator_passed",
-            "naturalization_status": "naturalization_failed",
-            "human_review_status": "complete",
-            "step_1_complete": False,
-            "may_prepare_development_bank_protocol": False,
-            "renderer_revision_only": True,
-            "failed_review_ids": result["failed_review_ids"],
-            "human_review_result_canonical_sha256": canonical_sha256(result),
-            "gpu_qwen_capping_run": False,
-        }
+    gate = gate_from_review_result(result)
     write_json(result_path.resolve(), result)
     write_json(final_gate_path.resolve(), gate)
     return {"result": result, "final_gate": gate}

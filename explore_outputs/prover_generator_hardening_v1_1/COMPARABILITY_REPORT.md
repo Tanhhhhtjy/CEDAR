@@ -8,6 +8,6 @@ master seed, candidate budget, solvers, and validators. Amendment 01 changes onl
 F-class schedule and rebuilds every attempt. The pre-amendment run is hash-bound in its amendment.
 
 Formal proof depth is not model behavior difficulty. The naturalization sample tests only renderer
-quality and awaits a real reviewer; it is not a language-model benchmark. Amendment 02 preserves
-the original packet at `06fd188` and changes no symbolic record, gold, edit, F certificate, proof,
-countermodel, or candidate result.
+quality; its completed real review produced Gate C and is not a language-model benchmark.
+Amendment 02 preserves the original packet at `06fd188` and changes no symbolic record, gold, edit,
+F certificate, proof, countermodel, or candidate result.

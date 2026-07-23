@@ -10,6 +10,7 @@ from pathlib import Path
 from statistics import median
 from typing import Any
 
+from finalize_naturalization_review_v2 import gate_from_review_result
 from hardening_common import (
     ERROR_CLASSES,
     MASTER_SEED,
@@ -103,6 +104,7 @@ def _write_research_reports(
     validation: dict[str, Any],
     naturalization: dict[str, Any],
     test_summary: dict[str, str],
+    human_review: dict[str, Any] | None,
 ) -> None:
     EXPLORE.mkdir(parents=True, exist_ok=True)
     failure_catalog = """# Failure Catalog
@@ -124,13 +126,33 @@ None in the Amendment 01 replacement run: 48/48 attempts are valid.
 No failed sample was dropped, no seed was replaced, and no correctness gate was relaxed.
 """
     (EXPLORE / "FAILURE_CATALOG.md").write_text(failure_catalog, encoding="utf-8")
+    if human_review is None:
+        outcome = """The symbolic generator passed every frozen hard gate. Amendment 02 revised only
+the renderer and human-review governance before review. The final state remains Gate B because the
+blank v2 naturalization workbook has not yet been returned by a real reviewer."""
+        human_summary = "- Human review: `awaiting_human_naturalization_review`"
+    else:
+        failed_ids = ", ".join(human_review["failed_review_ids"])
+        naturalness = Counter(row["language_naturalness"] for row in human_review["rows"])
+        leakage_yes = sum(
+            row["condition_identity_leakage"] == "yes" for row in human_review["rows"]
+        )
+        unclear = [row["review_id"] for row in human_review["rows"] if row["clear_reference"] == "no"]
+        outcome = """The symbolic generator remains passed. A real reviewer completed the frozen v2
+packet, and the item-level all-criteria rule produced Gate C: 0/12 rows passed. This is a
+naturalization failure, not a symbolic-gold, atomic-edit, or F-certificate failure."""
+        human_summary = f"""- Human review: `failed` (Gate C)
+- Passed / failed rows: {human_review["passed_row_count"]} / {len(human_review["failed_review_ids"])}
+- Failed IDs: {failed_ids}
+- Naturalness distribution: {dict(sorted(naturalness.items()))}
+- Condition-identity leakage = yes: {leakage_yes}/12
+- Clear-reference failures: {', '.join(unclear) if unclear else 'none'}
+- Completed workbook: `naturalization_review12_bilingual_v2_completed.xlsx`"""
     results = f"""# Phase 1.1 Results
 
 ## Outcome
 
-The symbolic generator passed every frozen hard gate. Amendment 02 revised only the renderer and
-human-review governance before review. The final state remains Gate B because the blank v2
-naturalization workbook has not yet been returned by a real reviewer.
+{outcome}
 
 ## Symbolic stress test
 
@@ -151,7 +173,7 @@ These are formal proof-depth results, not claims about model behavior.
 
 - Frozen sample: 12 v2 records, covering six F classes at easy and medium difficulty
 - Automatic checks: {naturalization["automatic_checks"]["passed"]}
-- Human review: `awaiting_human_naturalization_review`
+{human_summary}
 - Workbook: `naturalization_review12_bilingual_v2.xlsx`
 - Workbook fields: blank; no gold, F class, or symbolic internals are displayed
 - Item-level rule: all six criteria must pass on all 12 rows
@@ -172,7 +194,13 @@ No Qwen, GPU, capping, S arm, model-response selection, development bank, or hel
 was run. The 48 stress records are not a confirmation set.
 """
     (EXPLORE / "PHASE1_1_RESULTS.md").write_text(results, encoding="utf-8")
-    ledger = """# Experiment Ledger
+    review_ledger = (
+        "| 2026-07-23 | Human review | Finalized the immutable completed v2 packet | "
+        "Gate C; 0/12 passed; symbolic generator remains passed |\n"
+        if human_review is not None
+        else ""
+    )
+    ledger = f"""# Experiment Ledger
 
 | Date | Stage | Action | Result |
 |---|---|---|---|
@@ -187,7 +215,7 @@ was run. The 48 stress records are not a confirmation set.
 | 2026-07-23 | Naturalization | 12 bilingual deterministic renders | Automatic gate 12/12; human fields blank |
 | 2026-07-23 | Tests | Targeted, full repository, Ruff | See `PHASE1_1_RESULTS.md` |
 | 2026-07-23 | Amendment 02 | Renderer, leakage audit, and human finalizer only | v2 packet; symbolic hashes unchanged |
-"""
+{review_ledger}"""
     (EXPLORE / "EXPERIMENT_LEDGER.md").write_text(ledger, encoding="utf-8")
     comparability = """# Comparability Report
 
@@ -199,9 +227,9 @@ master seed, candidate budget, solvers, and validators. Amendment 01 changes onl
 F-class schedule and rebuilds every attempt. The pre-amendment run is hash-bound in its amendment.
 
 Formal proof depth is not model behavior difficulty. The naturalization sample tests only renderer
-quality and awaits a real reviewer; it is not a language-model benchmark. Amendment 02 preserves
-the original packet at `06fd188` and changes no symbolic record, gold, edit, F certificate, proof,
-countermodel, or candidate result.
+quality; its completed real review produced Gate C and is not a language-model benchmark.
+Amendment 02 preserves the original packet at `06fd188` and changes no symbolic record, gold, edit,
+F certificate, proof, countermodel, or candidate result.
 """
     (EXPLORE / "COMPARABILITY_REPORT.md").write_text(comparability, encoding="utf-8")
 
@@ -223,11 +251,24 @@ def _manifest(
             "workbook_canonical_content_sha256"
         ],
     }
+    human_result_path = root / "human_review_result.json"
+    completed_workbook_path = root / "naturalization_review12_bilingual_v2_completed.xlsx"
+    human_review = None
+    if human_result_path.exists():
+        human_review = json.loads(human_result_path.read_text(encoding="utf-8"))
+        if completed_workbook_path.exists():
+            workbook_hashes[completed_workbook_path.name] = human_review[
+                "result_canonical_sha256"
+            ]
     files: list[dict[str, Any]] = []
     included_roots = [root, EXPLORE]
     for included_root in included_roots:
         for path in sorted(included_root.rglob("*")):
-            if not path.is_file() or path.name == "manifest.json" or "__pycache__" in path.parts:
+            if (
+                not path.is_file()
+                or path.name in {"manifest.json", "_dump.json"}
+                or "__pycache__" in path.parts
+            ):
                 continue
             relative = path.relative_to(REPO_ROOT).as_posix()
             files.append(
@@ -254,7 +295,7 @@ def _manifest(
                 "status": row["status"],
             }
         )
-    return {
+    manifest = {
         "schema_version": "cedar.prover_generator_hardening.manifest.v1_1",
         "research_anchor": "4712b0d555ae2b07f73781c6a11b7caa660ef96a",
         "protocol_commit": "2266a16",
@@ -287,6 +328,13 @@ def _manifest(
         "files": files,
         "gpu_qwen_capping_run": False,
     }
+    if human_review is not None and completed_workbook_path.exists():
+        manifest["completed_workbook_raw_sha256"] = file_sha256(completed_workbook_path)
+        manifest["completed_workbook_review_content_canonical_sha256"] = human_review[
+            "result_canonical_sha256"
+        ]
+        manifest["human_review_result_canonical_sha256"] = canonical_sha256(human_review)
+    return manifest
 
 
 def analyze(root: Path, test_summary: dict[str, str]) -> dict[str, Any]:
@@ -297,7 +345,13 @@ def analyze(root: Path, test_summary: dict[str, str]) -> dict[str, Any]:
     metrics = _metrics(stress)
     symbolic_pass = validation["passed"] and metrics["valid_count"] >= 44
     automatic_pass = naturalization["automatic_checks"]["passed"]
-    final_gate = {
+    human_result_path = root / "human_review_result.json"
+    human_review = (
+        json.loads(human_result_path.read_text(encoding="utf-8"))
+        if human_result_path.exists()
+        else None
+    )
+    pending_gate = {
         "gate": "B" if symbolic_pass and automatic_pass else "D",
         "symbolic_status": "symbolic_generator_passed"
         if symbolic_pass
@@ -314,9 +368,15 @@ def analyze(root: Path, test_summary: dict[str, str]) -> dict[str, Any]:
         else "a symbolic or automatic hard gate failed",
         "gpu_qwen_capping_run": False,
     }
+    if not symbolic_pass or not automatic_pass:
+        final_gate = pending_gate
+    elif human_review is not None:
+        final_gate = gate_from_review_result(human_review)
+    else:
+        final_gate = pending_gate
     write_json(root / "stress_metrics.json", metrics)
     write_json(EXPLORE / "FINAL_GATE.json", final_gate)
-    _write_research_reports(metrics, validation, naturalization, test_summary)
+    _write_research_reports(metrics, validation, naturalization, test_summary, human_review)
     manifest = _manifest(root, stress, naturalization, final_gate)
     write_json(root / "manifest.json", manifest)
     return {"metrics": metrics, "final_gate": final_gate, "manifest_files": len(manifest["files"])}

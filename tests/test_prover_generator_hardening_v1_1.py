@@ -215,7 +215,11 @@ def test_manifest_has_no_absolute_paths_and_binds_all_48_attempts() -> None:
     assert manifest["naturalization12_v2_canonical_sha256"]
     assert manifest["workbook_v2_canonical_content_sha256"]
     assert manifest["human_review_finalizer_sha256"]
+    assert manifest["completed_workbook_raw_sha256"]
+    assert manifest["completed_workbook_review_content_canonical_sha256"]
+    assert manifest["human_review_result_canonical_sha256"]
     assert all(":" not in entry["path"] for entry in manifest["files"])
+    assert all(not entry["path"].endswith("/_dump.json") for entry in manifest["files"])
     assert "C:\\" not in json.dumps(manifest)
 
 
@@ -252,13 +256,21 @@ def test_final_gate_stops_at_real_human_review() -> None:
             encoding="utf-8"
         )
     )
-    assert gate["gate"] == "B"
+    assert gate["gate"] == "C"
     assert gate["symbolic_status"] == "symbolic_generator_passed"
-    assert gate["human_review_status"] == "awaiting_human_naturalization_review"
-    assert gate["review_packet"] == "naturalization_review12_bilingual_v2.xlsx"
-    assert gate["human_passing_rule"] == "all_six_criteria_on_all_12_rows"
+    assert gate["human_review_status"] == "complete"
+    assert gate["naturalization_status"] == "naturalization_failed"
+    assert gate["failed_review_ids"] == [f"NAT-{index:02d}" for index in range(1, 13)]
     assert gate["step_1_complete"] is False
     assert gate["may_prepare_development_bank_protocol"] is False
+
+
+def test_analyzer_preserves_finalized_gate_c() -> None:
+    result = json.loads((HARDENING / "human_review_result.json").read_text(encoding="utf-8"))
+    assert result["status"] == "failed"
+    assert result["passed_row_count"] == 0
+    assert all(row["language_naturalness"] == 3 for row in result["rows"])
+    assert all(row["condition_identity_leakage"] == "yes" for row in result["rows"])
 
 
 def _v2_rows() -> list[dict]:
