@@ -1,0 +1,161 @@
+{
+  "configuration": {
+    "axis_telemetry": {
+      "hook_order": "monitor before same-layer cap",
+      "layers": [
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53
+      ],
+      "phases": [
+        "conversation_prefill",
+        "assistant_prefix_context",
+        "answer_step"
+      ],
+      "reference_caps": [
+        "p25"
+      ]
+    },
+    "capping": {
+      "axis_sha256": "a207fe7a36563280b7b29010880aa0082bd8e3113c141cb4a2eed6b46c140211",
+      "capping_config_sha256": "6aec1220487473aaeab80b05d5d960ac54b5dd9080b51ac4bb0bbd1f4330db24",
+      "experiment": "layers_46:54-p0.25",
+      "layers": {
+        "46": {
+          "axis_cosine": -1.000001311302185,
+          "direction_sha256": "a97146172423ef8e63eebaeef57c25cb83db1042d492dfd54d6425b0e32e9d96",
+          "threshold": -32.5
+        },
+        "47": {
+          "axis_cosine": -1.000001072883606,
+          "direction_sha256": "5b8b0aa74cd5ebc88bc1423170fafd478b3fe8bd81921870bbc4e9130f534548",
+          "threshold": -64.5
+        },
+        "48": {
+          "axis_cosine": -1.0000014305114746,
+          "direction_sha256": "d2d1c6b6bd65f1531990fb34459578be46d626c8ea29bbbfcecb069cfd94d5df",
+          "threshold": -35.75
+        },
+        "49": {
+          "axis_cosine": -1.0000016689300537,
+          "direction_sha256": "be9cf8536c69b6b152b7e5f5207238e1abece4eff685f828177a08b30cc6e213",
+          "threshold": -37.25
+        },
+        "50": {
+          "axis_cosine": -1.0000015497207642,
+          "direction_sha256": "998416f2cb54f1cd00ad98e4752bf1757bb91e9bbef940aa7716e5b5bdb3f5fb",
+          "threshold": -33.0
+        },
+        "51": {
+          "axis_cosine": -1.0000014305114746,
+          "direction_sha256": "8dcf9ef75125bb46dfc49730ce5784d92445200fbcce9804da542d5b36aaf66a",
+          "threshold": -28.5
+        },
+        "52": {
+          "axis_cosine": -1.0000016689300537,
+          "direction_sha256": "fba1d99ad9d46475457ea49b6a239b9c842c9daafb38a85d89761aa306ec93c8",
+          "threshold": -21.0
+        },
+        "53": {
+          "axis_cosine": -1.0000016689300537,
+          "direction_sha256": "b071f0710a24e61ba16144d6d4036092030b70e6b3b5a7fbced7db44d7aeb39b",
+          "threshold": -44.5
+        }
+      },
+      "positions": "all decoder-block output positions",
+      "repo_id": "lu-christina/assistant-axis-vectors",
+      "revision": "3b3b788432ad33e3a28d9ff08e88a530c0740814"
+    },
+    "condition": "p25",
+    "dataset": {
+      "arms_canonical_text_sha256": "53f2dfb26efe3d3c36ce5b4f466a50d642ba15b424d37113aaa2f6dea468aaa5",
+      "arms_path": "datasets/c3_sycobench_bidirectional_selectivity/c3_arms2400.jsonl",
+      "arms_raw_sha256_diagnostic": "53f2dfb26efe3d3c36ce5b4f466a50d642ba15b424d37113aaa2f6dea468aaa5",
+      "arms_semantic_sha256": "edd16f21bb8f0b647bd77fb8faa50a50dc2db8c941d264145efaa2bf9a8949a6",
+      "construction_audit_canonical_text_sha256": "cded422605d71b10b9efcb2f73691495cf679657ecc86294893f8c33eee0fb80",
+      "execution_preflight_canonical_text_sha256": "246a9c9b02a7f50607bd16b3a980ee434c4b5497a0320e805d20859ea8cf90a6",
+      "manifest_canonical_text_sha256": "baa63907f01c8b606bf9d847ab420bd99f7e84de570192c1fd9cccfc7cf58c9b",
+      "review_gate_canonical_text_sha256": "31d7db35e677dcec73dcbd5ed8121f8207f93871128fb430940b72041972f6ab",
+      "selected_ids_sha256": "72a2823c948c0c90741f859625ec327784db9f762ebd4954ef8e4110f174cc68",
+      "selected_rows": 96
+    },
+    "environment": {
+      "cuda_visible_devices": "2,4,6,7",
+      "platform": "Linux-6.8.0-124-generic-x86_64-with-glibc2.35",
+      "python": "3.11.15",
+      "torch": "2.6.0+cu124",
+      "transformers": "4.56.1",
+      "visible_gpu_count": 4
+    },
+    "git": {
+      "branch": "agent/c3-sycobench-bidirectional-selectivity",
+      "commit": "c11c3bafcf3efcb89981f37813ced5ba43863d76",
+      "dirty": false,
+      "head_matches_upstream": true,
+      "upstream_commit": "c11c3bafcf3efcb89981f37813ced5ba43863d76"
+    },
+    "instrumentation": "p25",
+    "kind": "C3 SycoBench bidirectional exploratory selectivity diagnostic",
+    "measurement": {
+      "answer_repair": false,
+      "assistant_prefix": "{\"answer\":\"",
+      "batch_size": 1,
+      "candidate_labels": [
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "content_retry": false,
+      "enable_thinking": false,
+      "free_generation": false,
+      "single_next_token_forward": true
+    },
+    "model": {
+      "attention_implementation": "sdpa",
+      "dtype": "bfloat16",
+      "repo_id": "Qwen/Qwen3-32B",
+      "revision": "9216db5781bf21249d130ec9da846c4624c16137"
+    },
+    "monitor_enabled": true,
+    "phase": "smoke-p25",
+    "preflight_status": "zero_gpu_code_frozen_agent_self_review_authorized",
+    "review_gate": {
+      "cohen_kappa": null,
+      "data_lead_review_performed": false,
+      "direction_cases_reviewed": 32,
+      "dual_independent_review": false,
+      "gpu_authorized": true,
+      "human_review_performed": false,
+      "limitations": [
+        "No Cohen kappa",
+        "No human or data-lead review",
+        "No independent reviewer",
+        "No inter-annotator agreement estimate"
+      ],
+      "protocol_deviation": true,
+      "raw_agreement": null,
+      "review_mode": "agent_self_review_user_waiver",
+      "status": "passed",
+      "template_pairs_reviewed": 4,
+      "user_review_waived": true
+    },
+    "scope": "smoke",
+    "seed": 0,
+    "selection": "smoke96",
+    "track": "direct"
+  },
+  "created_at": "2026-07-23T19:43:03.907588+08:00",
+  "fingerprint": "051ff0ce38bd4afc2c1d70657dc9d1484b086282d781076c2a27567be58eb6ed"
+}
