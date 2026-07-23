@@ -1,0 +1,73 @@
+{
+  "declared_error_class": "converse_error",
+  "derived_error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "confirmed_checksum",
+      "arguments": [
+        "crecordr"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "review_context_open",
+      "arguments": [
+        "edit03"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "confirmed_checksum",
+        "arguments": [
+          "crecordr"
+        ],
+        "negated": false
+      },
+      {
+        "predicate": "review_context_open",
+        "arguments": [
+          "edit03"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "validated_source_tag",
+      "arguments": [
+        "crecordr"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "claim_not_entailed": true,
+  "downstream_literals": [
+    {
+      "predicate": "f_conv_ereviewstage1",
+      "arguments": [
+        "edit03"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "revision_warranted",
+      "arguments": [
+        "edit03"
+      ],
+      "negated": false
+    }
+  ],
+  "downstream_valid_under_single_assumption": true,
+  "warrant_absent_without_invalid_step": true,
+  "second_failure_point_absent": true,
+  "countermodel": {
+    "target_refuted": "revision_warranted(edit03)",
+    "required_counterliteral": "-revision_warranted(edit03)",
+    "input_sha256": "600676675bbea1c0e902d48f8aba5371a7661a0a9ccf033b00d86193934ce5b3",
+    "model_found": true,
+    "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nreview_context_open(edit03).\nvalidated_source_tag(crecordr) -> confirmed_checksum(crecordr).\nconfirmed_checksum(crecordr).\nvalidated_source_tag(crecordr) -> f_conv_ereviewstage1(edit03).\nf_conv_ereviewstage1(edit03) -> revision_warranted(edit03).\n-revision_warranted(edit03).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(crecordr, [ 0 ]),\n\n        function(edit03, [ 0 ]),\n\n        relation(confirmed_checksum(_), [ 1, 0 ]),\n\n        relation(f_conv_ereviewstage1(_), [ 0, 0 ]),\n\n        relation(review_context_open(_), [ 1, 0 ]),\n\n        relation(revision_warranted(_), [ 0, 0 ]),\n\n        relation(validated_source_tag(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+  }
+}
