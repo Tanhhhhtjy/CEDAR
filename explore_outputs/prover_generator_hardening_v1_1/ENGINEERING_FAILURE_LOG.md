@@ -26,3 +26,13 @@ New failures must be appended; prior entries must never be removed after a rebui
   and four medium attempts. All 48 records are rebuilt; no item or seed is selectively repaired.
 - Scientific effect: F scaffolds change assignment across cells. Gold logic, desired transitions,
   candidate enumeration, family difficulty, solvers, and gates remain unchanged.
+
+## EF-003: one V/F rendered-length ratio below the frozen floor
+
+- Stage: deterministic naturalization automatic gate after the Amendment 01 replacement run.
+- Symptom: NAT-10 had a V/F word ratio of 0.765, below the required 0.80 floor; all other language
+  checks and the other 11 rows passed.
+- General fix: add one fixed neutral sentence to every V rendering stating that the authenticated
+  update supplies no other assumptions or changes. The same sentence is translated in Chinese.
+- Scientific effect: renderer only. Symbolic records, selection, gold, F reasoning, and V edits are
+  unchanged. The automatic language suite is rerun for all 12 records.
