@@ -2,7 +2,8 @@
 
 ## Outcome
 
-The symbolic generator passed every frozen hard gate. The final state is Gate B because the blank
+The symbolic generator passed every frozen hard gate. Amendment 02 revised only the renderer and
+human-review governance before review. The final state remains Gate B because the blank v2
 naturalization workbook has not yet been returned by a real reviewer.
 
 ## Symbolic stress test
@@ -22,15 +23,17 @@ These are formal proof-depth results, not claims about model behavior.
 
 ## Naturalization
 
-- Frozen sample: 12 records, covering six F classes at easy and medium difficulty
+- Frozen sample: 12 v2 records, covering six F classes at easy and medium difficulty
 - Automatic checks: True
 - Human review: `awaiting_human_naturalization_review`
+- Workbook: `naturalization_review12_bilingual_v2.xlsx`
 - Workbook fields: blank; no gold, F class, or symbolic internals are displayed
+- Item-level rule: all six criteria must pass on all 12 rows
 
 ## Verification
 
-- Targeted Phase 1.1 tests: 24 passed
-- Full repository test run: 240 passed, 20 failed (pre-existing asset/environment-bound failures)
+- Targeted Phase 1.1 tests: 34 passed
+- Full repository test run: 250 passed, 20 failed (pre-existing asset/environment-bound failures)
 - Ruff: passed
 
 The full-repository failures are outside Phase 1.1 and are dominated by unavailable frozen model

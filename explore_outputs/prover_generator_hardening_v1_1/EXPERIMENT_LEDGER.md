@@ -12,3 +12,4 @@
 | 2026-07-23 | Determinism | Two clean full builds | 331/331 canonical files identical |
 | 2026-07-23 | Naturalization | 12 bilingual deterministic renders | Automatic gate 12/12; human fields blank |
 | 2026-07-23 | Tests | Targeted, full repository, Ruff | See `PHASE1_1_RESULTS.md` |
+| 2026-07-23 | Amendment 02 | Renderer, leakage audit, and human finalizer only | v2 packet; symbolic hashes unchanged |

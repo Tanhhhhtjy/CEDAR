@@ -26,15 +26,15 @@ REPO_ROOT = HERE.parents[2]
 EXPLORE = REPO_ROOT / "explore_outputs" / "prover_generator_hardening_v1_1"
 
 
-def _canonical_file_hash(path: Path, workbook_hash: str | None = None) -> str:
+def _canonical_file_hash(path: Path, workbook_hashes: dict[str, str] | None = None) -> str:
     if path.suffix == ".jsonl":
         return canonical_jsonl_sha256(path)
     if path.suffix == ".json":
         return canonical_json_file_sha256(path)
     if path.suffix == ".xlsx":
-        if workbook_hash is None:
+        if workbook_hashes is None or path.name not in workbook_hashes:
             raise ValueError("workbook canonical content hash is required")
-        return workbook_hash
+        return workbook_hashes[path.name]
     normalized = path.read_text(encoding="utf-8").replace("\r\n", "\n")
     return canonical_sha256({"normalized_text": normalized})
 
@@ -117,6 +117,9 @@ None in the Amendment 01 replacement run: 48/48 attempts are valid.
 2. First-run F schedule lacked easy/medium coverage within class: preserved at commit `b4586f7`,
    corrected by Amendment 01, and followed by a complete 48-attempt rebuild.
 3. One automatic V/F length-ratio failure: fixed in the renderer only and rerun for all 12 rows.
+4. A pre-review audit found missing `the claim that`, awkward replacement syntax, fixed condition
+   wording, and an underspecified human gate. Amendment 02 revised renderer/review governance only;
+   332 protected symbolic and proof artifacts retained their canonical hashes.
 
 No failed sample was dropped, no seed was replaced, and no correctness gate was relaxed.
 """
@@ -125,7 +128,8 @@ No failed sample was dropped, no seed was replaced, and no correctness gate was 
 
 ## Outcome
 
-The symbolic generator passed every frozen hard gate. The final state is Gate B because the blank
+The symbolic generator passed every frozen hard gate. Amendment 02 revised only the renderer and
+human-review governance before review. The final state remains Gate B because the blank v2
 naturalization workbook has not yet been returned by a real reviewer.
 
 ## Symbolic stress test
@@ -145,10 +149,12 @@ These are formal proof-depth results, not claims about model behavior.
 
 ## Naturalization
 
-- Frozen sample: 12 records, covering six F classes at easy and medium difficulty
+- Frozen sample: 12 v2 records, covering six F classes at easy and medium difficulty
 - Automatic checks: {naturalization["automatic_checks"]["passed"]}
 - Human review: `awaiting_human_naturalization_review`
+- Workbook: `naturalization_review12_bilingual_v2.xlsx`
 - Workbook fields: blank; no gold, F class, or symbolic internals are displayed
+- Item-level rule: all six criteria must pass on all 12 rows
 
 ## Verification
 
@@ -180,6 +186,7 @@ was run. The 48 stress records are not a confirmation set.
 | 2026-07-23 | Determinism | Two clean full builds | 331/331 canonical files identical |
 | 2026-07-23 | Naturalization | 12 bilingual deterministic renders | Automatic gate 12/12; human fields blank |
 | 2026-07-23 | Tests | Targeted, full repository, Ruff | See `PHASE1_1_RESULTS.md` |
+| 2026-07-23 | Amendment 02 | Renderer, leakage audit, and human finalizer only | v2 packet; symbolic hashes unchanged |
 """
     (EXPLORE / "EXPERIMENT_LEDGER.md").write_text(ledger, encoding="utf-8")
     comparability = """# Comparability Report
@@ -192,7 +199,9 @@ master seed, candidate budget, solvers, and validators. Amendment 01 changes onl
 F-class schedule and rebuilds every attempt. The pre-amendment run is hash-bound in its amendment.
 
 Formal proof depth is not model behavior difficulty. The naturalization sample tests only renderer
-quality and awaits a real reviewer; it is not a language-model benchmark.
+quality and awaits a real reviewer; it is not a language-model benchmark. Amendment 02 preserves
+the original packet at `06fd188` and changes no symbolic record, gold, edit, F certificate, proof,
+countermodel, or candidate result.
 """
     (EXPLORE / "COMPARABILITY_REPORT.md").write_text(comparability, encoding="utf-8")
 
@@ -203,7 +212,17 @@ def _manifest(
     naturalization: dict[str, Any],
     final_gate: dict[str, Any],
 ) -> dict[str, Any]:
-    workbook_hash = naturalization["workbook_canonical_content_sha256"]
+    original_naturalization = json.loads(
+        (root / "naturalization_automatic_checks.json").read_text(encoding="utf-8")
+    )
+    workbook_hashes = {
+        "naturalization_review12_bilingual.xlsx": original_naturalization[
+            "workbook_canonical_content_sha256"
+        ],
+        "naturalization_review12_bilingual_v2.xlsx": naturalization[
+            "workbook_canonical_content_sha256"
+        ],
+    }
     files: list[dict[str, Any]] = []
     included_roots = [root, EXPLORE]
     for included_root in included_roots:
@@ -215,9 +234,7 @@ def _manifest(
                 {
                     "path": relative,
                     "raw_file_sha256": file_sha256(path),
-                    "canonical_content_sha256": _canonical_file_hash(
-                        path, workbook_hash if path.suffix == ".xlsx" else None
-                    ),
+                    "canonical_content_sha256": _canonical_file_hash(path, workbook_hashes),
                 }
             )
     item_hashes = []
@@ -240,7 +257,9 @@ def _manifest(
     return {
         "schema_version": "cedar.prover_generator_hardening.manifest.v1_1",
         "research_anchor": "4712b0d555ae2b07f73781c6a11b7caa660ef96a",
-        "protocol_commit": "cbd5ced",
+        "protocol_commit": "2266a16",
+        "naturalization_amendment": "02",
+        "protected_baseline_commit": "06fd18863503734c32c754defa411172c2756297",
         "architecture": "proof_graph_plus_atomic_edit_certification",
         "master_seed": MASTER_SEED,
         "builder_sha256": file_sha256(root / "proof_graph_builder.py"),
@@ -253,8 +272,17 @@ def _manifest(
         ],
         "formal_attempts": item_hashes,
         "failures": [row["attempt_id"] for row in stress if row["status"] != "valid"],
-        "naturalization12_canonical_sha256": naturalization["naturalization_canonical_sha256"],
-        "workbook_canonical_content_sha256": workbook_hash,
+        "naturalization12_v1_canonical_sha256": original_naturalization[
+            "naturalization_canonical_sha256"
+        ],
+        "naturalization12_v2_canonical_sha256": naturalization["naturalization_canonical_sha256"],
+        "workbook_v1_canonical_content_sha256": workbook_hashes[
+            "naturalization_review12_bilingual.xlsx"
+        ],
+        "workbook_v2_canonical_content_sha256": workbook_hashes[
+            "naturalization_review12_bilingual_v2.xlsx"
+        ],
+        "human_review_finalizer_sha256": file_sha256(root / "finalize_naturalization_review_v2.py"),
         "final_gate_canonical_sha256": canonical_sha256(final_gate),
         "files": files,
         "gpu_qwen_capping_run": False,
@@ -264,9 +292,8 @@ def _manifest(
 def analyze(root: Path, test_summary: dict[str, str]) -> dict[str, Any]:
     stress = read_jsonl(root / "hybrid_stress48.jsonl")
     validation = json.loads((root / "validation_report.json").read_text(encoding="utf-8"))
-    naturalization = json.loads(
-        (root / "naturalization_automatic_checks.json").read_text(encoding="utf-8")
-    )
+    naturalization_path = root / "naturalization_automatic_checks_v2.json"
+    naturalization = json.loads(naturalization_path.read_text(encoding="utf-8"))
     metrics = _metrics(stress)
     symbolic_pass = validation["passed"] and metrics["valid_count"] >= 44
     automatic_pass = naturalization["automatic_checks"]["passed"]
@@ -280,7 +307,9 @@ def analyze(root: Path, test_summary: dict[str, str]) -> dict[str, Any]:
         else "not_reached",
         "step_1_complete": False,
         "may_prepare_development_bank_protocol": False,
-        "reason": "real human naturalization review has not been returned"
+        "review_packet": "naturalization_review12_bilingual_v2.xlsx",
+        "human_passing_rule": "all_six_criteria_on_all_12_rows",
+        "reason": "real human naturalization v2 review has not been returned"
         if symbolic_pass and automatic_pass
         else "a symbolic or automatic hard gate failed",
         "gpu_qwen_capping_run": False,
