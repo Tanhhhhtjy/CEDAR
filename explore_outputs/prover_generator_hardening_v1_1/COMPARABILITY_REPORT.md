@@ -1,8 +1,11 @@
 # Comparability Report
 
-Phase 1.1 is a hardening stress test of one approved engineering architecture. It does not compare
-or score ProverGen-style and ReviseQA-style routes. The v1 `100 vs 99` score is retired.
+Phase 1.1 evaluates one approved hybrid engineering architecture. It does not compare or score
+ProverGen-style and ReviseQA-style routes, and the v1 `100 vs 99` score remains retired.
 
-The 48 attempts are comparable only within the frozen family × variant × replicate matrix. Formal
-proof depth is not a claim about model behavior. The naturalization sample is a renderer and human
-review checkpoint, not a language-model benchmark.
+All replacement-run attempts use the same frozen 8-family x 2-variant x 3-replicate matrix,
+master seed, candidate budget, solvers, and validators. Amendment 01 changes only the global
+F-class schedule and rebuilds every attempt. The pre-amendment run is hash-bound in its amendment.
+
+Formal proof depth is not model behavior difficulty. The naturalization sample tests only renderer
+quality and awaits a real reviewer; it is not a language-model benchmark.

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import inspect
+import json
 import sys
 from pathlib import Path
 
@@ -23,6 +24,7 @@ from hardening_common import (  # noqa: E402
     stable_seed,
     write_json,
 )
+from naturalize_prover_generator_hardening_v1_1 import automatic_checks  # noqa: E402
 from proof_graph_builder import (  # noqa: E402
     FAMILY_BLUEPRINTS,
     assert_no_answer_channel,
@@ -65,12 +67,16 @@ def test_enumerator_has_no_answer_argument_and_is_deterministic() -> None:
 
 def test_all_48_neighborhoods_have_one_unique_edit_and_stable_order() -> None:
     counts = []
+    class_variant_counts = {}
     for family_index, blueprint in enumerate(FAMILY_BLUEPRINTS):
         for variant_index, variant in enumerate(("easy", "medium")):
             for replicate_id in range(1, 4):
                 error_class = ERROR_CLASSES[
                     (family_index * 3 + variant_index * 3 + replicate_id - 1) % 6
                 ]
+                class_variant_counts[(error_class, variant)] = (
+                    class_variant_counts.get((error_class, variant), 0) + 1
+                )
                 seed = stable_seed(MASTER_SEED, blueprint["family_id"], variant, replicate_id)
                 built = proof_graph_builder(
                     blueprint, variant, seed, blueprint["transition"], error_class
@@ -83,6 +89,8 @@ def test_all_48_neighborhoods_have_one_unique_edit_and_stable_order() -> None:
                 counts.append(len(candidates))
     assert len(counts) == 48
     assert sum(value >= 20 for value in counts) / len(counts) >= 0.90
+    assert set(class_variant_counts.values()) == {4}
+    assert len(class_variant_counts) == 12
 
 
 @pytest.mark.parametrize(
@@ -153,3 +161,54 @@ def test_no_prohibited_generic_fatal_step_in_v11_source() -> None:
     prohibited = "unsupported" + "_atomic_state_claim"
     for path in HARDENING.glob("*.py"):
         assert prohibited not in path.read_text(encoding="utf-8")
+
+
+def test_naturalization12_passes_surface_and_reverse_mapping_checks() -> None:
+    rows = [
+        json.loads(line)
+        for line in (HARDENING / "naturalization12.jsonl").read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    assert len(rows) == 12
+    assert automatic_checks(rows)["passed"]
+    cells = {(row["internal_error_class"], row["variant"]) for row in rows}
+    assert len(cells) == 12
+
+
+def test_review_workbook_hides_internals_and_leaves_human_fields_blank() -> None:
+    from openpyxl import load_workbook
+
+    workbook = load_workbook(HARDENING / "naturalization_review12_bilingual.xlsx", data_only=False)
+    assert workbook.sheetnames == ["自然化审核", "审核说明"]
+    sheet = workbook["自然化审核"]
+    surface = "\n".join(
+        str(cell.value) for row in sheet.iter_rows() for cell in row if cell.value is not None
+    )
+    for error_class in ERROR_CLASSES:
+        assert error_class not in surface
+    assert "source_attempt_id" not in surface
+    for row in range(6, 18):
+        assert all(sheet.cell(row=row, column=column).value is None for column in range(4, 9))
+        assert sheet.cell(row=row, column=13).value is None
+
+
+def test_manifest_has_no_absolute_paths_and_binds_all_48_attempts() -> None:
+    manifest = json.loads((HARDENING / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["gpu_qwen_capping_run"] is False
+    assert len(manifest["formal_attempts"]) == 48
+    assert not manifest["failures"]
+    assert all(":" not in entry["path"] for entry in manifest["files"])
+    assert "C:\\" not in json.dumps(manifest)
+
+
+def test_final_gate_stops_at_real_human_review() -> None:
+    gate = json.loads(
+        (ROOT / "explore_outputs/prover_generator_hardening_v1_1/FINAL_GATE.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert gate["gate"] == "B"
+    assert gate["symbolic_status"] == "symbolic_generator_passed"
+    assert gate["human_review_status"] == "awaiting_human_naturalization_review"
+    assert gate["step_1_complete"] is False
+    assert gate["may_prepare_development_bank_protocol"] is False
