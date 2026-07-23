@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import tempfile
@@ -27,6 +28,7 @@ from formal_horn import (
     decisive_literal,
     edit_count,
     evaluate_fixed_point,
+    file_sha256,
     label_from_evaluation,
     literal_key,
     read_jsonl,
@@ -59,6 +61,45 @@ def _canonical_hash(path: Path) -> str:
     if path.suffix == ".jsonl":
         return canonical_jsonl_sha256(path)
     return canonical_json_file_sha256(path)
+
+
+def _canonical_text_hash(path: Path) -> str:
+    normalized = path.read_text(encoding="utf-8").replace("\r\n", "\n")
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
+
+
+def audit_manifest(root: Path) -> dict[str, Any]:
+    manifest_path = root / "manifest.json"
+    require(manifest_path.is_file(), "manifest.json is missing")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    repo_root = root.parents[2]
+    seen: set[str] = set()
+    for entry in manifest["files"]:
+        relative = entry["path"]
+        require(relative not in seen, f"duplicate manifest path: {relative}")
+        seen.add(relative)
+        path = repo_root / relative if relative.startswith("explore_outputs/") else root / relative
+        require(path.is_file(), f"manifest file missing: {relative}")
+        require(file_sha256(path) == entry["raw_file_sha256"], f"raw hash mismatch: {relative}")
+        if path.suffix == ".jsonl":
+            canonical = canonical_jsonl_sha256(path)
+        elif path.suffix == ".json":
+            canonical = canonical_json_file_sha256(path)
+        else:
+            canonical = _canonical_text_hash(path)
+        require(
+            canonical == entry["canonical_content_sha256"],
+            f"canonical hash mismatch: {relative}",
+        )
+    require(manifest["hard_gate_hash_type"] == "canonical_content_sha256", "wrong hash gate")
+    require(manifest["raw_hash_is_provenance_only"] is True, "raw hash used as hard gate")
+    return {
+        "status": "passed",
+        "manifest_entries": len(seen),
+        "aggregate_canonical_sha256": canonical_sha256(
+            {entry["path"]: entry["canonical_content_sha256"] for entry in manifest["files"]}
+        ),
+    }
 
 
 def _file_hash_map(root: Path) -> dict[str, str]:
@@ -402,7 +443,11 @@ def main() -> None:
     parser.add_argument("--data-dir", type=Path, default=HERE)
     parser.add_argument("--skip-solver-rerun", action="store_true")
     parser.add_argument("--skip-rebuild", action="store_true")
+    parser.add_argument("--manifest-only", action="store_true")
     args = parser.parse_args()
+    if args.manifest_only:
+        print(json.dumps(audit_manifest(args.data_dir.resolve()), ensure_ascii=False, indent=2))
+        return
     report = validate(
         args.data_dir.resolve(),
         rerun_solver=not args.skip_solver_rerun,

@@ -29,6 +29,7 @@ from formal_horn import (  # noqa: E402
     rule,
     stable_seed,
 )
+from validate_prover_generator_feasibility import audit_manifest  # noqa: E402
 
 
 def test_family_catalog_has_eight_unique_families() -> None:
@@ -173,3 +174,4 @@ def test_manifest_contains_no_absolute_paths() -> None:
     manifest = json.loads((DATA_DIR / "manifest.json").read_text(encoding="utf-8"))
     assert all(":" not in entry["path"] for entry in manifest["files"])
     assert manifest["gpu_qwen_capping_run"] is False
+    assert audit_manifest(DATA_DIR)["status"] == "passed"

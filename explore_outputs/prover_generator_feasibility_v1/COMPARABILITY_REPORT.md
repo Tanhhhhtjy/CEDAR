@@ -1,14 +1,12 @@
 # Comparability Report
 
-The comparison is route-internal and controlled: both styles receive the same common
-specifications, semantics, Prover9 executable, independent evaluator, search budget, schema,
-difficulty contract, validation gates, and scoring. Construction order is the intended variable.
+Both routes used the same 16 specifications, finite signed-Horn semantics, Prover9 executable,
+Python evaluator, 100-candidate limit, schema, validity rules, and scoring. Construction order
+was the intended variable. Canonical rebuild equality passed: `078c53d362abbf74d5702161ce5236ce6cbe2cb841cd1ff63ad3b1ad38f7a356`.
 
-It is not directly comparable to published ProverGen generation yield because CEDAR uses a
-smaller Horn fragment, no upstream data assets, and no LLM naturalization. It is not directly
-comparable to ReviseQA's reported behavior because CEDAR replaces stochastic, multi-record LLM
-edits with deterministic one-record search and adds an F single-error contract.
-
-The external prover is Dec-2007 rather than the ProverGen README's recommended 2009-11A. This
-version deviation applies identically to both routes and is acceptable for the shared
-function-free Horn fragment, but prevents a claim of strict upstream solver reproduction.
+The result is not directly comparable to published ProverGen yield because no upstream assets,
+rich FOL operators, or LLM translation were used. It is not directly comparable to ReviseQA
+because its official stochastic multi-edit LLM proposal stage was replaced by deterministic
+one-record neighbor search. Prover9 Dec-2007, rather than 2009-11A, is a shared compatibility
+deviation. These boundaries prevent a strict-reproduction claim but preserve the internal route
+comparison.

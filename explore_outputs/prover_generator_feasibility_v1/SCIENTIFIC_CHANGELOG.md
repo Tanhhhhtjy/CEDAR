@@ -17,3 +17,11 @@ No dataset candidate, family blueprint, solver label, or route result existed at
 - Corrected direct Prover9 serialization to repeat each universal quantifier.
 - Changed unrecognized/fatal prover output from an implicit negative result to a hard exception.
 - Rebuilt both routes from all unchanged specifications; no family-level amendment occurred.
+
+## 2026-07-23 — bounded comparison completed
+
+- Generated and dual-validated sixteen common specifications through each route.
+- Preserved all formal attempts and rejected world-first neighbor traces.
+- Confirmed atomic V, single-error F, counterevidence, and eight-of-eight depth gradients.
+- Selected `human_checkpoint / hybrid_candidate` under the predeclared under-five-point rule.
+- Did not implement the hybrid or expand into a development/held-out bank.
