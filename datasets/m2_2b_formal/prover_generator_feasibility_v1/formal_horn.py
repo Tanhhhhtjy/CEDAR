@@ -246,7 +246,8 @@ def _prover9_record(record: dict[str, Any]) -> str:
     body = " & ".join(_prover9_atom(item) for item in record["body"])
     formula = f"({body}) -> {_prover9_atom(record['head'])}"
     if variables:
-        formula = f"all {' '.join(variables)} ({formula})"
+        quantifiers = " ".join(f"all {variable}" for variable in variables)
+        formula = f"{quantifiers} ({formula})"
     return f"{formula}."
 
 
@@ -295,19 +296,60 @@ def locate_solver(name: str) -> Path:
     )
 
 
-def _sanitize_solver_output(output: str) -> str:
+def _solver_section(output: str, name: str, end_name: str) -> str | None:
+    pattern = re.compile(
+        rf"^=+ {re.escape(name)} =+\n(.*?)^=+ {re.escape(end_name)} =+$",
+        re.MULTILINE | re.DOTALL,
+    )
+    match = pattern.search(output)
+    return match.group(1).strip() if match else None
+
+
+def _sanitize_solver_output(output: str, solver: str) -> str:
+    """Keep deterministic evidence sections and omit process/time/path telemetry."""
+
     output = output.replace("\x07", "").replace("\r\n", "\n")
-    lines: list[str] = []
-    for line in output.splitlines():
-        if re.match(r"^Process \d+ was started", line):
-            continue
-        if line.startswith("The command was "):
-            continue
-        if re.match(r"^(Mon|Tue|Wed|Thu|Fri|Sat|Sun) ", line):
-            continue
-        line = re.sub(r"process \d+", "process <PID>", line)
-        lines.append(line.rstrip())
-    return "\n".join(lines).strip() + "\n"
+    if solver == "prover9":
+        version_match = re.search(r"Prover9 \(32\) version [^\n]+", output)
+        input_section = _solver_section(output, "INPUT", "end of input")
+        proof_section = _solver_section(output, "PROOF", "end of proof")
+        if proof_section:
+            proof_section = re.sub(
+                r"^% Proof \d+ at .*? seconds\.$",
+                "% Proof timing omitted.",
+                proof_section,
+                flags=re.MULTILINE,
+            )
+        if "THEOREM PROVED" in output:
+            outcome = "THEOREM PROVED"
+        elif "SEARCH FAILED" in output:
+            outcome = "SEARCH FAILED"
+        else:
+            outcome = "UNRECOGNIZED SOLVER OUTCOME"
+        parts = [version_match.group(0) if version_match else "Prover9 version unknown"]
+        if input_section:
+            parts.append("INPUT\n" + input_section)
+        if proof_section:
+            parts.append("PROOF\n" + proof_section)
+        parts.append(outcome)
+        return "\n\n".join(parts).strip() + "\n"
+
+    version_match = re.search(r"Mace4 \(32\) version [^\n]+", output)
+    input_section = _solver_section(output, "INPUT", "end of input")
+    model_section = _solver_section(output, "MODEL", "end of model")
+    if model_section:
+        model_section = re.sub(
+            r"interpretation\(\s*([0-9]+),\s*\[number=[0-9]+, seconds=[0-9]+\]",
+            r"interpretation( \1, [number=<N>, seconds=<TIME>]",
+            model_section,
+        )
+    parts = [version_match.group(0) if version_match else "Mace4 version unknown"]
+    if input_section:
+        parts.append("INPUT\n" + input_section)
+    if model_section:
+        parts.append("MODEL\n" + model_section)
+    parts.append("MODEL FOUND" if model_section else "MODEL NOT FOUND")
+    return "\n\n".join(parts).strip() + "\n"
 
 
 def run_prover9(world: dict[str, Any], goal: dict[str, Any]) -> dict[str, Any]:
@@ -321,7 +363,7 @@ def run_prover9(world: dict[str, Any], goal: dict[str, Any]) -> dict[str, Any]:
         timeout=10,
         check=False,
     )
-    combined = _sanitize_solver_output(completed.stdout + completed.stderr)
+    combined = _sanitize_solver_output(completed.stdout + completed.stderr, "prover9")
     proved = "THEOREM PROVED" in combined
     search_failed = "SEARCH FAILED" in combined
     if not proved and not search_failed:
@@ -347,8 +389,9 @@ def run_mace4_countermodel(world: dict[str, Any], target: dict[str, Any]) -> dic
         timeout=10,
         check=False,
     )
-    combined = _sanitize_solver_output(completed.stdout + completed.stderr)
-    model_found = "MODEL FOUND" in combined
+    raw_output = completed.stdout + completed.stderr
+    combined = _sanitize_solver_output(raw_output, "mace4")
+    model_found = "interpretation(" in raw_output and "Exiting with 1 model" in raw_output
     if not model_found:
         raise RuntimeError("Mace4 did not produce a countermodel for an underived target")
     return {

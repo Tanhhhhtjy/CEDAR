@@ -10,3 +10,10 @@
 - Recorded the Dec-2007 external Prover9 compatibility deviation.
 
 No dataset candidate, family blueprint, solver label, or route result existed at this checkpoint.
+
+## 2026-07-23 — solver adapter hardening
+
+- Added legacy Dec-2007 Mace4 model-marker support without weakening the countermodel requirement.
+- Corrected direct Prover9 serialization to repeat each universal quantifier.
+- Changed unrecognized/fatal prover output from an implicit negative result to a hard exception.
+- Rebuilt both routes from all unchanged specifications; no family-level amendment occurred.

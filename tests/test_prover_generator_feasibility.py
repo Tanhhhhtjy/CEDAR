@@ -24,6 +24,7 @@ from formal_horn import (  # noqa: E402
     label_from_evaluation,
     literal,
     opposite,
+    prover9_input,
     read_jsonl,
     rule,
     stable_seed,
@@ -118,6 +119,21 @@ def test_stable_seed_depends_on_route() -> None:
 
 def test_canonical_hash_ignores_mapping_key_order() -> None:
     assert canonical_sha256({"a": 1, "b": 2}) == canonical_sha256({"b": 2, "a": 1})
+
+
+def test_prover9_multivariable_quantifiers_are_repeated() -> None:
+    world = {
+        "constants": ["a", "b", "c"],
+        "records": [
+            rule(
+                "r1",
+                [literal("edge", "?x", "?y"), literal("edge", "?y", "?z")],
+                literal("reach", "?x", "?z"),
+            )
+        ],
+    }
+    payload = prover9_input(world, literal("reach", "a", "c"))
+    assert "all x all y all z" in payload
 
 
 @pytest.mark.skipif(not (DATA_DIR / "provergen_style16.jsonl").exists(), reason="data not built")

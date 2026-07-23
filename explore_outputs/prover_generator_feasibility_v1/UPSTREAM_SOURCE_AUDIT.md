@@ -67,6 +67,11 @@ changed. This older solver version is an engineering compatibility deviation, no
 change; the compared fragment uses only finite function-free Horn formulas supported by both
 versions. Exact hashes are frozen in the final manifest.
 
+The legacy release uses `interpretation(...)` rather than a literal `MODEL FOUND` marker and
+requires repeated direct quantifiers such as `all x all y all z`. These differences are handled
+only in the route-neutral solver adapter. Fatal or unrecognized solver output is a hard failure,
+never evidence of non-entailment.
+
 ## Hard-stop assessment
 
 - Critical code inaccessible: no.
