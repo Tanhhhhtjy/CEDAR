@@ -1,0 +1,104 @@
+{
+  "declared_error_class": "converse_error",
+  "derived_error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "confirmed_checksum",
+      "arguments": [
+        "crecordr"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "review_context_open",
+      "arguments": [
+        "edit126"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "confirmed_checksum",
+        "arguments": [
+          "crecordr"
+        ],
+        "negated": false
+      },
+      {
+        "predicate": "review_context_open",
+        "arguments": [
+          "edit126"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "validated_source_tag",
+      "arguments": [
+        "crecordr"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "claim_not_entailed": true,
+  "downstream_literals": [
+    {
+      "predicate": "f_conv_mreviewstage1",
+      "arguments": [
+        "edit126"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "f_conv_mreviewstage2",
+      "arguments": [
+        "edit126"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "f_conv_mreviewstage3",
+      "arguments": [
+        "edit126"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "revision_warranted",
+      "arguments": [
+        "edit126"
+      ],
+      "negated": false
+    }
+  ],
+  "downstream_valid_under_single_assumption": true,
+  "warrant_absent_without_invalid_step": true,
+  "second_failure_point_absent": true,
+  "countermodel": {
+    "target_refuted": "revision_warranted(edit126)",
+    "required_counterliteral": "-revision_warranted(edit126)",
+    "input_sha256": "5a439c41aed1f6dbca6df7496f84fa71b51ecf00909e8267544b6d1f5771fb83",
+    "model_found": true,
+    "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nreview_context_open(edit126).\nvalidated_source_tag(crecordr) -> confirmed_checksum(crecordr).\nconfirmed_checksum(crecordr).\nvalidated_source_tag(crecordr) -> f_conv_mreviewstage1(edit126).\nf_conv_mreviewstage1(edit126) -> f_conv_mreviewstage2(edit126).\nf_conv_mreviewstage2(edit126) -> f_conv_mreviewstage3(edit126).\nf_conv_mreviewstage3(edit126) -> revision_warranted(edit126).\nreview_context_open(edit126) -> review_case_active(edit126).\nreview_case_active(edit126) -> observation_bundle_scoped(edit126).\n-revision_warranted(edit126).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(crecordr, [ 0 ]),\n\n        function(edit126, [ 0 ]),\n\n        relation(confirmed_checksum(_), [ 1, 0 ]),\n\n        relation(f_conv_mreviewstage1(_), [ 0, 0 ]),\n\n        relation(f_conv_mreviewstage2(_), [ 0, 0 ]),\n\n        relation(f_conv_mreviewstage3(_), [ 0, 0 ]),\n\n        relation(observation_bundle_scoped(_), [ 1, 0 ]),\n\n        relation(review_case_active(_), [ 1, 0 ]),\n\n        relation(review_context_open(_), [ 1, 0 ]),\n\n        relation(revision_warranted(_), [ 0, 0 ]),\n\n        relation(validated_source_tag(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+  },
+  "pre_error_literals": [
+    {
+      "predicate": "review_context_open",
+      "arguments": [
+        "edit126"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "review_case_active",
+      "arguments": [
+        "edit126"
+      ],
+      "negated": false
+    }
+  ],
+  "pre_error_steps_entailed": true
+}

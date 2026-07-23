@@ -22,10 +22,12 @@ from finalize_paired_justification_review import (  # noqa: E402
 )
 from paired_justification_common import (  # noqa: E402
     ERROR_CLASSES,
+    _render,
     canonical_json_file_sha256,
     canonical_jsonl_sha256,
     file_sha256,
     read_jsonl,
+    select_source_rows,
     stable_text_sha256,
 )
 from validate_prover_generator_hardening_v1_2 import validate_formal  # noqa: E402
@@ -107,6 +109,25 @@ def test_surface_language_contract() -> None:
         ) or "an item" not in (
             row["surface"]["english_v_text"] + row["surface"]["english_f_text"]
         )
+
+
+def test_base_prompt_coreference_repair_is_limited_to_pj11_and_pj12() -> None:
+    rows = _rows()
+    sources = select_source_rows()
+    for index, (row, source) in enumerate(zip(rows, sources, strict=True), start=1):
+        frozen = _render(source, index)
+        english = row["surface"]["english_base_prompt"]
+        chinese = row["surface"]["chinese_base_prompt"]
+        if index in {11, 12}:
+            assert english != frozen["english_base_prompt"]
+            assert chinese != frozen["chinese_base_prompt"]
+            assert "then an item has status" not in english
+            assert "then that same item has status" in english
+            assert "那么某个对象具有" not in chinese
+            assert "那么该同一对象具有" in chinese
+        else:
+            assert english == frozen["english_base_prompt"]
+            assert chinese == frozen["chinese_base_prompt"]
 
 
 def test_automatic_and_determinism_reports_pass() -> None:

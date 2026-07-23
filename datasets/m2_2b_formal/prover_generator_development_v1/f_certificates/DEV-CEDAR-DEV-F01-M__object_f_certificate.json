@@ -1,0 +1,125 @@
+{
+  "error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "lan640fallverified",
+      "arguments": [
+        "csor25"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "lan640fallverified",
+        "arguments": [
+          "csor25"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "lan640fallsource",
+      "arguments": [
+        "csor25"
+      ],
+      "negated": false
+    },
+    "operator": "converse_error"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "11dd04defffdfc98267a188ff3751aa348325ff1e4296c9dc71861f1b955c794",
+      "projected_edit_sha256": "c425234e41c91cd08fbff58eb4bd67af52910cb4a48d3f49809af30e4f665b9c"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "431594a370bc9d0633ed5e6abfaa5b6630802d24deee02deb3f3f19054b363e0",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "lan640outcome",
+      "arguments": [
+        "csor25"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "1da20e70d28b14a9ffb99a7789abbdbd4fa206fb70a3c9841ad7b786a9c40539",
+    "entailed_premise_keys": [
+      "lan640fallverified(csor25)"
+    ],
+    "unsupported_claim_key": "lan640fallsource(csor25)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "lan640outcome(csor25)",
+    "proof": {
+      "record_ids": [
+        "data_lan640_root",
+        "schema_lan640pos_0",
+        "schema_lan640pos_1",
+        "schema_lan640pos_2",
+        "schema_lan640pos_3",
+        "schema_lan640pos_4",
+        "schema_lan640pos_5"
+      ],
+      "depth": 6
+    },
+    "refutes_induced_label": "false"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_lan640_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "lan640seed",
+          "arguments": [
+            "csor25"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_lan640_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "lan640seed",
+          "arguments": [
+            "csor25"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-2730fa12ef0284c3",
+      "rank": 33
+    },
+    "updated_world_sha256": "431594a370bc9d0633ed5e6abfaa5b6630802d24deee02deb3f3f19054b363e0",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

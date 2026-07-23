@@ -1,0 +1,123 @@
+{
+  "error_class": "cross_entity_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "sor939fallsignal",
+      "arguments": [
+        "ctor5"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "sor939fallsignal",
+        "arguments": [
+          "ctor5"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "sor939fallsignal",
+      "arguments": [
+        "clan74"
+      ],
+      "negated": false
+    },
+    "operator": "cross_entity_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "b93aab2ad260b789b19f8de282a554fc0678aba1055865e54c43395d815f2050",
+      "projected_edit_sha256": "9711bcf652942de4145c1570fc8956f7620cd5efae1c72a9b382ea07f553d17d"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "05a5f6135b55ae6840dcbf622fdbb47e758ebe07d96418ddd235588603357d58",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "sor939outcome",
+      "arguments": [
+        "clan74"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "cross_entity_transfer",
+    "world_semantic_sha256": "c10fa2bf8b4086350dcd1d0e741d0b2b33a7632662ba16e0699b8ff078ba6f52",
+    "entailed_premise_keys": [
+      "sor939fallsignal(ctor5)"
+    ],
+    "unsupported_claim_key": "sor939fallsignal(clan74)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-sor939outcome(clan74)",
+    "proof": {
+      "record_ids": [
+        "data_sor939_link",
+        "schema_sor939_bad",
+        "schema_sor939bad_0"
+      ],
+      "depth": 2
+    },
+    "refutes_induced_label": "true"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_sor939_link",
+        "kind": "fact",
+        "literal": {
+          "predicate": "sor939link",
+          "arguments": [
+            "clan74",
+            "ctor5"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_sor939_link",
+        "kind": "fact",
+        "literal": {
+          "predicate": "sor939link",
+          "arguments": [
+            "clan74",
+            "cpax53"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-07e1463347cebee9",
+      "rank": 31
+    },
+    "updated_world_sha256": "05a5f6135b55ae6840dcbf622fdbb47e758ebe07d96418ddd235588603357d58",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

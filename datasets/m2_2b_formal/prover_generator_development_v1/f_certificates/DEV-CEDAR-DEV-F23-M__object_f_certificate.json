@@ -1,0 +1,106 @@
+{
+  "error_class": "unsupported_bridge",
+  "entailed_premises": [
+    {
+      "predicate": "kel864fallobserved",
+      "arguments": [
+        "csor26"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "kel864fallobserved",
+        "arguments": [
+          "csor26"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "kel864fallbridge",
+      "arguments": [
+        "csor26"
+      ],
+      "negated": false
+    },
+    "operator": "unsupported_bridge"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "6901d5241b151f389dd226ecb50244bdf0834cf4a504566aa2b87df02b51ab96",
+      "projected_edit_sha256": "801a4399b19f673ff0e97aa0fb560eeda962fa392be75dbb6d03e2daa8e4c721"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "4f7f3b9ee9d15a38477f0afb480654f99dfc9ce830d1f151e1aecbbb75983e8c",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "kel864outcome",
+      "arguments": [
+        "csor26"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "unsupported_bridge",
+    "world_semantic_sha256": "d9ca0d88ec925161c8b80248ecad3d6c8abb3d706ce50cefc990ed9c8a1e81de",
+    "entailed_premise_keys": [
+      "kel864fallobserved(csor26)"
+    ],
+    "unsupported_claim_key": "kel864fallbridge(csor26)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "-kel864outcome(csor26)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "-kel864outcome(csor26)",
+      "required_counterliteral": "kel864outcome(csor26)",
+      "input_sha256": "14a9425838bdd01999168e6bc8a16f18765266f3d9e3b152d47d9f46f19a12e6",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nkel864edge(csor26,clan87).\nkel864edge(ckel864node0,ckel864node1).\nkel864edge(ckel864node1,ckel864node2).\nkel864edge(ckel864node2,ckel864node3).\nkel864noise1(clan87).\nkel864noise2(cpax86).\nkel864noise3(cvek36).\nkel864noise4(cmiv84).\nkel864noise5(ckel864node0).\nkel864noise6(ckel864node1).\nkel864fallobserved(csor26).\nkel864reach(csor26,ckel864node3) -> -kel864outcome(csor26).\n(all x all y (kel864edge(x,y) -> kel864reach(x,y))).\n(all x all y all z (kel864reach(x,y) & kel864edge(y,z) -> kel864reach(x,z))).\nkel864outcome(csor26).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel864node0, [ 0 ]),\n\n        function(ckel864node1, [ 0 ]),\n\n        function(ckel864node2, [ 0 ]),\n\n        function(ckel864node3, [ 0 ]),\n\n        function(clan87, [ 1 ]),\n\n        function(cmiv84, [ 0 ]),\n\n        function(cpax86, [ 0 ]),\n\n        function(csor26, [ 1 ]),\n\n        function(cvek36, [ 0 ]),\n\n        relation(kel864fallobserved(_), [ 0, 1 ]),\n\n        relation(kel864noise1(_), [ 0, 1 ]),\n\n        relation(kel864noise2(_), [ 1, 0 ]),\n\n        relation(kel864noise3(_), [ 1, 0 ]),\n\n        relation(kel864noise4(_), [ 1, 0 ]),\n\n        relation(kel864noise5(_), [ 1, 0 ]),\n\n        relation(kel864noise6(_), [ 1, 0 ]),\n\n        relation(kel864outcome(_), [ 0, 1 ]),\n\n        relation(kel864edge(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 1 ]),\n\n        relation(kel864reach(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 1 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "kel864edge",
+          "arguments": [
+            "clan87",
+            "ckel864node0"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-856609709c1ee186",
+      "rank": 27
+    },
+    "updated_world_sha256": "4f7f3b9ee9d15a38477f0afb480654f99dfc9ce830d1f151e1aecbbb75983e8c",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

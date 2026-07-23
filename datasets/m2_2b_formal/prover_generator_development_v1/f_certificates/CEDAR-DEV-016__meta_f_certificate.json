@@ -1,0 +1,104 @@
+{
+  "declared_error_class": "unsupported_bridge",
+  "derived_error_class": "unsupported_bridge",
+  "entailed_premises": [
+    {
+      "predicate": "scan_matches_file",
+      "arguments": [
+        "crecordr"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "review_context_open",
+      "arguments": [
+        "edit116"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "scan_matches_file",
+        "arguments": [
+          "crecordr"
+        ],
+        "negated": false
+      },
+      {
+        "predicate": "review_context_open",
+        "arguments": [
+          "edit116"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "change_basis_confirmed",
+      "arguments": [
+        "crecordr"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "claim_not_entailed": true,
+  "downstream_literals": [
+    {
+      "predicate": "f_unsu_mreviewstage1",
+      "arguments": [
+        "edit116"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "f_unsu_mreviewstage2",
+      "arguments": [
+        "edit116"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "f_unsu_mreviewstage3",
+      "arguments": [
+        "edit116"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "revision_warranted",
+      "arguments": [
+        "edit116"
+      ],
+      "negated": false
+    }
+  ],
+  "downstream_valid_under_single_assumption": true,
+  "warrant_absent_without_invalid_step": true,
+  "second_failure_point_absent": true,
+  "countermodel": {
+    "target_refuted": "revision_warranted(edit116)",
+    "required_counterliteral": "-revision_warranted(edit116)",
+    "input_sha256": "9f3ef2b6e66e309e61226ea562fb2b4e978b4a9e20484936f42f0d66a0e93ac3",
+    "model_found": true,
+    "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nreview_context_open(edit116).\nscan_matches_file(crecordr).\nscan_matches_file(crecordr) -> retention_status_confirmed(crecordr).\nchange_basis_confirmed(crecordr) -> f_unsu_mreviewstage1(edit116).\nf_unsu_mreviewstage1(edit116) -> f_unsu_mreviewstage2(edit116).\nf_unsu_mreviewstage2(edit116) -> f_unsu_mreviewstage3(edit116).\nf_unsu_mreviewstage3(edit116) -> revision_warranted(edit116).\nreview_context_open(edit116) -> review_case_active(edit116).\nreview_case_active(edit116) -> observation_bundle_scoped(edit116).\n-revision_warranted(edit116).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(crecordr, [ 0 ]),\n\n        function(edit116, [ 0 ]),\n\n        relation(change_basis_confirmed(_), [ 0, 0 ]),\n\n        relation(f_unsu_mreviewstage1(_), [ 0, 0 ]),\n\n        relation(f_unsu_mreviewstage2(_), [ 0, 0 ]),\n\n        relation(f_unsu_mreviewstage3(_), [ 0, 0 ]),\n\n        relation(observation_bundle_scoped(_), [ 1, 0 ]),\n\n        relation(retention_status_confirmed(_), [ 1, 0 ]),\n\n        relation(review_case_active(_), [ 1, 0 ]),\n\n        relation(review_context_open(_), [ 1, 0 ]),\n\n        relation(revision_warranted(_), [ 0, 0 ]),\n\n        relation(scan_matches_file(_), [ 1, 0 ])\n]).\n\nMODEL FOUND\n"
+  },
+  "pre_error_literals": [
+    {
+      "predicate": "review_context_open",
+      "arguments": [
+        "edit116"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "review_case_active",
+      "arguments": [
+        "edit116"
+      ],
+      "negated": false
+    }
+  ],
+  "pre_error_steps_entailed": true
+}

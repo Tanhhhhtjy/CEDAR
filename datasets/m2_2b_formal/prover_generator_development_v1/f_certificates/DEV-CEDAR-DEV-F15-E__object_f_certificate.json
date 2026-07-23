@@ -1,0 +1,108 @@
+{
+  "error_class": "scope_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "kel25fallaccess",
+      "arguments": [
+        "csor36",
+        "remote"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "kel25fallaccess",
+        "arguments": [
+          "csor36",
+          "remote"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "kel25fallaccess",
+      "arguments": [
+        "csor36",
+        "local"
+      ],
+      "negated": false
+    },
+    "operator": "scope_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "8a19c61f471b7bd4f572e494638dc345266d316bda8fcd373d81a0373ed22df5",
+      "projected_edit_sha256": "6fd60b9a08193f3b1183e3a6d118001652b5ed821a64057e58522e0b3b666496"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "412b033a671fbb455405bb61630429ae37ccb876a4493df3494b750a19f88809",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "kel25outcome",
+      "arguments": [
+        "csor36"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "scope_transfer",
+    "world_semantic_sha256": "376e90185bed294fbd69ab5299a462e52c318232a328cba6ba8fa43125303b71",
+    "entailed_premise_keys": [
+      "kel25fallaccess(csor36,remote)"
+    ],
+    "unsupported_claim_key": "kel25fallaccess(csor36,local)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "kel25outcome(csor36)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "kel25outcome(csor36)",
+      "required_counterliteral": "-kel25outcome(csor36)",
+      "input_sha256": "cde0135dbc9d0d821171e98650c9c1cf73bbfb4a9d13e0fda3be73fbdc9f6b6d",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nkel25left(csor36).\nkel25noise1(cpax31).\nkel25noise2(cvek6).\nkel25noise3(clan72).\nkel25fallaccess(csor36,remote).\nkel25left(csor36) & kel25right(csor36) -> kel25joint(csor36).\nkel25joint(csor36) -> kel25proofstep0(csor36).\nkel25proofstep0(csor36) -> kel25outcome(csor36).\n-kel25outcome(csor36).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(clan72, [ 0 ]),\n\n        function(cpax31, [ 0 ]),\n\n        function(csor36, [ 0 ]),\n\n        function(cvek6, [ 0 ]),\n\n        function(remote, [ 0 ]),\n\n        relation(kel25joint(_), [ 0, 0 ]),\n\n        relation(kel25left(_), [ 1, 0 ]),\n\n        relation(kel25noise1(_), [ 1, 0 ]),\n\n        relation(kel25noise2(_), [ 1, 0 ]),\n\n        relation(kel25noise3(_), [ 1, 0 ]),\n\n        relation(kel25outcome(_), [ 0, 0 ]),\n\n        relation(kel25proofstep0(_), [ 0, 0 ]),\n\n        relation(kel25right(_), [ 0, 0 ]),\n\n        relation(kel25fallaccess(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "kel25right",
+          "arguments": [
+            "csor36"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-b2f1cdbde5f5f924",
+      "rank": 9
+    },
+    "updated_world_sha256": "412b033a671fbb455405bb61630429ae37ccb876a4493df3494b750a19f88809",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

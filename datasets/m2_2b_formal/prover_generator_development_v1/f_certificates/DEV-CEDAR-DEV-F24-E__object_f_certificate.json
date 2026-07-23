@@ -1,0 +1,109 @@
+{
+  "error_class": "scope_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "sor32fallaccess",
+      "arguments": [
+        "cvek28",
+        "remote"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "sor32fallaccess",
+        "arguments": [
+          "cvek28",
+          "remote"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "sor32fallaccess",
+      "arguments": [
+        "cvek28",
+        "local"
+      ],
+      "negated": false
+    },
+    "operator": "scope_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "7a66e41165d057b67ee8607d1dc9ece5662a37b5c4fe7448b1b9c837a7953b14",
+      "projected_edit_sha256": "4d403d16b55d6b287cbc7a68b371ad6016c02dfccfa0bf98883c6b2eeb562b6b"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "7e5bda5914862c61ba47a08099a8616ed77ac6cdea3be0520a2c51303b122d94",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "sor32outcome",
+      "arguments": [
+        "cvek28"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "scope_transfer",
+    "world_semantic_sha256": "68b70d520325dba1f352518064aa1db54c1b15a9329b6745488904e3c86cdd1d",
+    "entailed_premise_keys": [
+      "sor32fallaccess(cvek28,remote)"
+    ],
+    "unsupported_claim_key": "sor32fallaccess(cvek28,local)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "-sor32outcome(cvek28)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "-sor32outcome(cvek28)",
+      "required_counterliteral": "sor32outcome(cvek28)",
+      "input_sha256": "e3f2c93df573648c80f64fe087c981469c73f8f7682db4ff973a0d2974403bac",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nsor32noise1(ckel70).\nsor32noise2(ctor13).\nsor32fallaccess(cvek28,remote).\nsor32reach(cvek28,ckel70) -> -sor32outcome(cvek28).\n(all x all y (sor32edge(x,y) -> sor32reach(x,y))).\n(all x all y all z (sor32reach(x,y) & sor32edge(y,z) -> sor32reach(x,z))).\nsor32outcome(cvek28).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel70, [ 0 ]),\n\n        function(ctor13, [ 0 ]),\n\n        function(cvek28, [ 0 ]),\n\n        function(remote, [ 0 ]),\n\n        relation(sor32noise1(_), [ 1, 0 ]),\n\n        relation(sor32noise2(_), [ 1, 0 ]),\n\n        relation(sor32outcome(_), [ 1, 0 ]),\n\n        relation(sor32edge(_,_), [\n\t\t\t   0, 0,\n\t\t\t   0, 0 ]),\n\n        relation(sor32fallaccess(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 0 ]),\n\n        relation(sor32reach(_,_), [\n\t\t\t   0, 0,\n\t\t\t   0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "sor32edge",
+          "arguments": [
+            "cvek28",
+            "ckel70"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-0d54eb06a61a4ae7",
+      "rank": 12
+    },
+    "updated_world_sha256": "7e5bda5914862c61ba47a08099a8616ed77ac6cdea3be0520a2c51303b122d94",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

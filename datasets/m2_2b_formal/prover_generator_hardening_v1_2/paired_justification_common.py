@@ -59,6 +59,29 @@ FORBIDDEN_PHRASES = (
     "no new information",
 )
 
+BASE_PROMPT_COREFERENCE_REPAIRS = {
+    11: {
+        "english_base_prompt": (
+            "If an item has status Cobalt 2, then an item has status Jade 3.",
+            "If an item has status Cobalt 2, then that same item has status Jade 3.",
+        ),
+        "chinese_base_prompt": (
+            "如果某个对象具有钴蓝2状态，那么某个对象具有碧玉3状态。",
+            "如果某个对象具有钴蓝2状态，那么该同一对象具有碧玉3状态。",
+        ),
+    },
+    12: {
+        "english_base_prompt": (
+            "If an item has status Amber 1, then an item has status Cobalt 2.",
+            "If an item has status Amber 1, then that same item has status Cobalt 2.",
+        ),
+        "chinese_base_prompt": (
+            "如果某个对象具有琥珀1状态，那么某个对象具有钴蓝2状态。",
+            "如果某个对象具有琥珀1状态，那么该同一对象具有钴蓝2状态。",
+        ),
+    },
+}
+
 
 def stable_text_sha256(text: str) -> str:
     return hashlib.sha256(text.replace("\r\n", "\n").encode("utf-8")).hexdigest()
@@ -473,6 +496,13 @@ def render_pair(
     variant = source["variant"]
     edit_id = f"edit{pair_index:02d}"
     old_render = _render(source, pair_index)
+    repairs = BASE_PROMPT_COREFERENCE_REPAIRS.get(pair_index, {})
+    for field, (ambiguous, explicit) in repairs.items():
+        if old_render[field].count(ambiguous) != 1:
+            raise ValueError(
+                f"PJ-{pair_index:02d} expected exactly one frozen coreference phrase in {field}"
+            )
+        old_render[field] = old_render[field].replace(ambiguous, explicit)
     mapping = _mapping(source, pair_index)
     selected_edit = source["validation"]["selected_edit"]
     edit_en = _edit_text(selected_edit, mapping, "en")
