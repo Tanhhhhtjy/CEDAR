@@ -8,7 +8,10 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from scripts import analyze_c2_v8_natural_confirmation as frozen
+try:
+    from scripts import analyze_c2_v8_natural_confirmation as frozen
+except ModuleNotFoundError:
+    import analyze_c2_v8_natural_confirmation as frozen
 
 CORRECTION_ID = "C2_V8_POST_RUN_ANALYSIS_CORRECTION_01"
 CORRECTION_DOC = Path(
