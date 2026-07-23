@@ -761,6 +761,8 @@ def report_markdown(analysis: Mapping[str, Any]) -> str:
             f"- 探索性离散 target 交互：`{100 * target_did['estimate']:+.2f}pp`，"
             f"post-hoc 95% CI `[{100 * target_did['ci_low']:+.2f}, "
             f"{100 * target_did['ci_high']:+.2f}]pp`。",
+            "- normalized-stem 聚类后，离散交互区间下界达到零；因此该离散结果不是"
+            "对重复结构处理完全稳健的确认性发现。",
             f"- 600个base中，margin交互为负/零/正："
             f"`{analysis['direction_counts']['margin_negative']}/"
             f"{analysis['direction_counts']['margin_zero']}/"
@@ -808,6 +810,9 @@ def report_markdown(analysis: Mapping[str, Any]) -> str:
             f"`{metrics['answer_step_correction_AO_minus_S']['estimate']:+.2f}`；",
             f"- target字母只覆盖："
             f"`{', '.join(sorted(direct['target_letter_sensitivity']))}`。",
+            f"- target=A/B 的离散交互分别为："
+            f"`{100 * direct['target_letter_sensitivity']['A']['target_social_did']:+.2f}pp` / "
+            f"`{100 * direct['target_letter_sensitivity']['B']['target_social_did']:+.2f}pp`。",
             "",
             "## Claim Candidates",
             "",
@@ -857,7 +862,8 @@ def stats_markdown(analysis: Mapping[str, Any]) -> str:
         "",
         f"- Base单位：{direct['n_bases']}；",
         f"- Bootstrap：{analysis['bootstrap']['samples']}次；",
-        f"- Seed：{analysis['bootstrap']['seed']}；",
+        f"- Base seed：{analysis['bootstrap']['seed']}；",
+        "- 各指标使用固定整数偏移；精确seed保存在JSON的每个区间对象中；",
         "- 分层：domain × difficulty；",
         "- 区间：percentile 95% CI；",
         "- 所有新增检验均为post-hoc且未做多重比较校正。",
@@ -1035,8 +1041,48 @@ def write_figure_one(path: Path, analysis: Mapping[str, Any]) -> None:
             tx = x_positions_right[condition] + (-18 if arm == "AO" else 18)
             my = scale_y(margin_value, left, margin_min, margin_max)
             ty = scale_y(target_value, right, target_min, target_max)
+            margin_low = scale_y(
+                float(margin_cells[arm][condition]["ci_low"]),
+                left,
+                margin_min,
+                margin_max,
+            )
+            margin_high = scale_y(
+                float(margin_cells[arm][condition]["ci_high"]),
+                left,
+                margin_min,
+                margin_max,
+            )
+            target_low = scale_y(
+                float(target_cells[arm][condition]["ci_low"]),
+                right,
+                target_min,
+                target_max,
+            )
+            target_high = scale_y(
+                float(target_cells[arm][condition]["ci_high"]),
+                right,
+                target_min,
+                target_max,
+            )
             margin_points.append((mx, my))
             target_points.append((tx, ty))
+            for x, low_y, high_y in (
+                (mx, margin_low, margin_high),
+                (tx, target_low, target_high),
+            ):
+                lines.append(
+                    f'<line x1="{x}" y1="{low_y:.2f}" x2="{x}" '
+                    f'y2="{high_y:.2f}" stroke="{colors[arm]}" stroke-width="1.4"/>'
+                )
+                lines.append(
+                    f'<line x1="{x - 5}" y1="{low_y:.2f}" x2="{x + 5}" '
+                    f'y2="{low_y:.2f}" stroke="{colors[arm]}" stroke-width="1.4"/>'
+                )
+                lines.append(
+                    f'<line x1="{x - 5}" y1="{high_y:.2f}" x2="{x + 5}" '
+                    f'y2="{high_y:.2f}" stroke="{colors[arm]}" stroke-width="1.4"/>'
+                )
             lines.append(f'<circle cx="{mx}" cy="{my:.2f}" r="7" fill="{colors[arm]}"/>')
             lines.append(f'<circle cx="{tx}" cy="{ty:.2f}" r="7" fill="{colors[arm]}"/>')
             lines.append(
@@ -1250,6 +1296,10 @@ def main() -> None:
         "bootstrap": {
             "samples": args.bootstrap_samples,
             "seed": args.bootstrap_seed,
+            "metric_seed_policy": (
+                "base seed plus fixed integer offsets; exact seed stored in "
+                "each interval object"
+            ),
             "unit": "base",
             "stratification": ["domain", "difficulty"],
             "interval": "percentile_95",

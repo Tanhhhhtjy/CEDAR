@@ -124,13 +124,14 @@ DiscreteSocialEffect =
 - 重复测量单位：base；
 - bootstrap：按 `domain × difficulty` 分层；
 - 重采样次数：10,000；
-- 补充分析 seed：`20260724`；
+- 补充分析 base seed：`20260724`；各指标使用固定整数偏移，精确 seed 写入结果 JSON；
 - 置信区间：percentile 95% CI；
 - exact MCQ 与 normalized stem：按结构簇重采样的敏感性分析；
 - leave-one-domain/template-out：报告方向，不逐格做显著性挑选。
 
-所有新增区间均为 post-hoc、未作多重比较校正的描述性区间。不得因为区间不跨零而将其
-升级为预注册主张。
+所有新增区间均为 post-hoc、未作多重比较校正的描述性区间。base、exact-MCQ 与
+normalized-stem 三种重采样结果必须并列；不得因为其中一个区间不跨零而将其升级为
+预注册主张。
 
 ## 5. 允许与禁止的结论
 
@@ -171,3 +172,14 @@ artifacts/m2/c2_v8_natural_social_confirmation/
 
 分析完成后停止，不自动运行新的 Qwen、p1、LoFa、J-Lens、probe、patching、seed、模板或
 第二模型。
+
+## 7. 交付前实现校正记录
+
+首次本地 dry run 后、任何补充产物提交或推送前，QA 发现两项报告实现问题：
+
+1. 文档只写 base seed，但代码为不同指标使用固定 seed 偏移；
+2. 主图已计算四格 bootstrap 区间，但初版 SVG 未绘制误差条。
+
+交付前修正为：文档和 JSON 明确记录 seed policy，并在主图绘制未校正的 post-hoc 95% CI。
+同时要求正文披露 normalized-stem 聚类下离散区间下界达到零。上述修正不改变任何输入、
+指标定义、点估计、重采样次数或模型输出。
