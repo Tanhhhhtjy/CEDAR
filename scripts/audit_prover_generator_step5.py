@@ -172,6 +172,11 @@ def load_cell(
     )
     require(configuration.get("scope") == scope, f"{name}: scope metadata", failures)
     require(configuration.get("condition") == "uncapped", f"{name}: not uncapped", failures)
+    require(
+        configuration.get("runner_amendment") == runner.RUNNER_AMENDMENT,
+        f"{name}: runner amendment identity",
+        failures,
+    )
     require(configuration.get("seed") == runner.SEED, f"{name}: seed", failures)
     require(
         configuration.get("mode") == {"name": mode, **asdict(runner.MODES[mode])},
@@ -179,14 +184,12 @@ def load_cell(
         failures,
     )
     require(
-        configuration.get("dataset", {}).get("selected_ids_sha256")
-        == object_sha256(expected_ids),
+        configuration.get("dataset", {}).get("selected_ids_sha256") == object_sha256(expected_ids),
         f"{name}: selected ID hash",
         failures,
     )
     require(
-        configuration.get("dataset", {}).get("data_freeze_commit")
-        == runner.DATA_FREEZE_COMMIT,
+        configuration.get("dataset", {}).get("data_freeze_commit") == runner.DATA_FREEZE_COMMIT,
         f"{name}: data freeze commit",
         failures,
     )
@@ -281,8 +284,7 @@ def main() -> None:
         failures.append("formal audit requires a passed combined smoke audit")
 
     cells = {
-        mode: load_cell(args.output_root, args.scope, mode, source_rows, failures)
-        for mode in MODES
+        mode: load_cell(args.output_root, args.scope, mode, source_rows, failures) for mode in MODES
     }
     if all(cells.values()):
         thinking = cells["thinking"]
@@ -310,13 +312,9 @@ def main() -> None:
             assert cell is not None
             results = cell["results"]
             parse_failures = [
-                row["id"]
-                for row in results
-                if row.get("final_answer_parse_status") != "passed"
+                row["id"] for row in results if row.get("final_answer_parse_status") != "passed"
             ]
-            missing_logits = [
-                row["id"] for row in results if row.get("answer_logits") is None
-            ]
+            missing_logits = [row["id"] for row in results if row.get("answer_logits") is None]
             if parse_failures:
                 warnings.append(f"{mode}: {len(parse_failures)} strict parse failures")
             if missing_logits:
@@ -368,8 +366,7 @@ def main() -> None:
                         Counter(row["outcome_class"] for row in cell["results"])
                     ),
                     "parse_failures": sum(
-                        row["final_answer_parse_status"] != "passed"
-                        for row in cell["results"]
+                        row["final_answer_parse_status"] != "passed" for row in cell["results"]
                     ),
                     "missing_answer_logits": sum(
                         row["answer_logits"] is None for row in cell["results"]

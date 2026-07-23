@@ -37,13 +37,30 @@ class FakeTokenizer:
         return "thinking-prompt" if self.enable_thinking else "nonthinking-prompt"
 
 
+class WhitespaceTokenizer:
+    eos_token_id = 0
+    pad_token_id = 0
+
+    def encode(self, text: str, **_kwargs):
+        if text in runner.LABEL_TOKEN_IDS:
+            return [runner.LABEL_TOKEN_IDS[text]]
+        return [256 + ord(character) for character in text]
+
+    def decode(self, ids, **_kwargs):
+        reverse = {value: key for key, value in runner.LABEL_TOKEN_IDS.items()}
+        if len(ids) == 1 and ids[0] in reverse:
+            return reverse[ids[0]]
+        return "".join(chr(value - 256) for value in ids if value >= 256)
+
+
 class ProverGeneratorStep5Tests(unittest.TestCase):
     def test_frozen_inputs_and_smoke_selection(self) -> None:
         rows = runner.validate_inputs()
         self.assertEqual(len(rows), 288)
-        self.assertEqual({arm: 48 for arm in runner.ARMS}, {
-            arm: sum(row["arm"] == arm for row in rows) for arm in runner.ARMS
-        })
+        self.assertEqual(
+            {arm: 48 for arm in runner.ARMS},
+            {arm: sum(row["arm"] == arm for row in rows) for arm in runner.ARMS},
+        )
         smoke = runner.select_rows(rows, "smoke")
         self.assertEqual(len(smoke), 24)
         self.assertEqual(set(runner.SMOKE_BASE_IDS), {row["base_id"] for row in smoke})
@@ -65,9 +82,7 @@ class ProverGeneratorStep5Tests(unittest.TestCase):
 
     def test_strict_parser_mode_integrity_and_outcome_classes(self) -> None:
         response = '<think>Reason carefully.</think>\n{"answer":"D"}'
-        answer, status, reasoning, sections = runner.strict_answer(
-            response, truncated=False
-        )
+        answer, status, reasoning, sections = runner.strict_answer(response, truncated=False)
         self.assertEqual((answer, status), ("D", "passed"))
         self.assertEqual(reasoning, "Reason carefully.")
         self.assertTrue(runner.mode_integrity(runner.MODES["thinking"], sections)["passed"])
@@ -75,9 +90,7 @@ class ProverGeneratorStep5Tests(unittest.TestCase):
             '{"answer":"A"}', truncated=False
         )
         self.assertEqual((non_answer, non_status), ("A", "passed"))
-        self.assertTrue(
-            runner.mode_integrity(runner.MODES["nonthinking"], non_sections)["passed"]
-        )
+        self.assertTrue(runner.mode_integrity(runner.MODES["nonthinking"], non_sections)["passed"])
         row = {"initial_answer": "A", "target_answer": "D"}
         self.assertEqual(runner.classify(row, "A"), "initial")
         self.assertEqual(runner.classify(row, "D"), "induced_target")
@@ -106,6 +119,40 @@ class ProverGeneratorStep5Tests(unittest.TestCase):
             "answer_logits": diagnostics,
         }
         self.assertTrue(audit.diagnostics_valid(record))
+
+    def test_answer_prefix_capture_accepts_valid_json_whitespace(self) -> None:
+        tokenizer = WhitespaceTokenizer()
+        row = {"initial_answer": "D", "target_answer": "A"}
+        capture = runner.AnswerPrefixLogitCapture(tokenizer, row, prompt_tokens=3)
+        scores = torch.full((1, 512), -10.0)
+        scores[0, 32:36] = torch.tensor([4.0, 3.0, 2.0, 1.0])
+        prefix = tokenizer.encode('{\n  "answer" : "', add_special_tokens=False)
+        capture(torch.tensor([[7, 8, 9, *prefix]]), scores)
+        self.assertEqual(list(capture.by_response_index), [len(prefix)])
+
+    def test_capture_fallback_repairs_only_alignment_metadata(self) -> None:
+        captures = {2: {"target_minus_initial": 3.0}}
+        diagnostics, index, candidates, boundary = runner.align_answer_diagnostics(
+            [90, 91, runner.LABEL_TOKEN_IDS["A"]],
+            captures,
+            "A",
+            {
+                "answer_choice_index": None,
+                "answer_choice": None,
+                "errors": ["decoded response does not round-trip to generated token IDs"],
+            },
+        )
+        self.assertIs(diagnostics, captures[2])
+        self.assertEqual(index, 2)
+        self.assertEqual(candidates, [{"response_index": 2, "generated_label": "A"}])
+        self.assertEqual(boundary["answer_choice_index"], 2)
+        self.assertEqual(boundary["answer_choice"], "A")
+        self.assertEqual(boundary["errors"], [])
+        self.assertEqual(
+            boundary["alignment_method"],
+            "last_matching_on_trajectory_prefix_capture",
+        )
+        self.assertTrue(boundary["locator_diagnostic_errors"])
 
     def test_run_order_blocks_skips(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -161,8 +208,7 @@ class ProverGeneratorStep5Tests(unittest.TestCase):
                     "reasoning_token_count": 2,
                     "other_wrong_indicator": outcome == "other_wrong",
                     "invalid_or_abstain_indicator": outcome == "invalid_or_abstain",
-                    "synchronized_other_error": outcome
-                    in {"other_wrong", "invalid_or_abstain"},
+                    "synchronized_other_error": outcome in {"other_wrong", "invalid_or_abstain"},
                 }
             )
         summary = analysis.arm_summary(rows)

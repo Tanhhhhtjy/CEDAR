@@ -7,7 +7,6 @@ import argparse
 import gc
 import hashlib
 import json
-import math
 import os
 import platform
 import re
@@ -39,9 +38,7 @@ ZERO_GPU_GATE_PATH = DATA_ROOT / "ZERO_GPU_GATE.json"
 DEFAULT_OUTPUT_ROOT = ROOT / "artifacts" / "m2" / "prover_generator_step5_uncapped"
 
 DATA_FREEZE_COMMIT = "8a11bb8693d061113479100a28bcad0e64b2f18f"
-ARMS_CANONICAL_TEXT_SHA256 = (
-    "39caee8f42cd94f2869e8cafe707d4cfb049b3b210ca63a33648c6aa96882559"
-)
+ARMS_CANONICAL_TEXT_SHA256 = "39caee8f42cd94f2869e8cafe707d4cfb049b3b210ca63a33648c6aa96882559"
 ARMS_OBJECT_SHA256 = "7afd684250d044187a218a1d9daf4d0a276e3e1518efe8e44bc66932236cd6d0"
 ARMS_IDS_SHA256 = "a0ee7c876126bdbc1b5864bf0a60dd1b04e99f33377c95c071d8a96626cdad05"
 DATA_MANIFEST_CANONICAL_TEXT_SHA256 = (
@@ -61,6 +58,9 @@ LABELS = ("A", "B", "C", "D")
 LABEL_TOKEN_IDS = {"A": 32, "B": 33, "C": 34, "D": 35}
 ARMS = ("N", "R", "V", "F", "AO", "S")
 ASSISTANT_PREFIX = '{"answer":"'
+RUNNER_AMENDMENT = "step5-amendment-01-robust-answer-logit-alignment"
+ANSWER_PREFIX_PATTERN = re.compile(r'\{\s*"answer"\s*:\s*"\Z')
+CAPTURE_TAIL_TOKENS = 64
 SMOKE_BASE_IDS = (
     "CEDAR-DEV-001",
     "CEDAR-DEV-009",
@@ -69,32 +69,16 @@ SMOKE_BASE_IDS = (
 )
 EXPECTED_ROWS = {"smoke": 24, "formal": 288}
 EXPECTED_RENDERED_PROMPTS_SHA256 = {
-    ("smoke", "thinking"): (
-        "0cb7c2ed652a6c8c2ece8fbc772868bfbeb7594bc38574ed5243b42889ff3230"
-    ),
-    ("smoke", "nonthinking"): (
-        "9a9848ccf142a2c7deebb733caf3f2f6c701d4ec3e8a897266749eb6a83e1ddd"
-    ),
-    ("formal", "thinking"): (
-        "8c1cf173bff11761855ee0bc0d3467e3070457ebeb1c27a58ee244a4a5fd50d0"
-    ),
-    ("formal", "nonthinking"): (
-        "96e1a7e7ed429d4ceec520740397f2502bfe9215fd1f60f4c5251ee2088cf7cd"
-    ),
+    ("smoke", "thinking"): ("0cb7c2ed652a6c8c2ece8fbc772868bfbeb7594bc38574ed5243b42889ff3230"),
+    ("smoke", "nonthinking"): ("9a9848ccf142a2c7deebb733caf3f2f6c701d4ec3e8a897266749eb6a83e1ddd"),
+    ("formal", "thinking"): ("8c1cf173bff11761855ee0bc0d3467e3070457ebeb1c27a58ee244a4a5fd50d0"),
+    ("formal", "nonthinking"): ("96e1a7e7ed429d4ceec520740397f2502bfe9215fd1f60f4c5251ee2088cf7cd"),
 }
 EXPECTED_TOKENIZED_INPUT_IDS_SHA256 = {
-    ("smoke", "thinking"): (
-        "96bfd8c22e236191a5d4a0870bb6e4d6fab595da328fa03ae5e082c7995a9ddf"
-    ),
-    ("smoke", "nonthinking"): (
-        "4364985aa890ae1b3f5f5bd60d45d1a87f051942349dbdc4eb79a1941a51dbd4"
-    ),
-    ("formal", "thinking"): (
-        "000bbfbd0483df47853416e6d51be70ebb77797b37475eb93d2cd87654d454b0"
-    ),
-    ("formal", "nonthinking"): (
-        "85864e13ed2635ad839d8e3020554c710704d633090a4ec20ab3767767973364"
-    ),
+    ("smoke", "thinking"): ("96bfd8c22e236191a5d4a0870bb6e4d6fab595da328fa03ae5e082c7995a9ddf"),
+    ("smoke", "nonthinking"): ("4364985aa890ae1b3f5f5bd60d45d1a87f051942349dbdc4eb79a1941a51dbd4"),
+    ("formal", "thinking"): ("000bbfbd0483df47853416e6d51be70ebb77797b37475eb93d2cd87654d454b0"),
+    ("formal", "nonthinking"): ("85864e13ed2635ad839d8e3020554c710704d633090a4ec20ab3767767973364"),
 }
 
 
@@ -135,9 +119,7 @@ def read_json(path: Path) -> dict[str, Any]:
 
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
     return [
-        json.loads(line)
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
     ]
 
 
@@ -341,9 +323,7 @@ def validate_run_order(scope: str, mode: str, output_root: Path) -> None:
     if scope == "formal":
         if not passed_audit(output_root / "SMOKE_AUDIT.json"):
             raise ValueError("formal Step 5 is blocked until the combined smoke audit passes")
-        if mode == "nonthinking" and not completed_phase(
-            output_root, "formal", "thinking"
-        ):
+        if mode == "nonthinking" and not completed_phase(output_root, "formal", "thinking"):
             raise ValueError("formal nonthinking is blocked until 288 thinking rows complete")
 
 
@@ -357,9 +337,7 @@ def render_prompt(tokenizer: Any, row: Mapping[str, Any], mode: Mode) -> str:
 
 
 def validate_label_tokens(tokenizer: Any) -> None:
-    observed = {
-        label: tokenizer.encode(label, add_special_tokens=False) for label in LABELS
-    }
+    observed = {label: tokenizer.encode(label, add_special_tokens=False) for label in LABELS}
     expected = {label: [token_id] for label, token_id in LABEL_TOKEN_IDS.items()}
     if observed != expected:
         raise RuntimeError(f"Pinned Qwen A/B/C/D token mapping changed: {observed}")
@@ -367,9 +345,7 @@ def validate_label_tokens(tokenizer: Any) -> None:
         raise RuntimeError("Frozen assistant answer prefix tokenizes to an empty sequence")
 
 
-def choice_diagnostics(
-    logits: Tensor, row: Mapping[str, Any], tokenizer: Any
-) -> dict[str, Any]:
+def choice_diagnostics(logits: Tensor, row: Mapping[str, Any], tokenizer: Any) -> dict[str, Any]:
     values = logits.detach().float()
     if values.ndim != 1 or not torch.isfinite(values).all():
         raise FloatingPointError("Answer-step logits are malformed or contain NaN/Inf")
@@ -381,8 +357,7 @@ def choice_diagnostics(
         label: float(values[token_id].item()) for label, token_id in LABEL_TOKEN_IDS.items()
     }
     option_probabilities = {
-        label: float(probabilities[token_id].item())
-        for label, token_id in LABEL_TOKEN_IDS.items()
+        label: float(probabilities[token_id].item()) for label, token_id in LABEL_TOKEN_IDS.items()
     }
     option_mass = sum(option_probabilities.values())
     conditional = {
@@ -410,32 +385,65 @@ def choice_diagnostics(
         "option_mass": option_mass,
         "full_vocab_entropy": entropy,
         "full_vocab_top_token_id": top_id,
-        "full_vocab_top_token_text": tokenizer.decode(
-            [top_id], skip_special_tokens=False
-        ),
+        "full_vocab_top_token_text": tokenizer.decode([top_id], skip_special_tokens=False),
         "top_token_is_option": top_id in set(LABEL_TOKEN_IDS.values()),
     }
 
 
 class AnswerPrefixLogitCapture:
-    """Read-only capture at steps following the exact JSON answer prefix."""
+    """Read-only capture at steps following a valid JSON answer prefix."""
 
-    def __init__(
-        self, tokenizer: Any, row: Mapping[str, Any], *, prompt_tokens: int
-    ) -> None:
+    def __init__(self, tokenizer: Any, row: Mapping[str, Any], *, prompt_tokens: int) -> None:
         self.tokenizer = tokenizer
         self.row = row
         self.prompt_tokens = prompt_tokens
         self.prefix_ids = tokenizer.encode(ASSISTANT_PREFIX, add_special_tokens=False)
+        variants = (
+            ASSISTANT_PREFIX,
+            '{"answer": "',
+            '{ "answer":"',
+            '{ "answer": "',
+        )
+        self.prefix_variants = tuple(
+            tuple(tokenizer.encode(value, add_special_tokens=False)) for value in variants
+        )
+        self.max_prefix_tokens = max(len(value) for value in self.prefix_variants)
+        terminal_variants = (*variants, '"')
+        self.prefix_terminal_token_ids = {
+            int(encoded[-1])
+            for value in terminal_variants
+            if (encoded := tokenizer.encode(value, add_special_tokens=False))
+        }
         self.by_response_index: dict[int, dict[str, Any]] = {}
+
+    def has_answer_prefix(self, input_ids: Tensor) -> bool:
+        sequence_length = int(input_ids.shape[1])
+        tail = [
+            int(value)
+            for value in input_ids[0, max(0, sequence_length - self.max_prefix_tokens) :].tolist()
+        ]
+        if any(
+            len(tail) >= len(variant) and tuple(tail[-len(variant) :]) == variant
+            for variant in self.prefix_variants
+        ):
+            return True
+        if not tail or tail[-1] not in self.prefix_terminal_token_ids:
+            return False
+        response_start = max(self.prompt_tokens, sequence_length - CAPTURE_TAIL_TOKENS)
+        response_tail = [
+            int(value) for value in input_ids[0, response_start:sequence_length].tolist()
+        ]
+        decoded_tail = self.tokenizer.decode(
+            response_tail,
+            skip_special_tokens=False,
+            clean_up_tokenization_spaces=False,
+        )
+        return ANSWER_PREFIX_PATTERN.search(decoded_tail) is not None
 
     def __call__(self, input_ids: Tensor, scores: Tensor) -> Tensor:
         if input_ids.shape[0] != 1 or scores.shape[0] != 1:
             raise ValueError("Step 5 answer-logit capture requires batch size 1")
-        if (
-            input_ids.shape[1] >= len(self.prefix_ids)
-            and input_ids[0, -len(self.prefix_ids) :].tolist() == self.prefix_ids
-        ):
+        if self.has_answer_prefix(input_ids):
             response_index = int(input_ids.shape[1] - self.prompt_tokens)
             self.by_response_index[response_index] = choice_diagnostics(
                 scores[0], self.row, self.tokenizer
@@ -462,18 +470,20 @@ def response_sections(response: str) -> tuple[str, str, dict[str, Any]]:
     else:
         reasoning = ""
         final = stripped.strip()
-    return reasoning, final, {
-        "open_tag_count": len(opens),
-        "close_tag_count": len(closes),
-        "ordered_single_pair": ordered,
-        "reasoning_nonempty": bool(reasoning),
-        "final_nonempty": bool(final),
-    }
+    return (
+        reasoning,
+        final,
+        {
+            "open_tag_count": len(opens),
+            "close_tag_count": len(closes),
+            "ordered_single_pair": ordered,
+            "reasoning_nonempty": bool(reasoning),
+            "final_nonempty": bool(final),
+        },
+    )
 
 
-def strict_answer(
-    response: str, *, truncated: bool
-) -> tuple[str | None, str, str, dict[str, Any]]:
+def strict_answer(response: str, *, truncated: bool) -> tuple[str | None, str, str, dict[str, Any]]:
     reasoning, final, sections = response_sections(response)
     if truncated:
         return None, "truncated", reasoning, sections
@@ -496,9 +506,7 @@ def mode_integrity(mode: Mode, sections: Mapping[str, Any]) -> dict[str, Any]:
             and sections.get("final_nonempty")
         )
     else:
-        passed = bool(
-            sections.get("final_nonempty") and not sections.get("reasoning_nonempty")
-        )
+        passed = bool(sections.get("final_nonempty") and not sections.get("reasoning_nonempty"))
     return {"enabled": mode.enable_thinking, **dict(sections), "passed": passed}
 
 
@@ -529,6 +537,39 @@ def select_captured_diagnostics(
         return None, None, candidates
     index = int(selected["response_index"])
     return captures[index], index, candidates
+
+
+def align_answer_diagnostics(
+    response_ids: Sequence[int],
+    captures: Mapping[int, dict[str, Any]],
+    answer: str | None,
+    boundary: Mapping[str, Any],
+) -> tuple[dict[str, Any] | None, int | None, list[dict[str, Any]], dict[str, Any]]:
+    """Align a parsed answer to its read-only on-trajectory logit capture."""
+    fallback, fallback_index, candidates = select_captured_diagnostics(
+        response_ids, captures, answer
+    )
+    output_boundary = dict(boundary)
+    boundary_index = output_boundary.get("answer_choice_index")
+    if isinstance(boundary_index, int):
+        diagnostics = captures.get(boundary_index)
+        capture_index = boundary_index if diagnostics is not None else None
+        output_boundary.setdefault("alignment_method", "tokenizer_offset_roundtrip")
+    else:
+        diagnostics = fallback
+        capture_index = fallback_index
+        if answer is not None and diagnostics is not None and isinstance(capture_index, int):
+            original_errors = list(output_boundary.get("errors", []))
+            output_boundary.update(
+                {
+                    "answer_choice_index": capture_index,
+                    "answer_choice": answer,
+                    "alignment_method": "last_matching_on_trajectory_prefix_capture",
+                    "locator_diagnostic_errors": original_errors,
+                    "errors": [],
+                }
+            )
+    return diagnostics, capture_index, candidates, output_boundary
 
 
 def _encode_with_offsets(tokenizer: Any, text: str) -> tuple[list[int], list[tuple[int, int]]]:
@@ -651,9 +692,7 @@ def generate_one(
         raise ValueError(f"{row['id']}: prompt tokenization changed under batch-size 1")
     from cedar_m2.models.qwen import model_input_device
 
-    encoded = {
-        name: value.to(model_input_device(model)) for name, value in encoded.items()
-    }
+    encoded = {name: value.to(model_input_device(model)) for name, value in encoded.items()}
     capture = AnswerPrefixLogitCapture(tokenizer, row, prompt_tokens=len(prompt_ids))
     transformers_module.set_seed(record_seed)
     with torch.inference_mode():
@@ -662,9 +701,7 @@ def generate_one(
             **generation_kwargs(tokenizer),
             logits_processor=transformers_module.LogitsProcessorList([capture]),
         )
-    response_ids = [
-        int(value) for value in generated.sequences[0, len(prompt_ids) :].tolist()
-    ]
+    response_ids = [int(value) for value in generated.sequences[0, len(prompt_ids) :].tolist()]
     response = tokenizer.decode(
         response_ids,
         skip_special_tokens=True,
@@ -680,22 +717,26 @@ def generate_one(
         mode=mode,
         strict_choice=answer,
     )
-    boundary_index = boundary.get("answer_choice_index")
-    if isinstance(boundary_index, int):
-        diagnostics = capture.by_response_index.get(boundary_index)
-        capture_index = boundary_index if diagnostics is not None else None
-    else:
-        diagnostics, capture_index, _ = select_captured_diagnostics(
-            response_ids, capture.by_response_index, answer
-        )
-    capture_candidates = select_captured_diagnostics(
-        response_ids, capture.by_response_index, answer
-    )[2]
+    diagnostics, capture_index, capture_candidates, boundary = align_answer_diagnostics(
+        response_ids, capture.by_response_index, answer, boundary
+    )
     if answer is not None and (
         diagnostics is None or capture_index != boundary.get("answer_choice_index")
     ):
+        failure_diagnostic = {
+            "id": row["id"],
+            "answer": answer,
+            "parse_status": parse_status,
+            "response_tokens": len(response_ids),
+            "response_tail": response[-2000:],
+            "response_token_ids_tail": response_ids[-128:],
+            "boundary": boundary,
+            "capture_indices": sorted(capture.by_response_index),
+            "capture_candidates": capture_candidates,
+        }
         raise RuntimeError(
-            f"{row['id']}: strict answer lacks aligned on-trajectory logit capture"
+            f"{row['id']}: strict answer lacks aligned on-trajectory logit capture; "
+            f"diagnostic={json.dumps(failure_diagnostic, ensure_ascii=False, sort_keys=True)}"
         )
     outcome = classify(row, answer)
     return {
@@ -714,9 +755,7 @@ def generate_one(
         "response_tokens": len(response_ids),
         "finish_reason": reason,
         "truncated": reason == "length",
-        "reasoning_token_count": len(
-            tokenizer.encode(reasoning, add_special_tokens=False)
-        ),
+        "reasoning_token_count": len(tokenizer.encode(reasoning, add_special_tokens=False)),
         "mode_integrity": mode_integrity(mode, sections),
         "chosen_option": answer,
         "final_answer_parse_status": parse_status,
@@ -791,6 +830,7 @@ def build_configuration(
     mode = MODES[mode_name]
     return {
         "kind": "CEDAR prover-generator Step 5 uncapped development calibration",
+        "runner_amendment": RUNNER_AMENDMENT,
         "scope": scope,
         "mode": {"name": mode_name, **asdict(mode)},
         "condition": "uncapped",
@@ -803,12 +843,8 @@ def build_configuration(
             "selected_rows": len(rows),
             "selected_ids_sha256": object_sha256([row["id"] for row in rows]),
             "smoke_base_ids": list(SMOKE_BASE_IDS) if scope == "smoke" else None,
-            "zero_gpu_gate_canonical_text_sha256": (
-                ZERO_GPU_GATE_CANONICAL_TEXT_SHA256
-            ),
-            "release_manifest_canonical_text_sha256": (
-                DATA_MANIFEST_CANONICAL_TEXT_SHA256
-            ),
+            "zero_gpu_gate_canonical_text_sha256": (ZERO_GPU_GATE_CANONICAL_TEXT_SHA256),
+            "release_manifest_canonical_text_sha256": (DATA_MANIFEST_CANONICAL_TEXT_SHA256),
             "data_freeze_commit": DATA_FREEZE_COMMIT,
         },
         "model": {
@@ -827,7 +863,7 @@ def build_configuration(
             "content_retry": False,
             "answer_repair": False,
             "actual_answer_logit_capture": (
-                "read-only exact JSON-prefix capture on generated trajectory"
+                "read-only JSON-prefix capture with on-trajectory candidate alignment"
             ),
             "candidate_labels": list(LABELS),
             "candidate_token_ids": LABEL_TOKEN_IDS,
@@ -904,8 +940,7 @@ def main() -> None:
         from cedar_m2.models.qwen import QwenModelSpec, load_qwen_model
 
         max_memory = {
-            index: f"{args.gpu_memory_gib}GiB"
-            for index in range(torch.cuda.device_count())
+            index: f"{args.gpu_memory_gib}GiB" for index in range(torch.cuda.device_count())
         }
         update_runtime(
             run_dir,
@@ -946,10 +981,7 @@ def main() -> None:
             ]
         )
         tokenized_hash = object_sha256(
-            [
-                {"id": row["id"], "input_ids": ids}
-                for row, ids in zip(rows, tokenized, strict=True)
-            ]
+            [{"id": row["id"], "input_ids": ids} for row, ids in zip(rows, tokenized, strict=True)]
         )
         key = (args.scope, args.mode)
         if rendered_hash != EXPECTED_RENDERED_PROMPTS_SHA256[key]:
@@ -1024,9 +1056,7 @@ def main() -> None:
                 "content_retries": 0,
                 "answer_repairs": 0,
                 "parse_failures": [
-                    row["id"]
-                    for row in results
-                    if row["final_answer_parse_status"] != "passed"
+                    row["id"] for row in results if row["final_answer_parse_status"] != "passed"
                 ],
                 "missing_answer_logits": [
                     row["id"] for row in results if row["answer_logits"] is None
