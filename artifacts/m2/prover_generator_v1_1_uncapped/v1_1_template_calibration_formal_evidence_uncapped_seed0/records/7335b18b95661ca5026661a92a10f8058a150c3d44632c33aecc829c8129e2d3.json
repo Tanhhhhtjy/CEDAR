@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-010-N",
+    "index": 20,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 20,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 425,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 425
+        }
+      ],
+      "answer_logit_capture_indices": [
+        425
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 8.592166959413826e-10,
+          "B": 1.250152867423139e-09,
+          "C": 0.9999999978478527,
+          "D": 4.277787836967734e-11
+        },
+        "full_vocab_entropy": 4.820765653335002e-08,
+        "full_vocab_probabilities": {
+          "A": 8.592166977905435e-10,
+          "B": 1.2501528701136522e-09,
+          "C": 1.0,
+          "D": 4.2777878461741636e-11
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 41.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 20.375,
+          "B": 20.75,
+          "C": 41.25,
+          "D": 17.375
+        },
+        "option_argmax": "C",
+        "option_mass": 1.0000000021521473,
+        "ranks": {
+          "A": 3,
+          "B": 2,
+          "C": 1,
+          "D": 5
+        },
+        "target_logit": 20.75,
+        "target_minus_initial": -20.5,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-010",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F05",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-010-N",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "C->B",
+      "prompt_sha256": "8f3311c7a3dc9f19d970d40cb6d0588bceb4a25f783bfbdfb176d562c4477ec2",
+      "prompt_token_ids_sha256": "3dbf06defa1e9a431b5c5abf8ea29425725913917564407d20b70785c75c81b9",
+      "prompt_tokens": 409,
+      "reasoning_token_count": 417,
+      "record_seed": 20,
+      "response": "<think>\nOkay, let's try to figure this out step by step. The question is whether Node D having status Coral 11 is supported, contradicted, or undetermined based on the given records.\n\nFirst, I need to look at all the records related to Node D. From the records:\n\nRecord 5: Node D has Teal 8.\nRecord 8: Node D has Pearl 12.\nRecord 9: Node D has Jade 3.\nRecord 10: If D has Amber 1, then not Coral 11.\nRecords 11-14 form a chain: Pearl 12 → Umber 13 → Azure 14 → Saffron 15 → Amber 1.\n\nSo starting with Record 8, Pearl 12. According to Record 11, if Pearl 12, then Umber 13. So D must have Umber 13. Then Record 12 says if Umber 13, then Azure 14. So D has Azure 14. Then Record 13 leads to Saffron 15, and Record 14 leads to Amber 1. So following this chain, D would end up with Amber 1.\n\nNow, Record 10 says if D has Amber 1, then it does NOT have Coral 11. Since we just deduced that D must have Amber 1 (through the chain from Pearl 12), then according to Record 10, D cannot have Coral 11. Therefore, the existence of Coral 11 for D is contradicted by the existing records. \n\nBut wait, are there any other possibilities? Let me check. The records don't mention anything else about Coral 11 except in Record 10. Since the chain from Pearl 12 leads to Amber 1, which triggers the condition in Record 10, that directly negates Coral 11. Therefore, the answer should be contradicted (C).\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "2776b3c6774ca175da2d463f17811c6906dc0e9b2f77185f4d26afe469803168",
+      "response_tokens": 428,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 425,
+      "social_template": null,
+      "structure_class": "PGF-02",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

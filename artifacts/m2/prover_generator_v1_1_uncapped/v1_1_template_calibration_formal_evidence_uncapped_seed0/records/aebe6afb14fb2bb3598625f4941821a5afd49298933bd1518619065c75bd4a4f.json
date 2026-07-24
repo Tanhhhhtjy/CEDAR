@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-026-R",
+    "index": 53,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 53,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 435,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 435
+        }
+      ],
+      "answer_logit_capture_indices": [
+        435
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 3.0988189964741795e-12,
+          "B": 4.277787618579899e-11,
+          "C": 5.315785217850635e-08,
+          "D": 0.9999999467962711
+        },
+        "full_vocab_entropy": 8.918044613892562e-07,
+        "full_vocab_probabilities": {
+          "A": 3.098819161342914e-12,
+          "B": 4.2777878461741636e-11,
+          "C": 5.315785500670245e-08,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 49.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 23.0,
+          "B": 25.625,
+          "C": 32.75,
+          "D": 49.5
+        },
+        "option_argmax": "D",
+        "option_mass": 1.0000000532037316,
+        "ranks": {
+          "A": 5,
+          "B": 3,
+          "C": 2,
+          "D": 1
+        },
+        "target_logit": 32.75,
+        "target_minus_initial": -16.75,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-026",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F13",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "D",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-026-R",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "D->C",
+      "prompt_sha256": "91e862268de17f253e7eb87b7165d40c743cd6436e2add76ce8222f343f90723",
+      "prompt_token_ids_sha256": "11dddb1f50d3c168a8d24ccb35d5c0ca2901e14a96240d97b71a37e7aa7d1b8e",
+      "prompt_tokens": 415,
+      "reasoning_token_count": 427,
+      "record_seed": 53,
+      "response": "<think>\nOkay, let's try to figure out if Node B having status Ochre 9 is supported based on the given records. \n\nFirst, I need to look at all the records related to Node B. From the records, Node B has several statuses: Ivory 4 (Record 1), Teal 8 (Record 5), and Cobalt 2 (Record 6). There's also a conditional rule in Record 7 that says if Node B has Amber 1, then it has Cobalt 2. But since there's no mention of Amber 1 in the records, that might not apply here.\n\nNow, looking at the chain of conditionals starting from Record 8. Record 8 states that if Node B has both Ivory 4 and Azure 14, then it gets Jade 3. But in the records, Node B has Ivory 4 (Record 1), but there's no mention of Azure 14. So the condition for Record 8 isn't met. Without Azure 14, we can't trigger Jade 3. \n\nIf Jade 3 isn't activated, then the subsequent conditions in Records 9 through 13 can't be triggered either. Those records form a chain: Jade 3 → Indigo 10 → Coral 11 → Pearl 12 → Umber 13 → Ochre 9. Since the initial condition for Jade 3 isn't met, the entire chain doesn't get started. \n\nAdditionally, the existing statuses for Node B (Ivory 4, Teal 8, Cobalt 2) don't interact with the conditions needed for Ochre 9. There's no rule that connects these statuses to the chain leading to Ochre 9. \n\nTherefore, there's no way to derive that Node B has Ochre 9 based on the provided records. The necessary conditions aren't met, and there's no direct statement about Ochre 9. The answer should be undetermined because we can't confirm or deny it with the given information.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "e5747b91c5266b5587c6a135d8cf2e492c6f17054d960226be98441c8bbf41e5",
+      "response_tokens": 438,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 435,
+      "social_template": null,
+      "structure_class": "PGF-04",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

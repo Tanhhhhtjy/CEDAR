@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-010-R",
+    "index": 21,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 21,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 652,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 652
+        }
+      ],
+      "answer_logit_capture_indices": [
+        652
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 1.5229980361123228e-08,
+          "B": 1.5229980361123228e-08,
+          "C": 0.9999999690801339,
+          "D": 4.5990554386095676e-10
+        },
+        "full_vocab_entropy": 5.842468340233609e-07,
+        "full_vocab_probabilities": {
+          "A": 1.5229980832032197e-08,
+          "B": 1.5229980832032197e-08,
+          "C": 1.0,
+          "D": 4.5990555808117506e-10
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 39.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 21.25,
+          "B": 21.25,
+          "C": 39.25,
+          "D": 17.75
+        },
+        "option_argmax": "C",
+        "option_mass": 1.0000000309198671,
+        "ranks": {
+          "A": 2,
+          "B": 2,
+          "C": 1,
+          "D": 5
+        },
+        "target_logit": 21.25,
+        "target_minus_initial": -18.0,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-010",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F05",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-010-R",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "C->B",
+      "prompt_sha256": "b583ce24dea178b1b8f4af58a8bacbbee84477d3effd263a5ff31368f3f01c7c",
+      "prompt_token_ids_sha256": "e3ad12457129d8b4feb4d9bb4059a8dd4747f937d5e0a7ee3f02b47b627a370d",
+      "prompt_tokens": 407,
+      "reasoning_token_count": 644,
+      "record_seed": 21,
+      "response": "<think>\nOkay, let's tackle this problem step by step. The question is whether Node D having status Coral 11 is supported, contradicted, or undetermined based on the given records and rules. \n\nFirst, I need to look at all the records related to Node D. From the records provided:\n\n- Record 5: Node D has status Teal 8.\n- Record 8: Node D has status Pearl 12.\n- Record 9: Node D has status Jade 3.\n\nSo, Node D has three statuses: Teal 8, Pearl 12, and Jade 3. \n\nNext, the rules that apply to Node D. Let's go through them one by one.\n\nRule 10: If Node D has status Amber 1, then it is not the case that Node D has status Coral 11. But from the records, there's no mention of Node D having Amber 1. So this rule might not be directly applicable unless there's a chain leading to Amber 1.\n\nRule 11: If Node D has Pearl 12, then it must have Umber 13. Since Record 8 states Pearl 12, this triggers Rule 11. Therefore, Node D must have Umber 13.\n\nRule 12: If Node D has Umber 13, then it must have Azure 14. Since we just established Umber 13 from Rule 11, this leads to Azure 14.\n\nRule 13: If Azure 14, then Saffron 15. So now, Node D must have Saffron 15.\n\nRule 14: If Saffron 15, then Amber 1. Therefore, Node D must now have Amber 1.\n\nNow, with Amber 1 in place (from the chain of rules starting with Pearl 12), Rule 10 comes into play. Rule 10 says that if Node D has Amber 1, then it does NOT have Coral 11. Since we've just deduced that Node D has Amber 1, this means that Coral 11 is explicitly negated for Node D. \n\nTherefore, the statement that Node D has Coral 11 is contradicted by the rules and existing records. There's no record indicating Coral 11, and the rules lead us to conclude that Coral 11 cannot be true once Amber 1 is established through the chain. \n\nI need to check if there's any possibility that Coral 11 could still be true. Since the rules lead to a direct contradiction (Amber 1 implies not Coral 11), and all the steps are necessarily triggered by the existing status Pearl 12, the conclusion is that Coral 11 is contradicted. \n\nNo other records mention Coral 11 except Rule 10, which is a conditional negation. Since the conditions for Rule 10 are met (Amber 1 is true), the negation of Coral 11 is enforced. Therefore, the correct answer should be C) contradicted.\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "10e8e2c1df73fad7afa1bb176aff32ffd2017fa58a4eb3812c85863b36943143",
+      "response_tokens": 655,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 652,
+      "social_template": null,
+      "structure_class": "PGF-02",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

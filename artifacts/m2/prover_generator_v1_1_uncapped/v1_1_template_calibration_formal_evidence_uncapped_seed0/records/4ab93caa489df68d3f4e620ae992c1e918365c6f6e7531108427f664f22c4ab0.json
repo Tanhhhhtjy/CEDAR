@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-022-R",
+    "index": 45,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 45,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 385,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 385
+        }
+      ],
+      "answer_logit_capture_indices": [
+        385
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 7.991959867062869e-11,
+          "B": 2.1724398656360779e-10,
+          "C": 2.7894680993428904e-10,
+          "D": 0.9999999994238895
+        },
+        "full_vocab_entropy": 2.342701499458144e-08,
+        "full_vocab_probabilities": {
+          "A": 7.99195987166712e-11,
+          "B": 2.1724398668876432e-10,
+          "C": 2.789468100949932e-10,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 41.75,
+        "initial_rank": 1,
+        "logits": {
+          "A": 18.5,
+          "B": 19.5,
+          "C": 19.75,
+          "D": 41.75
+        },
+        "option_argmax": "D",
+        "option_mass": 1.0000000005761105,
+        "ranks": {
+          "A": 6,
+          "B": 4,
+          "C": 3,
+          "D": 1
+        },
+        "target_logit": 19.5,
+        "target_minus_initial": -22.25,
+        "target_rank": 4,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-022",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F11",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "D",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-022-R",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "D->B",
+      "prompt_sha256": "e36be06d601d51bd4de62d5ac0c016e606129eab86ebaaf6dee5b358531912b2",
+      "prompt_token_ids_sha256": "40fed894688df8173136484c3d1c72a12eaaad00cf94653d195b9b8b50eeaa5f",
+      "prompt_tokens": 398,
+      "reasoning_token_count": 377,
+      "record_seed": 45,
+      "response": "<think>\nOkay, let's see. The question is whether Sample B having status Teal 8 is supported based on the given records. Let me go through the records step by step.\n\nFirst, looking at the records about Sample B. Record 6 says Sample B has status Azure 14. Then Record 7 says it has Cobalt 2. And Record 5 says Silver 7. But the important one here is Record 6 because it triggers a chain of implications starting with Record 8.\n\nRecord 8 states that if Sample B has Azure 14, then it must have Ochre 9. Since Record 6 confirms Azure 14, that means Ochre 9 is added. Then Record 9 says if Ochre 9 is present, then Indigo 10 must be there. So applying that, we get Indigo 10. \n\nContinuing this chain: Record 10 links Indigo 10 to Coral 11. So now Coral 11 is added. Then Record 11 connects Coral 11 to Pearl 12. Next, Record 12 says Pearl 12 leads to Umber 13. Then Record 13 states that if Umber 13 is present, then Teal 8 must be there. \n\nSo following each implication step by step, starting from Azure 14, each condition is met, leading us through Ochre 9, Indigo 10, Coral 11, Pearl 12, Umber 13, and finally to Teal 8. There's no mention of any contradictions here. All the conditions are met based on the initial status given in Record 6. Therefore, the conclusion that Sample B has Teal 8 is supported by the records provided.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "3d1699e97c99aac360412df65cfb297008c0aae5b24bd251e7c4785ef6b9bdfc",
+      "response_tokens": 388,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 385,
+      "social_template": null,
+      "structure_class": "PGF-03",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-030-R",
+    "index": 61,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 61,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 946,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 946
+        }
+      ],
+      "answer_logit_capture_indices": [
+        946
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999990044813615,
+          "B": 9.42244554273984e-07,
+          "C": 5.3157802087067e-08,
+          "D": 1.1628222216403169e-10
+        },
+        "full_vocab_entropy": 1.3968777238915209e-05,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 9.422454922969337e-07,
+          "C": 5.315785500670245e-08,
+          "D": 1.1628233792526643e-10
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 45.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 45.25,
+          "B": 31.375,
+          "C": 28.5,
+          "D": 22.375
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000009955196296,
+        "ranks": {
+          "A": 1,
+          "B": 2,
+          "C": 3,
+          "D": 4
+        },
+        "target_logit": 31.375,
+        "target_minus_initial": -13.875,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-030",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F15",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-030-R",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "A->B",
+      "prompt_sha256": "aba274b88d381c05fd28c0768bc2493fbe2f1ec2ca1f45ef6b2598e4dd7fe9ca",
+      "prompt_token_ids_sha256": "3800d2154bbf759075c8a0f1fc7230f84afe570de34b6c1df142e230f30fc447",
+      "prompt_tokens": 407,
+      "reasoning_token_count": 938,
+      "record_seed": 61,
+      "response": "<think>\nOkay, let's try to figure out if Sample D has the status Pearl 12. Let me start by going through the records step by step.\n\nFirst, looking at the records provided:\n\nRecord 1 says Sample D has status Ivory 4.\nRecord 5 states Sample D has Teal 8.\nRecord 9 mentions Sample D has Amber 1.\nThen there's Record 10: If an item has Amber 1, then it also has Cobalt 2. So since D has Amber 1, does that mean it must have Cobalt 2? But I don't see any records mentioning Cobalt 2 for D. However, maybe that's not directly relevant to Pearl 12 yet.\n\nNow, looking at the other records related to Sample D. The key here might be the chain starting from Record 11. Let's check that.\n\nRecord 11: If Sample D has Ivory 4 and Saffron 15, then it has Jade 3. But from the records, D has Ivory 4 (Record 1), but there's no mention of Saffron 15. So the condition for Record 11 isn't met. Therefore, we can't conclude that D has Jade 3 from this.\n\nThen Records 12, 13, and 14 form a chain: Jade 3 → Umber 13 → Azure 14 → Pearl 12. But since we can't get Jade 3 from Record 11 because Saffron 15 isn't present, this chain doesn't start.\n\nWait, but there's another angle. Record 9 says D has Amber 1. Record 10 says if Amber 1, then Cobalt 2. But does that affect anything else? Not directly related to the Pearl 12 chain.\n\nIs there another way to get Jade 3? The only condition given is in Record 11, which requires both Ivory 4 and Saffron 15. Since Saffron 15 isn't listed for D, we can't trigger that. Therefore, we can't get Jade 3, and thus the subsequent statuses (Umber 13, Azure 14, Pearl 12) don't follow.\n\nBut wait, are there any other records that might influence this? Let me check again. The other records are about Samples B, C, E, A. For example, Record 7 says B has Indigo 10, but that's not relevant here. The rest are about other samples. So nothing else applies to Sample D's status chain towards Pearl 12.\n\nTherefore, since the initial condition for the chain leading to Pearl 12 isn't met (missing Saffron 15), we can't conclude that Sample D has Pearl 12. However, are there any contradictions? Let's see. The problem states that an unlisted statement isn't automatically negated. So if there's no support for Pearl 12, but also no direct contradiction, then the answer would be undetermined. But wait, maybe there's a contradiction somewhere?\n\nLooking at the records, there's no statement that says Sample D does not have Pearl 12. The only thing is that the conditions to derive Pearl 12 aren't met. Therefore, it's not supported, but also not contradicted. The question asks if it's supported, contradicted, etc. Since there's no support (because the necessary conditions aren't met) and no contradiction (because nothing says it's false), the answer would be undetermined (A). But wait, the options are A) undetermined, B) supported, C) contradicted, D) both.\n\nWait, but maybe there's another path. Let me check again. The only way to get Pearl 12 is through the chain starting with Jade 3. To get Jade 3, we need both Ivory 4 and Saffron 15. Since D has Ivory 4 (Record 1) but no Saffron 15, the antecedent of Record 11 isn't satisfied. Therefore, we can't derive Jade 3. Without Jade 3, the rest of the chain (Records 12-14) can't be triggered. Therefore, there's no support for Pearl 12. Since there's no support and no direct contradiction (because the absence of a status isn't a contradiction unless a rule requires it), the answer is A) undetermined.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "7bac30262dfb9c87f87facae4bac96945d0713261070fb7a11103ea59a0fa528",
+      "response_tokens": 949,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 946,
+      "social_template": null,
+      "structure_class": "PGF-04",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-005-N",
+    "index": 8,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 8,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 617,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 617
+        }
+      ],
+      "answer_logit_capture_indices": [
+        617
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999998668112557,
+          "B": 1.818961405705023e-09,
+          "C": 3.850741434655393e-09,
+          "D": 1.2751904143968293e-07
+        },
+        "full_vocab_entropy": 2.1384801129897824e-06,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 1.8189616479702408e-09,
+          "C": 3.850741947530878e-09,
+          "D": 1.275190584237862e-07
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 44.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 44.25,
+          "B": 24.125,
+          "C": 24.875,
+          "D": 28.375
+        },
+        "option_argmax": "A",
+        "option_mass": 1.000000133188762,
+        "ranks": {
+          "A": 1,
+          "B": 4,
+          "C": 3,
+          "D": 2
+        },
+        "target_logit": 24.875,
+        "target_minus_initial": -19.375,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-005",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F03",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-005-N",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "A->C",
+      "prompt_sha256": "9b67ed48c67bfe79bc5cf53535d4f15d38d4f26eee09bd1367103f75878da19f",
+      "prompt_token_ids_sha256": "1c40428820cbf769e63a3d915fdb1c470fb1c38308e195b69188e87ac95015e8",
+      "prompt_tokens": 532,
+      "reasoning_token_count": 609,
+      "record_seed": 8,
+      "response": "<think>\nOkay, let's try to figure out if Shipment C has status Indigo 10. Let me start by going through the records and rules step by step.\n\nFirst, looking at the records provided:\n\n- Record 1: Shipment C has status Ivory 4.\n- Record 5: Shipment C has status Umber 13.\n- Record 6: Shipment C has status Azure 14.\n- Record 7: Shipment C has a link to Shipment G, but that might not be relevant here.\n- Records 2,3,4 are about other shipments, so probably not directly relevant unless there's a rule connecting them, but I don't see any here.\n\nNow, the rules. Let's check each applicable rule for Shipment C.\n\nRule 8: If C has Ivory 4 and Umber 13, then Amber 1. Since both are present (Records 1 and 5), this triggers. So, C gets Amber 1.\n\nRule 13: If Amber 1, then Coral 11. So from Amber 1, we get Coral 11.\n\nRule 14: If Coral 11, then Indigo 10. So that would lead to Indigo 10. So that's one path to Indigo 10.\n\nBut wait, there's another path. Let's check other rules.\n\nRule 9: If Ivory 4 and Azure 14, then Cobalt 2. Since C has both Ivory 4 (Record 1) and Azure 14 (Record 6), this applies. So Cobalt 2 is triggered.\n\nRule 15: Cobalt 2 leads to Pearl 12.\n\nRule 16: Pearl 12 leads to Indigo 10. So this is another path to Indigo 10.\n\nSo both paths (Amber 1 → Coral 11 → Indigo 10 and Cobalt 2 → Pearl 12 → Indigo 10) lead to Indigo 10. Therefore, regardless of which rule applies, Indigo 10 is achieved. \n\nBut wait, is there any rule that might contradict this? Let's check Rule 10: If not Ivory 4, then Lilac 5. But since C does have Ivory 4 (Record 1), Rule 10's condition isn't met. So Rules 11 and 12 (which involve Lilac 5 and Copper 6) don't come into play here. \n\nRule 12 says if Copper 6, then not Indigo 10. But since we don't have Copper 6 here (because Rule 10 isn't triggered), this doesn't affect our conclusion.\n\nSo both paths via Amber and Cobalt lead to Indigo 10. Therefore, the conclusion is supported. The answer should be A) supported.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "742d2445804ad906de23e9b6574f611307daa4d20d0733d501223b69962e8c6a",
+      "response_tokens": 620,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 617,
+      "social_template": null,
+      "structure_class": "PGF-07",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

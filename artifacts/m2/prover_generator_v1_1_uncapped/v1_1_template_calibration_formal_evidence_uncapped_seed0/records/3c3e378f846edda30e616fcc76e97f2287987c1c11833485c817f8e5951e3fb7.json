@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-001-N",
+    "index": 0,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 0,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 418,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 418
+        }
+      ],
+      "answer_logit_capture_indices": [
+        418
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999999509349025,
+          "B": 3.653481959784805e-08,
+          "C": 1.1861119504142608e-08,
+          "D": 6.691585845733523e-10
+        },
+        "full_vocab_entropy": 8.565296525375743e-07,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 3.6534821390432626e-08,
+          "C": 1.1861120086109622e-08,
+          "D": 6.691586174056852e-10
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 46.75,
+        "initial_rank": 1,
+        "logits": {
+          "A": 46.75,
+          "B": 29.625,
+          "C": 28.5,
+          "D": 25.625
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000000490651,
+        "ranks": {
+          "A": 1,
+          "B": 2,
+          "C": 3,
+          "D": 4
+        },
+        "target_logit": 29.625,
+        "target_minus_initial": -17.125,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-001",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F01",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-001-N",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "A->B",
+      "prompt_sha256": "676697bfccd41c5e4767da37775d2ad233362080b370ee79b602f6e263bc8bde",
+      "prompt_token_ids_sha256": "f439eba46eaa6f1be6a0da7f56a2a32d7cd419a485a34719766f2333b320421c",
+      "prompt_tokens": 324,
+      "reasoning_token_count": 410,
+      "record_seed": 0,
+      "response": "<think>\nOkay, let's try to figure out if File D having status Copper 6 is supported, contradicted, undetermined, or both. Let me start by going through the records step by step.\n\nFirst, the records given are:\n\nRecord 4: File D has status Teal 8.\nRecord 6: If not Teal 8, then Cobalt 2.\nRecord 7: If Cobalt 2, then not Copper 6.\nRecord 8: If Teal 8, then Silver 7.\nRecord 9: If Silver 7, then Copper 6.\n\nSo, from Record 4, we know that File D is definitely Teal 8. That's a fact. Now, let's look at the implications.\n\nSince D is Teal 8 (from Record 4), Record 8 says that if Teal 8, then Silver 7. So we can conclude that D has Silver 7. Then, Record 9 says if Silver 7, then Copper 6. So following that chain: Teal 8 → Silver 7 → Copper 6. Therefore, according to these records, D should have Copper 6.\n\nBut wait, are there any contradictions? Let's check. Since D is Teal 8, the antecedent in Record 6 (if not Teal 8) is false. In logic, if the antecedent of a conditional is false, the whole implication is true regardless. So Record 6 doesn't come into play here. Similarly, Record 7 is about if D has Cobalt 2, but since we know D is Teal 8, not Cobalt 2, Record 7's antecedent is false. So Record 7 doesn't apply either. Therefore, there's no contradiction here. The only active rules are 8 and 9 leading to Copper 6.\n\nSo the conclusion is that Copper 6 is supported. Therefore, the answer should be A) supported.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "dce54a2e061e46af3bea3fefac7e381b412cae983303b1869f54eaf42d056190",
+      "response_tokens": 421,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 418,
+      "social_template": null,
+      "structure_class": "PGF-01",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-017-R",
+    "index": 33,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 33,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 334,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 334
+        }
+      ],
+      "answer_logit_capture_indices": [
+        334
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 9.736200676810096e-10,
+          "B": 0.9999999940723869,
+          "C": 4.363462454363092e-09,
+          "D": 5.905303988552466e-10
+        },
+        "full_vocab_entropy": 1.3240746454812324e-07,
+        "full_vocab_probabilities": {
+          "A": 9.736200734522527e-10,
+          "B": 1.0,
+          "C": 4.363462480228009e-09,
+          "D": 5.905304023556823e-10
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 38.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 17.25,
+          "B": 38.0,
+          "C": 18.75,
+          "D": 16.75
+        },
+        "option_argmax": "B",
+        "option_mass": 1.000000005927613,
+        "ranks": {
+          "A": 3,
+          "B": 1,
+          "C": 2,
+          "D": 4
+        },
+        "target_logit": 18.75,
+        "target_minus_initial": -19.25,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-017",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F09",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-017-R",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "B->C",
+      "prompt_sha256": "e0d8185cdfaf7b3fb6786c068371d14deca89ed95dad8adcc84d9d4e3846be99",
+      "prompt_token_ids_sha256": "55e9d87337059140ee91faed730a76d390de507b7d76eeb03224e9a891efedf0",
+      "prompt_tokens": 290,
+      "reasoning_token_count": 326,
+      "record_seed": 33,
+      "response": "<think>\nOkay, let's see. The user is asking whether it's supported that File A has status Lilac 5. The options are whether it's supported, contradicted, undetermined, or both.\n\nFirst, I need to look at the records provided. Let's start with Record 4: File A has status Teal 8. Then Record 6 says if File A has status Teal 8, then it has status Copper 6. Since Teal 8 is given, that triggers the condition in Record 6, so File A must have Copper 6.\n\nNext, Record 7 states that if File A has Copper 6, then it has Silver 7. Since we just established Copper 6 from the previous step, this means Silver 7 is also a status for File A.\n\nThen, Record 8 says if File A has Silver 7, then it has Lilac 5. Following the chain, Silver 7 leads to Lilac 5. So each conditional is triggered by the previous status. Therefore, starting from Teal 8, through Copper 6 and Silver 7, we end up with Lilac 5. \n\nNone of the records contradict this chain. The other records (like those for Files B, C, D) don't affect File A's status here. The link in Record 5 to File G isn't relevant here since the question is about status codes, not links. \n\nSo each step is supported by the given rules. Therefore, the conclusion that File A has Lilac 5 is supported. The answer should be B.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "9c82af16aea121a08cc062e011e88625a5c7d0ac84b3ea457da94047d2c0703c",
+      "response_tokens": 337,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 334,
+      "social_template": null,
+      "structure_class": "PGF-03",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}
