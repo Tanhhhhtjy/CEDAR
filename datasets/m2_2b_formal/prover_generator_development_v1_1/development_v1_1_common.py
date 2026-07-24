@@ -25,15 +25,22 @@ PARENT_RESULT_COMMIT = "8228cb11c4512e9bd1467f05dedb2186b1e51d4d"
 PARENT_DATA_FREEZE_COMMIT = "8a11bb8693d061113479100a28bcad0e64b2f18f"
 AMENDMENT = "development-v1.1-measurement-shell-and-position-balance"
 
-PARENT_FILE_SHA256 = {
+TEXT_HASH_MODE = "utf8_lf_canonical_v1"
+PARENT_FILE_CANONICAL_TEXT_SHA256 = {
     "development_bases48.jsonl": "c35de742516998a0d6040153ff5443669c92dc063399d588fade7697b8b48b43",
     "development_arms288.jsonl": "39caee8f42cd94f2869e8cafe707d4cfb049b3b210ca63a33648c6aa96882559",
-    "manifest.json": "17138c9064ecc9ab987a6596f46b527f76d6d99a1d2998efe44772b013e91e78",
-    "ZERO_GPU_GATE.json": "5133a80ad306e4aebc4d3fbae71800a1778d076bcaa2c4cff71bf5f7a6e60335",
-    "independent_validation_report.json": "430b51f141b8f07cc29f65636d0f3c559bbe793e278e1ac19daa5ecbb6b224f8",
-    "construction_audit48.jsonl": "6a4999bb529a8f36b04e9cda5dd7eb12715fc9fb553d578b2622142685a8cd06",
-    "tokenizer_preflight.json": "85fdb268f9f11bc8e675e2b463a7d994c6b5aa0d5f4642ad9b89c7b286d6e907",
-    "development_human_review_result.json": "fe2bc9bac738e32033b33ba9887a064046e0d757052ed015bfe41a06074e30d0",
+    "manifest.json": "da03474d040bbd35081d571ac52d8248e6200de52ddbf70e9ed724194fa327fa",
+    "ZERO_GPU_GATE.json": "befd379d724a9984ff3b5c2d49ab9765ef1d19cab45ba4ebc201f1eee08a8c78",
+    "independent_validation_report.json": (
+        "9e80d3817b48832c4d1b46ce67d13d97bb97bca4af85cf1edc7456fe066be4a2"
+    ),
+    "construction_audit48.jsonl": (
+        "6a4999bb529a8f36b04e9cda5dd7eb12715fc9fb553d578b2622142685a8cd06"
+    ),
+    "tokenizer_preflight.json": "d484d2a0e2d8f899a29a4b319b95d4ead90c7f1eed59a063d8d6ff02a4225af4",
+    "development_human_review_result.json": (
+        "28f81273fc54a8c7b287324b47c00776f023ad14eb5d34ace987c9320b410017"
+    ),
 }
 
 OPTION_LETTERS = ("A", "B", "C", "D")
@@ -185,6 +192,12 @@ def file_sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
+def canonical_text_sha256(path: Path) -> str:
+    text = path.read_bytes().decode("utf-8")
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
+
+
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
 
@@ -200,9 +213,9 @@ def write_jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> None:
 
 
 def validate_parent_files() -> None:
-    for name, expected in PARENT_FILE_SHA256.items():
+    for name, expected in PARENT_FILE_CANONICAL_TEXT_SHA256.items():
         path = V1_ROOT / name
-        if not path.is_file() or file_sha256(path) != expected:
+        if not path.is_file() or canonical_text_sha256(path) != expected:
             raise ValueError(f"Frozen development-v1 parent changed: {path}")
 
 

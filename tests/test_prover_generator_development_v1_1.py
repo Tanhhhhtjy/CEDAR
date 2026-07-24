@@ -31,6 +31,10 @@ def load_script(name: str, path: Path):
 
 runner = load_script("v1_1_runner", ROOT / "scripts" / "run_prover_generator_v1_1_uncapped.py")
 analyzer = load_script("v1_1_analyzer", ROOT / "scripts" / "analyze_prover_generator_v1_1.py")
+tokenizer_preflight = load_script(
+    "v1_1_tokenizer_preflight",
+    DATA / "run_qwen_tokenizer_preflight.py",
+)
 
 
 class DevelopmentV11Tests(unittest.TestCase):
@@ -41,6 +45,33 @@ class DevelopmentV11Tests(unittest.TestCase):
 
     def test_parent_release_is_hash_frozen(self) -> None:
         common.validate_parent_files()
+
+    def test_parent_text_hash_is_lf_crlf_portable(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            lf = root / "lf.json"
+            crlf = root / "crlf.json"
+            changed = root / "changed.json"
+            lf.write_bytes(b'{"value":1}\n')
+            crlf.write_bytes(b'{"value":1}\r\n')
+            changed.write_bytes(b'{"value":2}\n')
+            self.assertEqual(
+                common.canonical_text_sha256(lf),
+                common.canonical_text_sha256(crlf),
+            )
+            self.assertNotEqual(
+                common.canonical_text_sha256(lf),
+                common.canonical_text_sha256(changed),
+            )
+
+    def test_hf_home_cache_root_resolution(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            hub = root / "hub"
+            hub.mkdir()
+            self.assertEqual(tokenizer_preflight.resolve_transformers_cache_dir(root), hub)
+            self.assertEqual(tokenizer_preflight.resolve_transformers_cache_dir(hub), hub)
+            self.assertIsNone(tokenizer_preflight.resolve_transformers_cache_dir(None))
 
     def test_candidate_matrix_and_position_balance(self) -> None:
         self.assertEqual(len(self.bases), 48)

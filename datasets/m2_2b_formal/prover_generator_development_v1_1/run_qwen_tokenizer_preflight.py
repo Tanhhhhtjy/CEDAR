@@ -28,6 +28,14 @@ SMOKE_BASE_IDS = {
 }
 
 
+def resolve_transformers_cache_dir(cache_dir: Path | None) -> Path | None:
+    """Accept either a Hugging Face home directory or its hub cache."""
+    if cache_dir is None:
+        return None
+    hub = cache_dir / "hub"
+    return hub if hub.is_dir() else cache_dir
+
+
 def _encode_chat(tokenizer: Any, messages: list[dict[str, str]], *, thinking: bool) -> list[int]:
     kwargs = {"tokenize": True, "add_generation_prompt": True}
     try:
@@ -99,10 +107,11 @@ def _runner_fingerprints(tokenizer: Any, arms: list[dict[str, Any]], candidate_p
 def run(root: Path, cache_dir: Path | None) -> dict[str, Any]:
     from transformers import AutoTokenizer
 
+    transformers_cache = resolve_transformers_cache_dir(cache_dir)
     tokenizer = AutoTokenizer.from_pretrained(
         TOKENIZER_BINDING["repo"],
         revision=TOKENIZER_BINDING["revision"],
-        cache_dir=str(cache_dir) if cache_dir else None,
+        cache_dir=str(transformers_cache) if transformers_cache else None,
         trust_remote_code=False,
         local_files_only=True,
     )

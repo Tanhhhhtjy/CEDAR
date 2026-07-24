@@ -16,5 +16,9 @@ python datasets/m2_2b_formal/prover_generator_development_v1_1/run_qwen_tokenize
 python datasets/m2_2b_formal/prover_generator_development_v1_1/validate_prover_generator_development_v1_1.py --require-release-gates
 ```
 
+`--cache-dir` accepts either the Hugging Face home directory (containing
+`hub/`) or the hub cache directory itself. All parent text-file identity
+checks use UTF-8 with LF-normalized line endings.
+
 See `docs/PROVER_GENERATOR_DEVELOPMENT_V1_1_PROTOCOL.md` for the frozen order
 and scientific gates.

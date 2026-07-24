@@ -17,8 +17,9 @@ from development_v1_1_common import (
     HERE,
     OPTION_LETTERS,
     ORDERED_POSITION_TRANSITIONS,
-    PARENT_FILE_SHA256,
+    PARENT_FILE_CANONICAL_TEXT_SHA256,
     SCHEMA,
+    TEXT_HASH_MODE,
     V1_ROOT,
     VALIDATION_FAMILIES,
     canonical_sha256,
@@ -66,7 +67,8 @@ def _validate_parent_release() -> dict[str, Any]:
     require(tokenizer.get("status") == "passed", "parent tokenizer gate changed")
     require(human.get("status") == "passed", "parent human review changed")
     return {
-        "file_sha256": PARENT_FILE_SHA256,
+        "hash_mode": TEXT_HASH_MODE,
+        "canonical_text_sha256": PARENT_FILE_CANONICAL_TEXT_SHA256,
         "independent_validation_passed": True,
         "zero_gpu_gate": "A",
         "tokenizer_gate": "passed",
@@ -141,6 +143,9 @@ def _refresh_manifest(root: Path, validation_passed: bool) -> None:
     manifest["independent_validation_passed"] = validation_passed
     manifest["fixed_tokenizer_gate"] = read_json(root / "tokenizer_preflight.json").get("status")
     manifest["human_naturalization_gate"] = read_json(root / "HUMAN_NATURALIZATION_AUDIT.json").get("status")
+    manifest.pop("parent_file_sha256", None)
+    manifest["parent_file_hash_mode"] = TEXT_HASH_MODE
+    manifest["parent_file_canonical_text_sha256"] = PARENT_FILE_CANONICAL_TEXT_SHA256
     manifest["files"] = files
     write_json(root / "manifest.json", manifest)
 
