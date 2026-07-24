@@ -1,12 +1,35 @@
 {
-  "blockers": [
-    "fixed_qwen_and_p25_asset_preflight"
-  ],
+  "automatic_checks": {
+    "all_release_sources_present": true,
+    "arm_balance": true,
+    "calibration_module_selection_recomputed": true,
+    "condition_contract": true,
+    "exact_input_rows": true,
+    "exact_result_rows": true,
+    "frozen_parent_and_calibration_hashes": true,
+    "human_review_carried_without_text_change": true,
+    "itt_and_bounds": true,
+    "no_retry_or_repair": true,
+    "old_parent_gate_not_rewritten": true,
+    "parent_result_commit_frozen": true,
+    "position_balance": true,
+    "scope_is_evidence_only": true,
+    "single_uninterrupted_matrix": true,
+    "social_module_excluded": true,
+    "thinking_4096": true,
+    "validation_bases": true,
+    "validation_families_unseen": true,
+    "variant_transition_balance": true
+  },
+  "blockers": [],
   "formal_rows": 192,
-  "gate": "pending",
-  "may_run_paired_validation": false,
+  "gate": "E1-paired-evidence-validation",
+  "may_run_paired_validation": true,
   "p1_authorized": false,
-  "p25_authorized_scope": null,
+  "p25_authorized_scope": "evidence_only_internal_validation",
+  "release_checks": {
+    "fixed_qwen_and_p25_asset_preflight": true
+  },
   "schema": "cedar.prover_generator.evidence_validation_v1_1.gate.v1",
   "social_formal_prover_authorized": false
 }
