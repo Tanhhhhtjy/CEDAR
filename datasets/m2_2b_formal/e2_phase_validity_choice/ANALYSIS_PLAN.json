@@ -1,0 +1,53 @@
+{
+  "analysis_unit": {
+    "bases": 24,
+    "families": 12,
+    "independent_cluster": "family",
+    "repeated_measures": [
+      "base",
+      "arm",
+      "condition"
+    ]
+  },
+  "anchor_equivalence_is_engineering_not_scientific_replication": true,
+  "family_bootstrap": {
+    "draws": 20000,
+    "seed": 20260725
+  },
+  "gate_c": {
+    "at_least_three_of_four_arm_m_general_estimates_positive": true,
+    "m_general_positive_probability": 0.95,
+    "m_specific_equivalence_probability": 0.8,
+    "m_specific_rope": "plus_or_minus_0.25_times_uncapped_family_sd"
+  },
+  "gate_e": {
+    "probability_validity_discrimination_decline_at_least_10pp": 0.8
+  },
+  "gate_t": {
+    "common_update_direction_probability": 0.9,
+    "family_direction": "at_least_8_of_12_nonnegative_and_4_strictly_positive",
+    "invalid_or_truncation_difference_max_pp": 5,
+    "leave_one_family_out_must_not_reverse": true,
+    "n_r_discrete_stability_required": true,
+    "validity_equivalence_probability": 0.8,
+    "validity_rope_pp": 10
+  },
+  "hierarchical_models": {
+    "answer": "target_follow ~ validity * prefill_cap * decode_cap + C(variant) + C(position_transition) + (1|family) + (1|base)",
+    "engine": "statsmodels BinomialBayesMixedGLM variational Bayes",
+    "nonconvergence_route": "Gate F",
+    "validity": "response_sufficient ~ validity * prefill_cap * decode_cap + C(variant) + C(position_transition) + C(label_mapping) + (1|family) + (1|base)"
+  },
+  "multiplicity": {
+    "anchor": "engineering_gate_excluded_from_scientific_family",
+    "primary_families": [
+      "Validity discrimination prefill/decode/interaction",
+      "Answer selectivity prefill/decode/interaction",
+      "Common update prefill/decode/interaction"
+    ],
+    "secondary": "option geometry, length, entropy, option mass, strata and telemetry"
+  },
+  "schema": "cedar.e2_phase_validity_choice.analysis_plan.v1",
+  "scope": "exploratory_mechanism_routing",
+  "status": "frozen_before_gpu"
+}
