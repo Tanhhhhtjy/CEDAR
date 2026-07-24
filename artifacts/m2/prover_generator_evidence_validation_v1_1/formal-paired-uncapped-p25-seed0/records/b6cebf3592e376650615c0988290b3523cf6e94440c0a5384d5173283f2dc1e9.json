@@ -1,0 +1,173 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-011-R",
+    "index": 34,
+    "seed": 0
+  },
+  "payload": {
+    "index": 34,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 348,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 348
+        }
+      ],
+      "answer_logit_capture_indices": [
+        348
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999996165068953,
+          "B": 2.3823687301606907e-07,
+          "C": 7.582557227473455e-10,
+          "D": 1.44497975904109e-07
+        },
+        "full_vocab_entropy": 5.92644664720865e-06,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 2.3823696437830222e-07,
+          "C": 7.582560135332983e-10,
+          "D": 1.4449803131810768e-07
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 45.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 45.0,
+          "B": 29.75,
+          "C": 24.0,
+          "D": 29.25
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000003834932518,
+        "ranks": {
+          "A": 1,
+          "B": 2,
+          "C": 4,
+          "D": 3
+        },
+        "target_logit": 29.25,
+        "target_minus_initial": -15.75,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-011",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "development_validation",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F06",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-DEV-011-R",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 17,
+      "paired_condition_order": [
+        "uncapped",
+        "p25"
+      ],
+      "phase": "prespecified_internal_validation",
+      "position_transition": "A->D",
+      "prompt_sha256": "1d43a0d8c5e38198d2d3252a123652dfbcdc4b01f631f7db08081859b51a562e",
+      "prompt_token_ids_sha256": "7ccc2d2881444324636d47fd687f79449e4df050aee52ab0586a227ccdfcb386",
+      "prompt_tokens": 295,
+      "reasoning_token_count": 340,
+      "record_seed": 17,
+      "response": "<think>\nOkay, let's see. The user is asking whether it's supported that Case A has status Copper 6. The options are whether it's contradicted, undetermined, both, or supported. \n\nFirst, I need to look at the records provided. Let me go through them again.\n\nRecord 4 says Case A has status Silver 7. Then Record 7 states that if Case A has status Silver 7, then it must have status Teal 8. So from Record 4 and 7, we can infer Case A has Teal 8.\n\nThen Record 8 says if Case A has Teal 8, then it has Amber 1. So now, since we established Teal 8, that leads to Amber 1.\n\nNow, Record 6 says if Case A has Amber 1, then it does NOT have Copper 6. Since we've deduced through the chain (Silver 7 → Teal 8 → Amber 1), the condition for Record 6 is met. Therefore, according to Record 6, Case A cannot have Copper 6. \n\nSo the conclusion is that having Copper 6 is contradicted by the existing records. Therefore, the answer should be A) contradicted. \n\nWait, but let me make sure there's no other path. The only status directly assigned to Case A is Silver 7 (Record 4). The rest are conditional based on that. The chain seems solid. No other records mention Copper 6 except in the context of Record 6. So there's no way for Case A to have Copper 6 without violating Record 6. Hence, the answer is A.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "4d72d6a45735be14e1cc4c87c0cd33059d66597fe7b046c129dbbb838b007402",
+      "response_tokens": 351,
+      "scope": "evidence-validation",
+      "seed": 0,
+      "selected_answer_logit_index": 348,
+      "structure_class": "PGF-02",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "204d0d8e611dfb9159b48c1df831693ad8186376b5b1329b375c70ce401384a6"
+}
