@@ -1,0 +1,145 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-023-R",
+    "index": 133,
+    "mode": "thinking",
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 133,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 333,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 333
+        }
+      ],
+      "answer_logit_capture_indices": [
+        333
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.99999997792326,
+          "B": 2.0611534246195957e-09,
+          "C": 4.5990554792795966e-10,
+          "D": 1.955568108684254e-08
+        },
+        "full_vocab_entropy": 4.0365412701248715e-07,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 2.061153470123145e-09,
+          "C": 4.5990555808117506e-10,
+          "D": 1.9555681518568235e-08
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 41.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 41.0,
+          "B": 21.0,
+          "C": 19.5,
+          "D": 23.25
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000000220767404,
+        "ranks": {
+          "A": 1,
+          "B": 3,
+          "C": 4,
+          "D": 2
+        },
+        "target_logit": 23.25,
+        "target_minus_initial": -17.75,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-023",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F12",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-023-R",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "prompt_sha256": "377a2ea3009ec00e7924e06f18e47512a302659820e2a3e19b22bbf037cc37a1",
+      "prompt_token_ids_sha256": "c1afb22da56797015d578124126e9184e6d8cd2874ab904a06b7918cc3c6af2a",
+      "prompt_tokens": 284,
+      "reasoning_token_count": 325,
+      "record_seed": 133,
+      "response": "<think>\nOkay, let's see. The user is asking whether it's supported that Account E has status Ivory 4. The answer options are A to D. I need to check the records and apply the rules step by step.\n\nFirst, looking at the records. Record 3 says Account E has status Silver 7. Then there are a series of conditional statements starting from Record 5. \n\nRecord 5 states that if Account E has status Silver 7, then it has status Lilac 5. Since Record 3 confirms Silver 7, that triggers Record 5, so we can add Lilac 5 to Account E's statuses.\n\nNext, Record 6 says if Account E has Lilac 5, then it has Copper 6. Since we just established Lilac 5 from the previous step, this condition is met. So now Account E also has Copper 6.\n\nThen, Record 7 states that if Account E has Copper 6, then it has Ivory 4. Since we just added Copper 6 from the previous rule, this condition is satisfied. Therefore, Account E must have Ivory 4.\n\nI need to make sure there are no contradictions. The records don't mention anything that would negate these conditions. Each rule is applied in a chain: Silver 7 leads to Lilac 5, which leads to Copper 6, which leads to Ivory 4. All the premises are met based on the initial status in Record 3. There's no conflicting information here. So the conclusion that Account E has Ivory 4 is supported. The answer should be A.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "da6946914d9510b97b65260a1a69d4c8df4ac85557fc2da7ee04448692a5151f",
+      "response_tokens": 336,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 333,
+      "structure_class": "PGF-03",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "9b73eeeffc9604d99d6cc182aebe94cca26a91e8109fa684cc30b2500ff1d9f9"
+}

@@ -1,0 +1,145 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-034-R",
+    "index": 199,
+    "mode": "thinking",
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 199,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 560,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 560
+        }
+      ],
+      "answer_logit_capture_indices": [
+        560
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999999862473283,
+          "B": 1.3440409489262107e-08,
+          "C": 2.789468062587293e-10,
+          "D": 3.3315443695238106e-11
+        },
+        "full_vocab_entropy": 2.509987666599045e-07,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 1.3440409674103648e-08,
+          "C": 2.789468100949932e-10,
+          "D": 3.3315444153414475e-11
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 44.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 44.25,
+          "B": 26.125,
+          "C": 22.25,
+          "D": 20.125
+        },
+        "option_argmax": "A",
+        "option_mass": 1.000000013752672,
+        "ranks": {
+          "A": 1,
+          "B": 2,
+          "C": 3,
+          "D": 4
+        },
+        "target_logit": 26.125,
+        "target_minus_initial": -18.125,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-034",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F17",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-034-R",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "prompt_sha256": "bb119dd66f61d96cc930ecae1b492bedba443c9646d144fb3d2a1c90fc9bff28",
+      "prompt_token_ids_sha256": "860544342178180f665e0cb3a848a7320f105d3f32b95152d55f3c8ce3dd4678",
+      "prompt_tokens": 385,
+      "reasoning_token_count": 552,
+      "record_seed": 199,
+      "response": "<think>\nOkay, let's see. The question is whether Node B having status Ochre 9 is supported, contradicted, undetermined, or both. Let me go through the records again carefully.\n\nFirst, the records about Node B. Record 5 says B has Teal 8. Record 6: Indigo 10. Record 7: Jade 3. So those are the direct statuses for B. Then there are the conditional rules starting from Record 8.\n\nLooking at the conditionals. Record 8 says if B has Amber 1, then it does not have Ochre 9. But right now, from the records, B has Indigo 10, Jade 3, and Teal 8. None of those are Amber 1. So Record 8's condition isn't triggered here. So that rule doesn't apply unless B somehow gets Amber 1.\n\nThen Records 9 to 12 form a chain. Record 9: If Indigo 10, then Coral 11. Since B does have Indigo 10 (Record 6), that means Coral 11 must be true. Then Record 10: Coral 11 implies Pearl 12. So Pearl 12 is true. Then Record 11: Pearl 12 implies Umber 13. So Umber 13. Then Record 12: Umber 13 implies Amber 1. Therefore, B must have Amber 1.\n\nWait, so following that chain, starting from Indigo 10 (which B has), we get through Coral 11, Pearl 12, Umber 13, and end up with Amber 1. So B must have Amber 1. Now, once B has Amber 1, Record 8 comes into play. Record 8 says if B has Amber 1, then it does not have Ochre 9. Therefore, since we've established B must have Amber 1 (from the chain of implications), then according to Record 8, B cannot have Ochre 9. Therefore, the statement that B has Ochre 9 is contradicted.\n\nSo the answer should be A) contradicted. Let me check again. The key steps: B has Indigo 10 → Coral 11 → Pearl 12 → Umber 13 → Amber 1. Therefore, Amber 1 is true. Then, since Amber 1 is true, the implication in Record 8 is that Ochre 9 is not true. Therefore, Ochre 9 is contradicted. So the answer is A.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "730c75315ee11a7169c558890c98c8a0741849467683d0c89fe3d7cfa341b1d3",
+      "response_tokens": 563,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 560,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "9b73eeeffc9604d99d6cc182aebe94cca26a91e8109fa684cc30b2500ff1d9f9"
+}

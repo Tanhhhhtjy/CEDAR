@@ -1,0 +1,145 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-005-N",
+    "index": 24,
+    "mode": "thinking",
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 24,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 933,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 933
+        }
+      ],
+      "answer_logit_capture_indices": [
+        933
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999999046924233,
+          "B": 1.1861118955655009e-08,
+          "C": 3.653481790838733e-08,
+          "D": 4.691163987585685e-08
+        },
+        "full_vocab_entropy": 1.6360932022507768e-06,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 1.1861120086109622e-08,
+          "C": 3.6534821390432626e-08,
+          "D": 4.691164434689199e-08
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 43.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 43.5,
+          "B": 25.25,
+          "C": 26.375,
+          "D": 26.625
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000000953075858,
+        "ranks": {
+          "A": 1,
+          "B": 4,
+          "C": 3,
+          "D": 2
+        },
+        "target_logit": 25.25,
+        "target_minus_initial": -18.25,
+        "target_rank": 4,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-005",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F03",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-005-N",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "prompt_sha256": "bb45e96bffc91a1fe962032ff1663b7f4018e1e9652a7de8daead296a46f9206",
+      "prompt_token_ids_sha256": "b46e44d9b3ad9058f0f15349a6f504b0a8d7ba6b9d3a00a2dd2fa2c1b68e6b2e",
+      "prompt_tokens": 540,
+      "reasoning_token_count": 925,
+      "record_seed": 24,
+      "response": "<think>\nOkay, let's try to figure out if Shipment C has status Indigo 10. Let me start by going through the records and rules step by step.\n\nFirst, looking at the records provided:\n\n- Record 1: Shipment C has status Ivory 4.\n- Record 5: Shipment C has status Umber 13.\n- Record 6: Shipment C has status Azure 14.\n- Record 7: Shipment C has a link to Shipment G, but I don't think that's relevant here since the question is about status codes.\n- The other records are about Shipments D, E, A, which don't seem to affect Shipment C's status directly.\n\nNow, the rules. Let's see which ones apply to Shipment C.\n\nRule 8: If C has Ivory 4 and Umber 13, then Amber 1. Since both are present (Records 1 and 5), this triggers Amber 1. So according to Rule 13, if Amber 1, then Coral 11. Then Rule 14: Coral 11 leads to Indigo 10. So that's one path to Indigo 10.\n\nBut wait, there's also Rule 9: If C has Ivory 4 and Azure 14, then Cobalt 2. Records 1 and 6 satisfy that. So Cobalt 2 leads to Pearl 12 (Rule 15), which then leads to Indigo 10 (Rule 16). So that's another path to Indigo 10.\n\nBut there's also Rule 10: If C does not have Ivory 4, then Lilac 5. But since C does have Ivory 4 (Record 1), Rule 10's condition isn't met. So we don't go that route.\n\nBut wait, there's a possible conflict here. If both Rule 8 and Rule 9 are triggered, leading to Amber 1 and Cobalt 2 respectively, then both paths lead to Indigo 10. So that would support it. But are there any contradictions?\n\nWait, let me check. Let's break it down step by step.\n\nFirst, from Records 1 and 5: Ivory 4 and Umber 13. So Rule 8 applies, leading to Amber 1. Then Rule 13: Amber 1 → Coral 11. Then Rule 14: Coral 11 → Indigo 10. So that's one way to get Indigo 10.\n\nSecond, from Records 1 and 6: Ivory 4 and Azure 14. So Rule 9 applies, leading to Cobalt 2. Then Rule 15: Cobalt 2 → Pearl 12. Then Rule 16: Pearl 12 → Indigo 10. So that's another way to get Indigo 10.\n\nSo both paths lead to Indigo 10. Therefore, regardless of which path is taken, Indigo 10 is a result. So that would support the conclusion that Indigo 10 is present.\n\nBut wait, are there any rules that might prevent this? Let's check for contradictions.\n\nLooking at Rule 10: Since C has Ivory 4, the antecedent is false, so Rule 10 doesn't apply. Therefore, Rules 11 and 12 (which depend on Lilac 5 and Copper 6) aren't triggered here. So no conflict there.\n\nAnother thing to check: Do any of the rules contradict Indigo 10? For example, Rule 12 says if Copper 6, then not Indigo 10. But since we don't have Copper 6 here (because Rule 10 isn't triggered), that's not an issue. So the only path to Indigo 10 is through either the Amber 1 → Coral 11 or Cobalt 2 → Pearl 12 routes. Both of those lead to Indigo 10. Therefore, both paths support it. So the answer should be A) supported.\n\nWait, but what if there's a conflict between the two paths? For example, if one path leads to Indigo 10 and another leads to something else? But in this case, both paths lead to Indigo 10. So no contradiction. Therefore, the conclusion is supported.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "a2572e944271cea6c5e35a0c6deda562366eae032a7b742a0b88f5a301f3c08c",
+      "response_tokens": 936,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 933,
+      "structure_class": "PGF-07",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "9b73eeeffc9604d99d6cc182aebe94cca26a91e8109fa684cc30b2500ff1d9f9"
+}
