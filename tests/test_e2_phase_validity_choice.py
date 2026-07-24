@@ -142,26 +142,124 @@ class E2PhaseValidityChoiceTests(unittest.TestCase):
         self.assertEqual(review["reviewed_items"], 48)
         self.assertEqual(review["failed_items"], 0)
 
-    def test_auditor_accepts_clean_smoke_nohook_record(self) -> None:
+    def test_smoke_auditor_enforces_noop_equivalence_and_runtime_hash(self) -> None:
+        def phase_stats(enabled: set[str]) -> dict[str, object]:
+            return {
+                "enabled_phases": sorted(enabled),
+                "apply_changes": enabled != {"prefill", "decode"},
+                "by_layer": {
+                    str(layer): {
+                        phase: {
+                            "forward_calls": 1,
+                            "observed_positions": 2 if phase == "prefill" else 1,
+                            "applied_positions": (2 if phase == "prefill" else 1)
+                            if phase in enabled
+                            else 0,
+                            "triggered_positions": 1 if phase in enabled else 0,
+                            "projection_correction_sum": 0.5 if phase in enabled else 0.0,
+                        }
+                        for phase in ("prefill", "decode")
+                    }
+                    for layer in common.CAP_LAYERS
+                },
+            }
+
+        def smoke_row(assay: str, item_id: str, condition: str) -> dict[str, object]:
+            row: dict[str, object] = {
+                "assay": assay,
+                "id": item_id,
+                "condition": condition,
+                "content_retry_count": 0,
+                "answer_repair_performed": False,
+                "hook_counts_before": {str(layer): 0 for layer in common.CAP_LAYERS},
+                "hook_counts_after": {str(layer): 0 for layer in common.CAP_LAYERS},
+                "prompt_sha256": f"prompt-{assay}-{item_id}",
+                "prompt_token_ids_sha256": f"prompt-tokens-{assay}-{item_id}",
+                "response_token_ids_sha256": f"response-{assay}-{item_id}",
+                "final_answer_parse_status": "passed",
+                "truncated": False,
+                "selected_answer_logit_index": 10,
+                "answer_logit_capture_indices": [10],
+                "answer_logit_candidates": [{"response_index": 10, "generated_label": "A"}],
+                "gold_correct": True,
+                "answer_logits": {
+                    "logits": {"A": 2.0, "B": 1.0},
+                    "option_argmax": "A",
+                    "option_mass": 0.9,
+                },
+                "phase_telemetry": None,
+                "full_cap_stats": None,
+            }
+            if assay == "answer":
+                row.update({"chosen_option": "A", "outcome_class": "initial"})
+            else:
+                row.update({"chosen_label": "A", "chosen_semantic": "sufficient"})
+            if condition in {"monitor_only", "full_p25"}:
+                row["phase_telemetry"] = phase_stats({"prefill", "decode"})
+                assert isinstance(row["phase_telemetry"], dict)
+                row["phase_telemetry"]["apply_changes"] = False
+            elif condition == "prefill_only":
+                row["phase_telemetry"] = phase_stats({"prefill"})
+            elif condition == "decode_only":
+                row["phase_telemetry"] = phase_stats({"decode"})
+            if condition == "full_p25":
+                row["full_cap_stats"] = {
+                    "by_layer": {
+                        str(layer): {
+                            "total_positions": 3,
+                            "triggered_positions": 2,
+                            "projection_correction_sum": 1.0,
+                        }
+                        for layer in common.CAP_LAYERS
+                    }
+                }
+            return row
+
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             run = root / "smoke-all-seed0"
             run.mkdir(parents=True)
-            row = {
-                "assay": "answer",
-                "id": "synthetic",
-                "condition": "nohook",
-                "content_retry_count": 0,
-                "answer_repair_performed": False,
-                "hook_counts_before": {"46": 0},
-                "hook_counts_after": {"46": 0},
-                "phase_telemetry": None,
-                "full_cap_stats": None,
+            manifest = common.read_json(DATA / "manifest.json")
+            rows = [
+                smoke_row(assay, item_id, condition)
+                for assay in ("answer", "validity")
+                for item_id in manifest["smoke_ids"][assay]
+                for condition in common.SMOKE_CONDITIONS
+            ]
+            results = run / "results.jsonl"
+            results.write_text(
+                "".join(json.dumps(row, sort_keys=True) + "\n" for row in rows),
+                encoding="utf-8",
+            )
+            runtime = {
+                "complete_results": len(rows),
+                "results_sha256": common.file_sha256(results),
+                "truncations": [],
+                "parse_failures": [],
+                "missing_logits": [],
             }
-            (run / "results.jsonl").write_text(json.dumps(row) + "\n", encoding="utf-8")
-            (run / "runtime.json").write_text("{}\n", encoding="utf-8")
+            (run / "runtime.json").write_text(json.dumps(runtime) + "\n", encoding="utf-8")
             result = auditor.audit(root, scope="smoke", assay="all")
-        self.assertEqual(result["status"], "passed")
+            self.assertEqual(result["status"], "passed")
+            self.assertTrue(result["smoke_noop_equivalence"]["passed"])
+
+            rows[1]["response_token_ids_sha256"] = "monitor-changed-output"
+            results.write_text(
+                "".join(json.dumps(row, sort_keys=True) + "\n" for row in rows),
+                encoding="utf-8",
+            )
+            runtime["results_sha256"] = common.file_sha256(results)
+            (run / "runtime.json").write_text(json.dumps(runtime) + "\n", encoding="utf-8")
+            changed = auditor.audit(root, scope="smoke", assay="all")
+            self.assertEqual(changed["status"], "failed")
+            self.assertTrue(
+                any(failure.startswith("smoke_noop_field:") for failure in changed["failures"])
+            )
+
+            runtime["results_sha256"] = "0" * 64
+            (run / "runtime.json").write_text(json.dumps(runtime) + "\n", encoding="utf-8")
+            bad_hash = auditor.audit(root, scope="smoke", assay="all")
+            self.assertIn("runtime_results_hash_mismatch", bad_hash["failures"])
 
     def test_analyzer_accepts_complete_synthetic_matrix(self) -> None:
         rows = []

@@ -105,6 +105,22 @@ Answer `full_p25` records must match the frozen anchor on:
 
 Failure stops E2A interpretation. Directional similarity is insufficient.
 
+## Smoke monitor no-op Gate
+
+Before the 576-cell formal matrix, the runner executes the eight frozen smoke
+inputs under six engineering conditions (48 cells total). For every Answer and
+Validity item, `nohook`, `monitor_only`, and `uncapped` must agree on prompt and
+prompt-token hashes, generated-token hash, parsed result, outcome category,
+answer-boundary indices, and decision logits (within the frozen numerical
+tolerance). The read-only monitor must observe and measure both prefill and
+decode at every capped layer without changing activations.
+
+The smoke audit also recomputes the raw `results.jsonl` SHA-256, record count,
+and truncation/parse/missing-logit lists from disk; validates all eight layers
+for every hooked condition; and requires zero smoke truncations, parse failures,
+or missing logits. Any failure stops before formal generation. Smoke records are
+retained and are not part of the scientific 576-cell analysis.
+
 ## Metrics and analysis unit
 
 The independent unit is the 12-family cluster; 24 bases and repeated arms/
