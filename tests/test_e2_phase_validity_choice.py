@@ -7,6 +7,7 @@ import unittest
 from collections import Counter
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 
 import torch
 from torch import nn
@@ -289,7 +290,10 @@ class E2PhaseValidityChoiceTests(unittest.TestCase):
                         "answer_logits": {
                             "logits": logits,
                             "target_minus_initial": logits[induced] - logits[initial],
+                            "full_vocab_entropy": 0.2,
+                            "option_mass": 0.9,
                         },
+                        "reasoning_token_count": 20,
                         "final_answer_parse_status": "passed",
                     }
                 )
@@ -307,6 +311,11 @@ class E2PhaseValidityChoiceTests(unittest.TestCase):
                         "sufficient_label": row["sufficient_label"],
                         "condition": condition,
                         "chosen_semantic": row["gold_semantic"],
+                        "answer_logits": {
+                            "full_vocab_entropy": 0.1,
+                            "option_mass": 0.95,
+                        },
+                        "reasoning_token_count": 10,
                         "final_answer_parse_status": "passed",
                     }
                 )
@@ -320,13 +329,31 @@ class E2PhaseValidityChoiceTests(unittest.TestCase):
             )
             previous = analyzer.BOOTSTRAP_DRAWS
             analyzer.BOOTSTRAP_DRAWS = 200
+            model = {
+                "optimizer": {"success": True},
+                "formula": "synthetic",
+                "fixed_effects": {},
+                "variance_components": {},
+            }
             try:
-                result = analyzer.analyze(root)
+                with patch.object(analyzer, "fit_hierarchical_model", return_value=model):
+                    result = analyzer.analyze(root)
             finally:
                 analyzer.BOOTSTRAP_DRAWS = previous
         self.assertEqual(result["status"], "complete")
         self.assertEqual(result["rows"], 576)
+        self.assertNotIn("criterion", result["rates"]["validity"]["uncapped"])
+        self.assertIn(
+            "overall_sufficient_rate", result["rates"]["validity"]["uncapped"]
+        )
+        self.assertEqual(result["post_hoc_secondary"]["scope"], "post_hoc_secondary")
         self.assertIn(result["route_gate"][0], {"T", "E", "C", "F"})
+
+    def test_not_applicable_audit_field_is_not_false(self) -> None:
+        value = auditor.not_applicable("formal-only field")
+        self.assertFalse(value["applicable"])
+        self.assertEqual(value["status"], "not_applicable")
+        self.assertIsNone(value["passed"])
 
 
 if __name__ == "__main__":

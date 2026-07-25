@@ -54,6 +54,17 @@ def family_metric(
 
 def bootstrap_family_contrast(scores: Mapping[str, float]) -> dict[str, Any]:
     families = sorted(scores)
+    if not families:
+        return {
+            "status": "not_estimable",
+            "estimate": None,
+            "family_cluster_bootstrap_95ci": None,
+            "probability_positive": None,
+            "probability_negative": None,
+            "families": 0,
+            "family_scores": {},
+            "draws": [],
+        }
     observed = mean([scores[family] for family in families])
     rng = random.Random(BOOTSTRAP_SEED)
     draws = [mean([scores[rng.choice(families)] for _ in families]) for _ in range(BOOTSTRAP_DRAWS)]
@@ -62,6 +73,7 @@ def bootstrap_family_contrast(scores: Mapping[str, float]) -> dict[str, Any]:
         "family_cluster_bootstrap_95ci": [percentile(draws, 0.025), percentile(draws, 0.975)],
         "probability_positive": sum(value > 0 for value in draws) / len(draws),
         "probability_negative": sum(value < 0 for value in draws) / len(draws),
+        "families": len(families),
         "family_scores": dict(sorted(scores.items())),
         "draws": draws,
     }
@@ -117,6 +129,150 @@ def geometry(row: Mapping[str, Any]) -> dict[str, float]:
         "m_general": (m_target + sum(m_other)) / 3,
         "m_specific": m_target - mean(m_other),
     }
+
+
+def reasoning_tokens(row: Mapping[str, Any]) -> float:
+    value = row.get("reasoning_token_count")
+    if value is None:
+        raise ValueError(f"Missing reasoning-token count: {row.get('id')}")
+    return float(value)
+
+
+def answer_telemetry(row: Mapping[str, Any], field: str) -> float:
+    value = row.get("answer_logits", {}).get(field)
+    if value is None:
+        raise ValueError(f"Missing Answer telemetry {field}: {row.get('id')}")
+    return float(value)
+
+
+def decision_value(row: Mapping[str, Any]) -> str:
+    if row["assay"] == "answer":
+        return str(row.get("outcome_class"))
+    return str(row.get("chosen_semantic"))
+
+
+def paired_condition_scores_by_decision_change(
+    rows: Sequence[dict[str, Any]],
+    *,
+    condition: str,
+    indicator: Callable[[Mapping[str, Any]], float],
+    changed: bool,
+) -> dict[str, float]:
+    selected = [row for row in rows if row["condition"] in {"uncapped", condition}]
+    by_cell = {(row["id"], row["condition"]): row for row in selected}
+    grouped: dict[str, list[float]] = defaultdict(list)
+    for row in selected:
+        if row["condition"] != "uncapped":
+            continue
+        treated = by_cell[(row["id"], condition)]
+        if (decision_value(treated) != decision_value(row)) != changed:
+            continue
+        grouped[row["family_id"]].append(indicator(treated) - indicator(row))
+    return {family: mean(values) for family, values in grouped.items()}
+
+
+def descriptive(values: Sequence[float]) -> dict[str, Any]:
+    return {
+        "n": len(values),
+        "mean": mean(values),
+        "median": statistics.median(values) if values else None,
+        "minimum": min(values) if values else None,
+        "maximum": max(values) if values else None,
+    }
+
+
+def four_state_transitions(
+    rows: Sequence[dict[str, Any]], *, condition: str
+) -> dict[str, Any]:
+    states = ("initial", "induced_target", "other_wrong", "invalid_or_abstain")
+    selected = [row for row in rows if row["condition"] in {"uncapped", condition}]
+    by_cell = {(row["id"], row["condition"]): row for row in selected}
+    result: dict[str, Any] = {}
+    for arm in ("N", "R", "V", "F"):
+        counts = {source: {target: 0 for target in states} for source in states}
+        n = 0
+        for row in selected:
+            if row["condition"] != "uncapped" or row["arm"] != arm:
+                continue
+            treated = by_cell[(row["id"], condition)]
+            source = str(row["outcome_class"])
+            target = str(treated["outcome_class"])
+            counts[source][target] += 1
+            n += 1
+        result[arm] = {"n": n, "counts": counts}
+    return result
+
+
+def post_hoc_secondary(
+    answer: Sequence[dict[str, Any]], validity: Sequence[dict[str, Any]]
+) -> dict[str, Any]:
+    assays = {"answer": list(answer), "validity": list(validity)}
+    result: dict[str, Any] = {
+        "scope": "post_hoc_secondary",
+        "stratification_note": (
+            "Same/changed-decision strata are descriptive post-treatment strata; "
+            "families without observations in a stratum are omitted, and no causal "
+            "interpretation is permitted."
+        ),
+        "reasoning_length_tokens": {},
+        "answer_step_telemetry": {},
+        "answer_four_state_transitions_vs_uncapped": {},
+    }
+    for assay, assay_rows in assays.items():
+        raw = {
+            condition: descriptive(
+                [reasoning_tokens(row) for row in assay_rows if row["condition"] == condition]
+            )
+            for condition in FORMAL_CONDITIONS
+        }
+        contrasts = {}
+        for condition in FORMAL_CONDITIONS[1:]:
+            all_scores = paired_condition_scores(
+                assay_rows, condition=condition, indicator=reasoning_tokens
+            )
+            same_scores = paired_condition_scores_by_decision_change(
+                assay_rows,
+                condition=condition,
+                indicator=reasoning_tokens,
+                changed=False,
+            )
+            changed_scores = paired_condition_scores_by_decision_change(
+                assay_rows,
+                condition=condition,
+                indicator=reasoning_tokens,
+                changed=True,
+            )
+            contrasts[condition] = {
+                "all": bootstrap_family_contrast(all_scores),
+                "same_decision": bootstrap_family_contrast(same_scores),
+                "changed_decision": bootstrap_family_contrast(changed_scores),
+            }
+            for summary in contrasts[condition].values():
+                summary.pop("draws", None)
+        result["reasoning_length_tokens"][assay] = {
+            "raw_by_condition": raw,
+            "paired_contrasts_vs_uncapped": contrasts,
+        }
+
+        result["answer_step_telemetry"][assay] = {}
+        for field in ("full_vocab_entropy", "option_mass"):
+            field_contrasts = {}
+            for condition in FORMAL_CONDITIONS[1:]:
+                scores = paired_condition_scores(
+                    assay_rows,
+                    condition=condition,
+                    indicator=lambda row, name=field: answer_telemetry(row, name),
+                )
+                summary = bootstrap_family_contrast(scores)
+                summary.pop("draws", None)
+                field_contrasts[condition] = summary
+            result["answer_step_telemetry"][assay][field] = field_contrasts
+
+    for condition in FORMAL_CONDITIONS[1:]:
+        result["answer_four_state_transitions_vs_uncapped"][condition] = (
+            four_state_transitions(answer, condition=condition)
+        )
+    return result
 
 
 def discrimination(
@@ -259,11 +415,11 @@ def summarize_rates(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
         )
         v = summary["validity"][condition]["V"]["sufficient_rate"]
         f = summary["validity"][condition]["F"]["sufficient_rate"]
-        summary["validity"][condition]["criterion"] = (v + f) / 2
+        summary["validity"][condition]["overall_sufficient_rate"] = (v + f) / 2
     return summary
 
 
-def analyze(output_root: Path) -> dict[str, Any]:
+def analyze(output_root: Path, *, reuse_frozen_hierarchical_models: bool = False) -> dict[str, Any]:
     audit = read_json(output_root / "E2A_AUDIT.json")
     if audit.get("status") != "passed":
         raise ValueError("E2A audit must pass before scientific analysis")
@@ -273,10 +429,26 @@ def analyze(output_root: Path) -> dict[str, Any]:
     answer = [row for row in rows if row["assay"] == "answer"]
     validity = [row for row in rows if row["assay"] == "validity"]
     rates = summarize_rates(rows)
-    hierarchical_models = {
-        "validity": fit_hierarchical_model(validity, assay="validity"),
-        "answer": fit_hierarchical_model(answer, assay="answer"),
-    }
+    hierarchical_model_source = "refit_from_formal_rows"
+    if reuse_frozen_hierarchical_models:
+        previous = read_json(output_root / "E2A_ANALYSIS.json")
+        if previous.get("status") != "complete" or previous.get("rows") != 576:
+            raise ValueError("A complete 576-row frozen analysis is required for hygiene reuse")
+        hierarchical_models = previous.get("hierarchical_models")
+        if not isinstance(hierarchical_models, dict) or set(hierarchical_models) != {
+            "answer",
+            "validity",
+        }:
+            raise ValueError("Frozen hierarchical models are missing or malformed")
+        hierarchical_model_source = (
+            "reused_unchanged_from_e2a_result_commit_"
+            "0c8517bb5fb4640f7d5e4d51356d0cf167046643"
+        )
+    else:
+        hierarchical_models = {
+            "validity": fit_hierarchical_model(validity, assay="validity"),
+            "answer": fit_hierarchical_model(answer, assay="answer"),
+        }
     contrasts: dict[str, Any] = {
         "validity_discrimination": {},
         "answer_selectivity": {},
@@ -405,13 +577,14 @@ def analyze(output_root: Path) -> dict[str, Any]:
     if not models_converged:
         gates = []
     result = {
-        "schema": "cedar.e2_phase_validity_choice.analysis.v1",
+        "schema": "cedar.e2_phase_validity_choice.analysis.v1_1",
         "status": "complete",
         "scope": "exploratory_mechanism_assay",
         "unit_of_analysis": "12 families; 24 bases nested within family",
         "rows": len(rows),
         "rates": rates,
         "hierarchical_models": hierarchical_models,
+        "hierarchical_model_source": hierarchical_model_source,
         "contrasts_vs_uncapped": contrasts,
         "routing_probabilities": {
             "validity_equivalence_within_10pp": validity_equivalence_probability,
@@ -422,8 +595,16 @@ def analyze(output_root: Path) -> dict[str, Any]:
             "common_update_family_direction_ok": family_direction_ok,
             "completion_difference_within_5pp": completion_ok,
         },
+        "post_hoc_secondary": post_hoc_secondary(answer, validity),
         "route_gate": gates if gates else ["F"],
         "route_gate_is_manuscript_confirmation": False,
+        "analysis_hygiene": {
+            "raw_rows_changed": False,
+            "primary_estimands_changed": False,
+            "routing_thresholds_changed": False,
+            "post_hoc_secondary_added": True,
+            "criterion_renamed_to_overall_sufficient_rate": True,
+        },
         "hierarchical_model_status": "complete" if models_converged else "nonconverged",
         "limitations": [
             "These 24 bases are an exploratory mechanism assay, not a new confirmation set.",
@@ -432,6 +613,10 @@ def analyze(output_root: Path) -> dict[str, Any]:
                 "hierarchical model."
             ),
             "Mechanism language requires E2B or bidirectional patching after a non-F route.",
+            (
+                "Reasoning length, answer-step telemetry, and four-state transition analyses "
+                "were added after E2A completion and are post-hoc secondary analyses."
+            ),
         ],
     }
     write_json(output_root / "E2A_ANALYSIS.json", result)
@@ -441,8 +626,19 @@ def analyze(output_root: Path) -> dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
+    parser.add_argument(
+        "--reuse-frozen-hierarchical-models",
+        action="store_true",
+        help=(
+            "Reuse the unchanged fitted model payload from the frozen E2A result while "
+            "rebuilding hygiene-only summaries."
+        ),
+    )
     args = parser.parse_args()
-    result = analyze(args.output_root)
+    result = analyze(
+        args.output_root,
+        reuse_frozen_hierarchical_models=args.reuse_frozen_hierarchical_models,
+    )
     print(
         json.dumps({"status": result["status"], "route_gate": result["route_gate"]}, sort_keys=True)
     )

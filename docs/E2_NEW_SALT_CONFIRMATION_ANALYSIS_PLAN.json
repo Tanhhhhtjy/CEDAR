@@ -1,0 +1,66 @@
+{
+  "analysis_unit": {
+    "bases": 24,
+    "families": 12,
+    "independent_cluster": "family",
+    "prompts": 96,
+    "repeated_measures": [
+      "base",
+      "arm",
+      "condition"
+    ]
+  },
+  "anchor_commit": "0c8517bb5fb4640f7d5e4d51356d0cf167046643",
+  "arms": [
+    "N",
+    "R",
+    "V",
+    "F"
+  ],
+  "bootstrap": {
+    "draws": 20000,
+    "interval": "two_sided_percentile_95ci",
+    "seed": 2026072502
+  },
+  "conditions": [
+    "uncapped",
+    "full_p25"
+  ],
+  "construction": {
+    "master_seed": 2026072501,
+    "model_output_screening_forbidden": true,
+    "salt": "cedar-e2-new-salt-confirmation-v1-20260725",
+    "salt_sha256": "198059a92ba743b5c9576b92270d8b714540b8505fcef05eb26f37436cefe34f"
+  },
+  "decision_rule": {
+    "directional_contradiction": "estimate_ci_upper_lt_0",
+    "directionally_consistent_not_confirmed": "estimate_gt_0_and_ci_includes_0",
+    "not_confirmed": "estimate_lte_0_and_ci_includes_0",
+    "positive_confirmation": "estimate_gt_0_and_ci_lower_gt_0"
+  },
+  "formal_generations": 192,
+  "multiplicity": "one_confirmatory_endpoint; all_other_analyses_secondary",
+  "naming": "new_salt_unselected_instance_confirmation",
+  "primary_estimand": "delta_m_general_full_p25_minus_uncapped",
+  "protocol": "docs/E2_NEW_SALT_CONFIRMATION_PROTOCOL.md",
+  "schema": "cedar.e2_new_salt_confirmation.analysis_plan.v1",
+  "secondary_estimands": [
+    "m_target",
+    "m_background",
+    "m_specific",
+    "arm_specific_m_general",
+    "v_target_follow",
+    "f_target_follow",
+    "common_update",
+    "vf_selectivity",
+    "four_state_transitions",
+    "reasoning_length",
+    "option_mass",
+    "full_vocab_entropy",
+    "top_token_integrity",
+    "completion_integrity",
+    "prespecified_breakdowns",
+    "leave_one_family_out"
+  ],
+  "status": "frozen_before_data_construction_and_model_output"
+}

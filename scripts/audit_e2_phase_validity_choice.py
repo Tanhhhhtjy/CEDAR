@@ -21,6 +21,7 @@ from e2_common import (  # noqa: E402
     CAP_LAYERS,
     FORMAL_CONDITIONS,
     SMOKE_CONDITIONS,
+    canonical_text_sha256,
     file_sha256,
     read_json,
     read_jsonl,
@@ -28,6 +29,17 @@ from e2_common import (  # noqa: E402
 )
 
 DEFAULT_OUTPUT_ROOT = ROOT / "artifacts" / "m2" / "e2_phase_validity_choice"
+
+
+def not_applicable(reason: str) -> dict[str, Any]:
+    return {
+        "applicable": False,
+        "status": "not_applicable",
+        "reason": reason,
+        "checked": None,
+        "expected": None,
+        "passed": None,
+    }
 
 
 def _close(left: float, right: float, tolerance: float = 1e-4) -> bool:
@@ -170,6 +182,13 @@ def audit(output_root: Path, *, scope: str, assay: str) -> dict[str, Any]:
     warnings: list[str] = []
     rows = read_jsonl(results_path) if results_path.is_file() else []
     runtime = read_json(runtime_path) if runtime_path.is_file() else {}
+    hash_validation: dict[str, Any] = {
+        "status": "not_checked",
+        "match_mode": None,
+        "runtime_sha256": runtime.get("results_sha256"),
+        "raw_file_sha256": None,
+        "canonical_lf_sha256": None,
+    }
     expected_by_scope_assay = {
         ("smoke", "answer"): 24,
         ("smoke", "validity"): 24,
@@ -186,8 +205,23 @@ def audit(output_root: Path, *, scope: str, assay: str) -> dict[str, Any]:
     elif results_path.is_file():
         if runtime.get("complete_results") != len(rows):
             failures.append("runtime_complete_results_mismatch")
-        if runtime.get("results_sha256") != file_sha256(results_path):
+        raw_hash = file_sha256(results_path)
+        canonical_hash = canonical_text_sha256(results_path)
+        runtime_hash = runtime.get("results_sha256")
+        if runtime_hash == raw_hash:
+            match_mode = "raw_file"
+        elif runtime_hash == canonical_hash:
+            match_mode = "canonical_lf_after_checkout_normalization"
+        else:
+            match_mode = None
             failures.append("runtime_results_hash_mismatch")
+        hash_validation = {
+            "status": "passed" if match_mode else "failed",
+            "match_mode": match_mode,
+            "runtime_sha256": runtime_hash,
+            "raw_file_sha256": raw_hash,
+            "canonical_lf_sha256": canonical_hash,
+        }
         recomputed_runtime_lists = {
             "truncations": [
                 f"{row.get('id')}::{row.get('condition')}"
@@ -321,12 +355,14 @@ def audit(output_root: Path, *, scope: str, assay: str) -> dict[str, Any]:
                 if stats[other_phase]["observed_positions"] <= 0:
                     failures.append(f"other_phase_not_observed:{prefix}::L{layer}")
 
-    anchor = {"checked": 0, "expected": 0, "passed": scope != "formal"}
+    anchor = not_applicable("anchor equivalence is evaluated only for the complete formal assay")
     if scope == "formal" and assay == "all" and len(rows) == 576:
         anchor, anchor_failures = anchor_equivalence(rows)
         failures.extend(anchor_failures)
     condition_counts = Counter(row.get("condition") for row in rows)
-    smoke_equivalence = {"items": 0, "checked_pairs": 0, "expected_pairs": 0, "passed": False}
+    smoke_equivalence: dict[str, Any] = not_applicable(
+        "smoke no-op equivalence is evaluated only in smoke scope"
+    )
     if scope == "smoke":
         smoke_equivalence, smoke_failures = smoke_noop_equivalence(rows)
         failures.extend(smoke_failures)
@@ -374,6 +410,7 @@ def audit(output_root: Path, *, scope: str, assay: str) -> dict[str, Any]:
             "parse_failures": list(runtime.get("parse_failures", [])),
             "missing_logits": list(runtime.get("missing_logits", [])),
         },
+        "results_hash_validation": hash_validation,
         "anchor_equivalence": anchor,
         "smoke_noop_equivalence": smoke_equivalence,
         "failures": failures,
