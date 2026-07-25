@@ -1,0 +1,105 @@
+{
+  "error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "tor567fallverified",
+      "arguments": [
+        "csor48"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "tor567fallverified",
+        "arguments": [
+          "csor48"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "tor567fallsource",
+      "arguments": [
+        "csor48"
+      ],
+      "negated": false
+    },
+    "operator": "converse_error"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "637d41333da7bbd2184200a7e941b634ff456a3b53c74807bf6473d0e7dc21b5",
+      "projected_edit_sha256": "b05fa31ccd94c41775398f555e3a50f2a4bd17647d7df0f3bc7363904cc884f2"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "b066a455a236055cf1b39ca1e9e2a2da0f9eaa043f56838369898c26298cbbd5",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "tor567outcome",
+      "arguments": [
+        "csor48"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "07a991f82d364a809765d018cff735d3a7a023e36423e49549baf8be808bfea4",
+    "entailed_premise_keys": [
+      "tor567fallverified(csor48)"
+    ],
+    "unsupported_claim_key": "tor567fallsource(csor48)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "tor567outcome(csor48)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "tor567outcome(csor48)",
+      "required_counterliteral": "-tor567outcome(csor48)",
+      "input_sha256": "49d950a584d5e673312b1ccf2b4abe2a1357317fbe00c0e336b230a886e5286a",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\ntor567left(csor48).\ntor567fallverified(csor48).\ntor567fallsource(csor48) -> tor567fallverified(csor48).\ntor567left(csor48) & tor567right(csor48) -> tor567joint(csor48).\ntor567joint(csor48) -> tor567outcome(csor48).\n-tor567outcome(csor48).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(csor48, [ 0 ]),\n\n        relation(tor567fallsource(_), [ 0, 0 ]),\n\n        relation(tor567fallverified(_), [ 1, 0 ]),\n\n        relation(tor567joint(_), [ 0, 0 ]),\n\n        relation(tor567left(_), [ 1, 0 ]),\n\n        relation(tor567outcome(_), [ 0, 0 ]),\n\n        relation(tor567right(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "tor567right",
+          "arguments": [
+            "csor48"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-9044c473afb67bed",
+      "rank": 10
+    },
+    "updated_world_sha256": "b066a455a236055cf1b39ca1e9e2a2da0f9eaa043f56838369898c26298cbbd5",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

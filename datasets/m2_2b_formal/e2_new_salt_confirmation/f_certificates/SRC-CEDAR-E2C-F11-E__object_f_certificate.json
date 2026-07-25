@@ -1,0 +1,123 @@
+{
+  "error_class": "cross_entity_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "tor690fallsignal",
+      "arguments": [
+        "ckel13"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "tor690fallsignal",
+        "arguments": [
+          "ckel13"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "tor690fallsignal",
+      "arguments": [
+        "cnav87"
+      ],
+      "negated": false
+    },
+    "operator": "cross_entity_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "df0a266536bd44669589f588eb7fcf1149503358d453b9c0e110239f8839de17",
+      "projected_edit_sha256": "67f93b6b281345cb11c9f5538d156916780fd68443b4274f8bad03885dedcde7"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "3d34e865d8eed47f912ba6a7102e4d529463f43959c765c38f23b81733552399",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "tor690outcome",
+      "arguments": [
+        "cnav87"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "cross_entity_transfer",
+    "world_semantic_sha256": "6a9e8a1090b4aa71d836a782109b16b4fa759ce3ef60c3680ebd9bf5041d1d47",
+    "entailed_premise_keys": [
+      "tor690fallsignal(ckel13)"
+    ],
+    "unsupported_claim_key": "tor690fallsignal(cnav87)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-tor690outcome(cnav87)",
+    "proof": {
+      "record_ids": [
+        "data_tor690_link",
+        "schema_tor690_bad",
+        "schema_tor690bad_0"
+      ],
+      "depth": 2
+    },
+    "refutes_induced_label": "true"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_tor690_link",
+        "kind": "fact",
+        "literal": {
+          "predicate": "tor690link",
+          "arguments": [
+            "cnav87",
+            "ckel13"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_tor690_link",
+        "kind": "fact",
+        "literal": {
+          "predicate": "tor690link",
+          "arguments": [
+            "cnav87",
+            "cmiv64"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-4fa33303df0333b1",
+      "rank": 1
+    },
+    "updated_world_sha256": "3d34e865d8eed47f912ba6a7102e4d529463f43959c765c38f23b81733552399",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

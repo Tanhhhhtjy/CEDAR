@@ -1,0 +1,105 @@
+{
+  "error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "tor656fallverified",
+      "arguments": [
+        "cnav88"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "tor656fallverified",
+        "arguments": [
+          "cnav88"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "tor656fallsource",
+      "arguments": [
+        "cnav88"
+      ],
+      "negated": false
+    },
+    "operator": "converse_error"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "5d9d08e568f2ff920e63db1ce6e97b7d48c84963292f8f1ff3100d97d9e10812",
+      "projected_edit_sha256": "26c7a31711f182f0c6ec6f55490de57b0d57ab435ae6640c401b84b65a56fb39"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "d7c63e0dcbb20d26c852b49e7503654f3395a6dff89d1c8bbe0a177a95dd8708",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "tor656outcome",
+      "arguments": [
+        "cnav88"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "e6602897ea5658129034ab0071e72cac3c33ad9327b139612949f8305d74faa2",
+    "entailed_premise_keys": [
+      "tor656fallverified(cnav88)"
+    ],
+    "unsupported_claim_key": "tor656fallsource(cnav88)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "tor656outcome(cnav88)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "tor656outcome(cnav88)",
+      "required_counterliteral": "-tor656outcome(cnav88)",
+      "input_sha256": "64ed08fbc54c701dd19d45e1f74430e5acd7aca48bae225a499953200c875f09",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\ntor656left(cnav88).\ntor656noise2(csor40).\ntor656noise3(cmiv62).\ntor656noise4(ckel7).\ntor656noise5(cnav88).\ntor656fallverified(cnav88).\ntor656fallsource(cnav88) -> tor656fallverified(cnav88).\ntor656left(cnav88) & tor656right(cnav88) -> tor656joint(cnav88).\ntor656joint(cnav88) -> tor656proofstep0(cnav88).\ntor656proofstep0(cnav88) -> tor656proofstep1(cnav88).\ntor656proofstep1(cnav88) -> tor656proofstep2(cnav88).\ntor656proofstep2(cnav88) -> tor656outcome(cnav88).\n-tor656outcome(cnav88).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel7, [ 0 ]),\n\n        function(cmiv62, [ 0 ]),\n\n        function(cnav88, [ 0 ]),\n\n        function(csor40, [ 0 ]),\n\n        relation(tor656fallsource(_), [ 0, 0 ]),\n\n        relation(tor656fallverified(_), [ 1, 0 ]),\n\n        relation(tor656joint(_), [ 0, 0 ]),\n\n        relation(tor656left(_), [ 1, 0 ]),\n\n        relation(tor656noise2(_), [ 1, 0 ]),\n\n        relation(tor656noise3(_), [ 1, 0 ]),\n\n        relation(tor656noise4(_), [ 1, 0 ]),\n\n        relation(tor656noise5(_), [ 1, 0 ]),\n\n        relation(tor656outcome(_), [ 0, 0 ]),\n\n        relation(tor656proofstep0(_), [ 0, 0 ]),\n\n        relation(tor656proofstep1(_), [ 0, 0 ]),\n\n        relation(tor656proofstep2(_), [ 0, 0 ]),\n\n        relation(tor656right(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "tor656right",
+          "arguments": [
+            "cnav88"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-dbc44043e48949ee",
+      "rank": 21
+    },
+    "updated_world_sha256": "d7c63e0dcbb20d26c852b49e7503654f3395a6dff89d1c8bbe0a177a95dd8708",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

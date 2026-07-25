@@ -1,0 +1,118 @@
+{
+  "error_class": "support_path_generalization",
+  "entailed_premises": [
+    {
+      "predicate": "tor163fallsupported",
+      "arguments": [
+        "clan38"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "tor163fallsupported",
+        "arguments": [
+          "clan38"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "tor163fallsupported",
+      "arguments": [
+        "cvek76"
+      ],
+      "negated": false
+    },
+    "operator": "support_path_generalization"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "494c4ccbd060698ca017d003fdb2f9a31456d29bbc0e0a7bba5b05ced2c82b11",
+      "projected_edit_sha256": "31afafbd8f06c2de764d8965a644953abf57c9c548bc64e4c74b7ffac72ae522"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "b276950d1a0515c1b9f1beb5211c7118f5512c9e980e4e5512d0154f99dca407",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "tor163outcome",
+      "arguments": [
+        "clan38"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "support_path_generalization",
+    "world_semantic_sha256": "896d84651f63df3106e3c74e3018162ca195fca8d5e0fdb781aee65da83e9852",
+    "entailed_premise_keys": [
+      "tor163fallsupported(clan38)"
+    ],
+    "unsupported_claim_key": "tor163fallsupported(cvek76)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-tor163outcome(clan38)",
+    "proof": {
+      "record_ids": [
+        "data_tor163_source",
+        "policy_tor163_terminal",
+        "schema_tor163up_0",
+        "schema_tor163up_1"
+      ],
+      "depth": 3
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "policy_tor163_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "tor163bridge",
+            "arguments": [
+              "clan38"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "tor163outcome",
+          "arguments": [
+            "clan38"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-58239e8bffbb0666",
+      "rank": 19
+    },
+    "updated_world_sha256": "b276950d1a0515c1b9f1beb5211c7118f5512c9e980e4e5512d0154f99dca407",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

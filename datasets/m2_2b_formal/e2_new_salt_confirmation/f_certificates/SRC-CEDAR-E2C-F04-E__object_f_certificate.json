@@ -1,0 +1,105 @@
+{
+  "error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "tor152fallverified",
+      "arguments": [
+        "clan77"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "tor152fallverified",
+        "arguments": [
+          "clan77"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "tor152fallsource",
+      "arguments": [
+        "clan77"
+      ],
+      "negated": false
+    },
+    "operator": "converse_error"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "f47c33954b0e1475e5c58744b2902eed9159c4926957fc70d1e32fc1f6a299bd",
+      "projected_edit_sha256": "809efeaf9bfd8d7b1f48bc2229108a2d9a5a4dd268d9c59a9e0b97dff29abccb"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "416cc4abfc7e239da7dfc946045cc6ede1f3f75d82bc270d9a48512fb2a3fae3",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "tor152outcome",
+      "arguments": [
+        "clan77"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "eab7096c8d2f511655834bbe817b589a3569b8073b46c8562e41a34ee737ed91",
+    "entailed_premise_keys": [
+      "tor152fallverified(clan77)"
+    ],
+    "unsupported_claim_key": "tor152fallsource(clan77)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "tor152outcome(clan77)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "tor152outcome(clan77)",
+      "required_counterliteral": "-tor152outcome(clan77)",
+      "input_sha256": "8dad019f59e18b0b2ccb3bd7c17706fcf8a1e302a437d55d99e4a5431e723b8f",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\ntor152left(clan77).\ntor152noise2(cmiv36).\ntor152fallverified(clan77).\ntor152fallsource(clan77) -> tor152fallverified(clan77).\ntor152left(clan77) & tor152right(clan77) -> tor152joint(clan77).\ntor152joint(clan77) -> tor152outcome(clan77).\n-tor152outcome(clan77).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(clan77, [ 0 ]),\n\n        function(cmiv36, [ 0 ]),\n\n        relation(tor152fallsource(_), [ 0, 0 ]),\n\n        relation(tor152fallverified(_), [ 1, 0 ]),\n\n        relation(tor152joint(_), [ 0, 0 ]),\n\n        relation(tor152left(_), [ 1, 0 ]),\n\n        relation(tor152noise2(_), [ 1, 0 ]),\n\n        relation(tor152outcome(_), [ 0, 0 ]),\n\n        relation(tor152right(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "tor152right",
+          "arguments": [
+            "clan77"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-58126a2ed0282b0a",
+      "rank": 8
+    },
+    "updated_world_sha256": "416cc4abfc7e239da7dfc946045cc6ede1f3f75d82bc270d9a48512fb2a3fae3",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

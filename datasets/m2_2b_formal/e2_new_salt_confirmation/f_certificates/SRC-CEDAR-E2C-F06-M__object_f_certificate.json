@@ -1,0 +1,106 @@
+{
+  "error_class": "conjunction_weakening",
+  "entailed_premises": [
+    {
+      "predicate": "lan916fallleft",
+      "arguments": [
+        "cpax34"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "lan916fallleft",
+        "arguments": [
+          "cpax34"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "lan916falljoined",
+      "arguments": [
+        "cpax34"
+      ],
+      "negated": false
+    },
+    "operator": "conjunction_weakening"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "d814eda70e618b6ee7fe996cb498052302636cd1d54f9f5963bede27fa46bf9f",
+      "projected_edit_sha256": "fbb3078f324483c8754db05a63f6a2b99a2ace5c67628f8daac069873e3db92e"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "77f45759a440ad4c8c02ad3ddb97bc0a353e244b395475caeb1a6a7f57c2e883",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "lan916outcome",
+      "arguments": [
+        "cpax34"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "conjunction_weakening",
+    "world_semantic_sha256": "0ea06a33179421b50954130aacfbac1c04f94aeea0ea9ba280e068395be6d5c5",
+    "entailed_premise_keys": [
+      "lan916fallleft(cpax34)"
+    ],
+    "unsupported_claim_key": "lan916falljoined(cpax34)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "-lan916outcome(cpax34)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "-lan916outcome(cpax34)",
+      "required_counterliteral": "lan916outcome(cpax34)",
+      "input_sha256": "ae585945a2aabe756d49f98b0630ff72afb53c1db5251da6d644af7b8d994ede",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nlan916edge(cpax34,ctor70).\nlan916edge(ctor70,clan916node0).\nlan916noise2(cmiv10).\nlan916noise3(csor17).\nlan916noise4(cvek61).\nlan916noise5(clan916node0).\nlan916noise6(clan916node1).\nlan916noise7(cpax34).\nlan916noise8(ctor70).\nlan916noise9(cmiv10).\nlan916fallleft(cpax34).\nlan916fallleft(cpax34) & lan916fallright(cpax34) -> lan916falljoined(cpax34).\nlan916reach(cpax34,clan916node1) -> -lan916outcome(cpax34).\n(all x all y (lan916edge(x,y) -> lan916reach(x,y))).\n(all x all y all z (lan916reach(x,y) & lan916edge(y,z) -> lan916reach(x,z))).\nlan916outcome(cpax34).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(clan916node0, [ 0 ]),\n\n        function(clan916node1, [ 1 ]),\n\n        function(cmiv10, [ 0 ]),\n\n        function(cpax34, [ 0 ]),\n\n        function(csor17, [ 0 ]),\n\n        function(ctor70, [ 0 ]),\n\n        function(cvek61, [ 0 ]),\n\n        relation(lan916falljoined(_), [ 0, 0 ]),\n\n        relation(lan916fallleft(_), [ 1, 0 ]),\n\n        relation(lan916fallright(_), [ 0, 0 ]),\n\n        relation(lan916noise2(_), [ 1, 0 ]),\n\n        relation(lan916noise3(_), [ 1, 0 ]),\n\n        relation(lan916noise4(_), [ 1, 0 ]),\n\n        relation(lan916noise5(_), [ 1, 0 ]),\n\n        relation(lan916noise6(_), [ 0, 1 ]),\n\n        relation(lan916noise7(_), [ 1, 0 ]),\n\n        relation(lan916noise8(_), [ 1, 0 ]),\n\n        relation(lan916noise9(_), [ 1, 0 ]),\n\n        relation(lan916outcome(_), [ 1, 0 ]),\n\n        relation(lan916edge(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 0 ]),\n\n        relation(lan916reach(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "lan916edge",
+          "arguments": [
+            "clan916node0",
+            "clan916node1"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-eef8bb11c7a3ece6",
+      "rank": 15
+    },
+    "updated_world_sha256": "77f45759a440ad4c8c02ad3ddb97bc0a353e244b395475caeb1a6a7f57c2e883",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

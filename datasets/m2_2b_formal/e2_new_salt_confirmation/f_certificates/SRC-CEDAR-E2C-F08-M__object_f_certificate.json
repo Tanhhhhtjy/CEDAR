@@ -1,0 +1,111 @@
+{
+  "error_class": "unsupported_bridge",
+  "entailed_premises": [
+    {
+      "predicate": "tor125fallobserved",
+      "arguments": [
+        "ckel20"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "tor125fallobserved",
+        "arguments": [
+          "ckel20"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "tor125fallbridge",
+      "arguments": [
+        "ckel20"
+      ],
+      "negated": false
+    },
+    "operator": "unsupported_bridge"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "afe907d7eaf6f9272e0989f81dd61e1e5d24d787bc117c4e9cf7a3e598e8372a",
+      "projected_edit_sha256": "45ce0cc7fb26f986dac9c64ef7d750c1553ca151c8aa4e8fcc5f7764c5ab92f4"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "8f91f16add755641fd7faa62ccb86a700e1699a042ebdfefc5b447a5dfa362c9",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "tor125outcome",
+      "arguments": [
+        "ckel20"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "unsupported_bridge",
+    "world_semantic_sha256": "b9843073f41519c45cc7832529259870dfd52fa58703d5ea3bb811a31190e452",
+    "entailed_premise_keys": [
+      "tor125fallobserved(ckel20)"
+    ],
+    "unsupported_claim_key": "tor125fallbridge(ckel20)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "tor125outcome(ckel20)",
+    "proof": {
+      "record_ids": [
+        "data_tor125_root",
+        "schema_tor125proof_0",
+        "schema_tor125proof_1",
+        "schema_tor125proof_2",
+        "schema_tor125proof_3",
+        "schema_tor125proof_4"
+      ],
+      "depth": 5
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "data_tor125_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "tor125token",
+          "arguments": [
+            "ckel20"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-cd2f121f61c9ad11",
+      "rank": 11
+    },
+    "updated_world_sha256": "8f91f16add755641fd7faa62ccb86a700e1699a042ebdfefc5b447a5dfa362c9",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

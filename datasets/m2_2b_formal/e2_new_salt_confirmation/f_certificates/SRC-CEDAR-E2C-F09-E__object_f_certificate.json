@@ -1,0 +1,125 @@
+{
+  "error_class": "scope_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "lan463fallaccess",
+      "arguments": [
+        "cpax44",
+        "remote"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "lan463fallaccess",
+        "arguments": [
+          "cpax44",
+          "remote"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "lan463fallaccess",
+      "arguments": [
+        "cpax44",
+        "local"
+      ],
+      "negated": false
+    },
+    "operator": "scope_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "e76f6f662e746ad2ffe9049d701c9831e472948bb3349c728a18affdc7be4d50",
+      "projected_edit_sha256": "73567e0db239c5f26a4d63888ca09a597c57bb5e8c218c0740f8d86e7956d999"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "c877edbdc2b1f052b1996ab4bbd2c002c963d11dbbd3ac6fedfb369ae5782137",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "lan463outcome",
+      "arguments": [
+        "cpax44"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "scope_transfer",
+    "world_semantic_sha256": "90cc9f681e3c88919521b891f5d37a7ba89f97911f45cf5ce4e443e4ca7114ae",
+    "entailed_premise_keys": [
+      "lan463fallaccess(cpax44,remote)"
+    ],
+    "unsupported_claim_key": "lan463fallaccess(cpax44,local)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "lan463outcome(cpax44)",
+    "proof": {
+      "record_ids": [
+        "data_lan463_gate",
+        "data_lan463_support_0",
+        "schema_lan463_gate_0",
+        "schema_lan463path0_0"
+      ],
+      "depth": 2
+    },
+    "refutes_induced_label": "false"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_lan463_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "lan463gate",
+          "arguments": [
+            "cpax44"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_lan463_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "lan463gate",
+          "arguments": [
+            "cpax44"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-f0c4a1790e905611",
+      "rank": 38
+    },
+    "updated_world_sha256": "c877edbdc2b1f052b1996ab4bbd2c002c963d11dbbd3ac6fedfb369ae5782137",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

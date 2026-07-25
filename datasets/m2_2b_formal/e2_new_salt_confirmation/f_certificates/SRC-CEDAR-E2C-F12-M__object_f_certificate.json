@@ -1,0 +1,120 @@
+{
+  "error_class": "support_path_generalization",
+  "entailed_premises": [
+    {
+      "predicate": "pax358fallsupported",
+      "arguments": [
+        "cmiv70"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "pax358fallsupported",
+        "arguments": [
+          "cmiv70"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "pax358fallsupported",
+      "arguments": [
+        "ctor18"
+      ],
+      "negated": false
+    },
+    "operator": "support_path_generalization"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "611edcb1d6128c54bbb01ba7ed80df6b6ecb804c6b0737fff25ea3ec41674bf6",
+      "projected_edit_sha256": "63199051c6255df3ea1798de655d67fe2e80a2a8b4b9c6f4f79f4dc6f8ea3a2f"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "eba1e8b67c809415ef279a87c2b7c4d5d63893dd87db2ed9687e0e179b105050",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "pax358outcome",
+      "arguments": [
+        "cmiv70"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "support_path_generalization",
+    "world_semantic_sha256": "ae576fd1b2b809e31f483da9538e9543a673e1e7efec2bd77fe5a431bbefa2c4",
+    "entailed_premise_keys": [
+      "pax358fallsupported(cmiv70)"
+    ],
+    "unsupported_claim_key": "pax358fallsupported(ctor18)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-pax358outcome(cmiv70)",
+    "proof": {
+      "record_ids": [
+        "data_pax358_source",
+        "policy_pax358_terminal",
+        "schema_pax358up_0",
+        "schema_pax358up_1",
+        "schema_pax358up_2",
+        "schema_pax358up_3"
+      ],
+      "depth": 5
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "policy_pax358_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "pax358bridge",
+            "arguments": [
+              "cmiv70"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "pax358outcome",
+          "arguments": [
+            "cmiv70"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-a2572d4866672266",
+      "rank": 12
+    },
+    "updated_world_sha256": "eba1e8b67c809415ef279a87c2b7c4d5d63893dd87db2ed9687e0e179b105050",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

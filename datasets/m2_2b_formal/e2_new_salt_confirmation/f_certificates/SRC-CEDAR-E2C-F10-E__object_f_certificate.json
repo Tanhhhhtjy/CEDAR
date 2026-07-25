@@ -1,0 +1,125 @@
+{
+  "error_class": "scope_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "nav571fallaccess",
+      "arguments": [
+        "cmiv62",
+        "remote"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "nav571fallaccess",
+        "arguments": [
+          "cmiv62",
+          "remote"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "nav571fallaccess",
+      "arguments": [
+        "cmiv62",
+        "local"
+      ],
+      "negated": false
+    },
+    "operator": "scope_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "954cac701c275fe3888f9cab249c0f9f8b99990ea117009db3017c1b3790a206",
+      "projected_edit_sha256": "269b28b2669555045aaae03fe0e7f3cc377b10aace0b3a2082956eea4a9285f1"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "e7f0840d4061ecc7d6247d5ae1a08db61897561264d007adc1840084fac1cedc",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "nav571outcome",
+      "arguments": [
+        "cmiv62"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "scope_transfer",
+    "world_semantic_sha256": "e1ec8891690539775986c1cfcbf326370762eeba2e67da5fb16a7be1874e557e",
+    "entailed_premise_keys": [
+      "nav571fallaccess(cmiv62,remote)"
+    ],
+    "unsupported_claim_key": "nav571fallaccess(cmiv62,local)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "nav571outcome(cmiv62)",
+    "proof": {
+      "record_ids": [
+        "data_nav571_gate",
+        "data_nav571_support_0",
+        "schema_nav571_gate_0",
+        "schema_nav571path0_0"
+      ],
+      "depth": 2
+    },
+    "refutes_induced_label": "false"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_nav571_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "nav571gate",
+          "arguments": [
+            "cmiv62"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_nav571_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "nav571gate",
+          "arguments": [
+            "cmiv62"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-b593fb159240f728",
+      "rank": 26
+    },
+    "updated_world_sha256": "e7f0840d4061ecc7d6247d5ae1a08db61897561264d007adc1840084fac1cedc",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

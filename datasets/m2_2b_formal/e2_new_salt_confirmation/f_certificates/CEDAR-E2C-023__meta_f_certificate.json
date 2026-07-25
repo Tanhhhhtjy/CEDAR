@@ -1,0 +1,83 @@
+{
+  "declared_error_class": "support_path_generalization",
+  "derived_error_class": "support_path_generalization",
+  "entailed_premises": [
+    {
+      "predicate": "usable_support_path",
+      "arguments": [
+        "crecords"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "review_context_open",
+      "arguments": [
+        "edit723"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "usable_support_path",
+        "arguments": [
+          "crecords"
+        ],
+        "negated": false
+      },
+      {
+        "predicate": "review_context_open",
+        "arguments": [
+          "edit723"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "usable_support_path",
+      "arguments": [
+        "crecordr"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "claim_not_entailed": true,
+  "downstream_literals": [
+    {
+      "predicate": "f_supp_ereviewstage1",
+      "arguments": [
+        "edit723"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "revision_warranted",
+      "arguments": [
+        "edit723"
+      ],
+      "negated": false
+    }
+  ],
+  "downstream_valid_under_single_assumption": true,
+  "warrant_absent_without_invalid_step": true,
+  "second_failure_point_absent": true,
+  "countermodel": {
+    "target_refuted": "revision_warranted(edit723)",
+    "required_counterliteral": "-revision_warranted(edit723)",
+    "input_sha256": "b3b236d7e699920fd5266721f4692c22855425e8dcb96db00eee0a4c09d77af1",
+    "model_found": true,
+    "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nreview_context_open(edit723).\naccess_gate_passed(crecords).\n(all item (access_gate_passed(item) -> usable_support_path(item))).\nusable_support_path(crecordr) -> f_supp_ereviewstage1(edit723).\nf_supp_ereviewstage1(edit723) -> revision_warranted(edit723).\nreview_context_open(edit723) -> review_case_active(edit723).\n-revision_warranted(edit723).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(crecordr, [ 0 ]),\n\n        function(crecords, [ 1 ]),\n\n        function(edit723, [ 0 ]),\n\n        relation(access_gate_passed(_), [ 0, 1 ]),\n\n        relation(f_supp_ereviewstage1(_), [ 0, 0 ]),\n\n        relation(review_case_active(_), [ 1, 0 ]),\n\n        relation(review_context_open(_), [ 1, 0 ]),\n\n        relation(revision_warranted(_), [ 0, 0 ]),\n\n        relation(usable_support_path(_), [ 0, 1 ])\n]).\n\nMODEL FOUND\n"
+  },
+  "pre_error_literals": [
+    {
+      "predicate": "review_context_open",
+      "arguments": [
+        "edit723"
+      ],
+      "negated": false
+    }
+  ],
+  "pre_error_steps_entailed": true
+}

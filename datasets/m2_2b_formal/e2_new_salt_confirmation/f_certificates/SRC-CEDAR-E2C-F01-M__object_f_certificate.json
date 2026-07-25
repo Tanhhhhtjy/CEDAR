@@ -1,0 +1,141 @@
+{
+  "error_class": "support_path_generalization",
+  "entailed_premises": [
+    {
+      "predicate": "lan996fallsupported",
+      "arguments": [
+        "cpax63"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "lan996fallsupported",
+        "arguments": [
+          "cpax63"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "lan996fallsupported",
+      "arguments": [
+        "cnav35"
+      ],
+      "negated": false
+    },
+    "operator": "support_path_generalization"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "2f9cd8ad7691283357221bc5847f27c83296140e691ff0dc48d6a519fb607126",
+      "projected_edit_sha256": "9f5f9e948dccb04233c5054e14cda9e0c340898fd6bdb685d12e5264cb1f7275"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "d52fc65894c9114d14976522d4f034ce8f693bf644dfe1922b116e49b67e2917",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "lan996outcome",
+      "arguments": [
+        "cpax63"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "support_path_generalization",
+    "world_semantic_sha256": "9ccae8d9a6410f37052cfec4e1d03d9c7bcb69a700f8e20fc1cce319b8334ee5",
+    "entailed_premise_keys": [
+      "lan996fallsupported(cpax63)"
+    ],
+    "unsupported_claim_key": "lan996fallsupported(cnav35)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-lan996outcome(cpax63)",
+    "proof": {
+      "record_ids": [
+        "data_lan996_source",
+        "policy_lan996_terminal",
+        "schema_lan996up_0",
+        "schema_lan996up_1",
+        "schema_lan996up_2"
+      ],
+      "depth": 4
+    },
+    "refutes_induced_label": "true"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "policy_lan996_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "lan996bridge",
+            "arguments": [
+              "cpax63"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "lan996outcome",
+          "arguments": [
+            "cpax63"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "policy_lan996_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "lan996bridge",
+            "arguments": [
+              "cpax63"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "lan996outcome",
+          "arguments": [
+            "cpax63"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-26019b96610d3df4",
+      "rank": 10
+    },
+    "updated_world_sha256": "d52fc65894c9114d14976522d4f034ce8f693bf644dfe1922b116e49b67e2917",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

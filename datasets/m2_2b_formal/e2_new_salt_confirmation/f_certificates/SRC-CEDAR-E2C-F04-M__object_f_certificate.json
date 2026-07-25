@@ -1,0 +1,105 @@
+{
+  "error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "pax412fallverified",
+      "arguments": [
+        "ctor6"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "pax412fallverified",
+        "arguments": [
+          "ctor6"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "pax412fallsource",
+      "arguments": [
+        "ctor6"
+      ],
+      "negated": false
+    },
+    "operator": "converse_error"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "28f9db5ff37e98ee5c491aa10fad80e4fc877f109624b1519890a06349b0a9d6",
+      "projected_edit_sha256": "7ca5d46a8850bde99477a2f52c9abee08c1b0fbcf9de537e1353b1759e5ac425"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "0bac6761129b01b699b3b6a189ed3d1b3442217e1f5ea736ae022279371b5a0f",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "pax412outcome",
+      "arguments": [
+        "ctor6"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "5b20317bb805a7b16bde77c01bfe8ab150c0cfa311dc9274e84cf49a7233427c",
+    "entailed_premise_keys": [
+      "pax412fallverified(ctor6)"
+    ],
+    "unsupported_claim_key": "pax412fallsource(ctor6)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "pax412outcome(ctor6)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "pax412outcome(ctor6)",
+      "required_counterliteral": "-pax412outcome(ctor6)",
+      "input_sha256": "7ef9263e5b843d9e971a3beb21b1d433d46a6d4eeef01157e6d7404e8a0d09ce",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\npax412left(ctor6).\npax412noise2(cvek35).\npax412noise3(csor15).\npax412noise4(ckel75).\npax412noise5(ctor6).\npax412noise6(cnav78).\npax412fallverified(ctor6).\npax412fallsource(ctor6) -> pax412fallverified(ctor6).\npax412left(ctor6) & pax412right(ctor6) -> pax412joint(ctor6).\npax412joint(ctor6) -> pax412proofstep0(ctor6).\npax412proofstep0(ctor6) -> pax412proofstep1(ctor6).\npax412proofstep1(ctor6) -> pax412proofstep2(ctor6).\npax412proofstep2(ctor6) -> pax412proofstep3(ctor6).\npax412proofstep3(ctor6) -> pax412outcome(ctor6).\n-pax412outcome(ctor6).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel75, [ 0 ]),\n\n        function(cnav78, [ 0 ]),\n\n        function(csor15, [ 0 ]),\n\n        function(ctor6, [ 0 ]),\n\n        function(cvek35, [ 0 ]),\n\n        relation(pax412fallsource(_), [ 0, 0 ]),\n\n        relation(pax412fallverified(_), [ 1, 0 ]),\n\n        relation(pax412joint(_), [ 0, 0 ]),\n\n        relation(pax412left(_), [ 1, 0 ]),\n\n        relation(pax412noise2(_), [ 1, 0 ]),\n\n        relation(pax412noise3(_), [ 1, 0 ]),\n\n        relation(pax412noise4(_), [ 1, 0 ]),\n\n        relation(pax412noise5(_), [ 1, 0 ]),\n\n        relation(pax412noise6(_), [ 1, 0 ]),\n\n        relation(pax412outcome(_), [ 0, 0 ]),\n\n        relation(pax412proofstep0(_), [ 0, 0 ]),\n\n        relation(pax412proofstep1(_), [ 0, 0 ]),\n\n        relation(pax412proofstep2(_), [ 0, 0 ]),\n\n        relation(pax412proofstep3(_), [ 0, 0 ]),\n\n        relation(pax412right(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "pax412right",
+          "arguments": [
+            "ctor6"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-65c97da40d0eb7f8",
+      "rank": 29
+    },
+    "updated_world_sha256": "0bac6761129b01b699b3b6a189ed3d1b3442217e1f5ea736ae022279371b5a0f",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

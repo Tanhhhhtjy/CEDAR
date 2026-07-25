@@ -1,0 +1,83 @@
+{
+  "declared_error_class": "conjunction_weakening",
+  "derived_error_class": "conjunction_weakening",
+  "entailed_premises": [
+    {
+      "predicate": "identity_check_passed",
+      "arguments": [
+        "crecordr"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "location_check_passed",
+      "arguments": [
+        "crecordr"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "identity_check_passed",
+        "arguments": [
+          "crecordr"
+        ],
+        "negated": false
+      },
+      {
+        "predicate": "location_check_passed",
+        "arguments": [
+          "crecordr"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "dual_check_complete",
+      "arguments": [
+        "crecordr"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "claim_not_entailed": true,
+  "downstream_literals": [
+    {
+      "predicate": "f_conj_ereviewstage1",
+      "arguments": [
+        "edit713"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "revision_warranted",
+      "arguments": [
+        "edit713"
+      ],
+      "negated": false
+    }
+  ],
+  "downstream_valid_under_single_assumption": true,
+  "warrant_absent_without_invalid_step": true,
+  "second_failure_point_absent": true,
+  "countermodel": {
+    "target_refuted": "revision_warranted(edit713)",
+    "required_counterliteral": "-revision_warranted(edit713)",
+    "input_sha256": "b31e1b3d2bb38ffe9292961b36863a9d8c04af7521ab6e528a1e630cf2bdfedc",
+    "model_found": true,
+    "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nreview_context_open(edit713).\nidentity_check_passed(crecordr).\nlocation_check_passed(crecordr).\nidentity_check_passed(crecordr) & timestamp_check_passed(crecordr) -> dual_check_complete(crecordr).\ndual_check_complete(crecordr) -> f_conj_ereviewstage1(edit713).\nf_conj_ereviewstage1(edit713) -> revision_warranted(edit713).\nreview_context_open(edit713) -> review_case_active(edit713).\n-revision_warranted(edit713).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(crecordr, [ 0 ]),\n\n        function(edit713, [ 0 ]),\n\n        relation(dual_check_complete(_), [ 0, 0 ]),\n\n        relation(f_conj_ereviewstage1(_), [ 0, 0 ]),\n\n        relation(identity_check_passed(_), [ 1, 0 ]),\n\n        relation(location_check_passed(_), [ 1, 0 ]),\n\n        relation(review_case_active(_), [ 1, 0 ]),\n\n        relation(review_context_open(_), [ 1, 0 ]),\n\n        relation(revision_warranted(_), [ 0, 0 ]),\n\n        relation(timestamp_check_passed(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+  },
+  "pre_error_literals": [
+    {
+      "predicate": "review_context_open",
+      "arguments": [
+        "edit713"
+      ],
+      "negated": false
+    }
+  ],
+  "pre_error_steps_entailed": true
+}

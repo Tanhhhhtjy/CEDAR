@@ -1,0 +1,83 @@
+{
+  "schema": "cedar.e2_new_salt_confirmation.v1.cpu_gate",
+  "gate": "E2-new-salt-confirmation",
+  "status": "passed_with_review_documentation_deviation",
+  "gpu_authorized": true,
+  "may_run_smoke": true,
+  "formal_requires_passed_smoke_audit": true,
+  "conditions": [
+    "uncapped",
+    "full_p25"
+  ],
+  "smoke_rows": 48,
+  "formal_rows": 192,
+  "model": {
+    "repo": "Qwen/Qwen3-32B",
+    "revision": "9216db5781bf21249d130ec9da846c4624c16137"
+  },
+  "p25_layers": [
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53
+  ],
+  "p1_authorized": false,
+  "additional_salt_authorized": false,
+  "data_hashes": {
+    "bases24_canonical_sha256": "a7077be4ad667be24129f47debcdf203f9c7b2478bddc3d893474ff6142e7295",
+    "arms96_canonical_sha256": "787f11916c1d61bb3d4658a6557805c16401b0519de59a4c80ffe29f067e59dd",
+    "builder_raw_sha256": "7c16ef7f8cd72cc00d616436057971223e55ca5ec1fe4d6356d06e608e1bcf7e",
+    "validator_raw_sha256": "8583635a285d98a9bdf35d35b8a91a425ea828d955b2e151a00eaeee42ea5680",
+    "review_result_canonical_sha256": "4d9270f4e029c4a457f04e74d1f7d07226bce47117d7c0914369d945ebc66dd0"
+  },
+  "code_hashes": {
+    "run_common_raw_sha256": "4d25683ca0ab7bcfcfcbf3fc0592acd20b9ffe13197588304a850512998dc6c3",
+    "runner_raw_sha256": "f9165209312dda6a6ba15488e4a471847d4281f2be9db0b8030b1730e330e0db",
+    "auditor_raw_sha256": "3b63411ebcb3a7c66841bc8c0728167ed240755efb4701c7abf2475a1bbac160",
+    "analyzer_raw_sha256": "8711fc514f031008cddd612ecfa9a558bd754475f6514b5761b3afb27c70e246"
+  },
+  "protocol_hashes": {
+    "docs/E2B_FIXED_TRACE_CROSS_ANALYSIS_PLAN.json": "1845fc53d9ed7766362fb69f1f584f3ea1aef1453e5ae6be313010dbcc8f45bb",
+    "docs/E2B_FIXED_TRACE_CROSS_PROTOCOL.md": "dde6cf51527afd8ba7ff42ec1d0418cf4a198dc2d1a59909c5276b03d32b11f0",
+    "docs/E2_NEW_SALT_CONFIRMATION_ANALYSIS_PLAN.json": "34a40097c35d34a22d6a74c527965d08025ccf83e9555bb33985ff8bd0f808dd",
+    "docs/E2_NEW_SALT_CONFIRMATION_PROTOCOL.md": "d1938a8e1b5bba4e2f07e359ca7a142ed3604306493878d50ff56eb7f7bbba49"
+  },
+  "tokenizer_and_assets": {
+    "tokenizer_status": "passed",
+    "axis_sha256": "a207fe7a36563280b7b29010880aa0082bd8e3113c141cb4a2eed6b46c140211",
+    "capping_config_sha256": "6aec1220487473aaeab80b05d5d960ac54b5dd9080b51ac4bb0bbd1f4330db24"
+  },
+  "selection_fingerprints": {
+    "smoke": {
+      "scope": "smoke",
+      "rows": 24,
+      "result_cells": 48,
+      "ids_sha256": "10a7b92501fe9d17b2de8e66d3438f5bd329dd817df679e0fb6ad31ca91b6fbd",
+      "messages_sha256": "8428d968695fac1a3aee14d77aa2a2460acb93fa1ce753049aff71f5b58cffba"
+    },
+    "formal": {
+      "scope": "formal",
+      "rows": 96,
+      "result_cells": 192,
+      "ids_sha256": "e4a8aebf2a9a2b571ca0f593b22c7e0ecc5a47d2f98b790b6f36a6016f3135fc",
+      "messages_sha256": "f37079eda18216487992d110913483e3d47347f8e4c448a71014050e6784c51f"
+    }
+  },
+  "deterministic_rebuild_passed": true,
+  "duplicate_audit_passed": true,
+  "human_review": {
+    "status": "passed_with_documentation_deviation",
+    "pairs_reviewed": 24,
+    "documentation_deviation": {
+      "present": true,
+      "class": "review_documentation_not_completed",
+      "limitation": "No completed item-level review workbook or numeric naturalness scores are available."
+    },
+    "codex_filled_human_ratings": false
+  },
+  "gpu_used": false
+}

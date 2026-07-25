@@ -1,0 +1,83 @@
+{
+  "declared_error_class": "unsupported_bridge",
+  "derived_error_class": "unsupported_bridge",
+  "entailed_premises": [
+    {
+      "predicate": "scan_matches_file",
+      "arguments": [
+        "crecordr"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "review_context_open",
+      "arguments": [
+        "edit705"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "scan_matches_file",
+        "arguments": [
+          "crecordr"
+        ],
+        "negated": false
+      },
+      {
+        "predicate": "review_context_open",
+        "arguments": [
+          "edit705"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "change_basis_confirmed",
+      "arguments": [
+        "crecordr"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "claim_not_entailed": true,
+  "downstream_literals": [
+    {
+      "predicate": "f_unsu_ereviewstage1",
+      "arguments": [
+        "edit705"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "revision_warranted",
+      "arguments": [
+        "edit705"
+      ],
+      "negated": false
+    }
+  ],
+  "downstream_valid_under_single_assumption": true,
+  "warrant_absent_without_invalid_step": true,
+  "second_failure_point_absent": true,
+  "countermodel": {
+    "target_refuted": "revision_warranted(edit705)",
+    "required_counterliteral": "-revision_warranted(edit705)",
+    "input_sha256": "babe8e685ba8fcad10887b03b2740d3189493eae71d08ef3ae965e5b4df8f337",
+    "model_found": true,
+    "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nreview_context_open(edit705).\nscan_matches_file(crecordr).\nscan_matches_file(crecordr) -> retention_status_confirmed(crecordr).\nchange_basis_confirmed(crecordr) -> f_unsu_ereviewstage1(edit705).\nf_unsu_ereviewstage1(edit705) -> revision_warranted(edit705).\nreview_context_open(edit705) -> review_case_active(edit705).\n-revision_warranted(edit705).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(crecordr, [ 0 ]),\n\n        function(edit705, [ 0 ]),\n\n        relation(change_basis_confirmed(_), [ 0, 0 ]),\n\n        relation(f_unsu_ereviewstage1(_), [ 0, 0 ]),\n\n        relation(retention_status_confirmed(_), [ 1, 0 ]),\n\n        relation(review_case_active(_), [ 1, 0 ]),\n\n        relation(review_context_open(_), [ 1, 0 ]),\n\n        relation(revision_warranted(_), [ 0, 0 ]),\n\n        relation(scan_matches_file(_), [ 1, 0 ])\n]).\n\nMODEL FOUND\n"
+  },
+  "pre_error_literals": [
+    {
+      "predicate": "review_context_open",
+      "arguments": [
+        "edit705"
+      ],
+      "negated": false
+    }
+  ],
+  "pre_error_steps_entailed": true
+}
