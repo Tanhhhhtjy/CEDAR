@@ -1,0 +1,31 @@
+{
+  "status": "disclosed_and_accepted_before_second_resume",
+  "protocol_deviation": true,
+  "scientific_configuration_changed": false,
+  "content_records_deleted": false,
+  "completed_content_records_rerun": false,
+  "incident": {
+    "initial_formal_segment": {
+      "record_range": [1, 59],
+      "cuda_visible_devices": "1,2,4,6",
+      "termination": "infrastructure_exit_137"
+    },
+    "first_resume_segment": {
+      "record_range": [60, 250],
+      "cuda_visible_devices": "1,2,4,7",
+      "issue": "physical GPU set differed from the frozen operational assignment"
+    },
+    "second_resume": {
+      "starts_after_record": 250,
+      "cuda_visible_devices": "1,2,4,6",
+      "checkpoint_preserved": true
+    }
+  },
+  "invariants": [
+    "All visible GPUs were NVIDIA GeForce RTX 4090",
+    "Qwen3-32B model and revision were unchanged",
+    "BF16, SDPA, thinking, greedy, seed 0, max_new_tokens 4096, and batch size 1 were unchanged",
+    "Prompt, mapping, data, Gate, capping configuration, and analysis rules were unchanged"
+  ],
+  "user_authorized_continuation_at": "2026-07-25T15:38:22+08:00"
+}
