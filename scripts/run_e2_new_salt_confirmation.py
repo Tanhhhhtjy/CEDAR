@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import platform
@@ -135,6 +136,22 @@ def hook_counts(model: Any) -> dict[str, int]:
     }
 
 
+def resolve_hub_cache(cache_dir: Path) -> Path:
+    hub = cache_dir / "hub"
+    return hub if hub.is_dir() else cache_dir
+
+
+def direction_sha256(cap: Any) -> str:
+    import torch
+
+    tensor = cap.direction.detach().cpu().contiguous()
+    digest = hashlib.sha256()
+    digest.update(str(tensor.dtype).encode("ascii"))
+    digest.update(json.dumps(list(tensor.shape)).encode("ascii"))
+    digest.update(tensor.view(torch.uint8).numpy().tobytes())
+    return digest.hexdigest()
+
+
 def stats_to_dict(stats: Mapping[int, Any]) -> dict[str, Any]:
     by_layer = {
         str(layer): {
@@ -163,8 +180,6 @@ def stats_to_dict(stats: Mapping[int, Any]) -> dict[str, Any]:
 
 
 def load_p25_assets(cache_dir: Path) -> tuple[dict[int, Any], dict[str, Any]]:
-    from run_cpu_preflight import direction_sha256, resolve_hub_cache
-
     axis_path, config_path = download_qwen_capping_assets(
         cache_dir=resolve_hub_cache(cache_dir), local_files_only=True
     )
