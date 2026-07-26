@@ -1408,6 +1408,13 @@ def make_figures(
 
     fig, axis = plt.subplots(figsize=(7.0, 3.4))
     forest_names = ["E2A", "E2C", "C2", "E-1b", "Pooled"]
+    forest_labels = [
+        "E2A (thinking generation)",
+        "E2C (thinking generation)",
+        "C2 (direct→free; 1 flip)",
+        "E−1b (A/B argmax)",
+        "Pooled (mixed readouts)",
+    ]
     y = np.arange(len(forest_names))[::-1]
     for y_value, name in zip(y, forest_names, strict=True):
         coefficient = rq1[name]["coefficients"]["z_g_top"]
@@ -1432,10 +1439,18 @@ def make_figures(
             linewidth=1.2,
         )
     axis.axvline(1.0, color="#777777", linestyle="--", linewidth=1)
-    axis.set_yticks(y, forest_names)
+    axis.set_yticks(y, forest_labels)
     axis.set_xscale("log")
     axis.set_xlabel("Odds ratio per 1-SD larger uncapped top gap")
     axis.grid(axis="x", alpha=0.2, linewidth=0.6)
+    axis.text(
+        0.01,
+        -0.18,
+        "Hollow marker: <5 flips; descriptive only",
+        transform=axis.transAxes,
+        fontsize=7,
+        ha="left",
+    )
     fig.tight_layout()
     export_figure(fig, figure_dir / "figure-02-gap-effect-forest")
     plt.close(fig)
