@@ -153,8 +153,9 @@ of the uncapped winner as an explicitly algebraic consistency check.
 
 - 10,000 deterministic cluster-bootstrap draws; seed `20260726`.
 - E2A/E2C source-specific clusters: `family_id`.
-- Pooled E2 resampling couples matching F01–F12 structural-family slots across
-  E2A and E2C as one upper cluster.
+- Pooled E2 resampling couples matching `structure_class` values (PGF-01 through
+  PGF-08) across E2A and E2C as one upper cluster; source-specific analyses
+  retain each dataset's native `family_id` clusters.
 - C2 clusters: `normalized_stem_id`; domain remains a fixed stratum.
 - E−1b clusters: `pair_id`, preserving original/swapped repetition.
 - Pooled resampling samples E2 upper families, C2 stems, and E−1b pairs

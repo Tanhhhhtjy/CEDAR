@@ -335,11 +335,12 @@ def build_e2_items(
             {
                 "base_id": str(uncapped["base_id"]),
                 "family_slot": family_slot(str(uncapped["family_id"])),
+                "structure_class": str(uncapped["structure_class"]),
                 "variant": uncapped.get("variant"),
                 "stratum": f"{dataset}|{uncapped['arm']}",
                 "standardization_group": f"{dataset}|{uncapped['arm']}|thinking_generation",
                 "pooled_resample_source": "E2",
-                "pooled_cluster_id": family_slot(str(uncapped["family_id"])),
+                "pooled_cluster_id": str(uncapped["structure_class"]),
                 "source_condition_uncapped": "uncapped",
                 "source_condition_p25": "full_p25",
                 "uncapped_truncated": bool(uncapped.get("truncated")),
@@ -888,7 +889,9 @@ def roc_auc(outcomes: Sequence[int], scores: Sequence[float]) -> float | None:
     return wins / (len(positives) * len(negatives))
 
 
-def descriptive_boundary(rows: Sequence[Mapping[str, Any]], gap_field: str) -> dict[str, Any]:
+def descriptive_boundary(
+    rows: Sequence[Mapping[str, Any]], gap_field: str, *, include_quantiles: bool = True
+) -> dict[str, Any]:
     eligible = [
         row
         for row in rows
@@ -896,7 +899,9 @@ def descriptive_boundary(rows: Sequence[Mapping[str, Any]], gap_field: str) -> d
     ]
     flips = [float(row[gap_field]) for row in eligible if row["any_flip"] == 1]
     stable = [float(row[gap_field]) for row in eligible if row["any_flip"] == 0]
-    quantiles = sorted({int(row["gap_quantile"]) for row in eligible})
+    quantiles = (
+        sorted({int(row["gap_quantile"]) for row in eligible}) if include_quantiles else []
+    )
     q_counts = {
         f"Q{quantile}": {
             "n": sum(int(row["gap_quantile"]) == quantile for row in eligible),
@@ -954,7 +959,7 @@ def resample_clusters(
 
 
 def _bootstrap_metrics(
-    rows: Sequence[Mapping[str, Any]], gap_field: str
+    rows: Sequence[Mapping[str, Any]], gap_field: str, *, include_quantiles: bool
 ) -> tuple[float | None, float | None, float | None]:
     eligible = [
         row
@@ -968,7 +973,7 @@ def _bootstrap_metrics(
         [-float(row[gap_field]) for row in eligible],
     )
     median_difference = median(flips) - median(stable) if flips and stable else None
-    if not eligible:
+    if not eligible or not include_quantiles:
         return auc, median_difference, None
     quantiles = sorted({int(row["gap_quantile"]) for row in eligible})
     nearest = [row for row in eligible if int(row["gap_quantile"]) == min(quantiles)]
@@ -992,6 +997,7 @@ def bootstrap_model(
     draws: int,
     seed: int,
     pooled: bool,
+    include_quantiles: bool = True,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     point = fit_fixed_effect_logit(rows, outcome, predictors)
     rng = random.Random(seed)
@@ -1004,7 +1010,9 @@ def bootstrap_model(
         sampled = resample_clusters(rows, rng, pooled=pooled)
         fitted = fit_fixed_effect_logit(sampled, outcome, predictors)
         coefficients = fitted.get("coefficients", {}) if fitted["status"] == "estimated" else {}
-        auc, median_difference, quantile_difference = _bootstrap_metrics(sampled, gap_field)
+        auc, median_difference, quantile_difference = _bootstrap_metrics(
+            sampled, gap_field, include_quantiles=include_quantiles
+        )
         record = {
             "scope": scope,
             "draw": draw,
@@ -1025,7 +1033,9 @@ def bootstrap_model(
         if quantile_difference is not None and math.isfinite(quantile_difference):
             quantile_draws.append(float(quantile_difference))
         records.append(record)
-    descriptive = descriptive_boundary(rows, gap_field)
+    descriptive = descriptive_boundary(
+        rows, gap_field, include_quantiles=include_quantiles
+    )
     coefficient_summary = {}
     for predictor in predictors:
         point_value = (
@@ -1132,6 +1142,25 @@ def leave_one_cluster_out(
         and all(value < 0 for value in finite),
         "estimates": estimates,
     }
+
+
+def leave_one_source_out(
+    rows: Sequence[Mapping[str, Any]], outcome: str, predictor: str
+) -> dict[str, Any]:
+    estimates = {}
+    for omitted in sorted({str(row["dataset"]) for row in rows}):
+        fitted = fit_fixed_effect_logit(
+            [row for row in rows if row["dataset"] != omitted], outcome, [predictor]
+        )
+        estimates[omitted] = {
+            "status": fitted["status"],
+            "estimate": (
+                fitted.get("coefficients", {}).get(predictor)
+                if fitted.get("status") == "estimated"
+                else None
+            ),
+        }
+    return estimates
 
 
 def transition_counts(items: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
@@ -1704,6 +1733,7 @@ def run_analysis(output: Path, *, draws: int, seed: int) -> dict[str, Any]:
         draws=draws,
         seed=seed + 200,
         pooled=True,
+        include_quantiles=False,
     )
     all_bootstrap_rows.extend(rq2_records)
     rq3, rq3_records = bootstrap_model(
@@ -1715,6 +1745,7 @@ def run_analysis(output: Path, *, draws: int, seed: int) -> dict[str, Any]:
         draws=draws,
         seed=seed + 300,
         pooled=True,
+        include_quantiles=False,
     )
     all_bootstrap_rows.extend(rq3_records)
     rq4_rows = [
@@ -1731,6 +1762,7 @@ def run_analysis(output: Path, *, draws: int, seed: int) -> dict[str, Any]:
         draws=draws,
         seed=seed + 400,
         pooled=True,
+        include_quantiles=False,
     )
     all_bootstrap_rows.extend(rq4_records)
 
@@ -1748,6 +1780,7 @@ def run_analysis(output: Path, *, draws: int, seed: int) -> dict[str, Any]:
         rq1[name]["coefficients"]["z_g_top"]["holm_adjusted_p"] = source_holm[name]
 
     loco = leave_one_cluster_out(items, "any_flip", "z_g_top")
+    loso = leave_one_source_out(items, "any_flip", "z_g_top")
     quantile_summaries = {
         dataset: quantile_bootstrap_summary(
             source_rows(items, dataset), draws=draws, seed=seed + 500 + index
@@ -1807,6 +1840,7 @@ def run_analysis(output: Path, *, draws: int, seed: int) -> dict[str, Any]:
         "e_minus1b_order_breakdown": e1_order,
         "e_minus1b_output_space_background": e1_output_space,
         "leave_one_cluster_out_pooled": loco,
+        "leave_one_source_out_pooled_point": loso,
         "quantile_summaries": quantile_summaries,
         "source_specific_holm": {
             "raw_bootstrap_sign_p": source_raw_p,
@@ -1824,6 +1858,7 @@ def run_analysis(output: Path, *, draws: int, seed: int) -> dict[str, Any]:
         "base_id",
         "cluster_id",
         "pooled_cluster_id",
+        "structure_class",
         "arm",
         "domain",
         "sample_seed",

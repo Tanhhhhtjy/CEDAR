@@ -87,6 +87,17 @@ def test_e2c_missing_record_is_retained_without_imputation() -> None:
     assert missing["transition"] == "invalid_or_missing"
 
 
+def test_e2_pooled_clusters_use_shared_structure_class() -> None:
+    plan = json.loads(analysis.PLAN_PATH.read_text(encoding="utf-8"))
+    e2a_rows = analysis.load_jsonl_blob(plan["inputs"]["e2a_results"])
+    e2c_rows = analysis.load_jsonl_blob(plan["inputs"]["e2c_results"])
+    e2a, _ = analysis.build_e2_items(e2a_rows, "E2A")
+    e2c, _ = analysis.build_e2_items(e2c_rows, "E2C")
+    expected = {f"PGF-{index:02d}" for index in range(1, 9)}
+    assert {item["pooled_cluster_id"] for item in e2a} == expected
+    assert {item["pooled_cluster_id"] for item in e2c} == expected
+
+
 def test_cluster_resampling_uses_whole_clusters_not_rows() -> None:
     rows = [
         synthetic_item("a1", "a", 0.1, 1),
