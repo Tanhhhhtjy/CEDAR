@@ -33,8 +33,9 @@ observed data.
 
 ## Production workflow
 
-1. MATLAB owns the random data, coordinates, statistics, markers, arrows, and
-   source plotting code.
+1. The formal-data workflow remains MATLAB-owned. For this simulated visual
+   mock, Python/Matplotlib may generate the same fixed-seed geometry because the
+   local MATLAB R2026a process currently crashes during startup.
 2. Export SVG and PDF as vector artifacts plus PNG for quick inspection.
 3. Inkscape may adjust typography and annotation placement, but must not move
    data marks or alter statistics.
@@ -43,7 +44,7 @@ observed data.
 
 ## Deliverables
 
-- MATLAB source script
+- MATLAB source script and temporary Python mock renderer
 - simulated data table with a fixed seed
 - editable SVG
 - vector PDF
