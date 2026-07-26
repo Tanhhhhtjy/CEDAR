@@ -1,0 +1,68 @@
+{
+  "schema": "cedar.e2b_fixed_trace_cross.delivery.v1",
+  "status": "stopped_at_smoke_replay_gate",
+  "branch": "agent/e2b-fixed-trace-cross-v1",
+  "cpu_gate_commit": "d1473782f40f3e468905a8ebaa51e01f526b775f",
+  "e2a_anchor_commit": "0c8517bb5fb4640f7d5e4d51356d0cf167046643",
+  "execution": {
+    "smoke_started_at": "2026-07-26T01:28:42.251900+08:00",
+    "smoke_completed_at": "2026-07-26T01:29:06.247422+08:00",
+    "smoke_records": 32,
+    "smoke_expected": 32,
+    "uncapped_records": 16,
+    "full_p25_records": 16,
+    "e2a_uncapped_trace_records": 16,
+    "e2a_full_p25_trace_records": 16,
+    "formal_started": false,
+    "analysis_run": false,
+    "resume_events": []
+  },
+  "environment": {
+    "cuda_visible_devices": "1,2,4,6",
+    "gpu_model": "NVIDIA GeForce RTX 4090",
+    "visible_gpu_count": 4,
+    "python": "3.11.15",
+    "torch": "2.6.0+cu124",
+    "transformers": "4.56.1"
+  },
+  "frozen_configuration": {
+    "model": "Qwen/Qwen3-32B",
+    "revision": "9216db5781bf21249d130ec9da846c4624c16137",
+    "dtype": "bfloat16",
+    "attention_implementation": "sdpa",
+    "p25_experiment": "layers_46:54-p0.25",
+    "p25_layers": [46, 47, 48, 49, 50, 51, 52, 53],
+    "axis_sha256": "a207fe7a36563280b7b29010880aa0082bd8e3113c141cb4a2eed6b46c140211",
+    "capping_config_sha256": "6aec1220487473aaeab80b05d5d960ac54b5dd9080b51ac4bb0bbd1f4330db24"
+  },
+  "smoke_audit": {
+    "status": "failed",
+    "rows": 32,
+    "nonfinite_logits": 0,
+    "hook_leaks": 0,
+    "diagonal_replay_checked": 16,
+    "diagonal_replay_passed": 2,
+    "diagonal_replay_failed": 14,
+    "replay_tolerance": 0.0001,
+    "maximum_absolute_logit_difference": 0.625,
+    "results_hash_validation": "passed"
+  },
+  "stopping_rule": {
+    "reason": "frozen diagonal replay tolerance exceeded",
+    "formal_authorized": false,
+    "artifacts_retained": true,
+    "tolerance_changed": false,
+    "traces_changed": false,
+    "runner_changed": false,
+    "configuration_changed": false
+  },
+  "files": {
+    "SMOKE_AUDIT.json": "20459eca99f2dfb365d2d131f6d6c08d81e3be3696e181cfa44cefc7f5c253ed",
+    "smoke-fixed-trace-seed0/results.jsonl": "d2eadbb196a15ab7859aa7943d66c12757f69af2c2c2a0820f693fb2593c2f8c",
+    "smoke-fixed-trace-seed0/runtime.json": "ed5281e5c5af242f7b719881f527b73e3caa4efd412def8e914abb409174e27e",
+    "smoke-fixed-trace-seed0/manifest.json": "62cb719ac62e1dc9939d574ca8b0e66ce8c15bee2fd39017f2360f69e0111163",
+    "driver_logs/smoke.log": "9d5b58503486a01617dbd2e23f7bc4f9c30d0ae6de999cdc73b643e53eace0c5",
+    "driver_logs/smoke-audit.log": "20459eca99f2dfb365d2d131f6d6c08d81e3be3696e181cfa44cefc7f5c253ed",
+    "driver_logs/nvidia-smi-before.txt": "36200078cb1b9c9599392818544b2d678014d8b48872e9a3a618cb178bcdd578"
+  }
+}
