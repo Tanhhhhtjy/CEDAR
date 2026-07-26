@@ -1,0 +1,51 @@
+{
+  "configuration": {
+    "cells": 384,
+    "forward_conditions": [
+      "uncapped",
+      "full_p25"
+    ],
+    "git": {
+      "branch": "agent/e2b-fixed-trace-cached-v1-1",
+      "commit": "13839365a6ea84acb9f89a4cb403f5aa57aefbe2",
+      "dirty": false,
+      "head_matches_upstream": true,
+      "upstream_commit": "13839365a6ea84acb9f89a4cb403f5aa57aefbe2",
+      "v1_failure_is_ancestor": true
+    },
+    "intervention": {
+      "experiment": "layers_46:54-p0.25",
+      "layers": [
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53
+      ]
+    },
+    "model": {
+      "attention_implementation": "sdpa",
+      "dtype": "bfloat16",
+      "repo": "Qwen/Qwen3-32B",
+      "revision": "9216db5781bf21249d130ec9da846c4624c16137"
+    },
+    "replay": {
+      "batch_size": 1,
+      "capture_before_force": true,
+      "engine": "model.generate_kv_cache_forced_tokens",
+      "natural_generation": false,
+      "terminal_probe_label_excluded_from_estimands": true
+    },
+    "schema": "cedar.e2b_fixed_trace_cached.run.v1_1",
+    "scope": "formal",
+    "trace_sources": [
+      "e2a_uncapped",
+      "e2a_full_p25"
+    ]
+  },
+  "created_at": "2026-07-26T15:28:17.660073+08:00",
+  "fingerprint": "34aa40c5ec6b14db1ae7f81627b07c33789b74a81355e51839d730b9ed15a502"
+}
