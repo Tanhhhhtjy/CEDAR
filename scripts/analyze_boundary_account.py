@@ -1210,7 +1210,9 @@ def source_rows(items: Sequence[Mapping[str, Any]], dataset: str) -> list[Mappin
 
 
 def build_gate(
-    rq1: Mapping[str, Mapping[str, Any]], loco: Mapping[str, Any]
+    rq1: Mapping[str, Mapping[str, Any]],
+    loco: Mapping[str, Any],
+    loso: Mapping[str, Mapping[str, Any]],
 ) -> dict[str, Any]:
     pooled = rq1["Pooled"]["coefficients"]["z_g_top"]
     source_names = ("E2A", "E2C", "C2", "E-1b")
@@ -1270,6 +1272,10 @@ def build_gate(
         "conditions": conditions,
         "negative_source_point_estimates": negative_sources,
         "source_cis_supporting_reverse": reverse_supported,
+        "leave_one_source_out_point_estimates": loso,
+        "pooled_without_e_minus1b_slope": loso["E-1b"]["estimate"],
+        "reconciles_wording_allowed": gate == "Gate A",
+        "consistent_with_wording_allowed": gate in {"Gate A", "Gate B"},
         "allowed_wording": allowed,
         "forbidden_wording": [
             "We proved the internal mechanism of capping.",
@@ -1484,6 +1490,7 @@ def write_reports(
     input_audit: Mapping[str, Any],
 ) -> None:
     rq1 = analysis["rq1_any_flip"]
+    loso = analysis["leave_one_source_out_pooled_point"]
     lines = [
         "# CEDAR Boundary Account post-hoc analysis",
         "",
@@ -1533,6 +1540,29 @@ def write_reports(
             "  count limits inference.",
             "- E−1b is forced choice and therefore provides geometry consistency rather ",
             "  than independent free-generation validation.",
+            f"- Removing E−1b changes the pooled slope to "
+            f"{fmt(loso['E-1b']['estimate'])}; therefore the pooled negative association "
+            "  is not evidence that the generative assays share the same boundary effect.",
+            "",
+            "## Five required answers",
+            "",
+            f"1. **E2A:** No robust concentration after arm stratification. The frozen "
+            f"   fixed-stratum slope is {fmt(rq1['E2A']['coefficients']['z_g_top']['estimate'])} "
+            f"   with CI [{fmt(rq1['E2A']['coefficients']['z_g_top']['bootstrap_95ci'][0])}, "
+            f"{fmt(rq1['E2A']['coefficients']['z_g_top']['bootstrap_95ci'][1])}], in the "
+            "   opposite direction, despite a favorable unadjusted AUC.",
+            f"2. **E2C:** Not directionally consistent in the fixed-stratum model; slope "
+            f"   {fmt(rq1['E2C']['coefficients']['z_g_top']['estimate'])}, CI "
+            f"[{fmt(rq1['E2C']['coefficients']['z_g_top']['bootstrap_95ci'][0])}, "
+            f"{fmt(rq1['E2C']['coefficients']['z_g_top']['bootstrap_95ci'][1])}].",
+            f"3. **C2:** Direct margins do not establish prediction of free-generation "
+            f"   flips: {rq1['C2']['descriptive']['flips']}/{rq1['C2']['descriptive']['n']} "
+            f"   events and AUC {fmt(rq1['C2']['descriptive']['auc_negative_gap'])}.",
+            f"4. **E−1b:** The small-margin pattern is strong but primarily forced-choice "
+            f"   boundary consistency (AUC {fmt(rq1['E-1b']['descriptive']['auc_negative_gap'])}); "
+            "   it cannot supply independent free-generation evidence.",
+            f"5. **Wording:** {gate['gate']} permits only `consistent with`; `reconciles` "
+            "   is not supported.",
             "",
             "## Claim Candidates",
             "",
@@ -1589,6 +1619,14 @@ def write_reports(
         )
     stats.extend(
         [
+            "## Leave-one-source-out diagnostic",
+            "",
+            *[
+                f"- Omit {name}: pooled slope {fmt(result['estimate'], 6)} "
+                f"(`{result['status']}`)."
+                for name, result in sorted(loso.items())
+            ],
+            "",
             "## Multiplicity",
             "",
             "Source-specific bootstrap sign p-values are Holm adjusted only where the ",
@@ -1847,7 +1885,7 @@ def run_analysis(output: Path, *, draws: int, seed: int) -> dict[str, Any]:
             "adjusted": source_holm,
         },
     }
-    gate = build_gate(rq1, loco)
+    gate = build_gate(rq1, loco, loso)
 
     write_json(output / "BOUNDARY_ANALYSIS.json", analysis)
     write_json(output / "CLAIM_GATE.json", gate)
