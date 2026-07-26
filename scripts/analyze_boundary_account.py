@@ -8,6 +8,7 @@ import csv
 import hashlib
 import io
 import json
+import logging
 import math
 import os
 import random
@@ -217,6 +218,14 @@ def base_item(
         delta_m_general = float(
             p25_geometry["m_general"] - uncapped_geometry["m_general"]
         )
+    target_minus_initial_uncapped = None
+    target_minus_initial_p25 = None
+    if uncapped_logits is not None and initial in uncapped_logits and target in uncapped_logits:
+        target_minus_initial_uncapped = float(
+            uncapped_logits[target] - uncapped_logits[initial]
+        )
+    if p25_logits is not None and initial in p25_logits and target in p25_logits:
+        target_minus_initial_p25 = float(p25_logits[target] - p25_logits[initial])
     item = {
         "dataset": dataset,
         "readout": readout,
@@ -241,6 +250,8 @@ def base_item(
         "m_specific_uncapped": uncapped_geometry["m_specific"],
         "m_specific_p25": p25_geometry["m_specific"],
         "delta_m_general": delta_m_general,
+        "target_minus_initial_uncapped": target_minus_initial_uncapped,
+        "target_minus_initial_p25": target_minus_initial_p25,
         "delta_baseline_winner_advantage": None,
         "z_g_top": None,
         "z_g_initial": None,
@@ -277,6 +288,7 @@ def build_e2_items(
     ids = sorted({str(row["id"]) for row in selected})
     items: list[dict[str, Any]] = []
     invariant_failures = []
+    answer_position_failures = []
     for item_id in ids:
         uncapped = index[(item_id, "uncapped")]
         p25 = index[(item_id, "full_p25")]
@@ -292,6 +304,20 @@ def build_e2_items(
         ):
             if uncapped.get(field) != p25.get(field):
                 invariant_failures.append(f"{dataset}:{item_id}:{field}")
+        for condition_row in (uncapped, p25):
+            if option_logits(condition_row) is None:
+                continue
+            selected_index = condition_row.get("selected_answer_logit_index")
+            capture_indices = condition_row.get("answer_logit_capture_indices", [])
+            boundary = condition_row.get("answer_boundary", {})
+            if (
+                selected_index not in capture_indices
+                or boundary.get("errors")
+                or boundary.get("answer_choice") != condition_row.get("chosen_option")
+            ):
+                answer_position_failures.append(
+                    f"{dataset}:{item_id}:{condition_row['condition']}"
+                )
         item = base_item(
             dataset=dataset,
             readout="thinking_generation",
@@ -328,6 +354,9 @@ def build_e2_items(
         "selected_rows": len(selected),
         "pairs": len(items),
         "invariant_failures": invariant_failures,
+        "answer_position_failures": answer_position_failures,
+        "content_retries": sum(int(row.get("content_retry_count", 0)) for row in selected),
+        "answer_repairs": sum(bool(row.get("answer_repair_performed")) for row in selected),
         "missing_uncapped_logits": [
             item["item_id"] for item in items if item["g_top"] is None
         ],
@@ -360,6 +389,7 @@ def build_c2_items(
     shared = sorted(set.intersection(*(set(mapping) for mapping in maps.values())))
     items: list[dict[str, Any]] = []
     invariant_failures = []
+    direct_answer_position_failures = []
     for item_id in shared:
         du = maps["direct_uncapped"][item_id]
         dp = maps["direct_p25"][item_id]
@@ -377,6 +407,8 @@ def build_c2_items(
         ):
             if len({canonical_json(row.get(field)) for row in quartet}) != 1:
                 invariant_failures.append(f"C2:{item_id}:{field}")
+        if du.get("answer_step_tokens") != 1 or dp.get("answer_step_tokens") != 1:
+            direct_answer_position_failures.append(f"C2:{item_id}:answer_step_tokens")
         item = base_item(
             dataset="C2",
             readout="free_generation",
@@ -432,6 +464,7 @@ def build_c2_items(
         "raw_counts": {name: len(mapping) for name, mapping in maps.items()},
         "shared_ids": len(shared),
         "invariant_failures": invariant_failures,
+        "direct_answer_position_failures": direct_answer_position_failures,
         "direct_free_uncapped_choice_agreement": {
             "agree": sum(
                 item["direct_choice_uncapped"] == item["choice_uncapped"] for item in items
@@ -570,6 +603,15 @@ def manifest_checks(plan: Mapping[str, Any]) -> dict[str, Any]:
             "artifacts/m2/e_minus1b_philpapers_cap_audit/runtime_manifest.json",
         ).decode("utf-8")
     )
+    c2_runtimes = {
+        name: json.loads(
+            git_blob(
+                inputs["c2_direct_uncapped"]["commit"],
+                f"artifacts/m2/c2_v8_natural_social_confirmation/{name}/runtime.json",
+            ).decode("utf-8")
+        )
+        for name in ("direct-uncapped", "direct-p25", "free-uncapped", "free-p25")
+    }
     c2_names = {
         "c2_direct_uncapped": "direct-uncapped/results.jsonl",
         "c2_direct_p25": "direct-p25/results.jsonl",
@@ -592,6 +634,10 @@ def manifest_checks(plan: Mapping[str, Any]) -> dict[str, Any]:
         ),
         "e_minus1b_runtime_results_hash": (
             e1_runtime.get("row_results_sha256") == inputs["e_minus1b_rows"]["sha256"]
+        ),
+        "e_minus1b_runtime_zero_content_retries": e1_runtime.get("content_retries") == 0,
+        "c2_runtime_zero_content_retries": all(
+            runtime.get("content_retries") == 0 for runtime in c2_runtimes.values()
         ),
     }
     for key, delivery_name in c2_names.items():
@@ -624,12 +670,23 @@ def audit_inputs(
     e2c = list(datasets["E2C"])
     c2 = list(datasets["C2"])
     e1 = list(datasets["E-1b"])
-    retries_and_repairs = {
-        "e2a_zero": True,
-        "e2c_zero": True,
-        "c2_zero": True,
-        "e_minus1b_runtime_zero": True,
-    }
+    addendum_by_base = {row["base_id"]: row for row in c2_addendum}
+    c2_crosscheck_failures = []
+    for item in c2:
+        addendum = addendum_by_base.get(str(item["base_id"]))
+        arm = item["arm"]
+        if addendum is None:
+            c2_crosscheck_failures.append(f"{item['item_id']}:missing_addendum_base")
+            continue
+        comparisons = {
+            f"margin_{arm}_uncapped": item["target_minus_initial_uncapped"],
+            f"margin_{arm}_p25": item["target_minus_initial_p25"],
+        }
+        for field, expected in comparisons.items():
+            if expected is None or not math.isclose(
+                float(addendum[field]), float(expected), rel_tol=0.0, abs_tol=1e-12
+            ):
+                c2_crosscheck_failures.append(f"{item['item_id']}:{field}")
     expected_missing = [item for item in e2c if item["g_top"] is None]
     checks = {
         "all_source_blobs_match_frozen_sha256": all(
@@ -638,19 +695,36 @@ def audit_inputs(
         "available_manifest_hashes_match": all(manifest_checks(plan).values()),
         "e2a_answer_pairs_96": len(e2a) == 96,
         "e2a_pair_invariants": not build_audits["E2A"]["invariant_failures"],
+        "e2a_answer_position_consistent": not build_audits["E2A"][
+            "answer_position_failures"
+        ],
         "e2a_no_missing_logits": not build_audits["E2A"]["missing_uncapped_logits"]
         and not build_audits["E2A"]["missing_p25_logits"],
         "e2c_pairs_96": len(e2c) == 96,
         "e2c_pair_invariants": not build_audits["E2C"]["invariant_failures"],
+        "e2c_answer_position_consistent_when_present": not build_audits["E2C"][
+            "answer_position_failures"
+        ],
         "e2c_exact_expected_missing": len(expected_missing) == 1
         and expected_missing[0]["item_id"] == "CEDAR-E2C-022-F"
         and expected_missing[0]["uncapped_truncated"],
         "c2_cross_readout_pairs_480": len(c2) == 480,
         "c2_pair_invariants": not build_audits["C2"]["invariant_failures"],
+        "c2_direct_answer_position_consistent": not build_audits["C2"][
+            "direct_answer_position_failures"
+        ],
         "c2_addendum_crosscheck_rows_600": len(c2_addendum) == 600,
+        "c2_addendum_values_match_raw_direct_records": not c2_crosscheck_failures,
         "e_minus1b_pair_variant_rows_900": len(e1) == 900,
         "e_minus1b_pair_invariants": not build_audits["E-1b"]["invariant_failures"],
-        "no_content_retry_or_answer_repair": all(retries_and_repairs.values()),
+        "no_content_retry_or_answer_repair": (
+            build_audits["E2A"]["content_retries"] == 0
+            and build_audits["E2A"]["answer_repairs"] == 0
+            and build_audits["E2C"]["content_retries"] == 0
+            and build_audits["E2C"]["answer_repairs"] == 0
+            and manifest_checks(plan)["c2_runtime_zero_content_retries"]
+            and manifest_checks(plan)["e_minus1b_runtime_zero_content_retries"]
+        ),
         "readout_modes_separate": {item["readout"] for item in e2a + e2c + c2 + e1}
         == {"thinking_generation", "free_generation", "forced_choice"},
     }
@@ -674,6 +748,7 @@ def audit_inputs(
         "source_blobs": blob_audit,
         "manifest_checks": manifest_checks(plan),
         "build_audits": build_audits,
+        "c2_addendum_crosscheck_failures": c2_crosscheck_failures,
         "output_argmax_agreement": agreement,
         "readout_warning": (
             "C2 direct logits and free-generation choices are distinct readouts; "
@@ -1228,6 +1303,8 @@ def make_figures(
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
+    logging.getLogger("matplotlib.font_manager").setLevel(logging.ERROR)
+
     plt.rcParams.update(
         {
             "font.family": "DejaVu Sans",
@@ -1309,7 +1386,10 @@ def make_figures(
         axis.errorbar(
             estimate,
             y_value,
-            xerr=[[estimate - lower_ci], [upper_ci - estimate]],
+            xerr=[
+                [max(0.0, estimate - lower_ci)],
+                [max(0.0, upper_ci - estimate)],
+            ],
             fmt=marker,
             color="black",
             markerfacecolor=filled,
@@ -1762,6 +1842,8 @@ def run_analysis(output: Path, *, draws: int, seed: int) -> dict[str, Any]:
         "m_specific_uncapped",
         "m_specific_p25",
         "delta_m_general",
+        "target_minus_initial_uncapped",
+        "target_minus_initial_p25",
         "delta_baseline_winner_advantage",
         "z_g_top",
         "z_g_initial",
