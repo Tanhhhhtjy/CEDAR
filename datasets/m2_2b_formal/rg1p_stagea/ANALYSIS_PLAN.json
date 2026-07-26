@@ -1,0 +1,74 @@
+{
+  "schema": "cedar.rg1p_stagea.analysis_plan.v1",
+  "status": "frozen_before_gpu",
+  "anchors": {
+    "e2a": "0c8517bb5fb4640f7d5e4d51356d0cf167046643",
+    "e2b_cached": "6a7e286283cfc763b0dafec23d84fc91b031a99d"
+  },
+  "capture": {
+    "layers": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63],
+    "reporting_layers": [45, 53, 54, 60, 63],
+    "stage_b_patch_layers_frozen_before_curves": [53, 60],
+    "state": "decoder_block_residual_output_at_answer_boundary",
+    "storage_dtype": "bfloat16",
+    "analysis_dtype": "float32"
+  },
+  "coordinates": {
+    "layer45": "delta_l2_only_no_axis_projection_not_a_negative_control",
+    "layers46_53": "official_layer_specific_assistant_axis",
+    "layers54_63": "fixed_layer53_exit_axis",
+    "random_layers46_53": "condition_specific_signed_layer_direction",
+    "random_layers54_63": "condition_specific_signed_layer53_exit_direction"
+  },
+  "random_reference_battery": {
+    "trace_source": "e2a_uncapped",
+    "seeds": [20260727, 20260728],
+    "signs": ["positive", "negative"],
+    "directions_shared_across_items": true,
+    "official_axis_orthogonalized": true,
+    "schedule": "same_item_same_layer_same_token_position",
+    "dose": "same_item_layer_position_actual_official_correction_l2_norm",
+    "recompute_trigger_from_random_trajectory": false,
+    "not_a_random_null_distribution": true
+  },
+  "engineering_noop": {
+    "condition": "uncapped_noop_repeat",
+    "trace_source": "e2a_uncapped",
+    "real_second_forward": true,
+    "smoke_rows": 8,
+    "formal_rows": 96,
+    "all_layer_kl_opt_strict_upper_bound": 1e-6,
+    "all_layer_delta_h_l2_strict_upper_bound": 0.0001,
+    "excluded_from_scientific_estimands": true
+  },
+  "statistics": {
+    "primary_trace_source": "e2a_uncapped",
+    "secondary_trace_source": "e2a_full_p25",
+    "primary_estimand": "off_exit_axis_share_layer60_minus_layer53",
+    "bootstrap_unit": "family",
+    "families": 12,
+    "primary_bootstrap_draws": 20000,
+    "layer_curve_bootstrap_draws": 10000,
+    "bootstrap_seed": 20260727,
+    "interval": "two_sided_percentile_95ci",
+    "layer_curves": "descriptive_exploratory_no_per_layer_p_values",
+    "probe_family_label_flip_permutations": 4096,
+    "panel_c": "descriptive_family_level_association_no_regression_line"
+  },
+  "layerwise_output_divergence": {
+    "layers": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63],
+    "mapping": "frozen_checkpoint_final_norm_then_full_lm_head",
+    "candidate_token_ids": {"A": 32, "B": 33, "C": 34, "D": 35},
+    "kl_opt_direction": "uncapped_to_full_p25",
+    "kl_vocab": "appendix_only",
+    "m_general": "mean_noninitial_option_logits_minus_initial_option_logit",
+    "state_readouts": ["delta_h_l2", "state_cosine", "uncapped_state_l2", "treatment_state_l2"],
+    "final_layer_candidate_logit_max_abs_strict_upper_bound": 0.001,
+    "translator_training": false,
+    "tuned_lens": false,
+    "descriptive_only": true,
+    "below_layer46_interpretation": "cache_propagated_effect_not_direct_rectification",
+    "origin_layer_claim_forbidden": true
+  },
+  "stage_b_authorized": false
+}
