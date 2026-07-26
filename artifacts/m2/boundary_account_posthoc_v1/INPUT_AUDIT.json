@@ -1,0 +1,207 @@
+{
+  "build_audits": {
+    "C2": {
+      "direct_answer_position_failures": [],
+      "direct_free_uncapped_choice_agreement": {
+        "agree": 382,
+        "n": 480
+      },
+      "invariant_failures": [],
+      "raw_counts": {
+        "direct_p25": 1200,
+        "direct_uncapped": 1200,
+        "free_p25": 480,
+        "free_uncapped": 480
+      },
+      "shared_ids": 480
+    },
+    "E-1b": {
+      "invariant_failures": [],
+      "pair_clusters": 450,
+      "pair_results_rows": 450,
+      "pair_variant_cells": 900,
+      "rows": 1800,
+      "sample_seeds": {
+        "123": 300,
+        "42": 300,
+        "7": 300
+      },
+      "variants": {
+        "original": 450,
+        "swapped": 450
+      }
+    },
+    "E2A": {
+      "answer_position_failures": [],
+      "answer_repairs": 0,
+      "content_retries": 0,
+      "invariant_failures": [],
+      "missing_p25_logits": [],
+      "missing_uncapped_logits": [],
+      "pairs": 96,
+      "selected_rows": 192
+    },
+    "E2C": {
+      "answer_position_failures": [],
+      "answer_repairs": 0,
+      "content_retries": 0,
+      "invariant_failures": [],
+      "missing_p25_logits": [],
+      "missing_uncapped_logits": [
+        "CEDAR-E2C-022-F"
+      ],
+      "pairs": 96,
+      "selected_rows": 192
+    }
+  },
+  "c2_addendum_crosscheck_failures": [],
+  "checks": {
+    "all_source_blobs_match_frozen_sha256": true,
+    "available_manifest_hashes_match": true,
+    "c2_addendum_crosscheck_rows_600": true,
+    "c2_addendum_values_match_raw_direct_records": true,
+    "c2_cross_readout_pairs_480": true,
+    "c2_direct_answer_position_consistent": true,
+    "c2_pair_invariants": true,
+    "e2a_answer_pairs_96": true,
+    "e2a_answer_position_consistent": true,
+    "e2a_no_missing_logits": true,
+    "e2a_pair_invariants": true,
+    "e2c_answer_position_consistent_when_present": true,
+    "e2c_exact_expected_missing": true,
+    "e2c_pair_invariants": true,
+    "e2c_pairs_96": true,
+    "e_minus1b_pair_invariants": true,
+    "e_minus1b_pair_variant_rows_900": true,
+    "no_content_retry_or_answer_repair": true,
+    "readout_modes_separate": true
+  },
+  "failures": [],
+  "manifest_checks": {
+    "c2_direct_p25_delivery_hash": true,
+    "c2_direct_uncapped_delivery_hash": true,
+    "c2_free_p25_delivery_hash": true,
+    "c2_free_uncapped_delivery_hash": true,
+    "c2_runtime_zero_content_retries": true,
+    "e2a_runtime_results_hash": true,
+    "e2c_delivery_analysis_hash": true,
+    "e2c_delivery_results_hash": true,
+    "e_minus1b_runtime_results_hash": true,
+    "e_minus1b_runtime_zero_content_retries": true
+  },
+  "output_argmax_agreement": {
+    "C2": {
+      "eligible": 480,
+      "readout": "free_generation",
+      "uncapped_argmax_matches_discrete": 382
+    },
+    "E-1b": {
+      "eligible": 900,
+      "readout": "forced_choice",
+      "uncapped_argmax_matches_discrete": 900
+    },
+    "E2A": {
+      "eligible": 96,
+      "readout": "thinking_generation",
+      "uncapped_argmax_matches_discrete": 96
+    },
+    "E2C": {
+      "eligible": 95,
+      "readout": "thinking_generation",
+      "uncapped_argmax_matches_discrete": 95
+    }
+  },
+  "readout_warning": "C2 direct logits and free-generation choices are distinct readouts; their agreement is diagnostic, not an audit requirement.",
+  "schema": "cedar.boundary_account_posthoc.input_audit.v1",
+  "source_blobs": {
+    "c2_addendum_crosscheck": {
+      "bytes": 231750,
+      "commit": "364af5f797ee1eccf21c99e67570f59cbe052e5b",
+      "expected_sha256": "6a8c6c702337986a450bfc4d60e9f5bb3c071f839fa337e58da027038e6366b3",
+      "observed_sha256": "6a8c6c702337986a450bfc4d60e9f5bb3c071f839fa337e58da027038e6366b3",
+      "passed": true,
+      "path": "artifacts/m2/c2_v8_natural_social_confirmation/addenda/margin_choice_dissociation/per_base_margin_choice.csv"
+    },
+    "c2_direct_p25": {
+      "bytes": 17913266,
+      "commit": "8ea7025f2a726997d78ad8919455a8756e3c192e",
+      "expected_sha256": "20154a9fabff51e7396e66b854edef1bfd076bbbdd88146d22fa275ade7700ab",
+      "observed_sha256": "20154a9fabff51e7396e66b854edef1bfd076bbbdd88146d22fa275ade7700ab",
+      "passed": true,
+      "path": "artifacts/m2/c2_v8_natural_social_confirmation/direct-p25/results.jsonl"
+    },
+    "c2_direct_uncapped": {
+      "bytes": 11359972,
+      "commit": "8ea7025f2a726997d78ad8919455a8756e3c192e",
+      "expected_sha256": "21481f09f9efc509e1db9c42fcbc627008b61ce30dfdbe2b453b36b22dff175d",
+      "observed_sha256": "21481f09f9efc509e1db9c42fcbc627008b61ce30dfdbe2b453b36b22dff175d",
+      "passed": true,
+      "path": "artifacts/m2/c2_v8_natural_social_confirmation/direct-uncapped/results.jsonl"
+    },
+    "c2_free_p25": {
+      "bytes": 8248794,
+      "commit": "8ea7025f2a726997d78ad8919455a8756e3c192e",
+      "expected_sha256": "b621d4692c54dc5b3fab62937999d2528d31be29fa566420a68bb6cb8fd05750",
+      "observed_sha256": "b621d4692c54dc5b3fab62937999d2528d31be29fa566420a68bb6cb8fd05750",
+      "passed": true,
+      "path": "artifacts/m2/c2_v8_natural_social_confirmation/free-p25/results.jsonl"
+    },
+    "c2_free_uncapped": {
+      "bytes": 6134948,
+      "commit": "8ea7025f2a726997d78ad8919455a8756e3c192e",
+      "expected_sha256": "7bd520491212de5a65f2c7def874bdd01a944e12c1744c2455c6366fd23c7ee9",
+      "observed_sha256": "7bd520491212de5a65f2c7def874bdd01a944e12c1744c2455c6366fd23c7ee9",
+      "passed": true,
+      "path": "artifacts/m2/c2_v8_natural_social_confirmation/free-uncapped/results.jsonl"
+    },
+    "e2a_analysis": {
+      "bytes": 32163,
+      "commit": "0c8517bb5fb4640f7d5e4d51356d0cf167046643",
+      "expected_sha256": "5897e1718f24c1768621b32bcd04904da274c18098ee8838bfa4f8f2bf2d707b",
+      "observed_sha256": "5897e1718f24c1768621b32bcd04904da274c18098ee8838bfa4f8f2bf2d707b",
+      "passed": true,
+      "path": "artifacts/m2/e2_phase_validity_choice/E2A_ANALYSIS.json"
+    },
+    "e2a_results": {
+      "bytes": 5253150,
+      "commit": "0c8517bb5fb4640f7d5e4d51356d0cf167046643",
+      "expected_sha256": "20d7c86f1fbbfc7e25e4c5cacc8647c4635208535c61f458753b6a17cdab12a0",
+      "observed_sha256": "20d7c86f1fbbfc7e25e4c5cacc8647c4635208535c61f458753b6a17cdab12a0",
+      "passed": true,
+      "path": "artifacts/m2/e2_phase_validity_choice/formal-all-seed0/results.jsonl"
+    },
+    "e2c_analysis": {
+      "bytes": 43290,
+      "commit": "ca729de0e6b55952266f1b32169b8fc2cd53005c",
+      "expected_sha256": "1399e1c2524fd15cd427540edb7f39b3a492391cf5e077981547a4525242c2d1",
+      "observed_sha256": "1399e1c2524fd15cd427540edb7f39b3a492391cf5e077981547a4525242c2d1",
+      "passed": true,
+      "path": "artifacts/m2/e2_new_salt_confirmation/E2_NEW_SALT_ANALYSIS.json"
+    },
+    "e2c_results": {
+      "bytes": 1345600,
+      "commit": "ca729de0e6b55952266f1b32169b8fc2cd53005c",
+      "expected_sha256": "a13db01efeb0be4b9293cff4ac0a79b863c8faa8fc9cd95dc8f05cf7b3694106",
+      "observed_sha256": "a13db01efeb0be4b9293cff4ac0a79b863c8faa8fc9cd95dc8f05cf7b3694106",
+      "passed": true,
+      "path": "artifacts/m2/e2_new_salt_confirmation/formal-paired-uncapped-full-p25-seed0/results.jsonl"
+    },
+    "e_minus1b_pairs": {
+      "bytes": 1299433,
+      "commit": "880aab2250eefc69f81c595dc0283555b91ca6b4",
+      "expected_sha256": "3fa946a5a393e78e55d596ead63e71e47510a3b333550632941a9cc84963f2fa",
+      "observed_sha256": "3fa946a5a393e78e55d596ead63e71e47510a3b333550632941a9cc84963f2fa",
+      "passed": true,
+      "path": "artifacts/m2/e_minus1b_philpapers_cap_audit/pair_results.jsonl"
+    },
+    "e_minus1b_rows": {
+      "bytes": 22678128,
+      "commit": "880aab2250eefc69f81c595dc0283555b91ca6b4",
+      "expected_sha256": "da6e01c4543173da62172b9cefa6f8512c22e1d21bbdfc51b4f4b6ca13bf00c4",
+      "observed_sha256": "da6e01c4543173da62172b9cefa6f8512c22e1d21bbdfc51b4f4b6ca13bf00c4",
+      "passed": true,
+      "path": "artifacts/m2/e_minus1b_philpapers_cap_audit/row_results.jsonl"
+    }
+  },
+  "status": "passed"
+}
