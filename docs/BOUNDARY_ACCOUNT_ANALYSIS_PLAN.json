@@ -1,0 +1,111 @@
+{
+  "schema": "cedar.boundary_account_posthoc.analysis_plan.v1",
+  "status": "frozen_before_boundary_analysis",
+  "claim_boundary": "post-hoc diagnostic; not preregistered confirmation; not causal mechanism evidence",
+  "bootstrap": {
+    "draws": 10000,
+    "seed": 20260726,
+    "interval": "two_sided_percentile_95ci",
+    "unit": "natural source cluster"
+  },
+  "primary": {
+    "outcome": "any_flip",
+    "predictor": "within-dataset-arm/readout standardized uncapped g_top",
+    "model": "fixed-stratum logistic with cluster bootstrap",
+    "expected_slope": "negative",
+    "pooled_test_count": 1
+  },
+  "secondary": [
+    "initial_exit_on_g_initial",
+    "target_entry_on_g_target",
+    "post_intervention_boundary_crossing_description",
+    "median_gap_contrast",
+    "negative_gap_auc",
+    "nearest_minus_farthest_flip_rate",
+    "c2_direct_argmax_consistency",
+    "e_minus1b_order_and_output_space_diagnostics"
+  ],
+  "multiplicity": {
+    "pooled_primary": "none",
+    "four_source_slopes": "Holm when inferential estimates exist"
+  },
+  "inputs": {
+    "e2a_results": {
+      "commit": "0c8517bb5fb4640f7d5e4d51356d0cf167046643",
+      "path": "artifacts/m2/e2_phase_validity_choice/formal-all-seed0/results.jsonl",
+      "sha256": "20d7c86f1fbbfc7e25e4c5cacc8647c4635208535c61f458753b6a17cdab12a0"
+    },
+    "e2a_analysis": {
+      "commit": "0c8517bb5fb4640f7d5e4d51356d0cf167046643",
+      "path": "artifacts/m2/e2_phase_validity_choice/E2A_ANALYSIS.json",
+      "sha256": "5897e1718f24c1768621b32bcd04904da274c18098ee8838bfa4f8f2bf2d707b"
+    },
+    "e2c_results": {
+      "commit": "ca729de0e6b55952266f1b32169b8fc2cd53005c",
+      "path": "artifacts/m2/e2_new_salt_confirmation/formal-paired-uncapped-full-p25-seed0/results.jsonl",
+      "sha256": "a13db01efeb0be4b9293cff4ac0a79b863c8faa8fc9cd95dc8f05cf7b3694106"
+    },
+    "e2c_analysis": {
+      "commit": "ca729de0e6b55952266f1b32169b8fc2cd53005c",
+      "path": "artifacts/m2/e2_new_salt_confirmation/E2_NEW_SALT_ANALYSIS.json",
+      "sha256": "1399e1c2524fd15cd427540edb7f39b3a492391cf5e077981547a4525242c2d1"
+    },
+    "c2_direct_uncapped": {
+      "commit": "8ea7025f2a726997d78ad8919455a8756e3c192e",
+      "path": "artifacts/m2/c2_v8_natural_social_confirmation/direct-uncapped/results.jsonl",
+      "sha256": "21481f09f9efc509e1db9c42fcbc627008b61ce30dfdbe2b453b36b22dff175d"
+    },
+    "c2_direct_p25": {
+      "commit": "8ea7025f2a726997d78ad8919455a8756e3c192e",
+      "path": "artifacts/m2/c2_v8_natural_social_confirmation/direct-p25/results.jsonl",
+      "sha256": "20154a9fabff51e7396e66b854edef1bfd076bbbdd88146d22fa275ade7700ab"
+    },
+    "c2_free_uncapped": {
+      "commit": "8ea7025f2a726997d78ad8919455a8756e3c192e",
+      "path": "artifacts/m2/c2_v8_natural_social_confirmation/free-uncapped/results.jsonl",
+      "sha256": "7bd520491212de5a65f2c7def874bdd01a944e12c1744c2455c6366fd23c7ee9"
+    },
+    "c2_free_p25": {
+      "commit": "8ea7025f2a726997d78ad8919455a8756e3c192e",
+      "path": "artifacts/m2/c2_v8_natural_social_confirmation/free-p25/results.jsonl",
+      "sha256": "b621d4692c54dc5b3fab62937999d2528d31be29fa566420a68bb6cb8fd05750"
+    },
+    "c2_addendum_crosscheck": {
+      "commit": "364af5f797ee1eccf21c99e67570f59cbe052e5b",
+      "path": "artifacts/m2/c2_v8_natural_social_confirmation/addenda/margin_choice_dissociation/per_base_margin_choice.csv",
+      "sha256": "6a8c6c702337986a450bfc4d60e9f5bb3c071f839fa337e58da027038e6366b3",
+      "role": "provenance cross-check only; absent from requested 8ea7025f anchor"
+    },
+    "e_minus1b_pairs": {
+      "commit": "880aab2250eefc69f81c595dc0283555b91ca6b4",
+      "path": "artifacts/m2/e_minus1b_philpapers_cap_audit/pair_results.jsonl",
+      "sha256": "3fa946a5a393e78e55d596ead63e71e47510a3b333550632941a9cc84963f2fa"
+    },
+    "e_minus1b_rows": {
+      "commit": "880aab2250eefc69f81c595dc0283555b91ca6b4",
+      "path": "artifacts/m2/e_minus1b_philpapers_cap_audit/row_results.jsonl",
+      "sha256": "da6e01c4543173da62172b9cefa6f8512c22e1d21bbdfc51b4f4b6ca13bf00c4"
+    }
+  },
+  "expected_counts": {
+    "e2a_pairs": 96,
+    "e2c_pairs": 96,
+    "e2c_complete_logit_pairs": 95,
+    "c2_cross_readout_pairs": 480,
+    "e_minus1b_pair_variant_rows": 900
+  },
+  "missingness": {
+    "e2c_expected_missing_cell": "CEDAR-E2C-022-F::uncapped",
+    "imputation": "forbidden"
+  },
+  "quantiles": {
+    "basis": "uncapped g_top only",
+    "grouping": "dataset x readout",
+    "quartile_minimum_n": 40,
+    "tie_break": "stable item id"
+  },
+  "gate": {
+    "classes": ["Gate A", "Gate B", "Gate C"],
+    "causal_mechanism_wording_allowed": false
+  }
+}
