@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-019-R",
+    "index": 146,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 146,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 453,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 453
+        }
+      ],
+      "answer_logit_capture_indices": [
+        453
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999999817778215,
+          "B": 1.4166086934043074e-09,
+          "C": 4.9444500925214765e-09,
+          "D": 1.1861119869974174e-08
+        },
+        "full_vocab_entropy": 3.410754914057179e-07,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 1.4166087192180044e-09,
+          "C": 4.94445018262013e-09,
+          "D": 1.1861120086109622e-08
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 41.75,
+        "initial_rank": 1,
+        "logits": {
+          "A": 41.75,
+          "B": 21.375,
+          "C": 22.625,
+          "D": 23.5
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000000182221789,
+        "ranks": {
+          "A": 1,
+          "B": 4,
+          "C": 3,
+          "D": 2
+        },
+        "target_logit": 21.375,
+        "target_minus_initial": -20.375,
+        "target_rank": 4,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-019",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F10",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-019-R",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 73,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "c09b64808ea72fccdd66ba0908fd38bb31e446dfc05ebc20990b9d2a9b00b078",
+      "prompt_token_ids_sha256": "31ca0d86233bc7ffdf53f708e750ab165962e3599817401fb91b6b77ee919623",
+      "prompt_tokens": 392,
+      "reasoning_token_count": 445,
+      "record_seed": 73,
+      "response": "<think>\nOkay, let's try to figure out if Station C has status Orbit 7. Let me start by going through the records step by step.\n\nFirst, looking at the records provided:\n\nRecord 1: Station C has status Kestrel 4.\nRecord 3: Station C has status Prairie 8.\nRecord 4: Station C has status Quill 9.\nRecord 6: If Station C has Kestrel 4 and Prairie 8, then it has Harbor 1.\nRecord 7: If Station C has Kestrel 4 and Quill 9, then it has Iris 2.\nRecord 10: If Harbor 1, then Orbit 7.\nRecord 11: If Iris 2, then Orbit 7.\n\nSo, from Records 1 and 3, we have both Kestrel 4 and Prairie 8. Applying Rule 6, that means Station C must have Harbor 1. Then, Rule 10 says if Harbor 1, then Orbit 7. So that would imply Orbit 7 is true.\n\nBut also, Records 1 and 4 give Kestrel 4 and Quill 9. Rule 7 leads to Iris 2, and Rule 11 then also leads to Orbit 7. So both paths (Harbor 1 and Iris 2) result in Orbit 7. Therefore, Orbit 7 should be supported.\n\nWait, but are there any conflicting rules? Let me check other records. Records 2 and 5 are about other stations, so probably not relevant here. Records 8 and 9: If Station C doesn't have Kestrel 4, then Morrow 5, and if Morrow 5, then not Orbit 7. But since Station C does have Kestrel 4 (Record 1), the antecedent of Rule 8 is false, so Rule 8 doesn't apply. Therefore, Rules 8 and 9 don't come into play here.\n\nSo there's no contradiction. Both Rule 6 and 7 lead to Orbit 7 via their respective consequents. Therefore, the answer should be A) supported.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "48dace969b8de4d0c075b23c92be253afb32768717bac8aad1c4fa3e69bababf",
+      "response_tokens": 456,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 453,
+      "structure_class": "PGF-07",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

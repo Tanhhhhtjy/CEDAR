@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-022-N",
+    "index": 168,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 168,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 388,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 388
+        }
+      ],
+      "answer_logit_capture_indices": [
+        388
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 1.1032559000471097e-09,
+          "B": 0.9999998712614196,
+          "C": 1.2751904200716363e-07,
+          "D": 1.1628232295524333e-10
+        },
+        "full_vocab_entropy": 2.053483513009269e-06,
+        "full_vocab_probabilities": {
+          "A": 1.1032560420787263e-09,
+          "B": 1.0,
+          "C": 1.275190584237862e-07,
+          "D": 1.1628233792526643e-10
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 42.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 21.375,
+          "B": 42.0,
+          "C": 26.125,
+          "D": 19.125
+        },
+        "option_argmax": "B",
+        "option_mass": 1.000000128738597,
+        "ranks": {
+          "A": 3,
+          "B": 1,
+          "C": 2,
+          "D": 4
+        },
+        "target_logit": 21.375,
+        "target_minus_initial": -20.625,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-022",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F11",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-022-N",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 84,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "2093265b787ae95beb87f049a9a52af7c4ab64e2961d695e490aef0448516f1d",
+      "prompt_token_ids_sha256": "fdf07535ff7fcde564e847e14f4f814ef021a5684d527a7effa716ed4ce0555d",
+      "prompt_tokens": 499,
+      "reasoning_token_count": 380,
+      "record_seed": 84,
+      "response": "<think>\nOkay, let's try to figure out if Module E has status Prairie 17. Let me start by going through the records step by step.\n\nFirst, from the records, Module E has a link Flint 8 to Module B (Record 1). Then, there's a rule (Record 11) that says if Module E has that link to Module B, then Module E has status Yarrow 1. So applying Record 11, Module E must have Yarrow 1.\n\nNext, Record 13 states that if Module E has Yarrow 1, then it has Zenith 2. So now, Module E gets Zenith 2. Then Record 14 says if Zenith 2, then Alder 3. So now Alder 3 is added to Module E's status.\n\nNow, looking at Record 15: if Module E has Alder 3, then it does NOT have Prairie 17. So this directly tells us that Prairie 17 is not present. But wait, there's another path? Let me check if there's any other way Prairie 17 could be triggered.\n\nLooking at other rules, like if Module E had Cedar 5, then through Dune 6 and Ember 7 (Records 12, 16, 17, 18), it might lead to Prairie 17. But Module E's link is to Module B, not D. Record 12 is about linking to D, which isn't the case here. So that path isn't activated. \n\nSo the only active path is via Yarrow 1 → Zenith 2 → Alder 3, which leads to the negation of Prairie 17. Therefore, the conclusion is that Prairie 17 is contradicted. The answer should be B.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "2d95342dd949a5a18a2383b6e3265df41e95f75f3b10db36c10810b717fb2e9f",
+      "response_tokens": 391,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 388,
+      "structure_class": "PGF-08",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

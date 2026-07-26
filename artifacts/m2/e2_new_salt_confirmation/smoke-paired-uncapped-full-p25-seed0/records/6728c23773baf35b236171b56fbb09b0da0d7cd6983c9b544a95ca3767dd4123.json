@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-023-R",
+    "index": 34,
+    "scope": "smoke",
+    "seed": 0
+  },
+  "payload": {
+    "index": 34,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 307,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 307
+        }
+      ],
+      "answer_logit_capture_indices": [
+        307
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 2.413362694007924e-12,
+          "B": 3.1608815546080566e-10,
+          "C": 2.789468099283369e-10,
+          "D": 0.9999999994025517
+        },
+        "full_vocab_entropy": 1.53629589050297e-08,
+        "full_vocab_probabilities": {
+          "A": 2.4133626954497833e-12,
+          "B": 3.16088155649652e-10,
+          "C": 2.789468100949932e-10,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 43.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 16.75,
+          "B": 21.625,
+          "C": 21.5,
+          "D": 43.5
+        },
+        "option_argmax": "D",
+        "option_mass": 1.0000000005974483,
+        "ranks": {
+          "A": 7,
+          "B": 2,
+          "C": 3,
+          "D": 1
+        },
+        "target_logit": 21.625,
+        "target_minus_initial": -21.875,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-023",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F12",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "D",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-023-R",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 17,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "4c50c107d5469e381878c38d925f2b40db917fab7055736cb9e2f175e05dcd52",
+      "prompt_token_ids_sha256": "adb005dcd157be0cc2d28a3a5465ab0b4aaaea35e2a088654ce7a8260ae57888",
+      "prompt_tokens": 316,
+      "reasoning_token_count": 299,
+      "record_seed": 17,
+      "response": "<think>\nOkay, let's go through this step by step. The question is whether Specimen A has status Vale 6, and the options are whether it's supported, undetermined, both, or contradicted.\n\nFirst, looking at the records provided. Record 3 says Specimen A has Willow 7. Then Record 4 says it has Quill 2. Record 5 is a rule: if an item has Quill 2, then it also has Rowan 3. So from Record 4, we can infer that Specimen A has Rowan 3. But that's not directly related to Vale 6.\n\nNext, Record 7: If Specimen A has Willow 7, then it has Xenon 8. Since Record 3 confirms Willow 7, that triggers Record 7, so Xenon 8 must be true for A. Then Record 8 says if A has Xenon 8, then it has Prairie 1. So now we can conclude Prairie 1 is true for A.\n\nNow, Record 6 states that if A has Prairie 1, then it does NOT have Vale 6. Since we just established Prairie 1 is true (from Xenon 8 which came from Willow 7), Record 6 tells us that Vale 6 must be false. Therefore, the statement that Specimen A has Vale 6 is contradicted by the records. \n\nSo the answer should be D) contradicted.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "408d4a967199347cec1e0f16caadbab757ececd7c891228fdf8617a89d22022d",
+      "response_tokens": 310,
+      "scope": "smoke",
+      "seed": 0,
+      "selected_answer_logit_index": 307,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "fa0af57e0558f059bd81d1d73d77bd9a9b6c6c8e2d390e6cc4fd094de9817d47"
+}

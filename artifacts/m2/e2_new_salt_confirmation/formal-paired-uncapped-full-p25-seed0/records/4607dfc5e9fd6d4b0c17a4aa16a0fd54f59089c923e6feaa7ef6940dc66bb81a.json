@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-020-N",
+    "index": 152,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 152,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 675,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 675
+        }
+      ],
+      "answer_logit_capture_indices": [
+        675
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 2.061153385260273e-09,
+          "B": 0.9999999588274852,
+          "C": 1.9555680713411647e-08,
+          "D": 1.9555680713411647e-08
+        },
+        "full_vocab_entropy": 7.446365088981111e-07,
+        "full_vocab_probabilities": {
+          "A": 2.061153470123145e-09,
+          "B": 1.0,
+          "C": 1.9555681518568235e-08,
+          "D": 1.9555681518568235e-08
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 39.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 19.5,
+          "B": 39.5,
+          "C": 21.75,
+          "D": 21.75
+        },
+        "option_argmax": "B",
+        "option_mass": 1.0000000411725165,
+        "ranks": {
+          "A": 4,
+          "B": 1,
+          "C": 2,
+          "D": 2
+        },
+        "target_logit": 21.75,
+        "target_minus_initial": -17.75,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-020",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F10",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-020-N",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 76,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "28f923a6cc590ca0f8852cf1ebcb76a8584872ae615379217a0808c00c7c9dea",
+      "prompt_token_ids_sha256": "edb87b26eddcdd236b648fc5e7ec4efc12e3f8a6df5df9370f6f905d70fffa66",
+      "prompt_tokens": 764,
+      "reasoning_token_count": 667,
+      "record_seed": 76,
+      "response": "<think>\nOkay, let's try to figure out if Volume B has status Rowan 15. Let me start by going through the records and rules step by step.\n\nFirst, from the records, Volume B has several statuses: Flint 4 (Record 1), Quill 14 (Record 6), Birch 24 (Record 7), and Cedar 25 (Record 8). Also, there's a link to Volume G (Record 9), but I'm not sure if that's relevant here.\n\nNow, looking at the rules. Let's see what applies to Volume B. \n\nRule 10 says if Volume B has Flint 4 and Birch 24, then it has Cedar 1. Since both Flint 4 (Record 1) and Birch 24 (Record 7) are present, this triggers Rule 10. So Volume B should have Cedar 1. Then Rule 18 applies: Cedar 1 leads to Solace 16. Then Rule 19 takes Solace 16 to Timber 17, then Rule 20 to Vale 18, Rule 21 to Willow 19, and finally Rule 22 leads to Rowan 15. So that's one path to Rowan 15.\n\nBut there's another path. Volume B also has Flint 4 and Cedar 25 (from Records 1 and 8). Rule 11 says if Flint 4 and Cedar 25, then Dune 2. So Volume B gets Dune 2. Then Rule 23 leads to Xenon 20, then Rule 24 to Yarrow 21, Rule 25 to Zenith 22, Rule 26 to Alder 23, and Rule 27 to Rowan 15. So that's another path to Rowan 15.\n\nWait, but there's also Rule 12: If Volume B does not have Flint 4, then Grove 5. But since Volume B does have Flint 4 (Record 1), Rule 12's condition isn't met. So the chain starting with Grove 5 (Rules 13-16) leading to Kestrel 9, which then via Rule 17 would negate Rowan 15. But since Volume B does have Flint 4, that chain isn't triggered. So Rule 17's negation of Rowan 15 isn't applicable here.\n\nSo both paths (Cedar 1 and Dune 2) lead to Rowan 15. Are there any contradictions? Let me check. The first path through Cedar 1 leads to Rowan 15 via Willow 19. The second path through Dune 2 also leads to Rowan 15 via Alder 23. Both paths result in Rowan 15. So both support it. There's no rule that would negate Rowan 15 except Rule 17, which isn't triggered because Volume B has Flint 4. Therefore, Volume B having Rowan 15 is supported by multiple rules. So the answer should be B) supported.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "61274d9bb357c627a2f2d29b87047fa6171617b4378343638a95938b3c0ad7c0",
+      "response_tokens": 678,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 675,
+      "structure_class": "PGF-07",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

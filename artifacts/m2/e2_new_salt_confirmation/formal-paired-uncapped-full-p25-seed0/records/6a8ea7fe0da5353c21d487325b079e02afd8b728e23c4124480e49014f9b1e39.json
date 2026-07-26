@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-014-R",
+    "index": 106,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 106,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 522,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 522
+        }
+      ],
+      "answer_logit_capture_indices": [
+        522
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999997297012091,
+          "B": 1.4930942720935805e-10,
+          "C": 1.9171710421857932e-10,
+          "D": 2.6995776444840104e-07
+        },
+        "full_vocab_entropy": 4.090922629984561e-06,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 1.493094675675266e-10,
+          "C": 1.917171560394948e-10,
+          "D": 2.699578374176781e-07
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 47.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 47.0,
+          "B": 24.375,
+          "C": 24.625,
+          "D": 31.875
+        },
+        "option_argmax": "A",
+        "option_mass": 1.000000270298864,
+        "ranks": {
+          "A": 1,
+          "B": 4,
+          "C": 3,
+          "D": 2
+        },
+        "target_logit": 31.875,
+        "target_minus_initial": -15.125,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-014",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F07",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-014-R",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 53,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "9ef30dcde349c546fe5588f07c97d1f392462a8f8081c2593144f119abe2b412",
+      "prompt_token_ids_sha256": "c927d0c980fe3a07fc873f04ea5283d96ed44d0cd95467e0e684f95ea935be20",
+      "prompt_tokens": 480,
+      "reasoning_token_count": 514,
+      "record_seed": 53,
+      "response": "<think>\nOkay, let's tackle this problem step by step. The question is whether Module E having status Flint 13 is supported, contradicted, or undetermined based on the given records and rules.\n\nFirst, I need to look at all the records related to Module E. From the records provided:\n\n- Record 4: Module E has status Alder 8.\n- Record 9: Module E has status Grove 14.\n- Record 10: Module E has status Vale 3.\n- Record 11: If Module E has Vale 3 and Willow 4, then Timber 2.\n- Record 12: If Module E has Solace 1, then not Flint 13.\n- Records 13-17: A chain from Grove 14 leading through Harbor 15, Iris 16, Juniper 17, Kestrel 18 to Solace 1.\n\nSo, Module E has Grove 14 (Record 9). According to Record 13, Grove 14 implies Harbor 15. Then Record 14 says Harbor 15 implies Iris 16. Record 15: Iris 16 → Juniper 17. Record 16: Juniper 17 → Kestrel 18. Record 17: Kestrel 18 → Solace 1. So following this chain, Module E must have Solace 1.\n\nNow, Record 12 states that if Module E has Solace 1, then it does NOT have Flint 13. Since we've established through the chain that Solace 1 is true, that means Flint 13 is contradicted. Therefore, the answer should be A) contradicted.\n\nBut wait, are there any other possibilities? Let me check again. Module E also has Vale 3 (Record 10). Record 11 requires both Vale 3 and Willow 4 to get Timber 2. But there's no mention of Willow 4, so that rule doesn't apply. So the only active chain is Grove 14 leading to Solace 1, which triggers Record 12. Therefore, Flint 13 is indeed contradicted. No other records mention Flint 13 except Record 12, which directly negates it when Solace 1 is present. Since Solace 1 is derived from the chain, the conclusion holds. So the answer is A.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "8821425ae5cbae21cfd90a15cb8ad4c75dc350fc8c1439d107808096cf160d5d",
+      "response_tokens": 525,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 522,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

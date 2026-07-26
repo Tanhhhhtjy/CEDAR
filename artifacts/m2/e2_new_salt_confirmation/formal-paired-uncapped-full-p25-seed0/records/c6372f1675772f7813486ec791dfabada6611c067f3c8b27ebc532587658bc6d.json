@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-017-R",
+    "index": 130,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 130,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 592,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 592
+        }
+      ],
+      "answer_logit_capture_indices": [
+        592
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 1.6052279278959891e-09,
+          "B": 0.9999999858792894,
+          "C": 8.152020276948102e-09,
+          "D": 4.363462418612818e-09
+        },
+        "full_vocab_entropy": 2.798169873585721e-07,
+        "full_vocab_probabilities": {
+          "A": 1.6052279505629485e-09,
+          "B": 1.0,
+          "C": 8.152020392060422e-09,
+          "D": 4.363462480228009e-09
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 38.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 18.25,
+          "B": 38.5,
+          "C": 19.875,
+          "D": 19.25
+        },
+        "option_argmax": "B",
+        "option_mass": 1.0000000141207108,
+        "ranks": {
+          "A": 4,
+          "B": 1,
+          "C": 2,
+          "D": 3
+        },
+        "target_logit": 19.875,
+        "target_minus_initial": -18.625,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-017",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F09",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-017-R",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 65,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "4247d44f010664e1a90b5a15598ce543eb9f82c6b151a5190b57cf42ed56b1b1",
+      "prompt_token_ids_sha256": "7efc1e241b327de4c52de18a7d45ff815bcaef9bcb12487a833148259bdfe38c",
+      "prompt_tokens": 410,
+      "reasoning_token_count": 584,
+      "record_seed": 65,
+      "response": "<think>\nOkay, let's see. The question is whether Vessel B has status Nimbus 7, based on the given records and rules. Let me go through this step by step.\n\nFirst, looking at the records:\n\nRecord 1 says Vessel B has status Juniper 4.\nRecord 3: Vessel B has Orbit 8.\nRecord 4: Vessel B has Prairie 9.\nRecord 5: Vessel B has a link to Vessel G, but that might not be relevant here.\nThen there are the rules from 6 to 11.\n\nNow, the rules. Let's check which ones apply.\n\nRule 6: If Vessel B has Juniper 4 and Orbit 8, then it gets Grove 1. Since Records 1 and 3 confirm both Juniper 4 and Orbit 8, this condition is met. So according to Rule 6, Vessel B should have Grove 1 status.\n\nThen Rule 10 says if Vessel B has Grove 1, then it has Nimbus 7. So if Grove 1 is triggered, then Nimbus 7 follows. So from Rule 6 leading to Grove 1, which then leads to Nimbus 7 via Rule 10. That would support Nimbus 7.\n\nBut wait, are there other possibilities? Let's check other rules. Rule 7: If Juniper 4 and Prairie 9, then Harbor 2. Record 1 and 4 give both, so Rule 7 applies. So Vessel B would have Harbor 2. Then Rule 11 says if Harbor 2, then Nimbus 7. So both Rule 7 and Rule 11 would also lead to Nimbus 7. So two different paths leading to Nimbus 7. That seems to support it strongly.\n\nBut are there any conflicting rules? Let's check. Rule 8 says if Vessel B does NOT have Juniper 4, then it has Kestrel 5. But since Record 1 says it does have Juniper 4, Rule 8's condition isn't met. So Rule 8 doesn't apply here. Therefore, Kestrel 5 isn't triggered. Rule 9 says if Kestrel 5, then no Nimbus 7. But since Kestrel 5 isn't active (because Juniper 4 is), Rule 9 isn't in play here. So no conflict there.\n\nSo both Rule 6 and 7 lead to statuses (Grove 1 and Harbor 2) that trigger Nimbus 7 via Rules 10 and 11. Therefore, Nimbus 7 should be supported. The answer should be B) supported. But wait, is there any contradiction? Let me check again. Since both paths lead to Nimbus 7, there's no contradiction. So the answer is B.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "653d62c45d0ec01091c363198aa002c938ca1b286405391b2c96cbf80aa0bba8",
+      "response_tokens": 595,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 592,
+      "structure_class": "PGF-07",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

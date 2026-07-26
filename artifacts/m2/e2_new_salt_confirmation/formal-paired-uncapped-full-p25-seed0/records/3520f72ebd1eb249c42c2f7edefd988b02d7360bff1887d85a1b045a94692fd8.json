@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-003-N",
+    "index": 16,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 16,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 560,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 560
+        }
+      ],
+      "answer_logit_capture_indices": [
+        560
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 2.129785278339769e-12,
+          "B": 9.736200724978531e-10,
+          "C": 0.9999999990197412,
+          "D": 4.50875534382283e-12
+        },
+        "full_vocab_entropy": 2.4081032279354986e-08,
+        "full_vocab_probabilities": {
+          "A": 2.1297852804275097e-12,
+          "B": 9.736200734522527e-10,
+          "C": 1.0,
+          "D": 4.508755348242577e-12
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 46.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 19.375,
+          "B": 25.5,
+          "C": 46.25,
+          "D": 20.125
+        },
+        "option_argmax": "C",
+        "option_mass": 1.0000000009802588,
+        "ranks": {
+          "A": 6,
+          "B": 2,
+          "C": 1,
+          "D": 5
+        },
+        "target_logit": 25.5,
+        "target_minus_initial": -20.75,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-003",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F02",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-003-N",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 8,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "7e5a74c081e75a572cff87f4cc26f44d2b45164e56d8d8df1c457ac7c96bd089",
+      "prompt_token_ids_sha256": "fcac330bfa6bbb02d799449f30b006de83997de2d43eb71df8051fada4532093",
+      "prompt_tokens": 263,
+      "reasoning_token_count": 552,
+      "record_seed": 8,
+      "response": "<think>\nOkay, let's try to figure this out. The question is whether Station E having status Birch 5 is supported, contradicted, undetermined, or both supported and contradicted based on the given records.\n\nFirst, let me list out all the records again to make sure I have them straight:\n\nRecord 1: Station E has Alder 4.\nRecord 2: Station E has Yarrow 2.\nRecord 3: If Station E has Xenon 1, then Yarrow 2.\nRecord 4: If Station E has Alder 4 and Cedar 6, then Zenith 3.\nRecord 5: If Station E has Zenith 3, then Birch 5.\n\nSo, the user wants to know if Birch 5 is supported. Let's break it down step by step.\n\nFrom Records 1 and 2, we know Alder 4 and Yarrow 2 are true. Now, looking at Record 4: it requires both Alder 4 and Cedar 6 to conclude Zenith 3. But do we have Cedar 6? The records don't mention Cedar 6 at all. So, even though we have Alder 4, we don't know if Cedar 6 is true. Therefore, the antecedent of Record 4 (Alder 4 AND Cedar 6) isn't satisfied because Cedar 6 is unknown. Without Zenith 3 being established, Record 5 (which requires Zenith 3 to get Birch 5) can't be triggered.\n\nIs there any other way to get Zenith 3? The only way according to the records is through Record 4. Since we can't confirm Cedar 6, Zenith 3 remains undetermined. Consequently, Birch 5 depends on Zenith 3, which is also undetermined. \n\nAre there any other records that might affect this? Record 3 says if Xenon 1 is true, then Yarrow 2. But we already know Yarrow 2 is true from Record 2, and Xenon 1 isn't mentioned elsewhere. However, this doesn't impact the Birch 5 status directly. \n\nSo, since we can't confirm Cedar 6, the chain Alder 4 + Cedar 6 → Zenith 3 → Birch 5 is broken at the first step. Therefore, there's no support for Birch 5 based on the given information. But wait, does that mean it's contradicted? No, because the absence of evidence isn't contradiction. The records don't say anything that would make Birch 5 impossible. It's just that we can't confirm it. So the answer should be undetermined (C).\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "f67b554711eb8cf4bfcb774371233f9b84c7da1aac7b75822555bfc32175370f",
+      "response_tokens": 563,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 560,
+      "structure_class": "PGF-04",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

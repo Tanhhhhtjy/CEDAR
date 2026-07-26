@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-005-R",
+    "index": 34,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 34,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 527,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 527
+        }
+      ],
+      "answer_logit_capture_indices": [
+        527
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 1.1032560368675515e-09,
+          "B": 2.6465738364624257e-09,
+          "C": 9.736200688534068e-10,
+          "D": 0.9999999952765499
+        },
+        "full_vocab_entropy": 1.0349918966312543e-07,
+        "full_vocab_probabilities": {
+          "A": 1.1032560420787263e-09,
+          "B": 2.646573848963385e-09,
+          "C": 9.736200734522527e-10,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 39.75,
+        "initial_rank": 1,
+        "logits": {
+          "A": 19.125,
+          "B": 20.0,
+          "C": 19.0,
+          "D": 39.75
+        },
+        "option_argmax": "D",
+        "option_mass": 1.00000000472345,
+        "ranks": {
+          "A": 3,
+          "B": 2,
+          "C": 4,
+          "D": 1
+        },
+        "target_logit": 19.125,
+        "target_minus_initial": -20.625,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-005",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F03",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "D",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-005-R",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 17,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "6f5ca10ef8bd3b9c2af73d3597f6ce7a179aca3c96b61d421a844ee84dd5aca3",
+      "prompt_token_ids_sha256": "be684b83debc1a0618bc0b1d3f32e4ada3039863b39d12f8eb7b70a6edb69319",
+      "prompt_tokens": 336,
+      "reasoning_token_count": 519,
+      "record_seed": 17,
+      "response": "<think>\nOkay, let's see. The question is whether Capsule C has status Solace 7, based on the given records. Let me go through each step carefully.\n\nFirst, looking at the records. Record 4 says Capsule C has status Vale 9. Record 5 says Capsule C has status Nimbus 2. Then there are several conditional statements.\n\nRecord 6: If Capsule C does NOT have Vale 9, then it has Orbit 3. But since Record 4 states that Capsule C does have Vale 9, the antecedent of Record 6 is false. In logic, if the antecedent is false, the implication is automatically true, but that doesn't tell us anything about the consequent. So Record 6 doesn't apply here because the condition isn't met.\n\nRecord 7: If Capsule C has Orbit 3, then it does NOT have Solace 7. But since we know from Record 4 that Capsule C has Vale 9, and that makes Record 6's condition false, we don't know if Orbit 3 is true. So Record 7's antecedent isn't necessarily triggered here.\n\nRecord 8: If Capsule C has Vale 9, then it has Timber 8. Since we know Vale 9 is true (Record 4), this means by Record 8, Timber 8 must also be true. So Capsule C has Timber 8.\n\nRecord 9: If Capsule C has Timber 8, then it has Solace 7. Since we just established through Record 8 that Timber 8 is true, then by Record 9, Solace 7 must also be true. Therefore, Capsule C has Solace 7.\n\nWait, but let me check again. Let me map it out:\n\n- From Record 4: Vale 9 is true for C.\n- Record 8: Vale 9 → Timber 8. Therefore, Timber 8 is true.\n- Record 9: Timber 8 → Solace 7. Therefore, Solace 7 is true.\n\nSo that's a straightforward chain. Therefore, the answer should be D) supported. The other records about Orbit 3 and Nimbus 2 don't interfere here. Also, Record 5's Nimbus 2 doesn't conflict with anything here. The conditionals only care about the statuses mentioned. Since all the steps from Vale 9 to Solace 7 are covered by Records 8 and 9, it's supported.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "ecb32315294e850f7c767e680af222eaa4874004bfd9d6485063e550d4984444",
+      "response_tokens": 530,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 527,
+      "structure_class": "PGF-01",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

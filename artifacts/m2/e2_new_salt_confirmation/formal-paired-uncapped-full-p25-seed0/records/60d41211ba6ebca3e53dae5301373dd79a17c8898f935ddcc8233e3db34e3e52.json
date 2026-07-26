@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-004-N",
+    "index": 24,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 24,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 603,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 603
+        }
+      ],
+      "answer_logit_capture_indices": [
+        603
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999993396070224,
+          "B": 8.76424256143196e-08,
+          "C": 5.71500399953683e-07,
+          "D": 1.2501520445214758e-09
+        },
+        "full_vocab_entropy": 9.665895049693063e-06,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 8.764248349280024e-08,
+          "C": 5.71500777368783e-07,
+          "D": 1.2501528701136522e-09
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 45.75,
+        "initial_rank": 1,
+        "logits": {
+          "A": 45.75,
+          "B": 29.5,
+          "C": 31.375,
+          "D": 25.25
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000006603934137,
+        "ranks": {
+          "A": 1,
+          "B": 3,
+          "C": 2,
+          "D": 4
+        },
+        "target_logit": 31.375,
+        "target_minus_initial": -14.375,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-004",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F02",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-004-N",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 12,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "a76afb5eae9f9629d0c7329d53b16db367c2e75a698564b37c7a0aae68934785",
+      "prompt_token_ids_sha256": "1c27935a425d729c1b2fe3d9b975e7a932df310419d038a9473a0f0ed0bd1572",
+      "prompt_tokens": 389,
+      "reasoning_token_count": 595,
+      "record_seed": 12,
+      "response": "<think>\nOkay, let's try to figure out if Volume C has status Dune 9. Let me start by looking at the records provided.\n\nFirst, the records mention Volume C has several statuses: Yarrow 4 (Record 1), Cedar 8 (Record 5), Willow 2 (Record 6). Then there are some conditional statements. \n\nLooking at the conditionals, Record 7 says if Volume C has Vale 1, then Willow 2. But we already know Volume C has Willow 2 from Record 6, but I don't see any mention of Vale 1. Not sure if that's relevant yet.\n\nThen there's Record 8: If Volume C has Yarrow 4 and Harbor 13, then Xenon 3. Well, Volume C does have Yarrow 4 (Record 1), but there's no mention of Harbor 13. So that condition isn't met. Therefore, Xenon 3 isn't triggered here.\n\nRecords 9 through 12 form a chain. If Xenon 3, then Ember 10; then Flint 11; then Grove 12; then Dune 9. But since we don't have Xenon 3 (because Harbor 13 isn't present), this chain doesn't start. \n\nSo, the only statuses for Volume C are Yarrow 4, Cedar 8, Willow 2. None of the conditions that would lead to Dune 9 are met. The existing statuses don't trigger the necessary steps to get to Dune 9. Therefore, there's no support for Dune 9. However, is there any contradiction? The records don't state that Dune 9 is impossible. They just don't provide the necessary conditions to reach it. Since the absence of information doesn't automatically negate it, but the question is whether it's supported. Since the steps to Dune 9 aren't satisfied, it's not supported. But maybe I'm missing something. Let me check again.\n\nWait, maybe there's another way to get Xenon 3? The only way mentioned is through Yarrow 4 and Harbor 13. Since Harbor 13 isn't present, that's blocked. So no Xenon 3, so no Ember 10, etc. Therefore, the chain to Dune 9 isn't activated. So the answer would be undetermined (A) because there's no information that confirms or denies Dune 9. Wait, but the question is whether it's supported. Since the conditions for Dune 9 aren't met, there's no support. But the answer options are: A) undetermined, B) contradicted, C) supported, D) both. Since there's no contradiction either (the system doesn't say Dune 9 can't exist), it's undetermined. So the answer is A.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "ef408eeab09957c42683c19e38e9ab26f3e575697dc7a59e0a8cd7ed1d834c75",
+      "response_tokens": 606,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 603,
+      "structure_class": "PGF-04",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

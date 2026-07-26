@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-014-N",
+    "index": 104,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 104,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 473,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 473
+        }
+      ],
+      "answer_logit_capture_indices": [
+        473
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999999713526461,
+          "B": 1.3176513669058935e-10,
+          "C": 6.22414393846793e-11,
+          "D": 2.8453347306957433e-08
+        },
+        "full_vocab_entropy": 4.990936872673046e-07,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 1.3176514046531196e-10,
+          "C": 6.224144116773189e-11,
+          "D": 2.8453348122070565e-08
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 47.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 47.0,
+          "B": 24.25,
+          "C": 23.5,
+          "D": 29.625
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000000286473547,
+        "ranks": {
+          "A": 1,
+          "B": 3,
+          "C": 4,
+          "D": 2
+        },
+        "target_logit": 29.625,
+        "target_minus_initial": -17.375,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-014",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F07",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-014-N",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 52,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "48b7473fe413d5eee870ea6552bc4973d24742e14b22e93f3d9d671009713396",
+      "prompt_token_ids_sha256": "ffa31bcf7230eddf0655c6ef4be39916f2506c95f7070b7805fd2a9ca8700e56",
+      "prompt_tokens": 482,
+      "reasoning_token_count": 465,
+      "record_seed": 52,
+      "response": "<think>\nOkay, let's try to figure out if Module E has status Flint 13. The question is asking whether this is supported, contradicted, or undetermined based on the given records and rules.\n\nFirst, I need to look at all the records related to Module E. From the records, Module E has statuses Alder 8 (Record 4), Grove 14 (Record 9), Vale 3 (Record 10). Then there are several conditional rules starting from Record 11 onwards.\n\nLooking at the conditionals for Module E. Record 11 says if E has Vale 3 and Willow 4, then Timber 2. But we know E has Vale 3 (Record 10), but there's no mention of Willow 4. So that condition isn't met, so Timber 2 isn't triggered.\n\nRecord 12: If E has Solace 1, then it's not the case that E has Flint 13. So if Solace 1 is true, Flint 13 is false. But do we have Solace 1? Let's check the other rules.\n\nRecord 13: If Grove 14, then Harbor 15. Since E has Grove 14 (Record 9), then by Record 13, Harbor 15 must be true. Then Record 14 says if Harbor 15, then Iris 16. So Iris 16 is true. Then Record 15: Iris 16 → Juniper 17. So Juniper 17 is true. Then Record 16: Juniper 17 → Kestrel 18. So Kestrel 18 is true. Then Record 17: Kestrel 18 → Solace 1. Therefore, Solace 1 is true.\n\nNow, with Solace 1 being true (from the chain starting at Grove 14), Record 12 applies. Record 12 says if Solace 1, then not Flint 13. Therefore, Flint 13 must be false. So the statement that Module E has Flint 13 is contradicted. Therefore, the answer should be A) contradicted.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "547a06d7fd468bf122cd646f1cf188960a490635fb8a03a3e0fd20c4915b5e05",
+      "response_tokens": 476,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 473,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

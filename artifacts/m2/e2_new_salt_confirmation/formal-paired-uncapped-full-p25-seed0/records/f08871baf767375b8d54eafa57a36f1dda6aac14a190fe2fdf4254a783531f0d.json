@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-012-N",
+    "index": 88,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 88,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 636,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 636
+        }
+      ],
+      "answer_logit_capture_indices": [
+        636
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 4.277787829509401e-11,
+          "B": 0.9999999961043504,
+          "C": 3.850741932529737e-09,
+          "D": 2.1297852721306127e-12
+        },
+        "full_vocab_entropy": 7.616544195343522e-08,
+        "full_vocab_probabilities": {
+          "A": 4.2777878461741636e-11,
+          "B": 1.0,
+          "C": 3.850741947530878e-09,
+          "D": 2.1297852804275097e-12
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 44.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 20.375,
+          "B": 44.25,
+          "C": 24.875,
+          "D": 17.375
+        },
+        "option_argmax": "B",
+        "option_mass": 1.0000000038956496,
+        "ranks": {
+          "A": 3,
+          "B": 1,
+          "C": 2,
+          "D": 5
+        },
+        "target_logit": 24.875,
+        "target_minus_initial": -19.375,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-012",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F06",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-012-N",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 44,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "47d64dc952fad0291cde3dad41008ab99dd80b6309baca6ddda4cc0f478cf3d0",
+      "prompt_token_ids_sha256": "73ac973e82ccc3dd8ed52078c73d66e5e2b5b0ea88923b484f6768bfe7ccfa7e",
+      "prompt_tokens": 451,
+      "reasoning_token_count": 628,
+      "record_seed": 44,
+      "response": "<think>\nOkay, let's try to figure out if Volume D has status Orbit 13. The question is asking whether this is supported, undetermined, contradicted, or both. Let me go through the records step by step.\n\nFirst, looking at the records provided. Record 11 says Volume D has status Dune 3. Record 8 says Volume D has status Kestrel 10. Also, Record 1 says Volume D has a link Birch 1 to Volume F. Then Record 2 says Volume F has a link Birch 1 to Volume A. \n\nNow, looking at the rules. Record 14 states that if an item has a link Birch 1 to another, then it also has a link Prairie 14 to that same other item. So since Volume D has a Birch 1 link to F (Record 1), by Record 14, Volume D must have a Prairie 14 link to F. \n\nThen Record 15 says if an item has a Prairie 14 link to another, and that other item has a Birch 1 link to a third, then the original item has a Prairie 14 link to the third. So Volume D has Prairie 14 to F (from Record 14), and Volume F has Birch 1 to A (Record 2). Therefore, by Record 15, Volume D must have Prairie 14 to A. \n\nNow, Record 13 says if Volume D has a Prairie 14 link to B, then it does not have status Orbit 13. But wait, we have Volume D having Prairie 14 links to F and A, but do we have a link to B? The initial records don't mention Volume D linking to B directly. The only links are D to F (Birch and Prairie), F to A (Birch, leading to D's Prairie to A). There's no mention of Volume D having a Prairie 14 link to B. \n\nSo Record 13's condition is about a Prairie 14 link to B. Since we don't have any information that Volume D has a Prairie 14 link to B, the antecedent of Record 13 (the \"if\" part) isn't met. Therefore, we can't apply Record 13 to conclude anything about Orbit 13 status. \n\nAdditionally, there's Record 12, which requires Volume D to have both Dune 3 and Ember 4 statuses to get Cedar 2. But Volume D only has Dune 3 (Record 11), and there's no mention of Ember 4. So that rule doesn't trigger either.\n\nLooking at other records, none of them mention Orbit 13 except Record 13, which we can't apply because the condition isn't met. There's no other rule that directly mentions Orbit 13. Therefore, there's no information to support or contradict that Volume D has Orbit 13. The answer should be undetermined.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "2c38f1d5cc1b66b7169bafb601ea6073ec0d0a0f8bb4522daa45151e780d40c3",
+      "response_tokens": 639,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 636,
+      "structure_class": "PGF-06",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

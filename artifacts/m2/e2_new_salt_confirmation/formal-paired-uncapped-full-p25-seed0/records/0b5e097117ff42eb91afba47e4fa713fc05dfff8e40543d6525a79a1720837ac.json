@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-010-R",
+    "index": 74,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 74,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 653,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 653
+        }
+      ],
+      "answer_logit_capture_indices": [
+        653
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 4.847368481921914e-11,
+          "B": 8.592166614396054e-10,
+          "C": 4.139937639635764e-08,
+          "D": 0.9999999576929333
+        },
+        "full_vocab_entropy": 7.281186071850243e-07,
+        "full_vocab_probabilities": {
+          "A": 4.8473686869998645e-11,
+          "B": 8.592166977905435e-10,
+          "C": 4.139937814784389e-08,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 42.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 18.75,
+          "B": 21.625,
+          "C": 25.5,
+          "D": 42.5
+        },
+        "option_argmax": "D",
+        "option_mass": 1.0000000423070685,
+        "ranks": {
+          "A": 5,
+          "B": 3,
+          "C": 2,
+          "D": 1
+        },
+        "target_logit": 25.5,
+        "target_minus_initial": -17.0,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-010",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F05",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "D",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-010-R",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 37,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "7456197cbf9f8265043d4615fc22ec1678858289d0451642d13ed4ee8d17cc39",
+      "prompt_token_ids_sha256": "0cf4d9c54f8ce155bf0f00236a5232c5f82102c94208cb9a0925fae0f70fa8a5",
+      "prompt_tokens": 555,
+      "reasoning_token_count": 645,
+      "record_seed": 37,
+      "response": "<think>\nOkay, let's try to figure out if Assembly B has status Vale 18. Let me start by going through the records step by step.\n\nFirst, from the records given, Record 1 says that Assembly B has a link Orbit 12 to Assembly C. Then, Record 6 states that Assembly B has status Timber 17. But there's also Record 7 which says Assembly C has status Harbor 6. However, the key part here is the conditional rules.\n\nLooking at Record 8: If Assembly B has link Orbit 12 to Assembly C, then Assembly B has status Cedar 1. Since Record 1 confirms that link exists, we can apply this rule. So, according to Record 8, Assembly B must have status Cedar 1. \n\nNow, moving down the chain of conditionals. Record 10 says if B has Cedar 1, then it has Dune 2. So from Cedar 1 (from Record 8), we get Dune 2 (Record 10). Then Record 11: Dune 2 leads to Ember 3. Then Record 12: Ember 3 leads to Flint 4. Then Record 13: Flint 4 leads to Grove 5. Then Record 14: Grove 5 means B does NOT have Vale 18. \n\nSo if all these steps are valid, then Assembly B cannot have Vale 18. But wait, there's another path. Let me check if there's any other way Vale 18 could be assigned. \n\nLooking at Records 9 and beyond. Record 9 is about a link to Assembly A, but the link here is to C, so that path (Iris 7, etc.) doesn't apply. The other path starting with Cedar 1 leads through Dune, Ember, Flint, Grove, and then Record 14 says Grove 5 implies not Vale 18. \n\nBut then there's Records 19 which says if B has Nimbus 11, then Vale 18. However, the path leading to Nimbus 11 is through the Iris 7 path (which isn't triggered here because the link is to C, not A). So that path isn't active here. \n\nSo the main chain here is: link to C → Cedar 1 → Dune 2 → Ember 3 → Flint 4 → Grove 5 → not Vale 18. Therefore, Assembly B cannot have Vale 18. \n\nBut wait, the initial status of B is given as Timber 17 (Record 6) and Harbor 6 for C (Record 7). Do these conflict with any of the derived statuses? The problem says to treat the rules as exact and use only the listed records. The records don't say anything about Timber 17 conflicting with other statuses. Maybe multiple statuses can coexist. \n\nSo the conclusion from the rules is that because of the link to C, B has Cedar 1 and eventually Grove 5, which directly contradicts Vale 18. Therefore, the answer should be D) contradicted.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "4aaaf6d812ccc6b6da98afbea1a68885cda8b6b0f7605fd884e8539ded35f699",
+      "response_tokens": 656,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 653,
+      "structure_class": "PGF-08",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

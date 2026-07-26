@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-009-R",
+    "index": 18,
+    "scope": "smoke",
+    "seed": 0
+  },
+  "payload": {
+    "index": 18,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 320,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 320
+        }
+      ],
+      "answer_logit_capture_indices": [
+        320
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 2.1724398630953905e-10,
+          "B": 8.592166962906784e-10,
+          "C": 6.69158616237589e-10,
+          "D": 0.9999999982543808
+        },
+        "full_vocab_entropy": 4.0964124536913005e-08,
+        "full_vocab_probabilities": {
+          "A": 2.1724398668876432e-10,
+          "B": 8.592166977905435e-10,
+          "C": 6.691586174056852e-10,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 43.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 21.25,
+          "B": 22.625,
+          "C": 22.375,
+          "D": 43.5
+        },
+        "option_argmax": "D",
+        "option_mass": 1.0000000017456192,
+        "ranks": {
+          "A": 4,
+          "B": 2,
+          "C": 3,
+          "D": 1
+        },
+        "target_logit": 22.375,
+        "target_minus_initial": -21.125,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-009",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F05",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "D",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-009-R",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 9,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "bb137feb113292e122014c70c47157abb25d79deac8c0646a31c51a57f815bfe",
+      "prompt_token_ids_sha256": "ecdee58e3de9aec0ebe490953b3608f3614c39f3bdc9eed135922427e45c3e6d",
+      "prompt_tokens": 344,
+      "reasoning_token_count": 312,
+      "record_seed": 9,
+      "response": "<think>\nOkay, let's go through this step by step. The question is whether Vessel C has the status Prairie 8. Let's look at the records and rules provided.\n\nFirst, the records mention that Vessel C has a link Kestrel 4 to Vessel E (Record 1). Then, Record 6 says that if Vessel C has that link to E, then C has status Harbor 1. So from Record 1 and 6, we can conclude that Vessel C's status is Harbor 1.\n\nNow, looking at Record 8: If Vessel C has status Harbor 1, then it does NOT have status Prairie 8. Since we just established that C has Harbor 1, this means Prairie 8 is excluded. So that would mean the answer is D) contradicted, because having Prairie 8 would conflict with Harbor 1.\n\nBut wait, let me check if there's another way C could have Prairie 8. Let's see the other rules. Record 7 says if C has a link to D, then C has Juniper 3. Then Record 9 says if C has Juniper 3, then Prairie 8. But in our case, the link is to E, not D. So Record 7 doesn't apply here. So the only applicable rule is 6 leading to Harbor 1, which triggers Record 8, blocking Prairie 8. Therefore, there's no way for C to have Prairie 8 here. The answer should be D.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "6ffd85ef5fb5e3cc6878eec6856da1045dec9340760b15e4144d5ec299a632e8",
+      "response_tokens": 323,
+      "scope": "smoke",
+      "seed": 0,
+      "selected_answer_logit_index": 320,
+      "structure_class": "PGF-08",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "fa0af57e0558f059bd81d1d73d77bd9a9b6c6c8e2d390e6cc4fd094de9817d47"
+}

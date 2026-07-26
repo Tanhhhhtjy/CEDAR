@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-007-N",
+    "index": 48,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 48,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 537,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 537
+        }
+      ],
+      "answer_logit_capture_indices": [
+        537
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 7.835042292405517e-13,
+          "B": 5.109088932275014e-12,
+          "C": 0.9999999998249176,
+          "D": 1.6918980102844508e-10
+        },
+        "full_vocab_entropy": 4.990469815169263e-09,
+        "full_vocab_probabilities": {
+          "A": 7.835042293777295e-13,
+          "B": 5.1090889331695255e-12,
+          "C": 1.0,
+          "D": 1.6918980105806725e-10
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 49.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 21.125,
+          "B": 23.0,
+          "C": 49.0,
+          "D": 26.5
+        },
+        "option_argmax": "C",
+        "option_mass": 1.0000000001750824,
+        "ranks": {
+          "A": 6,
+          "B": 5,
+          "C": 1,
+          "D": 2
+        },
+        "target_logit": 26.5,
+        "target_minus_initial": -22.5,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-007",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F04",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-007-N",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 24,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "84689debba4e3c84f9e701444cc61dd0116db25d56b6cf1088bf90a25a275ab6",
+      "prompt_token_ids_sha256": "40e6c8c81745c99c24c5f286b87d9fd6eae2e8d6e178399abe568bd08735fe1f",
+      "prompt_tokens": 286,
+      "reasoning_token_count": 529,
+      "record_seed": 24,
+      "response": "<think>\nOkay, let's try to figure this out step by step. The question is whether Specimen B has status Dune 6 based on the given records. Let me start by reviewing all the records provided.\n\nFirst, the records:\n\n1. Specimen B has status Birch 4.\n2. Specimen C has status Cedar 5. (Not directly relevant to B, so maybe ignore this for now.)\n3. Specimen B has status Zenith 2.\n4. If B has Yarrow 1, then B has Zenith 2. (But we already know B has Zenith 2 from record 3. Not sure if this is relevant unless Yarrow 1 is involved.)\n5. If B has Birch 4 and Ember 7, then B has Alder 3. (Record 1 says B has Birch 4. But do we know if B has Ember 7?)\n6. If B has Alder 3, then B has Dune 6. (So if we can get Alder 3, then Dune 6 follows.)\n\nThe goal is to see if Dune 6 is supported for B. Let's break it down.\n\nFrom Record 1: B has Birch 4. So the first part of the condition in Record 5 is satisfied. But Record 5 requires both Birch 4 and Ember 7 to conclude Alder 3. However, there's no mention of Ember 7 in any of the records provided. So unless there's a way to infer Ember 7 from other records, we can't apply Record 5. \n\nLooking at other records: Records 3 and 4. Record 3 says B has Zenith 2. Record 4 is a conditional that if B had Yarrow 1, then Zenith 2 would follow. But since B already has Zenith 2, that doesn't help us here. \n\nSo, since we don't have any information about Ember 7, we can't confirm that the antecedent of Record 5 (Birch 4 and Ember 7) is true. Without that, we can't derive Alder 3. And without Alder 3, Record 6 can't be used to get Dune 6. \n\nTherefore, the status of Dune 6 for B isn't directly stated, nor can it be inferred because a necessary condition (Ember 7) is missing. The answer should be undetermined because we don't have enough information to confirm or deny the necessary steps to reach Dune 6.\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "549978cbc4ec07e393146bea81f35ca99e2aabe2353b2dae3f5e74dfbf546133",
+      "response_tokens": 540,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 537,
+      "structure_class": "PGF-04",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

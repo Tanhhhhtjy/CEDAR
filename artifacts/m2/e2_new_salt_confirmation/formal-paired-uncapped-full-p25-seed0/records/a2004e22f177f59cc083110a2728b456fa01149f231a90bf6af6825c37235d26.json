@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-007-R",
+    "index": 50,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 50,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 428,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 428
+        }
+      ],
+      "answer_logit_capture_indices": [
+        428
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 5.10908892662372e-12,
+          "B": 2.5946095932936015e-11,
+          "C": 0.999999998718792,
+          "D": 1.2501528685119464e-09
+        },
+        "full_vocab_entropy": 3.173944662648864e-08,
+        "full_vocab_probabilities": {
+          "A": 5.1090889331695255e-12,
+          "B": 2.5946095966178362e-11,
+          "C": 1.0,
+          "D": 1.2501528701136522e-09
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 44.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 18.5,
+          "B": 20.125,
+          "C": 44.5,
+          "D": 24.0
+        },
+        "option_argmax": "C",
+        "option_mass": 1.000000001281208,
+        "ranks": {
+          "A": 7,
+          "B": 5,
+          "C": 1,
+          "D": 2
+        },
+        "target_logit": 24.0,
+        "target_minus_initial": -20.5,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-007",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F04",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-007-R",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 25,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "f237009c8f0f133a874adccc8c557aded2cecf65c016a52a4781661961942fb9",
+      "prompt_token_ids_sha256": "19a19af56fa07bb4384bf91c3c58097f94714ec68fa24e4c27e81aff0f070927",
+      "prompt_tokens": 284,
+      "reasoning_token_count": 420,
+      "record_seed": 25,
+      "response": "<think>\nOkay, let's see. The question is whether Specimen B has status Dune 6 based on the given records. Let me go through each step carefully.\n\nFirst, looking at the records:\n\nRecord 1 says B has Birch 4.\nRecord 3 says B has Zenith 2.\nRecord 4 is a conditional: If B has Yarrow 1, then Zenith 2. But since B already has Zenith 2 per Record 3, maybe that's not directly relevant unless Yarrow 1 is involved. But there's no mention of Yarrow 1 in other records for B, so maybe Record 4 isn't triggered here.\n\nRecord 5: If B has Birch 4 AND Ember 7, then B gets Alder 3. From Record 1, B does have Birch 4. But do we know if B has Ember 7? The records don't mention Ember 7 for B. So the condition for Record 5 isn't fully met because we don't have both Birch 4 and Ember 7. Therefore, we can't conclude Alder 3 from Record 5.\n\nRecord 6: If B has Alder 3, then Dune 6. But since we can't establish Alder 3 (because Record 5's conditions aren't met), Record 6's antecedent isn't satisfied. So we can't derive Dune 6.\n\nSo, the key here is whether B has Ember 7. The records don't state that, so we can't assume it. Therefore, the chain to get to Dune 6 (Birch 4 + Ember 7 → Alder 3 → Dune 6) is missing a necessary link. Without knowing about Ember 7, we can't proceed. The existing statuses (Birch 4 and Zenith 2) don't trigger any other rules that lead to Dune 6. So the conclusion is that it's undetermined because we don't have enough information about Ember 7.\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "9fe144e4342489df713a85f709a32464812c99e6da793bccce99775ea95524aa",
+      "response_tokens": 431,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 428,
+      "structure_class": "PGF-04",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-023-N",
+    "index": 176,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 176,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 526,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 526
+        }
+      ],
+      "answer_logit_capture_indices": [
+        526
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 2.413362694511354e-12,
+          "B": 2.1724398660428961e-10,
+          "C": 1.6918980099227826e-10,
+          "D": 0.9999999996111528
+        },
+        "full_vocab_entropy": 9.795867228490351e-09,
+        "full_vocab_probabilities": {
+          "A": 2.4133626954497833e-12,
+          "B": 2.1724398668876432e-10,
+          "C": 1.6918980105806725e-10,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 42.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 15.75,
+          "B": 20.25,
+          "C": 20.0,
+          "D": 42.5
+        },
+        "option_argmax": "D",
+        "option_mass": 1.0000000003888472,
+        "ranks": {
+          "A": 7,
+          "B": 2,
+          "C": 3,
+          "D": 1
+        },
+        "target_logit": 20.25,
+        "target_minus_initial": -22.25,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-023",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F12",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "D",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-023-N",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 88,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "919fa12e3e909e48ce5e32e4fce9154a2e288b326c549ccf51679fa1c4fafdda",
+      "prompt_token_ids_sha256": "000b5b1dcfc37ed6c5d8a490644cc9472e9f1d7efdfd5a616a1f1d6ce82d6dbf",
+      "prompt_tokens": 318,
+      "reasoning_token_count": 518,
+      "record_seed": 88,
+      "response": "<think>\nOkay, let's try to figure this out step by step. The question is whether Specimen A has status Vale 6, and the options are whether it's supported, undetermined, both, or contradicted. \n\nFirst, I need to look at the records provided. Let me list them out again to make sure I have them right.\n\nRecord 1: Specimen C has Solace 4.\nRecord 2: Specimen B has Timber 5.\nRecord 3: Specimen A has Willow 7.\nRecord 4: Specimen A has Quill 2.\nRecord 5: If an item has Quill 2, then it has Rowan 3.\nRecord 6: If Specimen A has Prairie 1, then it does not have Vale 6.\nRecord 7: If Specimen A has Willow 7, then it has Xenon 8.\nRecord 8: If Specimen A has Xenon 8, then it has Prairie 1.\n\nSo, starting with Specimen A. From Record 3, A has Willow 7. According to Record 7, if A has Willow 7, then it must have Xenon 8. So by modus ponens, we can conclude A has Xenon 8. \n\nThen, Record 8 says if A has Xenon 8, then it has Prairie 1. Applying modus ponens again, since we just established Xenon 8, so Prairie 1 must be true for A. \n\nNow, Record 6 states that if A has Prairie 1, then it does not have Vale 6. Since we just deduced Prairie 1 is true for A, then according to Record 6, Vale 6 must be false for A. Therefore, the statement that A has Vale 6 is contradicted. \n\nWait, but the question is asking if it's supported, undetermined, etc. Since the conclusion is that Vale 6 is not true (due to Record 6), then the answer would be contradicted, which is option D. \n\nLet me check if there's any other path or if I missed something. The only way Vale 6 could be supported is if there's a rule that leads to it. But the records don't mention any rules that would result in Vale 6 except Record 6, which actually blocks it when Prairie 1 is true. Since we have Prairie 1 being true, Vale 6 is definitely not supported. So the answer should be D.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "66363b48f85df12c06f217315d12de5384ac76390618a3eb3b3b5421ae6020ff",
+      "response_tokens": 529,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 526,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

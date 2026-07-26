@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-011-R",
+    "index": 2,
+    "scope": "smoke",
+    "seed": 0
+  },
+  "payload": {
+    "index": 2,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 752,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 752
+        }
+      ],
+      "answer_logit_capture_indices": [
+        752
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999994947038826,
+          "B": 5.905301039629628e-10,
+          "C": 3.581746143941407e-10,
+          "D": 5.04347412784272e-07
+        },
+        "full_vocab_entropy": 7.3382725531701e-06,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 5.905304023556823e-10,
+          "C": 3.581747953784742e-10,
+          "D": 5.043476676291903e-07
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 44.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 44.25,
+          "B": 23.0,
+          "C": 22.5,
+          "D": 29.75
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000005052963727,
+        "ranks": {
+          "A": 1,
+          "B": 3,
+          "C": 4,
+          "D": 2
+        },
+        "target_logit": 29.75,
+        "target_minus_initial": -14.5,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-011",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F06",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-011-R",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 1,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "c188b588068dc854edb7a32bc1a6d4529de610aef8b9251f8d39fdb3150eb5f8",
+      "prompt_token_ids_sha256": "9c3603fba88bb0e09c8957c338aad027becdc5661d9f2319930134ae91649bef",
+      "prompt_tokens": 324,
+      "reasoning_token_count": 744,
+      "record_seed": 1,
+      "response": "<think>\nOkay, let's try to figure this out. The question is whether Station D has status Juniper 6, based on the given records. Let me go through each record step by step.\n\nFirst, the records provided are:\n\n1. Station C has status Iris 5.\n2. Station D has status Grove 3.\n3. If Station D has status Grove 3 and Station D has status Harbor 4, then Station D has status Flint 2.\n4. If Station D has link Kestrel 7 to Station A, then it is not the case that Station D has status Juniper 6.\n5. If an item has link Ember 1 to another item, then that same item has link Kestrel 7 to that other item.\n6. If an item has link Kestrel 7 to another item and that other item has link Ember 1 to a third item, then that same item has link Kestrel 7 to that third item.\n\nThe question is about whether Station D has status Juniper 6. The options are whether it's supported, contradicted, undetermined, etc.\n\nFrom Record 2, we know that Station D has status Grove 3. But that's a status, not a link. Now, looking at Record 4: If Station D has a link Kestrel 7 to Station A, then Station D does not have status Juniper 6. So, if we can determine whether Station D has that link, we can apply this rule.\n\nBut do we have any information about links involving Station D? Let's check the other records. Records 5 and 6 talk about links Ember 1 and Kestrel 7. However, none of the records directly mention Station D having a link to another station. The only links mentioned are in Records 4-6 as conditional statements.\n\nSo, unless there's a way to infer that Station D has a Kestrel 7 link to Station A, we can't apply Record 4. Let's see if there's a way to derive that. \n\nLooking at Records 5 and 6. Suppose some item has a link Ember 1 to another. Then, by Record 5, that same item has a Kestrel 7 link. Then, if that other item has an Ember 1 link to a third, by Record 6, the original item has Kestrel 7 to the third. But do we have any information about any Ember 1 links involving Station D? The problem doesn't state that. \n\nFor example, if Station D had an Ember 1 link to another station, say Station B, then by Record 5, Station D would have a Kestrel 7 link to Station B. But unless that's given, we can't assume. The records don't mention any such links for Station D. \n\nTherefore, there's no information that directly states or allows us to infer that Station D has a Kestrel 7 link to Station A. Without that, the antecedent of Record 4 isn't met, so we can't conclude anything about Juniper 6 status from Record 4. \n\nAdditionally, none of the other records mention Juniper 6 except Record 4. So there's no other rule that would support or contradict Station D having Juniper 6. \n\nTherefore, since we can't determine whether the condition in Record 4 is true (because we don't know if there's a Kestrel 7 link to Station A), the status of Juniper 6 for Station D is undetermined. The answer should be A.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "732b54366019eda3ceae5d4b9cb920e7e610c50b4022ebe78190ec232146e160",
+      "response_tokens": 755,
+      "scope": "smoke",
+      "seed": 0,
+      "selected_answer_logit_index": 752,
+      "structure_class": "PGF-06",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "fa0af57e0558f059bd81d1d73d77bd9a9b6c6c8e2d390e6cc4fd094de9817d47"
+}

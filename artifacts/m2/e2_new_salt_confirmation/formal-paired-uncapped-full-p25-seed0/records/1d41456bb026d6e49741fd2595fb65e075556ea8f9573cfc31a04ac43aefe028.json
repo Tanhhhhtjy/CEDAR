@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-024-R",
+    "index": 186,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 186,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 400,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 400
+        }
+      ],
+      "answer_logit_capture_indices": [
+        400
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 2.9400776917840634e-11,
+          "B": 1.1032560408004905e-09,
+          "C": 0.999999998841397,
+          "D": 2.594609593611714e-11
+        },
+        "full_vocab_entropy": 2.7589999618271577e-08,
+        "full_vocab_probabilities": {
+          "A": 2.940077695190446e-11,
+          "B": 1.1032560420787263e-09,
+          "C": 1.0,
+          "D": 2.5946095966178362e-11
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 39.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 15.25,
+          "B": 18.875,
+          "C": 39.5,
+          "D": 15.125
+        },
+        "option_argmax": "C",
+        "option_mass": 1.000000001158603,
+        "ranks": {
+          "A": 4,
+          "B": 2,
+          "C": 1,
+          "D": 5
+        },
+        "target_logit": 18.875,
+        "target_minus_initial": -20.625,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-024",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F12",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-024-R",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 93,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "35dcb6b0135a9f91966007e60939b5b9ccb5054e856c020c15932936e8b48dcc",
+      "prompt_token_ids_sha256": "27ce1c388314072a6c9f83cd75bab9737a270011ae161991f176197e48f83fa8",
+      "prompt_tokens": 416,
+      "reasoning_token_count": 392,
+      "record_seed": 93,
+      "response": "<think>\nOkay, let's see. The question is whether Beacon B having status Birch 10 is supported, undetermined, contradicted, or both. Let me go through the records again carefully.\n\nFirst, looking at the records about Beacon B. Record 4 says Beacon B has Yarrow 7. Record 7 says it has Cedar 11. Record 8 says it has Solace 2. Then there are several conditional rules starting from Record 9 onwards.\n\nStarting with Record 8: Beacon B has Solace 2. According to Record 9, if an item has Solace 2, then it also has Timber 3. So Beacon B must have Timber 3. But that's not directly related to Birch 10.\n\nNow, looking at the chain of conditionals for Beacon B. Record 11 says if B has Cedar 11, then it has Dune 12. Since Record 7 states B does have Cedar 11, we can apply this. So B gets Dune 12. Then Record 12: if Dune 12, then Ember 13. So now B has Ember 13. Record 13: Ember 13 implies Flint 14. Then Record 14: Flint 14 implies Rowan 1. So following this chain, B ends up with Rowan 1.\n\nNow, Record 10 says if B has Rowan 1, then it is not the case that B has Birch 10. Since we just deduced that B has Rowan 1 through the chain of conditionals (from Cedar 11 all the way to Rowan 1), then according to Record 10, B cannot have Birch 10. Therefore, the statement that B has Birch 10 is contradicted.\n\nSo the answer should be C) contradicted.\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "b37e40f5d26bf21272109b4262986ea0b7478b6348f4db67ae685bdb64bb73c0",
+      "response_tokens": 403,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 400,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

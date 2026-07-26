@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-001-N",
+    "index": 0,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 0,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 535,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 535
+        }
+      ],
+      "answer_logit_capture_indices": [
+        535
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 3.3315444050777924e-11,
+          "B": 2.9989608481864107e-09,
+          "C": 0.9999999969192501,
+          "D": 4.847368672066334e-11
+        },
+        "full_vocab_entropy": 6.520139805843428e-08,
+        "full_vocab_probabilities": {
+          "A": 3.3315444153414475e-11,
+          "B": 2.998960857425459e-09,
+          "C": 1.0,
+          "D": 4.8473686869998645e-11
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 43.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 19.375,
+          "B": 23.875,
+          "C": 43.5,
+          "D": 19.75
+        },
+        "option_argmax": "C",
+        "option_mass": 1.0000000030807499,
+        "ranks": {
+          "A": 5,
+          "B": 2,
+          "C": 1,
+          "D": 4
+        },
+        "target_logit": 19.375,
+        "target_minus_initial": -24.125,
+        "target_rank": 5,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-001",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F01",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-001-N",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 0,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "ed2ee533fb713d94d7336a1a2aed22d8923df928a044bdbb93ad9401ac19fac5",
+      "prompt_token_ids_sha256": "1b5e0e3c58d6ffa29803e85ea398d21ea82ef7672555eb344e05149f0d5e94ec",
+      "prompt_tokens": 320,
+      "reasoning_token_count": 527,
+      "record_seed": 0,
+      "response": "<think>\nOkay, let's try to figure this out step by step. The question is whether Vessel E has status Cedar 6, based on the given records. Let me start by reviewing all the records and rules provided.\n\nFirst, the records about Vessel E:\n- Record 3: Vessel E has status Dune 7.\n- Record 4: Vessel E has status Yarrow 2.\nThen there are several conditional rules (Records 5-8) that might apply here.\n\nStarting with Record 4: Vessel E has Yarrow 2. According to Record 5, if an item has Yarrow 2, then it also has Zenith 3. So, does that mean Vessel E has Zenith 3? Yes, by modus ponens. But Zenith 3 isn't directly relevant to Cedar 6, so let's move on.\n\nLooking at Record 3: Vessel E has Dune 7. Record 7 says if Vessel E has Dune 7, then it has Ember 8. So applying modus ponens here, we can conclude Vessel E has Ember 8. Then, Record 8 states that if Vessel E has Ember 8, then it has Xenon 1. So again, modus ponens gives us Xenon 1 for Vessel E.\n\nNow, Record 6 comes into play. It says if Vessel E has Xenon 1, then it does NOT have Cedar 6. Since we just established that Vessel E has Xenon 1 (through Dune 7 → Ember 8 → Xenon 1), applying modus ponens to Record 6 would mean that Vessel E does not have Cedar 6. Therefore, the status Cedar 6 for Vessel E is contradicted.\n\nWait, but the question is whether it's supported, undetermined, contradicted, etc. Since the conclusion is that it does not have Cedar 6, that would mean the statement \"Vessel E has Cedar 6\" is contradicted. So the answer should be C) contradicted.\n\nLet me double-check each step to make sure I didn't make a mistake. Starting from Dune 7 (Record 3) leads to Ember 8 (Record 7), then to Xenon 1 (Record 8). Then Record 6 uses Xenon 1 to negate Cedar 6. All the conditionals are straightforward. There's no mention of any other paths that could lead to Cedar 6. Therefore, the conclusion holds.\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "0ae0608a63d4854cab4a8156c661b7721648765dc5f0a151b01f9811f9c1eaf6",
+      "response_tokens": 538,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 535,
+      "structure_class": "PGF-02",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

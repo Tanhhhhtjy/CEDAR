@@ -1,0 +1,75 @@
+{
+  "configuration": {
+    "claim_scope": "new_salt_unselected_instance_confirmation",
+    "conditions": [
+      "uncapped",
+      "full_p25"
+    ],
+    "dataset": {
+      "families": [
+        "CEDAR-E2C-F02",
+        "CEDAR-E2C-F05",
+        "CEDAR-E2C-F06",
+        "CEDAR-E2C-F08",
+        "CEDAR-E2C-F10",
+        "CEDAR-E2C-F12"
+      ],
+      "input_rows": 24,
+      "path": "datasets/m2_2b_formal/e2_new_salt_confirmation/arms96.jsonl",
+      "result_rows": 48,
+      "selection": {
+        "ids_sha256": "10a7b92501fe9d17b2de8e66d3438f5bd329dd817df679e0fb6ad31ca91b6fbd",
+        "messages_sha256": "8428d968695fac1a3aee14d77aa2a2460acb93fa1ce753049aff71f5b58cffba",
+        "result_cells": 48,
+        "rows": 24,
+        "scope": "smoke"
+      }
+    },
+    "generation": {
+      "answer_repair": false,
+      "batch_size": 1,
+      "content_retry": false,
+      "do_sample": false,
+      "max_new_tokens": 4096,
+      "mode": "thinking",
+      "num_beams": 1
+    },
+    "git": {
+      "base_commit": "10120d04d00e3c9122bf2a2ba590bd403373fa45",
+      "base_is_ancestor": true,
+      "branch": "agent/e2-new-salt-confirmation-v1",
+      "commit": "5540c877a00aba30d3815430c21267756140d5d7",
+      "dirty": false,
+      "head_matches_upstream": true,
+      "upstream_commit": "5540c877a00aba30d3815430c21267756140d5d7"
+    },
+    "kind": "CEDAR E2 new-salt unselected instance confirmation",
+    "model": {
+      "attention_implementation": "sdpa",
+      "dtype": "bfloat16",
+      "repo_id": "Qwen/Qwen3-32B",
+      "revision": "9216db5781bf21249d130ec9da846c4624c16137"
+    },
+    "paired_order": "each prompt uncapped then full_p25",
+    "prohibited": [
+      "p1",
+      "additional_salt",
+      "additional_seed",
+      "item_deletion",
+      "answer_repair",
+      "patching",
+      "LoFa",
+      "J-Lens"
+    ],
+    "scope": "smoke",
+    "seed": 0,
+    "truncation_policy": {
+      "classification": "invalid_or_abstain",
+      "itt": true,
+      "manual_credit": false,
+      "retry": false
+    }
+  },
+  "created_at": "2026-07-26T02:51:21.133321+08:00",
+  "fingerprint": "fa0af57e0558f059bd81d1d73d77bd9a9b6c6c8e2d390e6cc4fd094de9817d47"
+}

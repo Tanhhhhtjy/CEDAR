@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-006-R",
+    "index": 42,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 42,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 520,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 520
+        }
+      ],
+      "answer_logit_capture_indices": [
+        520
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 1.2098656547956165e-06,
+          "B": 2.510995948967399e-08,
+          "C": 0.9999987637742344,
+          "D": 1.2501513246424633e-09
+        },
+        "full_vocab_entropy": 1.695587343419902e-05,
+        "full_vocab_probabilities": {
+          "A": 1.2098671504645608e-06,
+          "B": 2.510999053129126e-08,
+          "C": 1.0,
+          "D": 1.2501528701136522e-09
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 43.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 29.625,
+          "B": 25.75,
+          "C": 43.25,
+          "D": 22.75
+        },
+        "option_argmax": "C",
+        "option_mass": 1.0000012362272939,
+        "ranks": {
+          "A": 2,
+          "B": 3,
+          "C": 1,
+          "D": 4
+        },
+        "target_logit": 29.625,
+        "target_minus_initial": -13.625,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-006",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F03",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-006-R",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 21,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "32d0c19bebcbc19ac64eadd83bf9891d517a92db0bd9809ce05ad5c82a5f8a9a",
+      "prompt_token_ids_sha256": "38a445703fd07c9219fa928d6b9bbf038ca9388f65f6321ffa54d080409c5abb",
+      "prompt_tokens": 486,
+      "reasoning_token_count": 512,
+      "record_seed": 21,
+      "response": "<think>\nOkay, let's tackle this problem step by step. The question is whether Module D having status Yarrow 13 is supported, contradicted, undetermined, or both supported and contradicted based on the given records and rules.\n\nFirst, I need to look at the records related to Module D. From the records:\n\nRecord 8 says Module D has status Cedar 17.\nRecord 9 says Module D has status Morrow 2.\nThen there are several conditional statements starting from Record 10.\n\nNow, let's process the conditionals. Since Record 8 states that Module D has Cedar 17, the antecedent in Record 10 (\"If it is not the case that Module D has status Cedar 17...\") is false. In logic, if the antecedent of a conditional is false, the entire implication is true regardless of the consequent. So Record 10 doesn't apply here, meaning we don't need to consider Nimbus 3 for Module D.\n\nSince Module D does have Cedar 17 (Record 8), we look at Records 14-16. \n\nRecord 14: If Cedar 17, then Zenith 14. So Module D must have Zenith 14.\nRecord 15: If Zenith 14, then Alder 15. So now Alder 15 is added.\nRecord 16: If Alder 15, then Birch 16. So Birch 16 is next.\nRecord 17: If Birch 16, then Yarrow 13. Therefore, Module D must have Yarrow 13.\n\nBut wait, there's also Record 13: If Module D has Prairie 5, then it does not have Yarrow 13. However, since we're following the Cedar 17 path, the Prairie 5 status isn't involved here. The Prairie 5 path is part of the other conditionals (Records 10-13) which don't apply because we have Cedar 17. So there's no conflict here.\n\nTherefore, following the chain from Cedar 17 through Zenith 14, Alder 15, Birch 16, and finally Yarrow 13, all the conditionals are satisfied. There's no contradiction in the records. The conclusion is that Module D does have Yarrow 13, so the answer should be supported (C).\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "133b9300c50eac5dccc374f30bc36ff2e122f6fa745f03f940b21359893e69c9",
+      "response_tokens": 523,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 520,
+      "structure_class": "PGF-01",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-006-N",
+    "index": 40,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 40,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 613,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 613
+        }
+      ],
+      "answer_logit_capture_indices": [
+        613
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 6.144174135328052e-06,
+          "B": 1.1861046882272882e-08,
+          "C": 0.9999938367707291,
+          "D": 7.194088769816153e-09
+        },
+        "full_vocab_entropy": 8.171616354957223e-05,
+        "full_vocab_probabilities": {
+          "A": 6.14416512689786e-06,
+          "B": 1.1861029491910813e-08,
+          "C": 0.9999923706054688,
+          "D": 7.194078222028111e-09
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 43.75,
+        "initial_rank": 1,
+        "logits": {
+          "A": 31.75,
+          "B": 25.5,
+          "C": 43.75,
+          "D": 25.0
+        },
+        "option_argmax": "C",
+        "option_mass": 0.9999985338257034,
+        "ranks": {
+          "A": 2,
+          "B": 3,
+          "C": 1,
+          "D": 4
+        },
+        "target_logit": 31.75,
+        "target_minus_initial": -12.0,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-006",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F03",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-006-N",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 20,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "ee9731ba62b6ccd6636395a2ecc69b9d909e10a159a2012aef93f65e7d00d7f1",
+      "prompt_token_ids_sha256": "bab442e38459c41934a31d9381a316961c211b09da77371f6dcb3a70949bba5a",
+      "prompt_tokens": 488,
+      "reasoning_token_count": 605,
+      "record_seed": 20,
+      "response": "<think>\nOkay, let's try to figure out if Module D having status Yarrow 13 is supported, contradicted, undetermined, or both. Let me start by going through the records step by step.\n\nFirst, looking at the records provided:\n\nRecord 8 says Module D has status Cedar 17. Then Record 14 says if Module D has Cedar 17, then it has Zenith 14. Since Record 8 confirms Cedar 17, by modus ponens, we can conclude Zenith 14. \n\nThen Record 15: if Zenith 14, then Alder 15. So from Zenith 14, we get Alder 15. Then Record 16: Alder 15 implies Birch 16. So now Birch 16. Then Record 17: Birch 16 leads to Yarrow 13. So following this chain, we end up with Yarrow 13. That seems straightforward. So that would support Yarrow 13 being true.\n\nBut wait, there's another path. Let's check if there's any contradiction. Record 9 says Module D has status Morrow 2. Not sure how that connects yet. Then Records 10, 11, 12, 13 form another chain. Let's see: Record 10 says if not Cedar 17, then Nimbus 3. But since we do have Cedar 17 (Record 8), the antecedent of Record 10 is false, so the implication is vacuously true. So that path isn't triggered. Therefore, the other chain (Cedar 17 leading to Zenith, etc.) is the active one.\n\nSo following the Cedar 17 path, we end up with Yarrow 13 via Records 14-17. But there's also Record 13: if Prairie 5, then not Yarrow 13. However, Prairie 5 is part of the other chain (Nimbus 3 → Orbit 4 → Prairie 5). Since we have Cedar 17, that other chain isn't activated. So Record 13's antecedent isn't met here. Therefore, there's no contradiction from that direction.\n\nSo the conclusion is that Yarrow 13 is supported by the chain starting from Cedar 17. Therefore, the answer should be C) supported. But wait, let me check again. Are there any other records that might affect this?\n\nNo, because the other statuses for Module D (like Morrow 2) don't interfere with the Cedar 17 to Yarrow 13 chain. Also, since Record 8 directly states Cedar 17, and the subsequent implications all hold, leading to Yarrow 13. Therefore, it's supported. There's no contradiction here. So the answer is C.\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "5890ad88e9e927e9ff770169b3b48ff6ff99cd1c73df33518a69b399d11bada7",
+      "response_tokens": 616,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 613,
+      "structure_class": "PGF-01",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

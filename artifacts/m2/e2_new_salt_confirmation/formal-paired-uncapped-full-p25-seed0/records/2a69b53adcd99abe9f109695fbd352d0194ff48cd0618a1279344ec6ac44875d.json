@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-013-R",
+    "index": 98,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 98,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 351,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 351
+        }
+      ],
+      "answer_logit_capture_indices": [
+        351
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 9.736200720556794e-10,
+          "B": 0.999999998565587,
+          "C": 4.058652019751867e-10,
+          "D": 5.492788507814087e-11
+        },
+        "full_vocab_entropy": 4.2152791479566076e-08,
+        "full_vocab_probabilities": {
+          "A": 9.736200734522527e-10,
+          "B": 1.0,
+          "C": 4.05865202557365e-10,
+          "D": 5.4927885156930145e-11
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 40.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 19.25,
+          "B": 40.0,
+          "C": 18.375,
+          "D": 16.375
+        },
+        "option_argmax": "B",
+        "option_mass": 1.000000001434413,
+        "ranks": {
+          "A": 2,
+          "B": 1,
+          "C": 3,
+          "D": 5
+        },
+        "target_logit": 19.25,
+        "target_minus_initial": -20.75,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-013",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F07",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-013-R",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 49,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "87f693cc6334c802bdb52e4fe8633d24444b6b9bcb8b01814cf26b7c64008b23",
+      "prompt_token_ids_sha256": "67c1da70f70c4454a6c37b5de642c30576c68b07009b7d552091191385c6527b",
+      "prompt_tokens": 275,
+      "reasoning_token_count": 343,
+      "record_seed": 49,
+      "response": "<think>\nOkay, let's go through this step by step. The question is whether Capsule B having status Quill 5 is supported, contradicted, undetermined, or both. \n\nFirst, let's list out the given records:\n\n1. Capsule B has status Rowan 6.\n2. Capsule B has status Orbit 3.\n3. If Capsule B has Orbit 3 and Prairie 4, then Nimbus 2.\n4. If Capsule B has Morrow 1, then it does NOT have Quill 5.\n5. If Capsule B has Rowan 6, then it has Morrow 1.\n\nFrom Record 1, we know Rowan 6 is true. Applying Record 5, since Rowan 6 is true, Morrow 1 must also be true. Now, Record 4 says that if Morrow 1 is true, then Quill 5 is not true. So, because we've established Morrow 1 is true (from Rowan 6 → Morrow 1), that triggers the condition in Record 4, leading us to conclude that Quill 5 is false. \n\nTherefore, the statement that Capsule B has Quill 5 is contradicted. There's no mention of Prairie 4 in the records except in Record 3, which requires both Orbit 3 and Prairie 4 to get Nimbus 2. Since we don't have Prairie 4 listed as true (only Orbit 3 is given), Record 3 doesn't apply here. So, no other rules are affecting Quill 5's status. \n\nThe conclusion is that Quill 5 is contradicted, so the answer should be B.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "0ef9c4469c729867ece7f8397ececa478441afe9e40bd9efcca5a880383e6412",
+      "response_tokens": 354,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 351,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}

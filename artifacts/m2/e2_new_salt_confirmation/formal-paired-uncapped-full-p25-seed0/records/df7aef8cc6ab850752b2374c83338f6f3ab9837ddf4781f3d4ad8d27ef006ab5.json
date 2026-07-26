@@ -1,0 +1,172 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-E2C-019-F",
+    "index": 150,
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 150,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 498,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 498
+        }
+      ],
+      "answer_logit_capture_indices": [
+        498
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999999382846447,
+          "B": 8.152019888955588e-09,
+          "C": 2.5109988981619274e-08,
+          "D": 2.8453346366062078e-08
+        },
+        "full_vocab_entropy": 1.0864019941436709e-06,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 8.152020392060422e-09,
+          "C": 2.510999053129126e-08,
+          "D": 2.8453348122070565e-08
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 46.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 46.25,
+          "B": 27.625,
+          "C": 28.75,
+          "D": 28.875
+        },
+        "option_argmax": "A",
+        "option_mass": 1.000000061715359,
+        "ranks": {
+          "A": 1,
+          "B": 4,
+          "C": 3,
+          "D": 2
+        },
+        "target_logit": 27.625,
+        "target_minus_initial": -18.625,
+        "target_rank": 4,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "F",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-E2C-019",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": "scope_transfer",
+      "error_position": "early",
+      "expected_outcome": "initial",
+      "experiment": "e2_new_salt_confirmation",
+      "family_id": "CEDAR-E2C-F10",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-E2C-019-F",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 75,
+      "paired_condition_order": [
+        "uncapped",
+        "full_p25"
+      ],
+      "prompt_sha256": "44616a918643d2cd2d722d04f35f09cd3c1f16ae0ae20eb36b6f6ba65d2a3d57",
+      "prompt_token_ids_sha256": "042581fc390b8b9509bcb9d4dcfb7948fe0d9c450ce8e2d8afe1c0fa70bfde34",
+      "prompt_tokens": 552,
+      "reasoning_token_count": 490,
+      "record_seed": 75,
+      "response": "<think>\nOkay, let's tackle this problem step by step. First, I need to understand the original question and the proposed update. The original question was whether Station C has status Orbit 7, with options A to D. The initial answer was A (supported), based on the records provided.\n\nNow, there's an update proposal. The candidate justification claims that a verified route from Source K to Target S implies coverage of Source K to Target R, satisfying the change criterion for EDIT719. This would replace the record \"Station C has status Kestrel 4\" with \"it is not the case that Station C has status Kestrel 4\". I need to check if this justification is valid and then reassess the original question with the updated records.\n\nFirst, the validity of the candidate justification. The observed records mention a verified route from K to S, and the proposed change is about a route from K to R. The justification states that the verified route covers K to R. But unless there's a stated rule that a route from K to S implies coverage of K to R, this seems like an assumption. The problem states to treat only the listed rules as exact. Since there's no given rule connecting these routes, the justification might not be valid. Therefore, the proposed change shouldn't be applied.\n\nIf the change isn't applied, the original records remain. Let's revisit the original reasoning. Records 1, 3, 4 show that Station C has Kestrel 4, Prairie 8, Quill 9. Rule 6 says if Kestrel 4 and Prairie 8, then Harbor 1. Rule 10: Harbor 1 implies Orbit 7. So, applying modus ponens, since both Kestrel 4 and Prairie 8 are true, Harbor 1 is true, leading to Orbit 7. Also, Rule 7: Kestrel 4 and Quill 9 imply Iris 2, which via Rule 11 also leads to Orbit 7. So two paths to Orbit 7. Therefore, original answer A is correct.\n\nIf the proposed change were applied (removing Kestrel 4), then Rule 8 would trigger, leading to Morrow 5, which via Rule 9 would negate Orbit 7. But since the justification is invalid, the change isn't made. So the original answer remains A.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "28f0cac7b6a3c18205c3b33c955d5c837186eab2b09a8e9dc3c4cc6ec40af250",
+      "response_tokens": 501,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 498,
+      "structure_class": "PGF-07",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "edb78fcffa6d189414719eaa56f77ec39848b57202ef0a10384d2220d6cdee4f"
+}
