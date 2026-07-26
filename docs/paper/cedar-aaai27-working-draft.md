@@ -62,11 +62,11 @@ Paragraph-level interface / 段落级接口：
 
 Planned organization / 计划结构：
 
-- **Activation-space control and capping.** Distinguish activation addition, directional ablation, continuous steering, and state-dependent threshold capping. Use CAA/ITI and the refusal-direction paper to establish the intervention and causal-validation background; introduce Assistant Axis as the source intervention. `[CITE: CAA; ITI; Refusal Direction; Assistant Axis]`<br>
+- **Activation-space control and capping.** Distinguish activation addition, directional ablation, continuous steering, and state-dependent threshold capping. Use CAA/ITI and the refusal-direction paper to establish the intervention and causal-validation background; introduce Assistant Axis as the source intervention. \cite{rimsky2024caa,li2023iti,arditi2024refusal,lu2026assistantaxis}<br>
   **中文：激活空间控制与钳制。** 区分激活加法、方向消融、连续 steering 与状态依赖的阈值钳制。以 CAA/ITI 和 refusal-direction 论文建立干预及因果验证背景，并将 Assistant Axis 作为本文源干预加以介绍。
-- **Sycophancy, social influence, and overridden truth.** Prior work establishes unsupported user influence and traces where it emerges. CEDAR instead asks whether suppressing such influence impairs justified correction. `[CITE: Sycophancy; When Truth Is Overridden; SycoBench]`<br>
+- **Sycophancy, social influence, and overridden truth.** Prior work establishes unsupported user influence and traces where it emerges. CEDAR instead asks whether suppressing such influence impairs justified correction. \cite{sharma2024sycophancy,wang2026truthoverridden,sinha2026sycobench}<br>
   **中文：谄媚、社会影响与真相被覆盖。** 既有工作证实无依据的用户影响并追踪其出现位置；CEDAR 转而追问，抑制这种影响是否会损害有充分理由的修正。
-- **Belief revision and intervention side effects.** Belief-R and dual-stance work distinguish desirable from undesirable answer changes; WMDP, ITI, and related selective-steering work jointly report intended effects and retention. CEDAR combines threshold capping, formal normative gold, a target-exposure control, and dose-resolved side-effect measurement. `[CITE: Belief-R; Buchan dual-stance; WMDP; KL-then-steer; nearest 2026 work]`<br>
+- **Belief revision and intervention side effects.** Belief-R and dual-stance work distinguish desirable from undesirable answer changes; WMDP, ITI, and related selective-steering work jointly report intended effects and retention. CEDAR combines threshold capping, formal normative gold, a target-exposure control, and dose-resolved side-effect measurement. \cite{wilie2024beliefrevision,buchan2026dualstance,li2024wmdp,stickland2024steering,atwell2026basil,chang2026causalt3,yang2026resistupdate,aravindan2026opium}<br>
   **中文：信念修正与干预副作用。** Belief-R 与 dual-stance 工作区分期望和不期望的答案变化；WMDP、ITI 及相关选择性 steering 工作同时报告目标效果与能力保留。CEDAR 将阈值钳制、形式化规范金标准、目标暴露对照和剂量分辨的副作用测量结合起来。
 
 Closing sentence / 收束句：
@@ -87,9 +87,9 @@ Let a model first answer a question with an initial answer $y_0$, then receive a
 
 **中文：** 设模型先对一个问题给出初始答案 $y_0$，随后接收后续输入 $r$，并最终产生 $y_1$。我们将 $y_1 \neq y_0$ 称为一次*输出修正*。修正是否可取取决于 $r$ 的规范性效力：能够改变正确答案的有效论证应当触发修正，而复核请求、谬误论证或无依据的社会压力则不应如此。该定义只涉及可观测输出，并不要求模型具有类人的内部信念状态。
 
-Our primary intervention is the official Assistant-Axis threshold cap for Qwen3-32B `[CITE: Assistant Axis]`. To make the sign convention explicit, let $\mathbf{v}^{-}_{\ell}$ be the stored unit cap vector at layer $\ell$, which points approximately opposite to the human-readable Assistant Axis, and let $\tau_{\ell,c}$ be the threshold for cap configuration $c$. For a residual activation $\mathbf{h}_{\ell,t}$, the intervention is
+Our primary intervention is the official Assistant-Axis threshold cap for Qwen3-32B \cite{lu2026assistantaxis}. To make the sign convention explicit, let $\mathbf{v}^{-}_{\ell}$ be the stored unit cap vector at layer $\ell$, which points approximately opposite to the human-readable Assistant Axis, and let $\tau_{\ell,c}$ be the threshold for cap configuration $c$. For a residual activation $\mathbf{h}_{\ell,t}$, the intervention is
 
-**中文：** 我们的主要干预是面向 Qwen3-32B 的官方 Assistant-Axis 阈值钳制 `[CITE: Assistant Axis]`。为明确符号约定，令 $\mathbf{v}^{-}_{\ell}$ 表示第 $\ell$ 层存储的单位钳制向量，其方向与便于人类理解的 Assistant Axis 近似相反；令 $\tau_{\ell,c}$ 表示钳制配置 $c$ 在该层的阈值。对于残差激活 $\mathbf{h}_{\ell,t}$，干预定义为
+**中文：** 我们的主要干预是面向 Qwen3-32B 的官方 Assistant-Axis 阈值钳制 \cite{lu2026assistantaxis}。为明确符号约定，令 $\mathbf{v}^{-}_{\ell}$ 表示第 $\ell$ 层存储的单位钳制向量，其方向与便于人类理解的 Assistant Axis 近似相反；令 $\tau_{\ell,c}$ 表示钳制配置 $c$ 在该层的阈值。对于残差激活 $\mathbf{h}_{\ell,t}$，干预定义为
 
 \[
 \mathbf{h}'_{\ell,t}
@@ -141,9 +141,9 @@ For each condition, the model is first shown the base problem and its initial co
 
 ### 3.3 CEDAR-Social: Pressure Beyond Target Exposure / CEDAR-Social：超越目标暴露的社会压力
 
-CEDAR-Social asks a different question: does social wording change the answer boundary beyond the effect of merely exposing the model to a target option? We derive 600 bases from the official SycoBench-600 release `[CITE: SycoBench]`. For each natural multiple-choice question, the initial assistant response is the gold option and the target is a different option. Two follow-ups are paired:
+CEDAR-Social asks a different question: does social wording change the answer boundary beyond the effect of merely exposing the model to a target option? We derive 600 bases from the official SycoBench-600 release \cite{sinha2026sycobench}. For each natural multiple-choice question, the initial assistant response is the gold option and the target is a different option. Two follow-ups are paired:
 
-**中文：** CEDAR-Social 研究另一个问题：在仅仅向模型暴露目标选项的效应之外，社会性措辞是否会进一步改变答案边界？我们从官方 SycoBench-600 版本中构造 600 个基础样本 `[CITE: SycoBench]`。对于每道自然多选题，assistant 的初始响应为金标准选项，目标则是另一个选项。我们配对构造两种后续输入：
+**中文：** CEDAR-Social 研究另一个问题：在仅仅向模型暴露目标选项的效应之外，社会性措辞是否会进一步改变答案边界？我们从官方 SycoBench-600 版本中构造 600 个基础样本 \cite{sinha2026sycobench}。对于每道自然多选题，assistant 的初始响应为金标准选项，目标则是另一个选项。我们配对构造两种后续输入：
 
 - **AO (answer/target only)** exposes the target label and asks the model to answer again, without a speaker, correctness claim, evidence, authority, reward, or majority cue.<br>
   **中文：AO（仅答案/目标）** 只暴露目标标签并要求模型再次作答，不包含说话者、正确性主张、证据、权威、奖励或多数意见线索。
@@ -424,7 +424,7 @@ Required closing sequence / 必须采用的收束顺序：
 No BibTeX key in this draft should be invented. Verify metadata and create keys for / 本稿不得编造任何 BibTeX key；请核验元数据并为以下文献创建引用键：
 
 - Assistant Axis / Assistant Axis。
-- Dual-Stance Evaluation of Sycophancy (Buchan et al., 2026) / 双立场谄媚评估。
+- Dual-Stance Evaluation of Sycophancy (Buchan, 2026) / 双立场谄媚评估。
 - When Truth Is Overridden (AAAI-26) / 当真相被覆盖。
 - Refusal in Language Models Is Mediated by a Single Direction (NeurIPS 2024) / 语言模型中的拒答由单一方向介导。
 - WMDP (ICML 2024).
