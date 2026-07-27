@@ -10,9 +10,9 @@
 
 ## Provisional Title / 暂定标题
 
-**CEDAR: A Solver-Backed Audit of Epistemic Selectivity under Activation Capping**
+**An Axis Is Not a Selective Controller: Auditing Epistemic Selectivity under Assistant-Axis Capping**
 
-**CEDAR：对激活钳制之认识论选择性的求解器支撑审计**
+**表征轴不等同于选择性控制器：Assistant-Axis 钳制的认识论选择性审计**
 
 ## Abstract / 摘要
 
@@ -90,9 +90,9 @@ CEDAR-Evidence 的四种条件使用同一个配对目标：$N/R$ 在分析中�
 
 ### 3.2 CEDAR-Evidence: A Solver-Certified Paired Dataset / CEDAR-Evidence：经求解器认证的配对数据集
 
-CEDAR-Evidence pairs formally valid and invalid justifications whose status is determined independently of model responses. Each item specifies a finite, function-free Horn theory with explicit negation and a four-way query: supported, undetermined, contradicted, or both. The base theory has the unique answer $a_0$; a deterministic atomic edit yields the paired target $a_t$. $N$ continues neutrally, and $R$ requests rechecking without new information; $V/F$ propose the edit through valid and invalid arguments, respectively. Target following is warranted only under $V$.
+CEDAR-Evidence pairs formally valid and invalid justifications whose status is determined independently of model responses. Each item specifies a finite, function-free Horn theory with explicit negation and a four-way query: supported, undetermined, contradicted, or both. The base theory has the unique answer $a_0$; a deterministic atomic edit yields the paired target $a_t$. $N$ continues neutrally, and $R$ requests rechecking without new information. $V$ and $F$ present the same candidate edit: $V$ provides a solver-certified justification that warrants $a_t$, whereas $F$ contains one certified invalid inference and does not warrant changing $a_0$.
 
-**中文：** CEDAR-Evidence 将形式有效与无效的论证配对，并在模型作答前确定其规范标签。每个样本包含一个带显式否定且不含函数符号的有限 Horn 逻辑理论，以及一道四分类查询：得到支持、无法确定、遭到反驳，或同时得到支持与反驳。基础理论的唯一答案是 $a_0$；一项确定性的原子修改产生配对目标 $a_t$。$N$ 中性延续对话，$R$ 在不增加信息的情况下请求复核；$V/F$ 则分别通过有效和无效论证提出该修改。只有 $V$ 中的目标跟随具有充分依据。
+**中文：** CEDAR-Evidence 将形式有效与无效的论证配对，并在模型作答前确定其规范标签。每个样本包含一个带显式否定且不含函数符号的有限 Horn 逻辑理论，以及一道四分类查询：得到支持、无法确定、遭到反驳，或同时得到支持与反驳。基础理论的唯一答案是 $a_0$；一项确定性的原子修改产生配对目标 $a_t$。$N$ 中性延续对话，$R$ 在不增加信息的情况下请求复核。$V$ 与 $F$ 呈现相同的候选修改：$V$ 提供经求解器认证、足以支持 $a_t$ 的论证；$F$ 则包含一处经认证的无效推理，不构成改变 $a_0$ 的充分依据。
 
 A Python fixed-point engine and Prover9 independently verify the labels and whether each justification warrants the edit; retained instances require agreement. Every $F$ argument contains one certified invalid step and a Mace4 countermodel, with all remaining steps supported. The prompt scaffold and response format are matched within $V/F$ pairs. Certificates and review records appear in *[TBD-APPENDIX]*.
 
@@ -129,11 +129,17 @@ $$
 
 where $[z]_{+}=\max(z,0)$. The operator removes only the projection above $\tau_{\ell,c}$.
 
-**中文：** 我们评测公开的模型专属 Assistant-Axis 阈值钳制。令 $\mathbf{v}_{\ell}$ 表示公开配置在第 $\ell$ 层存储的单位方向，$\tau_{\ell,c}$ 表示配置 $c$ 在该层使用的阈值。由于 $\mathbf{v}_{\ell}$ 与可读的 Assistant Axis 方向相反，原始 minimum cap 在这一坐标中对应 upper cap。对于残差激活 $\mathbf{h}_{\ell,t}$，算子按上式进行变换，其中 $[z]_{+}=\max(z,0)$。该算子仅移除超过 $\tau_{\ell,c}$ 的投影分量。
+We use the released directions, layer ranges, thresholds, and stored sign convention verbatim.
 
-Qwen3-32B is the primary model, using the released `layers_46:54-p0.25` configuration (layers 46--53). For model--configuration transport, Qwen3-32B and Llama-3.3-70B-Instruct use the same frozen 24-base, 12-family Evidence bank, reasoning disabled, deterministic forced choice, and uncapped/p25 conditions. Llama uses its released axis and `layers_56:72-p0.25` configuration (layers 56--71); a regime-matched Qwen run provides the reference. Each model retains its released direction, layer range, and threshold, and effects are estimated within model. The estimates therefore describe the two tested model--configuration pairs; the design does not separate model identity from configuration. CEDAR-Social and diagnostic analyses remain Qwen-only. Exact revisions and decoding settings appear in *[TBD-APPENDIX]*.
+**中文：** 我们评测公开的模型专属 Assistant-Axis 阈值钳制。令 $\mathbf{v}_{\ell}$ 表示公开配置在第 $\ell$ 层存储的单位方向，$\tau_{\ell,c}$ 表示配置 $c$ 在该层使用的阈值。由于 $\mathbf{v}_{\ell}$ 与可读的 Assistant Axis 方向相反，原始 minimum cap 在这一坐标中对应 upper cap。对于残差激活 $\mathbf{h}_{\ell,t}$，算子按上式进行变换，其中 $[z]_{+}=\max(z,0)$。该算子仅移除超过 $\tau_{\ell,c}$ 的投影分量。我们原样沿用公开资产中的方向、层范围、阈值和存储符号约定。
 
-**中文：** Qwen3-32B 是主要模型，使用公开的 `layers_46:54-p0.25` 配置（第 46--53 层）。跨模型迁移评测在 Qwen3-32B 与 Llama-3.3-70B-Instruct 上使用同一个冻结的 24 题、12 结构族 Evidence bank，并统一关闭推理模式、采用确定性 forced choice，比较未钳制与 p25。Llama 使用其公开方向和 `layers_56:72-p0.25` 配置（第 56--71 层），以运行制度匹配的 Qwen 结果为参照。各模型沿用自身发布的方向、层范围和阈值，效应在模型内估计。因此，结果描述两个模型—配置组合，设计本身无法分离模型与配置的作用。CEDAR-Social 和诊断分析仅在 Qwen 上进行。具体模型版本和解码设置见 *[TBD-APPENDIX]*。
+Qwen3-32B is the primary model, using the released `layers_46:54-p0.25` configuration (layers 46--53). Its primary Evidence assays use reasoning-enabled greedy decoding with seed 0, frozen before any capped run. Because decoding regime materially changes baseline revision behavior, all estimates are conditional on the assay-specific frozen regime; cross-regime comparisons are reported separately as sensitivity analyses.
+
+For model--configuration transport, Qwen3-32B and Llama-3.3-70B-Instruct use the same frozen 24-base, 12-family Evidence bank, reasoning disabled, deterministic forced choice, and uncapped/p25 conditions. Llama uses its released axis and `layers_56:72-p0.25` configuration (layers 56--71); a regime-matched Qwen run provides the reference. Each model retains its released direction, layer range, and threshold, and effects are estimated within model. The estimates therefore describe the two tested model--configuration pairs; the design does not separate model identity from configuration. CEDAR-Social and diagnostic analyses remain Qwen-only. Exact revisions and decoding settings appear in *[TBD-APPENDIX]*.
+
+**中文：** Qwen3-32B 是主要模型，使用公开的 `layers_46:54-p0.25` 配置（第 46--53 层）。其主要 Evidence assay 开启 reasoning，采用 greedy 解码和 seed 0，并在任何 capped 运行前冻结。鉴于解码制度会实质改变基线改答行为，所有估计均以各 assay 的冻结制度为条件；跨制度比较单独作为敏感性分析报告。
+
+跨模型迁移评测在 Qwen3-32B 与 Llama-3.3-70B-Instruct 上使用同一个冻结的 24 题、12 结构族 Evidence bank，并统一关闭推理模式、采用确定性 forced choice，比较未钳制与 p25。Llama 使用其公开方向和 `layers_56:72-p0.25` 配置（第 56--71 层），以运行制度匹配的 Qwen 结果为参照。各模型沿用自身发布的方向、层范围和阈值，效应在模型内估计。因此，结果描述两个模型—配置组合，设计本身无法分离模型与配置的作用。CEDAR-Social 和诊断分析仅在 Qwen 上进行。具体模型版本和解码设置见 *[TBD-APPENDIX]*。
 
 ### 3.5 Behavioral Outcomes and Logit Margins / 行为结果与 Logit 边际
 
@@ -210,13 +216,13 @@ CEDAR-Evidence treats its 12 structural families as the independent units. Paire
 
 All scheduled evaluations enter the discrete analysis; truncated or unparsable responses are coded as invalid/abstaining and are not selectively rerun based on content. Continuous contrasts require the relevant option logits in both paired conditions, with incomplete coverage disclosed beside the result. Effects are estimated separately by data bank, evaluation protocol, and model. Cross-model results report both within-model effects and intervals on their native scales. A family-paired interaction standardized by each model's uncapped scale appears in *[TBD-APPENDIX]*; a nonsignificant interaction does not establish equivalence.
 
-The development bank is exploratory. Primary contrasts are $\Delta_{\mathrm{broad}}$ for the new-salt and matched Llama studies and $\Delta_{\mathrm{social}}$ for CEDAR-Social; the matched Qwen estimate serves as the reference for Llama. Other analyses are labeled prespecified secondary, sensitivity, or post hoc. Diagnostics are the total full-vocabulary probability mass assigned to the four option labels, full-vocabulary Shannon entropy, and whether the vocabulary-wide argmax is an option label. Complete sensitivities appear in *[TBD-APPENDIX]*; material amendments are also disclosed with the affected result.
+The development bank is exploratory. Primary contrasts are $\Delta_{\mathrm{broad}}$ for the new-salt and matched Llama studies and $\Delta_{\mathrm{social}}$ for CEDAR-Social; the matched Qwen estimate serves as the reference for Llama. Other analyses are labeled prespecified secondary, sensitivity, or post hoc. The four-margin decomposition, the equivalence region for pooled $m_{\mathrm{specific}}$, and the decision rules for follow-up analyses were frozen in a CPU-only protocol gate before any capped-model execution. Diagnostics are the total full-vocabulary probability mass assigned to the four option labels, full-vocabulary Shannon entropy, and whether the vocabulary-wide argmax is an option label. Complete sensitivities appear in *[TBD-APPENDIX]*; material amendments are also disclosed with the affected result.
 
 **中文：** CEDAR-Evidence 将 12 个结构族作为独立统计单位。每项对比先在结构族内汇总 capped--uncapped 配对差异，再对各结构族等权平均。主要区间使用冻结的结构族聚类 bootstrap；同时报告结构族效应和等权的 leave-one-family-out 分析。小聚类敏感性分析见 *[TBD-APPENDIX]*。CEDAR-Social 以题目为重采样单位，并按领域和难度分层。
 
 全部预定评测均进入离散分析；截断或无法解析的输出归为无效输出或弃答，且不根据输出内容选择性重跑。连续对比要求配对条件中相关选项 logit 均完整，并随结果披露不完整覆盖。不同数据批次、评测协议和模型的效应分别估计。跨模型结果在原始尺度上报告两组模型内效应及区间。以各模型未钳制尺度标准化、并保持结构族配对的交互见 *[TBD-APPENDIX]*；交互项不显著不构成等效证据。
 
-development bank 用于探索。new-salt 与匹配 Llama 研究的主要对比是 $\Delta_{\mathrm{broad}}$，CEDAR-Social 的主要对比是 $\Delta_{\mathrm{social}}$；匹配的 Qwen 估计作为 Llama 的参照。其余分析标记为预先指定的次要分析、敏感性分析或 post hoc 分析。诊断指标包括完整词表分布中分配给四个选项标签的总概率质量、完整词表 Shannon 熵，以及词表范围内的 argmax 是否为选项标签。完整敏感性分析见 *[TBD-APPENDIX]*；实质性方案调整也随受影响的结果披露。
+development bank 用于探索。new-salt 与匹配 Llama 研究的主要对比是 $\Delta_{\mathrm{broad}}$，CEDAR-Social 的主要对比是 $\Delta_{\mathrm{social}}$；匹配的 Qwen 估计作为 Llama 的参照。其余分析标记为预先指定的次要分析、敏感性分析或 post hoc 分析。四项 margin 分解、汇总 $m_{\mathrm{specific}}$ 的等效区间，以及决定后续分析路径的规则，均在任何 capped 模型运行前通过 CPU-only 协议闸冻结。诊断指标包括完整词表分布中分配给四个选项标签的总概率质量、完整词表 Shannon 熵，以及词表范围内的 argmax 是否为选项标签。完整敏感性分析见 *[TBD-APPENDIX]*；实质性方案调整也随受影响的结果披露。
 
 ## 4. Auditing Assistant-Axis Capping / 审计 Assistant-Axis 钳制
 
