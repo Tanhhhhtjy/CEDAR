@@ -106,7 +106,7 @@ Four minimally edited template pairs are balanced across domain and difficulty s
 
 ### 3.4 Intervention and Model Scope / 干预与模型范围
 
-We study the released, model-specific Assistant-Axis threshold cap. At layer $\ell$, let $\mathbf{v}_{\ell}$ denote the unit cap direction and $\tau_{\ell,c}$ the threshold under configuration $c$. Given residual activation $\mathbf{h}_{\ell,t}$, the operator maps it to
+We study the released, model-specific Assistant-Axis threshold cap. At layer $\ell$, let $\mathbf{v}_{\ell}$ denote the unit intervention direction stored in the released capping configuration and $\tau_{\ell,c}$ its threshold under configuration $c$. The stored direction is oppositely oriented to the corresponding Assistant Axis vector, with the threshold calibrated in that coordinate. Consequently, the upper-cap form below is equivalent to the minimum cap defined along the Assistant-Axis orientation in the source paper. Given residual activation $\mathbf{h}_{\ell,t}$, the operator maps it to
 
 $$
 \mathbf{h}'_{\ell,t}
@@ -121,7 +121,7 @@ $$
 
 where $[z]_{+}=\max(z,0)$. When the projection onto $\mathbf{v}_{\ell}$ exceeds $\tau_{\ell,c}$, the operator removes the excess component along that direction; activations below the threshold remain unchanged.
 
-**中文：** 我们考察公开的模型专属 Assistant-Axis 阈值钳制。令 $\mathbf{v}_{\ell}$ 表示第 $\ell$ 层的单位钳制方向，$\tau_{\ell,c}$ 表示配置 $c$ 对应的阈值。对于残差激活 $\mathbf{h}_{\ell,t}$，算子按上式进行变换，其中 $[z]_{+}=\max(z,0)$。当激活在 $\mathbf{v}_{\ell}$ 上的投影超过 $\tau_{\ell,c}$ 时，算子移除超出阈值的方向分量；低于阈值的激活保持不变。
+**中文：** 我们考察公开的模型专属 Assistant-Axis 阈值钳制。令 $\mathbf{v}_{\ell}$ 表示公开 capping 配置在第 $\ell$ 层存储的单位干预方向，$\tau_{\ell,c}$ 表示配置 $c$ 在该层使用的阈值。该存储方向与对应的 Assistant Axis 向量方向相反，阈值也在这一坐标下完成校准。因此，下文对 $\mathbf{v}_{\ell}$ 的上限钳制，与原论文沿 Assistant-Axis 方向定义的下限钳制等价。对于残差激活 $\mathbf{h}_{\ell,t}$，算子按上式进行变换，其中 $[z]_{+}=\max(z,0)$。当激活在 $\mathbf{v}_{\ell}$ 上的投影超过 $\tau_{\ell,c}$ 时，算子移除超出阈值的方向分量；低于阈值的激活保持不变。
 
 The full behavioral audit and diagnostic analyses use Qwen3-32B with the released `layers_46:54-p0.25` configuration, covering decoder layers 46--53. We repeat the matched behavioral audit on Llama-3.3-70B-Instruct using its released model-specific axis and `layers_56:72-p0.25` configuration. For Gemma-2-27B-IT, the release provides a model-specific axis but no capping layer range, so we select its treated layers and thresholds using the calibration procedure described in *[TBD-APPENDIX]*; the resulting configuration is *[TBD-GEMMA]*. Each model uses its own direction and intervention settings, and all effects are estimated separately by model. Exact model revisions, asset hashes, decoding settings, and calibration grids appear in *[TBD-APPENDIX]*.
 
