@@ -29,6 +29,8 @@ import e2b_cached_common as e2b  # noqa: E402
 SCHEMA = "cedar.rg1p_stagea.v1"
 BRANCH = "agent/rg1p-stagea-fixed-trace-propagation"
 BASE_RESULT_COMMIT = "6a7e286283cfc763b0dafec23d84fc91b031a99d"
+INITIAL_CPU_GATE_COMMIT = "6f5f5dd643e774862a7185357b1d6027d5685c4f"
+ENGINEERING_CORRECTION_ID = "RG1P_STAGEA_ENGINEERING_CORRECTION_01"
 PROTOCOL = ROOT / "docs/RG1P_STAGEA_FIXED_TRACE_PROPAGATION_PROTOCOL.md"
 SOURCE_TRACES = E2B_DATA.parent / "e2b_fixed_trace_cross/frozen_traces192.jsonl"
 SOURCE_MATRIX = E2B_DATA.parent / "e2b_fixed_trace_cross/formal_matrix384.jsonl"

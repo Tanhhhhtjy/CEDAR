@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import argparse
+import ast
+import hashlib
 import json
 import platform
 import subprocess
@@ -35,6 +37,7 @@ from rg1p_common import (  # noqa: E402
     CAP_EXPERIMENT,
     CAP_LAYERS,
     CAPTURE_LAYERS,
+    ENGINEERING_CORRECTION_ID,
     EXPECTED_AXIS_SHA256,
     EXPECTED_CAP_CONFIG_SHA256,
     EXPECTED_FORMAL_CELLS,
@@ -42,6 +45,7 @@ from rg1p_common import (  # noqa: E402
     EXPECTED_OFFICIAL_FORMAL,
     EXPECTED_RANDOM_FORMAL,
     EXPECTED_SMOKE_CELLS,
+    INITIAL_CPU_GATE_COMMIT,
     LAYER_BOOTSTRAP_DRAWS,
     MODEL_DTYPE,
     MODEL_REPO,
@@ -141,6 +145,40 @@ def validate_sources() -> dict[str, Any]:
         "e2b_analysis.json": canonical_text_sha256(SOURCE_ANALYSIS),
         "e2b_result_commit": BASE_RESULT_COMMIT,
         "e2b_replay_engine": source_manifest["replay_engine"],
+    }
+
+
+def validate_forward_path_equivalence() -> dict[str, Any]:
+    """Prove that the smoke resume did not alter any GPU forward operator."""
+    names = {
+        "TerminalBlockCollector",
+        "OfficialScheduleCapture",
+        "ScheduleMatchedRandomInjector",
+        "run_one",
+    }
+
+    def hashes(source: str) -> dict[str, str]:
+        found: dict[str, str] = {}
+        for node in ast.parse(source).body:
+            if isinstance(node, (ast.ClassDef, ast.FunctionDef)) and node.name in names:
+                payload = ast.dump(node, annotate_fields=True, include_attributes=False)
+                found[node.name] = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+        require(set(found) == names, "RG1-P forward definition missing")
+        return found
+
+    relative = "scripts/run_rg1p_stagea.py"
+    initial = command(
+        "git", "show", f"{INITIAL_CPU_GATE_COMMIT}:{relative}", check=False
+    )
+    require(initial.returncode == 0, "Initial RG1-P runner is unavailable")
+    current = (ROOT / relative).read_text(encoding="utf-8")
+    initial_hashes = hashes(initial.stdout)
+    current_hashes = hashes(current)
+    require(initial_hashes == current_hashes, "GPU forward path changed during lens correction")
+    return {
+        "status": "passed",
+        "initial_cpu_gate_commit": INITIAL_CPU_GATE_COMMIT,
+        "definition_ast_sha256": current_hashes,
     }
 
 
@@ -310,6 +348,7 @@ def main() -> None:
     require(Path(sys.prefix).name == "cedar", f"Expected cedar environment: {sys.prefix}")
     git = git_checks()
     sources = validate_sources()
+    forward_equivalence = validate_forward_path_equivalence()
     release, matrix_report = build_release(args.hf_home)
     tests = run_quality_gates(args.skip_tests)
     require(tests.get("status") == "passed", "CPU quality gates must run and pass")
@@ -331,6 +370,7 @@ def main() -> None:
         ROOT / "scripts/analyze_rg1p_stagea.py",
         ROOT / "scripts/plot_rg1p_stagea.py",
         ROOT / "tests/test_rg1p_stagea.py",
+        ROOT / "docs/RG1P_STAGEA_ENGINEERING_CORRECTION_01.md",
     ]
     require(all(path.is_file() for path in release_paths), "RG1-P release file missing")
     release_files = {
@@ -377,10 +417,19 @@ def main() -> None:
         },
         "logit_lens": {
             "path": "frozen_final_norm_then_full_checkpoint_lm_head",
+            "execution_shape": "one_layer_per_call_[1,1,5120]_matching_terminal_decode",
+            "engineering_correction": "RG1P_STAGEA_ENGINEERING_CORRECTION_01",
             "candidate_token_ids": {"A": 32, "B": 33, "C": 34, "D": 35},
             "final_layer_max_abs_tolerance": 0.001,
             "full_vocabulary_kl_appendix_only": True,
             "tuned_lens": False,
+        },
+        "engineering_correction": {
+            "id": ENGINEERING_CORRECTION_ID,
+            "failed_readout_cache_preserved": "lens_records/",
+            "corrected_readout_cache": "lens_records_shape_faithful_v2/",
+            "smoke_completed_forwards_preserved": 40,
+            "gpu_forward_path_equivalence": forward_equivalence,
         },
         "engineering_noop": {
             "trace_source": PRIMARY_TRACE_SOURCE,

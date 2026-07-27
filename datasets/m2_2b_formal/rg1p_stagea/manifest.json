@@ -364,6 +364,22 @@
     "storage_dtype": "bfloat16",
     "unique_complete_module_mapping": true
   },
+  "engineering_correction": {
+    "corrected_readout_cache": "lens_records_shape_faithful_v2/",
+    "failed_readout_cache_preserved": "lens_records/",
+    "gpu_forward_path_equivalence": {
+      "definition_ast_sha256": {
+        "OfficialScheduleCapture": "c2b25a5543999f7797a3733402b727d08df20c613a5a748730fc78d061daa345",
+        "ScheduleMatchedRandomInjector": "2487c159b6764891d80878909b85c2666cce18269c0a4655f06c620428646ab9",
+        "TerminalBlockCollector": "467eee90c8516cceb6cfcbf424c07b3828c51591aada4169f4a20d8ad961759c",
+        "run_one": "4176a19349f0fb5fdcf71079b2b9cac54850681e6d7ad29131d2b955a8a818b9"
+      },
+      "initial_cpu_gate_commit": "6f5f5dd643e774862a7185357b1d6027d5685c4f",
+      "status": "passed"
+    },
+    "id": "RG1P_STAGEA_ENGINEERING_CORRECTION_01",
+    "smoke_completed_forwards_preserved": 40
+  },
   "engineering_noop": {
     "condition": "uncapped_noop_repeat",
     "delta_h_l2_strict_upper_bound": 0.0001,
@@ -383,7 +399,7 @@
     "branch": "agent/rg1p-stagea-fixed-trace-propagation",
     "dirty_during_gate_build": true,
     "gpu_requires_clean_synced_commit": true,
-    "head": "6a7e286283cfc763b0dafec23d84fc91b031a99d"
+    "head": "6f5f5dd643e774862a7185357b1d6027d5685c4f"
   },
   "gpu_used": false,
   "logit_lens": {
@@ -393,6 +409,8 @@
       "C": 34,
       "D": 35
     },
+    "engineering_correction": "RG1P_STAGEA_ENGINEERING_CORRECTION_01",
+    "execution_shape": "one_layer_per_call_[1,1,5120]_matching_terminal_decode",
     "final_layer_max_abs_tolerance": 0.001,
     "full_vocabulary_kl_appendix_only": true,
     "path": "frozen_final_norm_then_full_checkpoint_lm_head",
@@ -547,23 +565,24 @@
   },
   "release_files": {
     "datasets/m2_2b_formal/rg1p_stagea/ANALYSIS_PLAN.json": "03ce93d61eb0277dda9136ffd6d0e6298863b0fdbcc986b8e308848ae015fe93",
-    "datasets/m2_2b_formal/rg1p_stagea/CPU_TEST_REPORT.json": "9ee102c4d549112fca159aec6738ef919fb2062ad1c0cb434f3a5be7f1231841",
+    "datasets/m2_2b_formal/rg1p_stagea/CPU_TEST_REPORT.json": "9e4929fe7ddb957b4034bb30b692dc9e3aba238acd175539e2f0417a0f213265",
     "datasets/m2_2b_formal/rg1p_stagea/axis_mapping.json": "093a4bf9653586142df2396ad3872c2364dc50df99425cd3dd158e39371fa0b3",
     "datasets/m2_2b_formal/rg1p_stagea/formal_matrix864.jsonl": "d61ffb1de80be23f03f2e3805bdc23f21d19a4b3b037d5371ddef93093dac032",
     "datasets/m2_2b_formal/rg1p_stagea/official_axis_units.safetensors": "172e39b9babdf6b89c154ea408a59465ad67c1f495012774ea8a71a1974ae2ed",
     "datasets/m2_2b_formal/rg1p_stagea/random_direction_metadata.json": "3fb8c450c2341b495038a30d464a75395c9fc654bb8db3230c74084340cd9bef",
     "datasets/m2_2b_formal/rg1p_stagea/random_directions.safetensors": "b69e0aa8dccfca40bf66ac241bf5a66bf448823a27a14beef31840dfa911e713",
-    "datasets/m2_2b_formal/rg1p_stagea/rg1p_common.py": "113815723b563f46c292b9aec09840eeba8e2e597c2de0116cbbd63b0daaff70",
+    "datasets/m2_2b_formal/rg1p_stagea/rg1p_common.py": "bafceb82c6bfe5fc99e363f9aa68074121a336738eda8f934119bbd0cd6070bd",
     "datasets/m2_2b_formal/rg1p_stagea/smoke_matrix72.jsonl": "3562cef3583cc4af8ce761900a19fb55beb4347ded3b440deb2414d375a01d8f",
-    "datasets/m2_2b_formal/rg1p_stagea/validate_rg1p_stagea.py": "e9095a08eb788914bb853db9506fbd62bf130c8b24d05f215c4e50ff32bc12d1",
+    "datasets/m2_2b_formal/rg1p_stagea/validate_rg1p_stagea.py": "ce2cd496cc96dd69205439aac5d24e19370f768ed308a3822321f591c90551f1",
+    "docs/RG1P_STAGEA_ENGINEERING_CORRECTION_01.md": "c164688a2d6423d7be3f452f58b5684083ce4161fdecb1c2f8f4763ad0adedd8",
     "docs/RG1P_STAGEA_FIXED_TRACE_PROPAGATION_PROTOCOL.md": "01bd3a2c6d28d79ebb92c3e12c60bdaf53e80db681b26262006b5ad90463c261",
     "scripts/analyze_rg1p_stagea.py": "f79d1678bd10f68ad3a464f16b8ed68f78eb2ff8d7776c7d76c06b40fa4b00f9",
     "scripts/audit_rg1p_stagea.py": "fc4329d36c328894c11d4050fa1c8fd8462e3951a5ac1d37e933e95f25b9cc3c",
     "scripts/plot_rg1p_stagea.py": "d9ce6a1615ee8d94966de1e90e88e86d7efa29ed743203693fff0c31049f7cb0",
-    "scripts/run_rg1p_stagea.py": "250e0197a121411d686280bae7ccd7f36dd8bc686ecd0c7eb9138ddaf3416200",
-    "tests/test_rg1p_stagea.py": "f413311ad3d5ddb17edbbf11b73cc524232fcbde4d46ce7fd05ceff3e3672de7"
+    "scripts/run_rg1p_stagea.py": "87a9f0607edccdb92f86214107cdf7a53fbf2cf665e49c27f4f51d53c6ad61f5",
+    "tests/test_rg1p_stagea.py": "f2c7858e6440c8c494282056a3d2ffba18d70e600532b9a0fad4be2bf821743d"
   },
-  "release_object_sha256": "6d7d0e3c4f135dde3590918c966e979df1fe83feb665edbc63df992ceb690eb6",
+  "release_object_sha256": "dae8ecf09c139fc8b976b64341c2885b675b962ea33c1a0a1c5f7c69fae69942",
   "replay_engine": "model.generate_kv_cache_forced_tokens",
   "schema": "cedar.rg1p_stagea.manifest.v1",
   "source_hashes": {

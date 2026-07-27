@@ -51,11 +51,21 @@ class _Inner(nn.Module):
         self.hidden = hidden
 
 
+class _TrackingLinear(nn.Linear):
+    def __init__(self, hidden: int, output: int) -> None:
+        super().__init__(hidden, output, bias=False)
+        self.input_shapes: list[tuple[int, ...]] = []
+
+    def forward(self, value: torch.Tensor) -> torch.Tensor:
+        self.input_shapes.append(tuple(value.shape))
+        return super().forward(value)
+
+
 class _ToyModel(nn.Module):
     def __init__(self, hidden: int) -> None:
         super().__init__()
         self.model = _Inner(hidden)
-        self.lm_head = nn.Linear(hidden, 40, bias=False)
+        self.lm_head = _TrackingLinear(hidden, 40)
 
 
 class RG1PCommonTests(unittest.TestCase):
@@ -111,9 +121,17 @@ class RG1PCommonTests(unittest.TestCase):
     def test_native_lens_is_final_norm_then_full_lm_head(self) -> None:
         model = _ToyModel(hidden=16)
         states = torch.randn((64, 16), generator=torch.Generator().manual_seed(9))
-        expected = model.lm_head(model.model.norm(states)).float()
+        expected = torch.stack(
+            [
+                torch.nn.functional.linear(
+                    model.model.norm(state.reshape(1, 1, -1)), model.lm_head.weight
+                )[0, 0]
+                for state in states
+            ]
+        ).float()
         observed = _native_lens_logits(model, states)
         self.assertTrue(torch.equal(observed, expected))
+        self.assertEqual(model.lm_head.input_shapes, [(1, 1, 16)] * 64)
 
     def test_family_bootstrap_uses_twelve_clusters(self) -> None:
         scores = {f"F{index:02d}": float(index - 5) for index in range(12)}

@@ -41,10 +41,12 @@ from rg1p_common import (  # noqa: E402
     BRANCH,
     CAP_LAYERS,
     CAPTURE_LAYERS,
+    ENGINEERING_CORRECTION_ID,
     EXPECTED_AXIS_SHA256,
     EXPECTED_CAP_CONFIG_SHA256,
     EXPECTED_FORMAL_CELLS,
     EXPECTED_SMOKE_CELLS,
+    INITIAL_CPU_GATE_COMMIT,
     MODEL_DTYPE,
     MODEL_REPO,
     MODEL_REVISION,
@@ -113,6 +115,63 @@ def git_provenance(*, require_synced: bool) -> dict[str, Any]:
         "head_matches_upstream": upstream == head if upstream else False,
         "dirty": bool(status),
         "e2b_result_is_ancestor": True,
+    }
+
+
+def initialize_stagea_run(
+    run_dir: Path, configuration: Mapping[str, Any]
+) -> tuple[dict[str, Any], dict[str, Any] | None]:
+    """Initialize a run or resume the single documented smoke correction.
+
+    The first 40 smoke forwards are immutable and remain bound to the initial
+    CPU Gate fingerprint. Only the derived native-lens implementation changed.
+    Reuse that fingerprint after proving that every scientific configuration
+    field is identical and that the corrected commit descends from the initial
+    Gate. Formal starts in a fresh directory and never uses this exception.
+    """
+    manifest_path = run_dir / "manifest.json"
+    if not manifest_path.is_file():
+        return initialize_run(run_dir, configuration), None
+    existing = read_json(manifest_path)
+    previous = existing.get("configuration")
+    require(isinstance(previous, dict), "Existing run manifest is malformed")
+    if previous == configuration:
+        return initialize_run(run_dir, configuration), None
+
+    require(configuration.get("scope") == "smoke", "Correction resume is smoke-only")
+    previous_git = previous.get("git")
+    current_git = configuration.get("git")
+    require(
+        isinstance(previous_git, dict) and isinstance(current_git, dict),
+        "Correction resume Git provenance is malformed",
+    )
+    require(
+        previous_git.get("commit") == INITIAL_CPU_GATE_COMMIT,
+        "Correction resume requires the initial RG1-P CPU Gate run",
+    )
+    require(
+        previous_git.get("branch") == current_git.get("branch") == BRANCH,
+        "Correction resume branch changed",
+    )
+    require(
+        _command(
+            "merge-base",
+            "--is-ancestor",
+            INITIAL_CPU_GATE_COMMIT,
+            str(current_git.get("commit")),
+            check=False,
+        ).returncode
+        == 0,
+        "Corrected execution commit does not descend from the initial CPU Gate",
+    )
+    previous_science = {key: value for key, value in previous.items() if key != "git"}
+    current_science = {key: value for key, value in configuration.items() if key != "git"}
+    require(previous_science == current_science, "Correction resume changed run configuration")
+    initialized = initialize_run(run_dir, previous)
+    return initialized, {
+        "reason": ENGINEERING_CORRECTION_ID,
+        "run_fingerprint_commit": INITIAL_CPU_GATE_COMMIT,
+        "execution_commit": current_git["commit"],
     }
 
 
@@ -745,16 +804,29 @@ def materialize(
 
 
 def _native_lens_logits(model: Any, states: Tensor) -> Tensor:
-    """Apply the frozen checkpoint's final norm and LM head, without fitting."""
+    """Apply the native lens with the terminal decode call's tensor shape.
+
+    The checkpoint's BF16 LM head is shape-sensitive: applying it once to a
+    ``[layers, hidden]`` matrix can select a different GEMM path from the
+    terminal ``[1, 1, hidden]`` decode call.  Evaluate each captured layer as
+    its own singleton sequence so the pre-registered final-layer anchor tests
+    the same numerical path as the archived answer logits.
+    """
+    require(states.ndim == 2, "Native lens expects [layers, hidden] states")
     norm = model.model.norm
     head = model.lm_head
     norm_device = norm.weight.device
     head_device = head.weight.device
-    values = states.to(device=norm_device, dtype=norm.weight.dtype)
-    normalized = norm(values)
-    if normalized.device != head_device:
-        normalized = normalized.to(head_device)
-    return head(normalized).float().cpu()
+    outputs = []
+    for state in states.unbind(dim=0):
+        values = state.reshape(1, 1, -1).to(
+            device=norm_device, dtype=norm.weight.dtype
+        )
+        normalized = norm(values)
+        if normalized.device != head_device:
+            normalized = normalized.to(head_device)
+        outputs.append(head(normalized)[0, 0].float().cpu())
+    return torch.stack(outputs)
 
 
 def restricted_option_log_probs(logits: Tensor, candidate_ids: Sequence[int]) -> Tensor:
@@ -765,7 +837,9 @@ def restricted_option_log_probs(logits: Tensor, candidate_ids: Sequence[int]) ->
 
 
 def _lens_record_path(run_dir: Path, pair_id: str) -> Path:
-    return run_dir / "lens_records" / f"{object_sha256(pair_id)}.json"
+    # Keep the failed batched-BF16 v1 readouts immutable as engineering
+    # evidence. Shape-faithful records live in a distinct cache namespace.
+    return run_dir / "lens_records_shape_faithful_v2" / f"{object_sha256(pair_id)}.json"
 
 
 def _compute_lens_pair(
@@ -855,7 +929,7 @@ def _compute_lens_pair(
         ),
     }
     return {
-        "schema": "cedar.rg1p_stagea.layer_lens_pair.v1",
+        "schema": "cedar.rg1p_stagea.layer_lens_pair.v2",
         "pair_id": f"{treatment['trace_id']}::{pair_kind}",
         "pair_kind": pair_kind,
         "source_id": treatment["source_id"],
@@ -867,7 +941,7 @@ def _compute_lens_pair(
         "arm": treatment["arm"],
         "variant": treatment["variant"],
         "candidate_token_ids": candidate_ids,
-        "mapping": "frozen_final_norm_then_lm_head",
+        "mapping": "frozen_final_norm_then_lm_head_singleton_decode_shape",
         "translator_fitted": False,
         "final_layer_candidate_logit_max_abs_error": final_errors,
         "layers": layer_metrics,
@@ -1013,7 +1087,7 @@ def main() -> None:
         "random_reference": manifest["random_reference"],
         "git": git,
     }
-    initialized = initialize_run(run_dir, configuration)
+    initialized, correction_resume = initialize_stagea_run(run_dir, configuration)
     store = RecordStore(run_dir / "records", run_fingerprint=str(initialized["fingerprint"]))
     results = materialize(store, matrix, run_dir)
     print(
@@ -1085,6 +1159,25 @@ def main() -> None:
                 "resume_events": [],
             },
         )
+    if correction_resume is not None:
+        runtime = read_json(runtime_path)
+        events = list(runtime.get("resume_events", []))
+        if not any(
+            event.get("execution_commit") == correction_resume["execution_commit"]
+            and event.get("reason") == ENGINEERING_CORRECTION_ID
+            for event in events
+        ):
+            events.append(
+                {
+                    **correction_resume,
+                    "resumed_at": datetime.now().astimezone().isoformat(),
+                    "completed_records_before_resume": len(results),
+                    "completed_records_preserved": True,
+                }
+            )
+            runtime["resume_events"] = events
+            runtime["engineering_correction"] = ENGINEERING_CORRECTION_ID
+            atomic_write_json(runtime_path, runtime)
     lens_gate_complete = False
     expected_lens_pairs = 24 if args.scope == "smoke" else 288
     for index, (trace, condition, kind) in enumerate(matrix):
