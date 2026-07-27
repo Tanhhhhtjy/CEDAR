@@ -68,11 +68,19 @@ Approved contribution architecture / 已确认的贡献架构：
 
 ## 3. CEDAR: Auditing Epistemic Selectivity / CEDAR：审计认识论选择性
 
-### 3.1 Epistemic Selectivity and Controlled Contrasts / 认识论选择性与受控对照
+CEDAR examines how activation capping changes a model's response to a proposed answer revision, with particular attention to sensitivity to the basis for that revision. It combines two complementary paired evaluations. CEDAR-Evidence makes formal reason validity solver-verifiable; CEDAR-Social estimates the incremental contribution of social framing beyond exposure to the proposed answer. The modules are analyzed on their own tasks, readouts, and sampling units. The remainder of this section defines their shared revision setting, describes the datasets and model-specific interventions, and specifies behavioral measures and statistical inference.
 
-Let $a_0$ be a model's initial answer to a base question and $a_t \neq a_0$ the option proposed in a follow-up. We record an *answer revision* when the final choice differs from $a_0$. CEDAR-Evidence measures epistemic selectivity by comparing how reasons of different formal validity affect revision, alongside the overall revision rate. CEDAR-Social holds exposure to $a_t$ fixed and estimates the incremental effect of social phrasing. Both modules use paired contrasts and separate readouts and analyses.
+**中文：** CEDAR 考察激活钳制如何改变模型对拟议答案修正的响应，重点关注这种响应能否区分不同的修正依据。它包含两套互补的配对评测。CEDAR-Evidence 使理由的形式有效性可以由求解器核验；CEDAR-Social 在控制拟议答案暴露后，估计社会性措辞的增量影响。两个模块分别采用各自的任务、读数和采样单位。本节随后定义二者共享的答案修正设定，并介绍数据集、模型专属干预、行为度量与统计推断。
 
-**中文：** 设模型对一道基础题的初始答案为 $a_0$，后续输入提出目标选项 $a_t\neq a_0$。若模型最终离开 $a_0$，我们记为一次*答案修正*。CEDAR-Evidence 通过比较形式有效性不同的理由如何影响改答来衡量认识论选择性，并同时报告总体改答率。CEDAR-Social 固定模型对 $a_t$ 的暴露，估计社会性措辞带来的增量影响。两个模块均采用配对比较，并分别定义读数和统计分析。
+### 3.1 Shared Revision Setting and Controlled Contrasts / 答案修正的共同设定与受控对照
+
+Consider a model that initially selects $a_0$ for a base question. A follow-up proposes a different option $a_t$ and elicits another response. Any valid final choice different from $a_0$ counts as an *answer revision*; a revision to $a_t$ counts as *target following*. Epistemic selectivity captures the behavioral separation between follow-ups that warrant adopting $a_t$ and matched follow-ups that do not.
+
+Within each paired comparison, the base question, $a_0$, $a_t$, and response contract remain fixed. CEDAR-Evidence varies the formal validity of the supplied justification; CEDAR-Social varies social framing while holding target exposure constant. Figure 1 summarizes these controlled contrasts.
+
+**中文：** 考虑模型在一道基础题上最初选择 $a_0$。后续输入提出另一选项 $a_t$，并要求模型再次作答。只要最终有效选择离开 $a_0$，就记为一次*答案修正*；其中，转向 $a_t$ 的修正记为*目标跟随*。认识论选择性刻画的是：在其他要素匹配时，足以支持采用 $a_t$ 的后续输入与不支持这一修正的后续输入能够产生多大的行为差异。
+
+在每组配对比较中，基础题、$a_0$、$a_t$ 和响应约定均保持一致。CEDAR-Evidence 改变所提供论证的形式有效性；CEDAR-Social 在保持目标暴露不变的情况下改变社会性措辞。Figure 1 概括了这些受控对照。
 
 **Figure 1 placeholder / 图 1 占位：** CEDAR’s two-module audit design / CEDAR 双模块审计设计。
 
