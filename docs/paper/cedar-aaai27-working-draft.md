@@ -63,9 +63,8 @@ Language models often shift answers toward a user's stated view, including when 
 
 **Reason-Sensitive Intervention Audits. / 理由敏感的干预审计。**
 
-`[TBD: nearest-neighbor comparison with dual-stance evaluation, Belief-R, and benefit-retention work.]`
-
-`[TBD：填入与 dual-stance evaluation、Belief-R 及收益—保留评测的最近邻比较。]`
+Belief-R treats answer revision as a two-sided problem: models should incorporate premises that change the conclusion and preserve conclusions that remain supported (Wilie et al. 2024). Formal reasoning benchmarks make this distinction auditable. ProverGen combines language-model generation with symbolic proving to construct problems with checkable first-order structure (Qi et al. 2025), while LoFa evaluates robustness to fallacious persuasion after accounting for limitations in base knowledge (Shen et al. 2026). Work on intervention side effects similarly evaluates target behavior together with retention criteria. KL-then-steer limits distributional change on benign inputs while maintaining steering efficacy (Stickland et al. 2024), and dual-stance evaluation shows that anti-sycophancy steering can also reduce agreement with factually correct statements (Buchan 2026). CEDAR brings these lines together for state-dependent threshold capping by holding the base problem and proposed target fixed, certifying whether the supplied reason warrants revision, and controlling target exposure when estimating the effect of social framing.<br>
+**中文：** Belief-R 将答案修正视为一个双向问题：模型应当吸收足以改变结论的新前提，同时维持仍有充分支持的原结论（Wilie et al. 2024）。形式推理 benchmark 使这种区分可以被严格评测。ProverGen 将语言模型生成与符号证明结合，构造具有可核验一阶逻辑结构的题目（Qi et al. 2025）；LoFa 则在控制基础知识不足后评估模型抵抗谬误说服的能力（Shen et al. 2026）。干预副作用研究也会同时考察目标行为与能力保留。KL-then-steer 在维持 steering 效果的同时限制良性输入上的分布变化（Stickland et al. 2024）；dual-stance evaluation 则表明，反谄媚 steering 也可能降低模型对事实正确陈述的赞同（Buchan 2026）。CEDAR 将这些研究线索用于状态依赖的 threshold capping：固定基础题与 proposed target，认证所给理由是否足以支持改答，并在估计社会性措辞效应时控制 target exposure。
 
 ## 3. CEDAR: Auditing Epistemic Selectivity / CEDAR：审计认识论选择性
 
