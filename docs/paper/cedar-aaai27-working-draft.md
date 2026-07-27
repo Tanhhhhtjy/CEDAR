@@ -48,7 +48,7 @@ Approved contribution architecture / 已确认的贡献架构：
 
 ## 2. Related Work / 相关工作
 
-### 2.1 Inference-Time Activation Control: Steering, Ablation, and Capping / 推理时激活控制：Steering、消融与钳制
+**Inference-Time Control. / 推理时激活控制。**
 
 Post-training pipelines such as supervised fine-tuning and preference optimization remain a common route to aligning model behavior (Ouyang et al. 2022; Rafailov et al. 2023). Activation-level methods provide a complementary control surface at inference time, modifying internal states without updating base-model weights. Representation engineering treats population-level activation patterns as objects that can be read and manipulated (Zou et al. 2023). Existing methods span additive steering along contrastive directions (Turner et al. 2023; Rimsky et al. 2024), localized interventions on attention heads (Li et al. 2023), directional ablation (Arditi et al. 2024), and context-conditioned control (Lee et al. 2025).<br>
 **中文：** 监督微调和偏好优化等训练后方法，是使模型行为符合预期的常用途径（Ouyang et al. 2022；Rafailov et al. 2023）。与此同时，激活层方法提供了互补的推理期控制界面，可在不更新基础模型权重的情况下直接调整内部状态。表征工程将群体层面的激活模式作为可读取和操控的对象（Zou et al. 2023）。现有方法包括沿对比方向进行加性 steering（Turner et al. 2023；Rimsky et al. 2024）、对注意力头实施局部干预（Li et al. 2023）、方向消融（Arditi et al. 2024），以及依赖上下文的条件控制（Lee et al. 2025）。
@@ -56,12 +56,12 @@ Post-training pipelines such as supervised fine-tuning and preference optimizati
 The Assistant Axis identifies a population-level direction associated with assistant-like behavior and constrains its projection using a one-sided, percentile-calibrated threshold (Lu et al. 2026). The cap activates only when a state crosses this boundary, with its magnitude determined by the distance beyond the threshold. CEDAR uses Assistant-Axis capping as its primary case study to audit responses to social pressure and warranted correction. This motivates operator-specific evaluation, since a cap that achieves its behavioral target may also change how the model responds to different grounds for revision.<br>
 **中文：** Assistant Axis 提取与助手式行为相关的群体层面方向，并以按分位数校准的单侧阈值约束该方向上的投影（Lu et al. 2026）。只有当状态越过这一边界时，capping 才介入，干预幅度由越界距离决定。CEDAR 以 Assistant-Axis capping 为主要实例，审计其对社会压力响应和合理修正的影响。这也要求对不同算子分别进行评估：capping 即使达成了目标行为，也可能改变模型对不同改答依据的响应。
 
-### 2.2 Sycophancy, Social Influence, and Answer Revision / 谄媚、社会影响与答案修正
+**Sycophancy and Answer Revision. / 谄媚与答案修正。**
 
 Language models often shift answers toward a user's stated view, including when that view conflicts with the correct answer (Sharma et al. 2024). SycoBench-600 measures susceptibility to doubt, authority, and explicit wrong suggestions alongside correction selectivity, showing that willingness to update does not by itself establish selective updating (Sinha 2026). Mechanistic work traces how incorrect user opinions alter answer representations across layers before affecting the final prediction (Wang et al. 2026). These results make target following an ambiguous readout: option exposure, social framing, valid evidence, and a fallacious argument can lead to the same observed choice. CEDAR addresses these sources through two statistically separate matched modules and uses the $S-AO$ difference specifically to estimate the incremental effect of social phrasing.<br>
 **中文：** 语言模型常会把答案移向用户表达的观点，包括该观点与正确答案冲突时（Sharma et al. 2024）。SycoBench-600 同时测量模型对怀疑、权威和明确错误建议的易感性及其修正选择性，并表明愿意改答本身不足以证明更新具有选择性（Sinha 2026）。机制研究进一步追踪错误用户意见如何在最终预测改变前逐层改变答案表征（Wang et al. 2026）。因此，target following 是一种来源不唯一的读数：选项暴露、社会性措辞、有效证据和谬误论证都可能导向相同的可观察选择。CEDAR 使用两个统计上独立的匹配模块分别处理这些来源，并以 $S-AO$ 差值专门估计社会性措辞的增量效应。
 
-### 2.3 Reason-Sensitive Evaluation and Intervention Side Effects / 理由敏感评测与干预副作用
+**Reason-Sensitive Intervention Audits. / 理由敏感的干预审计。**
 
 `[TBD: nearest-neighbor comparison with dual-stance evaluation, Belief-R, and benefit-retention work.]`
 
