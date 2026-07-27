@@ -268,9 +268,19 @@ The $V-F$ difference was estimated much less precisely. The capped--uncapped cha
 
 **中文：** $V$ 与 $F$ 之间的差异估计则不够精确。$V-F$ 目标跟随选择性的钳制前后变化为 $+4.17$ 个百分点（95\% CI $[-20.83,29.17]$），区间在正负两个方向上均保留了较大不确定性。在事后分析中，未钳制选项间距与后续迁移的关系随数据来源而异（*[TBD-APPENDIX]*）。因此，边界结果只能部分描述迁移出现的位置。§4.4 将检验连续 margin 位移能否在 new-salt 实例中重现，并另行考察钳制对自然任务连续与离散读数的影响。
 
-### 4.4 New-Salt and Natural-Task Evidence / New-Salt 与自然任务证据
+### 4.4 Continuous Margin Shifts Accompany Heterogeneous Behavioral Changes / 连续 Margin 位移伴随异质的行为变化
 
-`[TBD: E2C and CEDAR-Social synthesis]`
+The new-salt bank re-instantiated the same task grammar and structural families. Its aggregate margin shift remained positive: with complete capped--uncapped logits for 95 of 96 paired comparisons, full-p25 capping increased $m_{\mathrm{general}}$ by $+1.538$ logits (95% family-cluster bootstrap CI $[0.455,2.741]$). The positive aggregate conclusion remained robust in the tipping-point analysis of the single missing logit. The discrete effects differed from the development assay: target following changed by $-12.5$ percentage points under $V$ and $+16.7$ points under $F$, yielding a $V-F$ selectivity change of $-29.17$ points (95% CI $[-58.33,4.17]$). The development and new-salt banks therefore shared the aggregate margin direction, while their arm-level answer changes differed.
+
+**中文：** new-salt bank 对同一任务语法和结构族重新实例化，其总体 margin 位移仍为正。96 个 capped--uncapped 配对比较中，95 个具有完整 logits；在这些比较上，full-p25 钳制使 $m_{\mathrm{general}}$ 增加 $+1.538$ logits（95% family-cluster bootstrap CI $[0.455,2.741]$）。针对单个缺失 logit 的 tipping-point 分析表明，总体位移为正的结论保持稳健。离散效应则与 development assay 不同：$V$ 条件下的 target following 降低 $12.5$ 个百分点，$F$ 条件下增加 $16.7$ 个百分点，$V-F$ 选择性变化为 $-29.17$ 个百分点（95% CI $[-58.33,4.17]$）。因此，development bank 与 new-salt bank 的总体 margin 位移同向，各条件的离散改答有所不同。
+
+CEDAR-Social examines a separate contrast on 600 paired natural-task items. Relative to uncapped inference, full-p25 capping increased the target-minus-initial margin by $+1.268$ logits in $AO$ and $+0.482$ logits in $S$, giving $\Delta_{\mathrm{social}}(p25)=-0.786$ logits (95% stratified base-bootstrap CI $[-0.860,-0.711]$). Both component effects were positive: the interaction captures a smaller increase with social framing than with target exposure alone. On the frozen free-generation subset, strict target-following and completion-based SocialExcess were both zero, and no paired $S$-arm answer migrated under p25. In this experiment, the reduction in the incremental social-framing effect appeared only in the direct margin readout.
+
+**中文：** CEDAR-Social 在 600 道配对自然任务上估计一项独立对比。相较于未钳制推理，full-p25 钳制使 $AO$ 条件下目标相对初始答案的 margin 增加 $+1.268$ logits，使 $S$ 条件增加 $+0.482$ logits，由此得到 $\Delta_{\mathrm{social}}(p25)=-0.786$ logits（95% 分层 base-bootstrap CI $[-0.860,-0.711]$）。两个分量效应均为正：该交互反映社会性措辞下的增幅小于单纯目标暴露下的增幅。在冻结的自由生成子集中，按严格目标跟随和完整回答计算的 SocialExcess 均为 0，p25 条件下也未观察到 $S$ 臂的配对答案迁移。在该实验中，社会性措辞增量效应的减小仅出现在直接 margin 读数上。
+
+In a complementary bidirectional SycoBench assay, the continuous selectivity contrast was well resolved, whereas the prespecified mirrored argmax criterion remained inconclusive (*[TBD-APPENDIX]*). Across our analyses, continuous margin effects and discrete answer changes are accordingly reported as separate outcomes.
+
+**中文：** 在互补的双向 SycoBench 评测中，连续选择性对比得到了清晰估计，而预先指定的镜像 argmax 判据仍未得到确定结论（*[TBD-APPENDIX]*）。因此，全文将连续 margin 效应与离散答案改变作为两类独立结果报告。
 
 ### 4.5 Cross-Model Transport and Heterogeneity / 跨模型迁移与异质性
 
