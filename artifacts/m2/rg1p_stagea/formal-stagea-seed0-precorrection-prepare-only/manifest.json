@@ -1,0 +1,63 @@
+{
+  "configuration": {
+    "cells": 864,
+    "conditions": [
+      "uncapped",
+      "full_p25",
+      "uncapped_noop_repeat",
+      "random_s20260727_pos",
+      "random_s20260727_neg",
+      "random_s20260728_pos",
+      "random_s20260728_neg"
+    ],
+    "git": {
+      "branch": "agent/rg1p-stagea-fixed-trace-propagation",
+      "commit": "6f5f5dd643e774862a7185357b1d6027d5685c4f",
+      "dirty": true,
+      "e2b_result_is_ancestor": true,
+      "head_matches_upstream": true,
+      "upstream_commit": "6f5f5dd643e774862a7185357b1d6027d5685c4f"
+    },
+    "model": {
+      "attention_implementation": "sdpa",
+      "dtype": "bfloat16",
+      "repo": "Qwen/Qwen3-32B",
+      "revision": "9216db5781bf21249d130ec9da846c4624c16137"
+    },
+    "p25": {
+      "axis_sha256": "a207fe7a36563280b7b29010880aa0082bd8e3113c141cb4a2eed6b46c140211",
+      "capping_config_sha256": "6aec1220487473aaeab80b05d5d960ac54b5dd9080b51ac4bb0bbd1f4330db24",
+      "experiment": "layers_46:54-p0.25",
+      "layers": [
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53
+      ]
+    },
+    "random_reference": {
+      "conditions": [
+        "random_s20260727_pos",
+        "random_s20260727_neg",
+        "random_s20260728_pos",
+        "random_s20260728_neg"
+      ],
+      "orthogonal_tolerance": 1e-06,
+      "schedule": "same_layer_same_token_same_official_actual_correction_norm",
+      "seeds": [
+        20260727,
+        20260728
+      ],
+      "unit_tolerance": 1e-06
+    },
+    "replay_engine": "model.generate_kv_cache_forced_tokens",
+    "schema": "cedar.rg1p_stagea.run.v1",
+    "scope": "formal"
+  },
+  "created_at": "2026-07-27T13:03:22.292359+08:00",
+  "fingerprint": "6de024e0f9a2629ed74dcfd139937527b2759f63c8134515a5d33565dd0dae71"
+}

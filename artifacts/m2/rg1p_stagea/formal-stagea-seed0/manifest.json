@@ -1,0 +1,65 @@
+{
+  "configuration": {
+    "cells": 864,
+    "conditions": [
+      "uncapped",
+      "full_p25",
+      "uncapped_noop_repeat",
+      "random_s20260727_pos",
+      "random_s20260727_neg",
+      "random_s20260728_pos",
+      "random_s20260728_neg"
+    ],
+    "git": {
+      "branch": "agent/rg1p-stagea-fixed-trace-propagation",
+      "commit": "e50012a52f2aad17683cb79b68bcf4400f07f28d",
+      "dirty": false,
+      "e2b_result_is_ancestor": true,
+      "head_matches_upstream": true,
+      "upstream_commit": "e50012a52f2aad17683cb79b68bcf4400f07f28d"
+    },
+    "model": {
+      "attention_implementation": "sdpa",
+      "dtype": "bfloat16",
+      "repo": "Qwen/Qwen3-32B",
+      "revision": "9216db5781bf21249d130ec9da846c4624c16137"
+    },
+    "p25": {
+      "axis_sha256": "a207fe7a36563280b7b29010880aa0082bd8e3113c141cb4a2eed6b46c140211",
+      "capping_config_sha256": "6aec1220487473aaeab80b05d5d960ac54b5dd9080b51ac4bb0bbd1f4330db24",
+      "experiment": "layers_46:54-p0.25",
+      "layers": [
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53
+      ]
+    },
+    "random_reference": {
+      "bf16_norm_solver": "monotone_bisection_e4_i12",
+      "conditions": [
+        "random_s20260727_pos",
+        "random_s20260727_neg",
+        "random_s20260728_pos",
+        "random_s20260728_neg"
+      ],
+      "orthogonal_tolerance": 1e-06,
+      "realized_direction_sign_gate": "cosine_strictly_positive",
+      "schedule": "same_layer_same_token_same_official_actual_correction_norm",
+      "seeds": [
+        20260727,
+        20260728
+      ],
+      "unit_tolerance": 1e-06
+    },
+    "replay_engine": "model.generate_kv_cache_forced_tokens",
+    "schema": "cedar.rg1p_stagea.run.v1",
+    "scope": "formal"
+  },
+  "created_at": "2026-07-27T15:38:18.677309+08:00",
+  "fingerprint": "16e28807dee0f527a11c3ada565fe8a61a7081192ff11c9ab9906c262923e3f6"
+}
