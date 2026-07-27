@@ -313,14 +313,17 @@ def audit(scope: str, output_root: Path) -> dict[str, Any]:
                     tensor_rel[nonzero] = tensor_abs[nonzero] / source_schedule[nonzero]
                     tensor_max_abs = float(tensor_abs.max().item())
                     tensor_max_rel = float(tensor_rel.max().item())
-                    if not (
-                        tensor_max_abs <= REALIZED_NORM_ABS_TOLERANCE
-                        or tensor_max_rel <= REALIZED_NORM_REL_TOLERANCE
-                    ):
+                    tensor_violations = (
+                        tensor_abs > REALIZED_NORM_ABS_TOLERANCE
+                    ) & (tensor_rel > REALIZED_NORM_REL_TOLERANCE)
+                    if torch.any(tensor_violations):
                         norm_failures.append(
                             {
                                 "cell_id": cell_id,
                                 "source": "independent_tensor_recompute",
+                                "violating_positions": int(
+                                    torch.count_nonzero(tensor_violations).item()
+                                ),
                                 "realized_max_abs": tensor_max_abs,
                                 "realized_max_rel": tensor_max_rel,
                             }
@@ -331,10 +334,7 @@ def audit(scope: str, output_root: Path) -> dict[str, Any]:
                 direction_min = float(injection.get("realized_direction_cosine_min", -math.inf))
                 if not math.isfinite(direction_min) or direction_min <= 0:
                     schedule_failures.append(f"random_direction_sign:{cell_id}:{direction_min}")
-                if requested > 1e-5 or not (
-                    realized_abs <= REALIZED_NORM_ABS_TOLERANCE
-                    or realized_rel <= REALIZED_NORM_REL_TOLERANCE
-                ):
+                if requested > 1e-5:
                     norm_failures.append(
                         {
                             "cell_id": cell_id,
@@ -365,14 +365,15 @@ def audit(scope: str, output_root: Path) -> dict[str, Any]:
             relative[nonzero] = difference[nonzero] / denominator[nonzero]
             max_abs = float(difference.max().item())
             max_rel = float(relative.max().item())
-            if not (
-                max_abs <= 2 * REALIZED_NORM_ABS_TOLERANCE
-                or max_rel <= 2 * REALIZED_NORM_REL_TOLERANCE
-            ):
+            sign_violations = (
+                difference > 2 * REALIZED_NORM_ABS_TOLERANCE
+            ) & (relative > 2 * REALIZED_NORM_REL_TOLERANCE)
+            if torch.any(sign_violations):
                 random_sign_pair_failures.append(
                     {
                         "trace_id": row["trace_id"],
                         "seed": seed,
+                        "violating_positions": int(torch.count_nonzero(sign_violations).item()),
                         "max_abs": max_abs,
                         "max_rel": max_rel,
                     }
@@ -511,6 +512,7 @@ def audit(scope: str, output_root: Path) -> dict[str, Any]:
             "random_sign_pair_failures": random_sign_pair_failures,
             "bf16_absolute_tolerance": REALIZED_NORM_ABS_TOLERANCE,
             "bf16_relative_tolerance": REALIZED_NORM_REL_TOLERANCE,
+            "application": "per_position_absolute_or_relative",
             "passed": (
                 not schedule_failures and not norm_failures and not random_sign_pair_failures
             ),

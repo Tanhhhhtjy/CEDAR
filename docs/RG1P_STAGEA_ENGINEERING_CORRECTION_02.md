@@ -33,6 +33,12 @@ direction. The original frozen pass rule remains exactly:
 max absolute error <= 0.03125 OR max relative error <= 0.002
 ```
 
+The disjunction is applied per layer-token position. A record is valid when
+every position satisfies at least one of the two frozen tolerances. Taking a
+global maximum for each error type before applying `OR` is invalid because the
+two maxima can come from different positions; Correction 02 explicitly tests
+the elementwise violation mask.
+
 The ideal requested vector norm is evaluated in float64 to avoid treating a
 float32 reduction error at large doses as a changed request. The model-visible
 direction cosine is recorded for every cell and must remain strictly positive.

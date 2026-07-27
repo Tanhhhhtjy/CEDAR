@@ -525,6 +525,9 @@ class ScheduleMatchedRandomInjector:
         direction_cosines = torch.cat(cosine_chunks) if cosine_chunks else torch.ones(1)
         max_abs = float(realized.max().item()) if realized.numel() else 0.0
         max_rel = float(relative.max().item()) if relative.numel() else 0.0
+        norm_violations = (realized > REALIZED_NORM_ABS_TOLERANCE) & (
+            relative.reshape_as(realized_norms) > REALIZED_NORM_REL_TOLERANCE
+        )
         input_tensor = torch.stack([self.terminal_input[layer] for layer in CAP_LAYERS])
         output_tensor = torch.stack([self.terminal_output[layer] for layer in CAP_LAYERS])
         return (
@@ -542,8 +545,9 @@ class ScheduleMatchedRandomInjector:
                 "requested_norm_max_abs_error": float(requested.max().item()),
                 "realized_norm_max_abs_error": max_abs,
                 "realized_norm_max_relative_error": max_rel,
-                "realized_norm_within_frozen_bf16_tolerance": (
-                    max_abs <= REALIZED_NORM_ABS_TOLERANCE or max_rel <= REALIZED_NORM_REL_TOLERANCE
+                "realized_norm_violation_count": int(torch.count_nonzero(norm_violations).item()),
+                "realized_norm_within_frozen_bf16_tolerance": not bool(
+                    torch.any(norm_violations).item()
                 ),
                 "bf16_norm_solver": (
                     f"monotone_bisection_e{RANDOM_NORM_SEARCH_EXPANSIONS}"
