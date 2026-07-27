@@ -36,7 +36,7 @@ This title is preferred to “Cross-Model Transport and Heterogeneity” because
 
 - **Shared transport:** both overall effects have the same direction, the Llama interval excludes zero, and V/F selectivity does not reliably improve.
 - **Partial transport:** the Llama overall effect has the same direction but its interval includes zero, or the arm allocation differs materially.
-- **Model--configuration specificity:** the matched Qwen anchor retains the main direction while Llama is null or reverses.
+- **Model--configuration specificity:** the matched Qwen anchor retains the main direction while Llama reverses, or falls inside a prespecified negligible-effect region if such a region was frozen.
 - **Invalid comparison:** tokenization, cap exposure, output space, or another frozen gate fails.
 
 The prose uses one narrow route slot and does not assume a route before the audited estimates are available.
@@ -73,8 +73,10 @@ The model/configuration gates are reported only after they pass; a failed gate r
 
 - The comparison does not isolate model identity from the released model-specific configuration.
 - The same axis vector, layer range, or raw-logit baseline is not transferred across models.
+- The matched-Qwen estimate must come from the reasoning-off forced-choice anchor; the reasoning-enabled E2A estimate is not a cross-model comparator.
 - A nonsignificant cross-model interaction does not establish equivalence.
 - A same-direction point estimate with an interval crossing zero supports partial, not shared, transport.
+- An interval crossing zero does not by itself establish a null or negligible effect.
 - Results do not license claims about all Llama or Qwen models, all activation axes, or capping in general.
 - Continuous margin and discrete answer outcomes remain separate readouts.
 

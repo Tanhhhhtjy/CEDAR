@@ -292,9 +292,15 @@ In a complementary bidirectional SycoBench assay, the continuous selectivity con
 
 **中文：** 在互补的双向 SycoBench 评测中，连续选择性对比得到了清晰估计，而预先指定的镜像 argmax 判据仍未得到确定结论（*[TBD-APPENDIX]*）。因此，全文将连续 margin 效应与离散答案改变作为两类独立结果报告。
 
-### 4.5 Cross-Model Transport and Heterogeneity / 跨模型迁移与异质性
+### 4.5 Transport Across Model-Specific Capping Configurations / 跨模型专属钳制配置的迁移
 
-`[TBD: matched Qwen/Llama results and analysis]`
+Figure 2D reports within-model $Delta m_{\mathrm{general}}$ under the matched forced-choice regime. On the shared Evidence bank, the regime-matched Qwen anchor yielded *[TBD-XM-Q-BROAD]*, and Llama-3.3-70B-Instruct yielded *[TBD-XM-L-BROAD]*; both intervals use the frozen family-cluster bootstrap. *[TBD-XM-TRANSPORT-ROUTE]*
+
+**中文：** 图 2D 汇总匹配 forced-choice 制度下各模型内部的 $\Delta m_{\mathrm{general}}$。在共享 Evidence bank 上，制度匹配的 Qwen 参照为 *[TBD-XM-Q-BROAD]*，Llama-3.3-70B-Instruct 为 *[TBD-XM-L-BROAD]*；两者区间均来自冻结的 family-cluster bootstrap。*[TBD-XM-TRANSPORT-ROUTE]*
+
+Within each model, the prespecified target-specificity check pooled across arms was *[TBD-XM-SPECIFIC]*, and the corresponding change in continuous $V-F$ selectivity was *[TBD-XM-VF-SELECTIVITY]*. *[TBD-XM-DISCRETE]* Complete arm-level estimates and cap-exposure and output-integrity diagnostics appear in *[TBD-APPENDIX]*. Model identity and the released capping configuration vary together in this comparison; the estimates therefore apply to the two tested model--configuration pairs.
+
+**中文：** 各模型内部预先指定、跨 N/R/V/F 四臂汇总的 target-specificity 检查结果为 *[TBD-XM-SPECIFIC]*，相应的连续 $V-F$ 选择性变化为 *[TBD-XM-VF-SELECTIVITY]*。*[TBD-XM-DISCRETE]* 完整分臂估计、钳制暴露和输出完整性诊断见 *[TBD-APPENDIX]*。模型身份与公开 capping 配置在这项比较中同时发生变化；因此，这些估计仅描述本文测试的两个模型—配置组合。
 
 ## 5. Diagnosing the Shift / 诊断该位移
 
