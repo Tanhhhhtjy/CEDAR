@@ -31,7 +31,7 @@ Panel D contains only narrow TBD result slots until both matched runs pass the f
 
 - Insert the double-column placeholder after Section 4.1 and before the Section 4.2 heading. This lets LaTeX place it at the next page top without putting its source after the first substantive citation.
 - Give the figure a stable label and replace hard-coded references in Sections 4.2, 4.3, and 4.5 with label-based references.
-- Keep the placeholder shallow enough to expose pagination pressure, while reserving a realistic double-column caption interface.
+- Reserve a 2.80-inch artwork box for the 2-by-2 dashboard so pagination reflects a realistic final figure rather than a token placeholder.
 - Figure 3 retains its existing interface after Figure 2 increments the counter normally.
 
 ## Caption Contract
