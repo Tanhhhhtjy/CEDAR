@@ -43,23 +43,12 @@ from rg1p_common import (  # noqa: E402
 )
 
 DEFAULT_OUTPUT_ROOT = ROOT / "artifacts/m2/rg1p_stagea"
-REPLAY_GATE_MODES = ("strict_anchor", "cross_environment_diagnostic")
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--scope", choices=("smoke", "formal"), required=True)
     parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
-    parser.add_argument(
-        "--replay-gate-mode",
-        choices=REPLAY_GATE_MODES,
-        default="strict_anchor",
-        help=(
-            "Keep frozen anchor equivalence blocking by default. The AutoDL Route A "
-            "amendment uses diagnostic mode because all scientific contrasts are rebuilt "
-            "within one new hardware/software stack."
-        ),
-    )
     return parser.parse_args()
 
 
@@ -113,18 +102,7 @@ def bf16_alignment_diagnostics(
     }
 
 
-def replay_failures_are_blocking(mode: str) -> bool:
-    require(mode in REPLAY_GATE_MODES, f"Unknown replay gate mode: {mode}")
-    return mode == "strict_anchor"
-
-
-def audit(
-    scope: str,
-    output_root: Path,
-    *,
-    replay_gate_mode: str = "strict_anchor",
-) -> dict[str, Any]:
-    replay_blocking = replay_failures_are_blocking(replay_gate_mode)
+def audit(scope: str, output_root: Path) -> dict[str, Any]:
     expected = EXPECTED_SMOKE_CELLS if scope == "smoke" else EXPECTED_FORMAL_CELLS
     run_dir = output_root / f"{scope}-stagea-seed0"
     results_path = run_dir / "results.jsonl"
@@ -480,13 +458,7 @@ def audit(
     ):
         failures.append("runtime_layer_metrics_hash")
 
-    if replay_blocking:
-        failures.extend(f"replay:{item['cell_id']}" for item in replay_failures)
-    else:
-        warnings.append(
-            "replay_anchor_equivalence_is_diagnostic_only_under_autodl_route_a:"
-            f"{len(replay_failures)}"
-        )
+    failures.extend(f"replay:{item['cell_id']}" for item in replay_failures)
     failures.extend(f"tensor:{item}" for item in tensor_failures)
     failures.extend(f"nonfinite:{item}" for item in nonfinite_tensors)
     failures.extend(f"hook_leak:{item}" for item in hook_leaks)
@@ -524,8 +496,6 @@ def audit(
             "lens_anchor_failures": len(lens_anchor_failures),
         },
         "replay_gate": {
-            "mode": replay_gate_mode,
-            "gate_applied": replay_blocking,
             "checked": sum(
                 1
                 for row in rows
@@ -534,16 +504,7 @@ def audit(
             "failures": replay_failures,
             "max_abs_logit_error": replay_max_abs,
             "tolerance": REPLAY_TOLERANCE,
-            "numerical_equivalence_observed": not replay_failures,
-            "passed": not replay_failures if replay_blocking else None,
-            "interpretation": (
-                "blocking token-level equivalence gate"
-                if replay_blocking
-                else (
-                    "diagnostic only; AutoDL Route A is a fresh self-contained within-run "
-                    "assay and makes no token-level equivalence claim to E2A/E2B"
-                )
-            ),
+            "passed": not replay_failures,
         },
         "schedule_match": {
             "failures": schedule_failures,
@@ -599,11 +560,7 @@ def audit(
 
 def main() -> None:
     args = parse_args()
-    result = audit(
-        args.scope,
-        args.output_root.resolve(),
-        replay_gate_mode=args.replay_gate_mode,
-    )
+    result = audit(args.scope, args.output_root.resolve())
     print(json.dumps(result, indent=2, sort_keys=True))
     if result["status"] != "passed":
         raise SystemExit(1)

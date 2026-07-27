@@ -39,14 +39,16 @@ scientific contrasts use records generated on the same AutoDL hardware and
 software stack. It does not claim token-level numerical equivalence to frozen
 E2A/E2B logits.
 
-The audit command must therefore use:
+The frozen auditor remains byte-identical to the Stage A release. Route A uses
+an additive policy wrapper:
 
 ```text
---replay-gate-mode cross_environment_diagnostic
+python scripts/audit_rg1p_stagea_autodl_route_a.py --scope <smoke|formal> ...
 ```
 
-Replay differences remain fully measured and reported, but do not determine
-the Route A audit status. Tensor integrity, finite values, hook cleanup,
+The wrapper preserves `*_AUDIT_STRICT_ANCHOR.json` before writing the canonical
+Route A audit. Replay differences remain fully measured and reported, but do
+not determine the Route A audit status. Tensor integrity, finite values, hook cleanup,
 processor order, schedule matching, realized-norm matching, random sign pairs,
 engineering no-op behavior, terminal alignment, and the within-run native-lens
 anchor remain blocking gates.
