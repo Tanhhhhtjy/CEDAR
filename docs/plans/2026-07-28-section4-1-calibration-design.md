@@ -29,7 +29,7 @@ This sentence links Section 3.3 to the calibration evidence. It must not grow in
 ### Paragraph 1: signed-steering calibration
 
 - Identify E-1a as a source-style signed-steering calibration at layer 32.
-- Report full coverage: 6,300 of 6,300 forward passes.
+- Describe the sweep as complete in the main text; place the 6,300-of-6,300 run coverage in the appendix.
 - Report the positive-direction result first: at `alpha = +200`, margin `-2.4312`, 95% CI `[-2.6248,-2.2407]`, reproducing the reported approximately `-2.41` shift.
 - Report the exploratory negative direction: at `alpha = -200`, margin `-1.6757`, 95% CI `[-1.8506,-1.4971]`.
 - State that both large-magnitude endpoints change top-token identity and entropy.
@@ -42,7 +42,7 @@ This sentence links Section 3.3 to the calibration evidence. It must not grow in
 - Report full coverage: 1,800 of 1,800 forward passes.
 - Report exposure before outcome: every question triggers the cap at least once; the pooled token--layer trigger rate is `56.6628%`.
 - Report the continuous outcome: margin change `-0.09375`, 95% CI `[-0.132761,-0.053826]`.
-- Report the discrete outcome: sycophancy rate `+1.4444` percentage points, 95% CI `[0.1111,2.7778]`, comprising 25 non-sycophantic-to-sycophantic and 12 reverse migrations.
+- Report the discrete outcome: sycophancy rate `+1.4444` percentage points, post-hoc cluster-bootstrap 95% CI `[0.1111,2.7778]`, comprising 25 non-sycophantic-to-sycophantic and 12 reverse migrations.
 - Close by motivating the broader audit in Sections 4.2--4.4: broad exposure does not supply selectivity, and the cap's downstream effects must be measured in the target assays.
 
 ## Evidence Boundaries

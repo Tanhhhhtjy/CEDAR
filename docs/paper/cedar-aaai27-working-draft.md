@@ -226,9 +226,19 @@ development bank 用于探索。new-salt 与匹配 Llama 研究的主要对比�
 
 ## 4. Auditing Assistant-Axis Capping / 审计 Assistant-Axis 钳制
 
-### 4.1 The Axis Is Not the Operator / 表示轴不等于干预算子
+### 4.1 Calibrating Steering Direction and Cap Exposure / 校准 Steering 方向与钳制暴露
 
-`[TBD: final prose and verified source comparison]`
+Signed steering maps the controlled scalar projection $s$ at an intervention site to $s+\alpha$. A one-sided cap maps $s$ to $\min(s,\tau)$ and activates only above $\tau$. Because the released procedures use different intervention locations and schedules, we calibrate each in its deployed form.
+
+**中文：** Signed steering 在干预位置将受控标量投影 $s$ 映射为 $s+\alpha$。单侧 capping 将 $s$ 映射为 $\min(s,\tau)$，且只在投影超过 $\tau$ 时触发。由于两套公开流程采用不同的干预层位与调度，我们分别校准其实际部署形式。
+
+We first ran a complete seven-dose signed-steering calibration at layer 32 using the source-style PhilPapers setup. At $\alpha=+200$, the sycophancy margin changed by $-2.4312$ logits relative to $\alpha=0$ (95% CI $[-2.6248,-2.2407]$), closely matching the approximately $-2.41$ shift reported by Kelkar et al. (2026). The exploratory $\alpha=-200$ endpoint also produced a negative change of $-1.6757$ logits (95% CI $[-1.8506,-1.4971]$). At both large-magnitude endpoints, the margin shifts were accompanied by changes in top-token identity and full-vocabulary entropy. We therefore treat this margin as a benchmark readout and evaluate behavioral quality and selectivity separately in the target assays below. The full seven-dose curve and distributional diagnostics appear in *[TBD-APPENDIX]*.
+
+**中文：** 我们首先采用源工作风格的 PhilPapers 设定，完成了第 32 层的七剂量 signed-steering 校准。相较于 $\alpha=0$，当 $\alpha=+200$ 时，sycophancy margin 变化为 $-2.4312$ logits（95% CI $[-2.6248,-2.2407]$），与 Kelkar 等（2026）报告的约 $-2.41$ 位移接近。探索性的 $\alpha=-200$ 端点同样产生负向变化，为 $-1.6757$ logits（95% CI $[-1.8506,-1.4971]$）。在正负两个大剂量端点，margin 位移均伴随 top-token identity 和全词表熵的变化。因此，我们将这一 margin 作为 benchmark readout，并在下文目标评测中分别检验行为质量与选择性。完整七剂量曲线和分布诊断见 *[TBD-APPENDIX]*。
+
+We next calibrated the released layerwise p25 procedure on the same source-style PhilPapers benchmark. Across layers 46--53, every capped evaluation received at least one nonzero correction, and $56.66\%$ of eligible token--layer states triggered the cap. The intervention therefore reached every evaluation while modifying only its above-threshold states. Relative to uncapped inference, p25 changed the sycophancy margin by $-0.094$ logits (95% CI $[-0.133,-0.054]$). The discrete sycophancy rate increased by $1.44$ percentage points (post-hoc cluster-bootstrap 95% CI $[0.11,2.78]$), comprising 25 non-sycophantic-to-sycophantic migrations and 12 in the reverse direction. On this benchmark, the continuous margin and discrete sycophancy rate moved in opposite directions. Sections 4.2--4.4 therefore report these readouts separately when analyzing answer revision and reason selectivity.
+
+**中文：** 随后，我们在同一源工作风格的 PhilPapers benchmark 上校准公开的分层 p25 流程。在第 46--53 层中，每次 capped 评测都至少发生一次非零校正，所有可干预 token--layer 状态的实际触发率为 $56.66\%$。因此，该干预覆盖了全部评测样本，同时只修改其中超过阈值的状态。相较于未钳制推理，p25 下的 sycophancy margin 变化为 $-0.094$ logits（95% CI $[-0.133,-0.054]$）。离散 sycophancy rate 则增加 $1.44$ 个百分点（事后 cluster-bootstrap 95% CI $[0.11,2.78]$），其中包括 25 次由 non-sycophantic 到 sycophantic 的迁移和 12 次反向迁移。在这一 benchmark 上，连续 margin 与离散 sycophancy rate 的变化方向相反。因此，§4.2--4.4 在分析答案修正与理由选择性时分别报告这两类读数。
 
 ### 4.2 Capping Broadly Compresses Initial-Answer Advantage / 钳制广泛压缩初始答案优势
 
