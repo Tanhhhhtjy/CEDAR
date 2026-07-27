@@ -46,7 +46,7 @@ Approved contribution architecture / 已确认的贡献架构：
 3. **Controlled diagnostics.** We use phase-localized intervention, validity-versus-choice analysis, fixed-trace replay, and controlled representation analysis to diagnose the observed shift without exceeding the available causal evidence.<br>
    **中文：受控诊断。** 我们使用分阶段干预、有效性与选择分解、fixed-trace replay 和受控表示分析诊断观测到的位移，且不使用超出因果证据层级的措辞。
 
-## 2. Background and Related Work / 背景与相关工作
+## 2. Related Work / 相关工作
 
 ### 2.1 Inference-Time Activation Control: Steering, Ablation, and Capping / 推理时激活控制：Steering、消融与钳制
 
