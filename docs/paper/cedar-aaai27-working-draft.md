@@ -16,35 +16,31 @@
 
 ## Abstract / 摘要
 
-`[TBD: final five-sentence abstract with audited Qwen/Llama results]`
+Activation-space interventions can suppress unwanted language-model behavior, but standard evaluations reveal little about their effect on sensitivity to the grounds for revising an answer. We introduce CEDAR, a reason-sensitive audit framework comprising a solver-certified paired Evidence dataset that varies warrant validity and a separately analyzed Social protocol that isolates social framing from target exposure. On Qwen3-32B, the released Assistant-Axis p25 cap increased the pooled non-initial-versus-initial margin by $+3.130$ logits (95% family-cluster CI $[1.834,4.486]$), with positive shifts even in controls that concealed the target. In the development assay, target following rose by $20.8$ and $16.7$ percentage points under valid and single-fault arguments, leaving no stable improvement in valid--fallacious selectivity; a new-salt instantiation retained a $+1.538$-logit aggregate shift but showed different arm-level answer changes. The Social audit likewise separated continuous from discrete effects: capping changed the confident-endorsement-minus-target-exposure direct-margin contrast by $-0.786$ logits, while frozen free-generation SocialExcess was zero. Fixed-trace replay produced positive continuous shifts under both trace-source conditions; none of the 192 paired replays changed the four-option argmax. *[TBD-XM-ABSTRACT]* Across these assays, Assistant-Axis capping repeatedly altered answer geometry without a stable gain in reason selectivity, motivating direct reason-sensitive evaluation of activation-space control.
 
-`[TBD：填入包含经审计 Qwen/Llama 结果的最终五句式摘要]`
+**中文：** 激活空间干预可以抑制不期望的语言模型行为，但标准评测很少说明此类干预如何改变模型对改答依据的敏感性。我们提出 CEDAR，一套理由敏感的审计框架；其中经求解器认证的配对 Evidence 数据集改变论证是否成立，单独分析的 Social 协议则隔离社会措辞相对于纯目标暴露的增量。在 Qwen3-32B 上，公开的 Assistant-Axis p25 钳制使汇总的非初始选项相对初始答案 margin 增加 $+3.130$ logits（95% family-cluster CI $[1.834,4.486]$），且隐藏目标的对照条件也呈现正向位移。在 development assay 中，有效论证与 single-fault 谬误下的目标跟随分别增加 $20.8$ 和 $16.7$ 个百分点，valid--fallacious 选择性未出现稳定改善；new-salt 实例保留了 $+1.538$ logits 的总体位移，但各条件的答案改变有所不同。Social 审计同样显示连续与离散读出分离：钳制使“确信背书减目标暴露”的直接 margin 对比变化 $-0.786$ logits，而冻结自由生成读出中的 SocialExcess 为零。固定轨迹重放在两种轨迹来源下均产生正向连续位移；192 组配对重放均未改变四选项 argmax。*[TBD-XM-ABSTRACT]* 综合这些评测，Assistant-Axis 钳制反复改变答案几何，却没有带来稳定的理由选择性增益；激活空间控制因此需要直接接受理由敏感评测。
 
 ## 1. Introduction / 引言
 
-Paragraph contract / 段落接口：
+Runtime activation interventions can change language-model behavior without retraining, providing lightweight control over refusal, truthfulness, and persona at deployment time (Turner et al., 2023; Arditi et al., 2024; Lu et al., 2026). They are commonly evaluated with a target-behavior metric and broad capability tests or checks on benign inputs. These tests provide limited evidence about how an intervention changes the model's response to the grounds offered for revising an answer. Static accuracy can remain stable even when the intervention changes which arguments or social signals move the model away from its current answer.
 
-1. Runtime activation interventions can alter model behavior without retraining.<br>
-   **中文：** 推理时激活干预无需重新训练即可改变模型行为。
-2. Existing evaluations often pair the intended behavioral change with broad capability tests or checks on benign inputs, providing limited evidence about sensitivity to the grounds for revision.<br>
-   **中文：** 现有评测常把预期行为变化与一般能力测试或良性输入检查一并报告，但这些结果对模型能否依据改答理由作出区分提供的信息有限。
-3. Intervention evaluation poses two separate comparison problems: isolating social framing beyond target exposure and comparing reasons that warrant revision with matched reasons that do not.<br>
-   **中文：** 干预评测包含两类分别分析的比较：隔离超出 target exposure 的社会性措辞影响，以及比较足以支持修正的理由与匹配的无效理由。
-4. CEDAR makes these comparisons auditable through two complementary modules that are analyzed separately.<br>
-   **中文：** CEDAR 通过两个互补且分别分析的模块，使这些比较可以被审计。
-5. `[TBD: concise audited headline result across continuous geometry, discrete updating, and cross-model heterogeneity.]`<br>
-   **中文：** `[TBD：填入涵盖连续几何、离散更新与跨模型异质性的经审计标题级结果。]`
-6. Three contributions: framework and evaluation assets, a scoped empirical audit, and controlled diagnostics.<br>
-   **中文：** 三项贡献：框架与评测资产、限定范围的实证审计，以及受控诊断。
+**中文：** 推理时激活干预无需重新训练即可改变模型行为，为部署阶段调节拒答、真实性与 persona 提供了轻量手段（Turner 等，2023；Arditi 等，2024；Lu 等，2026）。现有工作通常同时报告目标行为指标与一般能力测试或良性输入检查。这些评测对干预如何改变模型对改答理由的响应说明有限。即使静态准确率保持不变，干预仍可能改变哪些论证或社会信号会推动模型放弃当前答案。
 
-Approved contribution architecture / 已确认的贡献架构：
+The same proposed answer may be accompanied by a valid derivation, a plausible fallacy, social endorsement, or simple repetition. These cases call for different responses: sufficient evidence should support revision, whereas an invalid inference, target exposure, or confidence alone should carry less weight. We call this differential response *epistemic selectivity*. It is a dynamic property of revision, so neither a static capability score nor an overall flip rate identifies it (Figure 1).
 
-1. **Framework and evaluation assets.** We formulate epistemic selectivity as a distinct evaluation target and introduce CEDAR. It comprises CEDAR-Evidence, a new solver-certified paired evaluation dataset, and CEDAR-Social, a paired protocol over SycoBench-600 that is analyzed separately.<br>
-   **中文：框架与评测资产。** 我们将认识论选择性形式化为独立评测目标并提出 CEDAR。CEDAR 包含新的 solver-certified 配对评测数据集 CEDAR-Evidence，以及在 SycoBench-600 上构造并单独分析的 CEDAR-Social 配对协议。
-2. **Scoped empirical audit.** We audit Assistant-Axis threshold capping on Qwen and Llama, retaining model-specific configurations, uncertainty, and heterogeneity.<br>
-   **中文：限定范围的实证审计。** 我们在 Qwen 与 Llama 上审计 Assistant-Axis 阈值钳制，并保留模型专属配置、不确定性与异质性。
-3. **Controlled diagnostics.** We use phase-localized intervention, validity-versus-choice analysis, fixed-trace replay, and controlled representation analysis to diagnose the observed shift without exceeding the available causal evidence.<br>
-   **中文：受控诊断。** 我们使用分阶段干预、有效性与选择分解、fixed-trace replay 和受控表示分析诊断观测到的位移，且不使用超出因果证据层级的措辞。
+**中文：** 同一候选答案可能伴随有效推导、看似合理的谬误、社会性背书或简单重复。这些情形要求不同的响应：充分证据应支持修正答案，无效推理、纯目标暴露或单纯的自信措辞应当具有较小权重。本文将这种差异化响应称为*认识论选择性*。它是改答过程中的动态属性，单纯的静态能力分数或总体翻转率都无法识别它（图 1）。
+
+We introduce CEDAR, a reason-sensitive audit framework with two paired modules that are constructed and analyzed separately. CEDAR-Evidence is a solver-certified paired dataset that varies warrant validity; CEDAR-Social is a natural-task protocol that isolates social framing from target exposure. Within each module, the base task, initial answer, proposed target, and output contract remain fixed. Four-way outcomes are paired with continuous margins that separate general movement away from the initial answer from target-specific attraction. We apply CEDAR to the released Assistant-Axis p25 cap on Qwen3-32B and run a matched forced-choice CEDAR-Evidence comparison of the released Qwen and Llama model--configuration pairs; CEDAR-Social and the diagnostic analyses remain Qwen-only.
+
+**中文：** 我们提出 CEDAR，一套由两个分别构造和分析的配对模块组成的理由敏感审计框架。CEDAR-Evidence 是改变理由有效性的经求解器认证配对数据集；CEDAR-Social 是在自然任务中隔离社会措辞与纯目标暴露的评测协议。每个模块内部均固定基础任务、初始答案、候选目标和输出约定。四态行为结果与连续 margin 联合使用，以区分离开初始答案的整体位移和目标特异吸引。我们用 CEDAR 审计 Qwen3-32B 的公开 Assistant-Axis p25 钳制，并在匹配的 forced-choice 制度下，对公开的 Qwen 与 Llama 模型—配置组合进行 CEDAR-Evidence 比较；CEDAR-Social 与诊断分析仍仅在 Qwen 上开展。
+
+In the Qwen3-32B development CEDAR-Evidence assay, full-p25 capping increased the pooled non-initial-versus-initial margin, $m_{\mathrm{general}}$, by $3.130$ logits (95% family-cluster CI $[1.834,4.486]$); all four arm estimates were positive, including neutral and evidence-free recheck ($N/R$) controls that concealed the target. Target following increased by $20.8$ and $16.7$ percentage points under valid ($V$) and single-fault fallacious ($F$) arguments, while the change in $V$-minus-$F$ selectivity remained imprecise. A new-salt re-instantiation showed a $+1.538$-logit complete-case aggregate shift, while its arm-level answer changes differed. In CEDAR-Social, capping changed the confident-endorsement-minus-target-exposure ($S-AO$) direct-margin contrast by $-0.786$ logits; both component shifts were positive, and the corresponding SocialExcess was zero in frozen free-generation readouts. The two Evidence banks shared the positive aggregate $m_{\mathrm{general}}$ direction; across Evidence and Social, continuous effects were accompanied by different selected-answer outcomes.
+
+**中文：** 在 Qwen3-32B 的 development CEDAR-Evidence assay 中，full-p25 钳制使汇总 $m_{\mathrm{general}}$（非初始选项相对初始答案的 margin）增加 $3.130$ logits（95% family-cluster CI $[1.834,4.486]$）；包括隐藏目标的中性延续与无证据复核（$N/R$）对照在内，四个条件的估计均为正。有效论证（$V$）与 single-fault 谬误论证（$F$）下的目标跟随分别增加 $20.8$ 和 $16.7$ 个百分点，$V$ 减 $F$ 的选择性变化仍不精确。new-salt 重新实例化的 complete-case 总体位移为 $+1.538$ logits，但各条件的离散改答不同。在 CEDAR-Social 中，钳制使“确信背书减目标暴露”（$S-AO$）的直接 margin 对比变化 $-0.786$ logits；两个分量位移均为正，冻结自由生成读出中相应的 SocialExcess 为零。两个 Evidence bank 的汇总 $m_{\mathrm{general}}$ 均为正向；在 Evidence 与 Social 评测中，连续效应对应的最终答案结果并不相同。
+
+Fixed-trace replay produced positive continuous shifts for traces generated without and with capping ($+2.078$ and $+0.700$ logits, respectively); none of 192 paired replays changed the four-option argmax. *[TBD-XM-INTRO-ROUTE]* This work makes three contributions. (i) We operationalize epistemic selectivity as an audit target for activation interventions and introduce CEDAR, which combines a solver-certified Evidence dataset with a separately analyzed Social protocol and pairs continuous with discrete readouts. (ii) On the released Qwen Assistant-Axis p25 cap, we document a broad compression of initial-answer advantage, heterogeneous discrete consequences, and no stable improvement in valid-versus-fallacious selectivity. (iii) We diagnose the shift with phase-restricted interventions, an independent validity assay, trajectory comparisons, and fixed-trace replay; the replay result shows that the shift persists with identical visible reasoning.
+
+**中文：** 固定轨迹重放在由未钳制与 p25 生成的轨迹上均产生正向连续位移（分别为 $+2.078$ 与 $+0.700$ logits）；192 组配对重放均未改变四选项 argmax。*[TBD-XM-INTRO-ROUTE]* 本文有三项贡献。（i）我们将认识论选择性操作化为激活干预的审计目标，并提出 CEDAR，将经求解器认证的 Evidence 数据集与单独分析的 Social 协议结合，同时报告连续与离散读出。（ii）在公开的 Qwen Assistant-Axis p25 钳制中，我们记录了初始答案优势的广泛压缩、随评测变化的离散后果，以及有效与谬误论证之间的选择性未出现稳定改善。（iii）我们通过分阶段干预、独立有效性评测、轨迹比较和固定轨迹重放诊断该位移；固定轨迹结果表明，该位移在可见推理完全一致时仍然存在。
 
 ## 2. Related Work / 相关工作
 
@@ -66,133 +62,94 @@ Social influence makes the grounds for answer revision difficult to infer from b
 Belief-revision benchmarks provide criteria for judging such answer changes. Belief-R treats answer revision as a two-sided problem: models should incorporate premises that change the conclusion and preserve conclusions that remain supported (Wilie et al. 2024). ProverGen combines language-model generation with symbolic proving to construct problems with checkable first-order structure (Qi et al. 2025), while LoFa evaluates robustness to fallacious persuasion after accounting for limitations in base knowledge (Shen et al. 2026). These resources support controlled evaluation of reason quality. A parallel line of work evaluates intervention side effects by pairing target behavior with retention criteria. KL-then-steer limits distributional change on benign inputs while maintaining additive-steering efficacy (Stickland et al. 2024); dual-stance evaluation shows that centroid-difference anti-sycophancy steering can also reduce agreement with factually correct statements (Buchan 2026). An audit of state-dependent capping therefore needs estimates of the intervention's effect on warranted-versus-unwarranted revision and on the additional target following attributable to social framing beyond target exposure.<br>
 **中文：** 信念修正 benchmark 为判断这类答案变化提供了判据。Belief-R 将答案修正视为一个双向问题：模型应当吸收足以改变结论的新前提，同时维持仍有充分支持的原结论（Wilie et al. 2024）。ProverGen 将语言模型生成与符号证明结合，构造具有可核验一阶逻辑结构的题目（Qi et al. 2025）；LoFa 则在控制基础知识不足后评估模型抵抗谬误说服的能力（Shen et al. 2026）。这些资源支持对理由质量进行受控评测。与之并行，另一类工作借助保留指标评估干预副作用。KL-then-steer 在维持加性 steering 效果的同时限制良性输入上的分布变化（Stickland et al. 2024）；dual-stance evaluation 表明，基于 centroid difference 的反谄媚 steering 也可能降低模型对事实正确陈述的赞同（Buchan 2026）。因此，对状态依赖 capping 的审计需要估计干预对有据与无据修正差异的影响，以及它对社会性措辞在 target exposure 之上所引起的额外 target following 的影响。
 
-## 3. CEDAR: Auditing Epistemic Selectivity / CEDAR：审计认识论选择性
+## 3. Designing a Reason-Selectivity Audit / 设计理由选择性审计
 
-CEDAR combines CEDAR-Evidence, a new solver-certified paired dataset, with CEDAR-Social, a separate protocol over natural tasks. The modules estimate responses to reason validity and social framing with distinct estimands and sampling units. We next define their shared answer-change setting, interventions, outcomes, and inference.
+Capping may alter warrant discrimination, the general criterion for leaving an answer, or sensitivity to social framing. CEDAR separates these accounts with two independently analyzed paired contrasts that vary warrant validity, target exposure, and social framing while holding the task, initial answer, and candidate target fixed. Both categorical transitions and continuous answer geometry are recorded.
 
-**中文：** CEDAR 包含两个模块：CEDAR-Evidence 是一套经求解器认证的新配对数据集，CEDAR-Social 是基于自然任务的独立评测协议。二者分别估计模型对理由有效性和社会性措辞的响应，并采用不同的估计量与统计单位。下文依次定义共同的答案改变设定、干预、行为指标和统计推断。
+**中文：** 钳制可能改变理由有效性判别、离开既有答案的一般倾向，或对社会措辞的敏感程度。CEDAR 用两组独立分析的配对对照区分这些作用；对照在固定任务、初始答案和候选目标的同时，分别改变理由有效性、目标暴露和社会措辞，并同时记录类别迁移与连续答案几何。
 
-### 3.1 Shared Answer-Change Setting and Controlled Contrasts / 答案改变的共同设定与受控对照
+### 3.1 Paired Revision Setting / 配对改答设定
 
-Each evaluation begins with a dialogue containing a base question and a supplied initial answer $a_0$. We associate the base with a different, paired target $a_t$ used to classify the subsequent response. A parseable final option different from $a_0$ is an *answer change*; a final answer equal to $a_t$ is *target following*. When the follow-up supplies sufficient support for $a_t$, target following constitutes a *warranted revision*.
+Each dialogue supplies a base question, an initial answer $a_0$, and a paired alternative $a_t$. A parseable final option different from $a_0$ is an *answer change*; choosing $a_t$ is *target following*, and is warranted only when the follow-up sufficiently supports it. In CEDAR-Evidence, $N/R$ retain $a_t$ for analysis but hide it from the model, whereas $V/F$ present the same candidate edit with valid or fallacious justification. CEDAR-Social presents $a_t$ in both $AO/S$ and varies social framing. Thus $V-F$ isolates warrant validity and $S-AO$ isolates social framing, each at constant target exposure (Figure 1).
 
-CEDAR-Evidence fixes the paired target across four conditions: $N/R$ retain it for analysis without revealing it, whereas $V/F$ present the same update with valid or fallacious justification. CEDAR-Social reveals $a_t$ in both $AO/S$ and varies the accompanying social framing. Each comparison fixes the base, $a_0$, target identity, and response format (Figure 1).
-
-**中文：** 每项评测都从一段包含基础问题和预置初始答案 $a_0$ 的对话开始。每个基础样本还关联一个不同于 $a_0$ 的配对目标 $a_t$，用于划分后续回答。可解析的最终选项与 $a_0$ 不同时，记为*答案改变*；最终答案等于 $a_t$ 时，记为*目标跟随*。当后续信息为 $a_t$ 提供充分支持时，目标跟随构成*有充分依据的改答*。
-
-CEDAR-Evidence 的四种条件使用同一个配对目标：$N/R$ 在分析中保留该目标，但不向模型展示；$V/F$ 呈现同一候选修改，论证分别有效或包含谬误。CEDAR-Social 的 $AO/S$ 都展示 $a_t$，仅改变伴随的社会性措辞。各项对比均固定基础题、$a_0$、目标身份和回答格式（Figure 1）。
+**中文：** 每段对话包含基础问题、初始答案 $a_0$ 和配对替代项 $a_t$。可解析的最终选项偏离 $a_0$ 时记为*答案改变*；选择 $a_t$ 时记为*目标跟随*，仅当后续信息充分支持 $a_t$ 时，这一改变才具有充分依据。CEDAR-Evidence 在分析中为 $N/R$ 保留 $a_t$，但不向模型展示；$V/F$ 则呈现同一候选修改，并分别附加有效论证或谬误论证。CEDAR-Social 的 $AO/S$ 均展示 $a_t$，只改变社会措辞。因此，$V-F$ 在固定目标暴露时隔离理由有效性，$S-AO$ 在同样条件下隔离社会措辞（图 1）。
 
 **Figure 1 / 图 1：** CEDAR paired, reason-sensitive audit design / CEDAR 成对理由敏感审计设计。
 
-**Caption / 图注：** **CEDAR's paired, reason-sensitive audit design.** CEDAR-Evidence holds the formal-task instance, initial answer $a_0$, and target answer $a_t$ fixed while varying the follow-up prompt. Neutral ($N$) and Recheck ($R$) serve as controls; Valid ($V$) provides sufficient support for updating to $a_t$; and Fallacy ($F$) proposes the same update through an invalid inference. CEDAR-Social holds the natural-task instance and answer pair fixed: Target re-mention ($AO$) exposes $a_t$ without task evidence, whereas Confident endorsement ($S$) adds an explicit social endorsement. Comparing uncapped and activation-capped responses separates whether $a_t$ becomes more likely from whether that movement is warranted, while the $S-AO$ contrast isolates the increment attributable to social pressure. Additional prompt templates and construction details appear in *[TBD-APPENDIX]*.
+**Caption / 图注：** **CEDAR's paired reason-selectivity audit.** CEDAR-Evidence fixes the task, $a_0$, and $a_t$: $N/R$ hide the target, while $V/F$ present the same edit with a valid or single-fault warrant. CEDAR-Social fixes a natural-task answer pair: $AO$ exposes $a_t$, and $S$ adds confident social framing. Capped--uncapped comparisons distinguish target movement from warranted movement; $S-AO$ isolates social framing beyond target exposure. Templates and construction details appear in the supplementary material.
 
-**中文图注：** **CEDAR 的成对理由敏感审计设计。** CEDAR-Evidence 固定形式化任务实例、初始答案 $a_0$ 和目标答案 $a_t$，仅改变后续提示。Neutral（$N$）与 Recheck（$R$）构成控制条件；Valid（$V$）为更新至 $a_t$ 提供充分支持；Fallacy（$F$）则通过无效推理提出同一更新。CEDAR-Social 固定自然任务实例及答案对：Target re-mention（$AO$）仅再次呈现 $a_t$，不提供任务证据；Confident endorsement（$S$）在此基础上加入明确的社会性背书。比较未钳制与激活钳制后的响应，可以区分 $a_t$ 是否变得更可能与这一变化是否具有充分理由；$S-AO$ 对比则隔离由社会压力带来的增量。更多提示模板与构造细节见 *[TBD-APPENDIX]*。
+**中文图注：** **CEDAR 的配对理由选择性审计。** CEDAR-Evidence 固定任务、$a_0$ 与 $a_t$：$N/R$ 隐藏目标，$V/F$ 为同一候选修改提供有效或 single-fault 理由。CEDAR-Social 固定自然任务中的答案对；$AO$ 展示 $a_t$，$S$ 再加入确信式社会措辞。钳制前后对比区分一般目标位移与有据位移，$S-AO$ 则隔离目标暴露之外的社会措辞效应。模板与构造细节见补充材料。
 
-### 3.2 CEDAR-Evidence: A Solver-Certified Paired Dataset / CEDAR-Evidence：经求解器认证的配对数据集
+### 3.2 Certified Valid--Fallacious Contrast / 经认证的有效—谬误对照
 
-CEDAR-Evidence pairs formally valid and invalid justifications whose status is determined independently of model responses. Each item specifies a finite, function-free Horn theory with explicit negation and a four-way query: supported, undetermined, contradicted, or both. The base theory has the unique answer $a_0$; a deterministic atomic edit yields the paired target $a_t$. $N$ continues neutrally, and $R$ requests rechecking without new information. $V$ and $F$ present the same candidate edit: $V$ provides a solver-certified justification that warrants $a_t$, whereas $F$ contains one certified invalid inference and does not warrant changing $a_0$.
+Each CEDAR-Evidence item specifies a finite, function-free Horn theory with explicit negation and a four-way query. The base has unique answer $a_0$; a deterministic atomic edit yields $a_t$. $V$ gives a sufficient justification for this edit, while its paired $F$ argument contains one fatal inference. A Python fixed-point engine and Prover9 must agree on the labels and support relation; every $F$ item also has a Mace4 countermodel, with all remaining steps supported. Certification makes warrant validity checkable before evaluation and independent of the evaluated model and argument author.
 
-**中文：** CEDAR-Evidence 将形式有效与无效的论证配对，并在模型作答前确定其规范标签。每个样本包含一个带显式否定且不含函数符号的有限 Horn 逻辑理论，以及一道四分类查询：得到支持、无法确定、遭到反驳，或同时得到支持与反驳。基础理论的唯一答案是 $a_0$；一项确定性的原子修改产生配对目标 $a_t$。$N$ 中性延续对话，$R$ 在不增加信息的情况下请求复核。$V$ 与 $F$ 呈现相同的候选修改：$V$ 提供经求解器认证、足以支持 $a_t$ 的论证；$F$ 则包含一处经认证的无效推理，不构成改变 $a_0$ 的充分依据。
+**中文：** 每个 CEDAR-Evidence 样本给出一个带显式否定、不含函数符号的有限 Horn 理论和一道四分类查询。基础理论的唯一答案为 $a_0$；一次确定性的原子修改产生 $a_t$。$V$ 提供足以支持该修改的论证，其配对的 $F$ 论证包含一处致命推理错误。Python 不动点推理器与 Prover9 必须就标签和支持关系达成一致；每个 $F$ 样本还带有 Mace4 反模型，其余推理步骤均有支持。由此，理由有效性在评测前即可核验，并独立于被测模型和论证撰写者。
 
-A Python fixed-point engine and Prover9 independently verify the labels and whether each justification warrants the edit; retained instances require agreement. Every $F$ argument contains one certified invalid step and a Mace4 countermodel, with all remaining steps supported. The prompt scaffold and response format are matched within $V/F$ pairs. Certificates and review records appear in *[TBD-APPENDIX]*.
+Each bank contains 24 bases: easy and medium variants of 12 structural families spanning six error classes. A new-salt bank re-instantiates the same grammar and family structures and is analyzed separately. Difficulty varies through proof structure and distractors while wording remains simple. Conditions are paired within family, the independent sampling unit. Certificates, examples, and review records appear in the supplementary material.
 
-Each evaluation bank contains 24 bases: easy and medium variants of 12 structural families spanning six error classes. A second bank uses a fresh generation salt to instantiate the same task grammar and family structures, and is analyzed separately. Structural families are the independent sampling units; conditions and model runs are paired within family.
+**中文：** 每个 bank 包含 24 个基础样本，由 12 个结构族的简单与中等变体组成，覆盖六类错误。new-salt bank 使用同一语法和结构族重新实例化，并单独分析。难度由证明结构和干扰项调节，措辞保持简明。条件在结构族内配对，结构族作为独立统计单位。证书、示例和审核记录见补充材料。
 
-**中文：** Python 不动点推理器与 Prover9 均独立核验对象层标签及论证能否支持候选修改；仅保留二者结论一致的样本。每个 $F$ 论证都包含一处经认证的无效推理和一个 Mace4 反模型，其余步骤均有支持。$V/F$ 配对使用相同的提示框架和回答格式。完整证书和审核记录见 *[TBD-APPENDIX]*。
+### 3.3 Exposure-Controlled Social Contrast / 控制目标暴露的社会对照
 
-每个评测 bank 包含 24 个基础样本，由 12 个结构族的简单与中等难度变体组成，共覆盖六类错误。第二个 bank 使用新的随机盐，对同一任务语法和结构族重新实例化，并单独分析。结构族是统计推断的独立单位；条件和模型运行在结构族内配对。
+CEDAR-Social covers the 600 multiple-choice questions in SycoBench-600. The gold option is $a_0$ and another option is $a_t$. Both follow-ups expose $a_t$: $AO$ adds no speaker, evidence, authority, reward, or consensus cue, while $S$ adds first-person confidence and a request to reconsider without task evidence. The paired $S-AO$ contrast therefore measures social framing net of target exposure.
 
-### 3.3 CEDAR-Social: Controlling for Target Exposure / CEDAR-Social：控制目标暴露效应
+**中文：** CEDAR-Social 覆盖 SycoBench-600 的 600 道多选题。标准答案为 $a_0$，另一个选项为 $a_t$。两种后续输入都展示 $a_t$：$AO$ 不加入说话者、证据、权威、奖励或共识线索；$S$ 加入第一人称确信和重新考虑的请求，但不提供任务证据。配对的 $S-AO$ 对比测量扣除目标暴露后的社会措辞效应。
 
-CEDAR-Social applies the answer-change setting to the 600 natural multiple-choice questions in SycoBench-600. Each dialogue supplies the gold option as $a_0$ and a different option as $a_t$. Both follow-ups present $a_t$. The answer-only condition ($AO$) contains no speaker, correctness, evidence, authority, reward, or consensus cues. The social condition ($S$) adds a first-person expression of confidence and a request for reconsideration, without adding task-relevant facts or reasons. The paired $S-AO$ contrast estimates the incremental contribution of social framing.
+Four minimally edited template pairs are balanced across domain and difficulty. Automated checks verify pairing and frozen-tokenizer length bounds. Two researchers review all pairs independently, without model outputs; agreement and adjudication are *[TBD-SOCIAL-AUDIT]*. Templates and review records appear in the supplementary material.
 
-Four minimally edited template pairs are balanced across domain and difficulty strata. Automated checks verify matching and token-length bounds under the frozen tokenizer. Two researchers independently review all pairs for template fidelity and linguistic naturalness without access to model outputs; agreement and adjudication are *[TBD-SOCIAL-AUDIT]*. Templates and review materials appear in *[TBD-APPENDIX]*.
-
-**中文：** CEDAR-Social 将答案改变设定用于 SycoBench-600 的 600 道自然多选题。每段对话将标准答案作为 $a_0$，另一个选项作为 $a_t$；两种后续输入都展示 $a_t$。纯目标暴露条件（$AO$）不加入说话者、正确性、证据、权威、奖励或共识线索。社会条件（$S$）增加第一人称确信和请求重新考虑的表达，但不提供与题目有关的事实或理由。配对的 $S-AO$ 对比估计社会性措辞的增量作用。
-
-四组最小改写模板在领域和难度层内均衡分配。自动检查核验配对一致性及冻结分词器下的 token 长度范围。两名研究人员在不接触模型输出的情况下，分别检查全部配对的模板一致性和语言自然度；一致率和分歧裁决为 *[TBD-SOCIAL-AUDIT]*。模板与审核材料见 *[TBD-APPENDIX]*。
+**中文：** 四组最小改写模板在领域和难度层内均衡分配。自动检查核验配对一致性及冻结分词器下的长度界。两名研究者在不接触模型输出的情况下独立审核全部配对；一致率与裁决记录为 *[TBD-SOCIAL-AUDIT]*。模板和审核材料见补充材料。
 
 ### 3.4 Intervention and Model Scope / 干预与模型范围
 
-We evaluate the released, model-specific Assistant-Axis threshold cap. At layer $\ell$, let $\mathbf{v}_{\ell}$ be the unit direction stored in the released configuration and $\tau_{\ell,c}$ its threshold under configuration $c$. Because $\mathbf{v}_{\ell}$ is oriented opposite to the human-readable Assistant Axis, the released minimum cap is an upper cap in this coordinate:
+At layer $\ell$, let $\mathbf{v}_{\ell}$ be the unit direction stored in the released model-specific configuration and $\tau_{\ell,c}$ its threshold. The stored direction is oriented opposite to the human-readable Assistant Axis, so the released minimum cap is an upper cap in this coordinate:
 
 $$
-\mathbf{h}'_{\ell,t}
-=
-\mathbf{h}_{\ell,t}
--
-\mathbf{v}_{\ell}
-\left[
-\langle\mathbf{h}_{\ell,t},\mathbf{v}_{\ell}\rangle-\tau_{\ell,c}
-\right]_{+},
+\mathbf{h}'_{\ell,t}=\mathbf{h}_{\ell,t}-\mathbf{v}_{\ell}
+\left[\langle\mathbf{h}_{\ell,t},\mathbf{v}_{\ell}\rangle-\tau_{\ell,c}\right]_{+},
 $$
 
-where $[z]_{+}=\max(z,0)$. The operator removes only the projection above $\tau_{\ell,c}$.
+where $[z]_{+}=\max(z,0)$; only projection above the threshold is removed.
 
-We use the released directions, layer ranges, thresholds, and stored sign convention verbatim.
+**中文：** 令 $\mathbf{v}_{\ell}$ 表示公开模型专属配置在第 $\ell$ 层存储的单位方向，$\tau_{\ell,c}$ 表示对应阈值。存储方向与可读的 Assistant Axis 方向相反，因此公开的 minimum cap 在该坐标中为 upper cap。上式中 $[z]_{+}=\max(z,0)$；算子只移除超过阈值的投影。
 
-**中文：** 我们评测公开的模型专属 Assistant-Axis 阈值钳制。令 $\mathbf{v}_{\ell}$ 表示公开配置在第 $\ell$ 层存储的单位方向，$\tau_{\ell,c}$ 表示配置 $c$ 在该层使用的阈值。由于 $\mathbf{v}_{\ell}$ 与可读的 Assistant Axis 方向相反，原始 minimum cap 在这一坐标中对应 upper cap。对于残差激活 $\mathbf{h}_{\ell,t}$，算子按上式进行变换，其中 $[z]_{+}=\max(z,0)$。该算子仅移除超过 $\tau_{\ell,c}$ 的投影分量。我们原样沿用公开资产中的方向、层范围、阈值和存储符号约定。
+Qwen3-32B is primary and uses `layers_46:54-p0.25` with reasoning-enabled greedy decoding. The matched transport audit uses Qwen3-32B and Llama-3.3-70B-Instruct on the same 24-base Evidence bank under deterministic reasoning-disabled forced choice; Llama uses `layers_56:72-p0.25`. Each model retains its released direction and configuration, so model identity and configuration are not separately identified. CEDAR-Social and all diagnostics remain Qwen-only. Revisions, decoding settings, and cross-regime sensitivities appear in the supplementary material.
 
-Qwen3-32B is the primary model, using the released `layers_46:54-p0.25` configuration (layers 46--53). Its primary Evidence assays use reasoning-enabled greedy decoding with seed 0, frozen before any capped run. Because decoding regime materially changes baseline revision behavior, all estimates are conditional on the assay-specific frozen regime; cross-regime comparisons are reported separately as sensitivity analyses.
+**中文：** 主要模型 Qwen3-32B 使用 `layers_46:54-p0.25` 和开启推理的 greedy 解码。匹配迁移评测在同一个 24 题 Evidence bank 上比较 Qwen3-32B 与 Llama-3.3-70B-Instruct，统一采用关闭推理的确定性 forced choice；Llama 使用 `layers_56:72-p0.25`。每个模型保留其公开方向与配置，模型身份和配置作用因而无法分离。CEDAR-Social 与全部诊断仅在 Qwen 上运行。模型 revision、解码设置与跨制度敏感性见补充材料。
 
-For model--configuration transport, Qwen3-32B and Llama-3.3-70B-Instruct use the same frozen 24-base, 12-family Evidence bank, reasoning disabled, deterministic forced choice, and uncapped/p25 conditions. Llama uses its released axis and `layers_56:72-p0.25` configuration (layers 56--71); a regime-matched Qwen run provides the reference. Each model retains its released direction, layer range, and threshold, and effects are estimated within model. The estimates therefore describe the two tested model--configuration pairs; the design does not separate model identity from configuration. CEDAR-Social and diagnostic analyses remain Qwen-only. Exact revisions and decoding settings appear in *[TBD-APPENDIX]*.
+### 3.5 Behavioral Outcomes and Answer Geometry / 行为结果与答案几何
 
-**中文：** Qwen3-32B 是主要模型，使用公开的 `layers_46:54-p0.25` 配置（第 46--53 层）。其主要 Evidence assay 开启 reasoning，采用 greedy 解码和 seed 0，并在任何 capped 运行前冻结。鉴于解码制度会实质改变基线改答行为，所有估计均以各 assay 的冻结制度为条件；跨制度比较单独作为敏感性分析报告。
-
-跨模型迁移评测在 Qwen3-32B 与 Llama-3.3-70B-Instruct 上使用同一个冻结的 24 题、12 结构族 Evidence bank，并统一关闭推理模式、采用确定性 forced choice，比较未钳制与 p25。Llama 使用其公开方向和 `layers_56:72-p0.25` 配置（第 56--71 层），以运行制度匹配的 Qwen 结果为参照。各模型沿用自身发布的方向、层范围和阈值，效应在模型内估计。因此，结果描述两个模型—配置组合，设计本身无法分离模型与配置的作用。CEDAR-Social 和诊断分析仅在 Qwen 上进行。具体模型版本和解码设置见 *[TBD-APPENDIX]*。
-
-### 3.5 Behavioral Outcomes and Logit Margins / 行为结果与 Logit 边际
-
-Changes in option support can precede a change in the selected answer. We therefore record both four-way final outcomes and continuous logit margins. A final response is assigned to the initial option, the paired target, another option, or invalid/abstaining. Let $z(a)$ denote the next-token logit of option label $a$ at the fixed answer position. For four-option tasks, define
+We record both continuous option geometry and four final outcomes: initial, paired target, another option, or invalid/abstaining. Let $z(a)$ be the next-token logit of option label $a$ at the fixed answer position:
 
 $$
-m_{\mathrm{general}}
-=
-\frac{1}{3}\sum_{a\neq a_0}z(a)-z(a_0),
+\begin{aligned}
+m_{\mathrm{general}} &= \tfrac{1}{3}\!\sum_{a\neq a_0}z(a)-z(a_0),\\
+m_{\mathrm{target}} &= z(a_t)-z(a_0),\\
+m_{\mathrm{background}} &= \tfrac{1}{2}\!\sum_{a\notin\{a_0,a_t\}}z(a)-z(a_0),\\
+m_{\mathrm{specific}} &= z(a_t)-\tfrac{1}{2}\!\sum_{a\notin\{a_0,a_t\}}z(a).
+\end{aligned}
 $$
 
-$$
-m_{\mathrm{target}}=z(a_t)-z(a_0),
-$$
+$m_{\mathrm{general}}$ measures movement away from $a_0$ across all alternatives; $m_{\mathrm{specific}}$ compares the paired target with the two backgrounds. Broad compression of initial-answer advantage raises the former without requiring the latter, whereas target-specific attraction raises $m_{\mathrm{specific}}$. Item-level transitions show when either continuous shift crosses the choice boundary.
+
+**中文：** 我们记录连续选项几何，以及初始答案、配对目标、其他选项和无效输出/弃答四类最终结果。令 $z(a)$ 表示固定答案位置上选项标签 $a$ 的 next-token logit，并按上式定义四项 margin。$m_{\mathrm{general}}$ 衡量相对于 $a_0$、共同朝所有替代项的位移；$m_{\mathrm{specific}}$ 比较配对目标与两个背景选项。初始答案优势的广泛压缩会提高前者，却不要求后者提高；目标特异吸引则会提高 $m_{\mathrm{specific}}$。逐题迁移进一步显示连续位移何时跨过选择边界。
+
+For outcome $Y$, follow-up condition $x$, and cap configuration $c$, let $\delta_x^Y(c)=\mathbb{E}[Y\mid x,c]-\mathbb{E}[Y\mid x,0]$, where $0$ denotes uncapped inference. The Evidence estimands are
 
 $$
-m_{\mathrm{background}}
-=
-\frac{1}{2}\sum_{a\notin\{a_0,a_t\}}z(a)-z(a_0),
-$$
-
-$$
-m_{\mathrm{specific}}
-=
-z(a_t)-\frac{1}{2}\sum_{a\notin\{a_0,a_t\}}z(a).
-$$
-
-Here $m_{\mathrm{general}}$ measures broad movement away from $a_0$; a positive capped--uncapped change indicates a smaller initial-answer advantage. The remaining margins locate the shift across the target and background options, with $m_{\mathrm{specific}}$ comparing the target directly with the two background alternatives. We also report changes in the initial, target, and mean background logits to identify which answer roles contribute to each margin shift.
-
-For outcome $Y$, follow-up condition $x$, and cap configuration $c$, let
-
-$$
-\delta_x^Y(c)=\mathbb{E}[Y\mid x,c]-\mathbb{E}[Y\mid x,0],
-$$
-
-where $0$ denotes uncapped inference. The Evidence estimands are
-
-$$
+\begin{aligned}
 \Delta_{\mathrm{broad}}(c)
-=\frac{1}{4}\sum_{x\in\{N,R,V,F\}}\delta_x^{m_{\mathrm{general}}}(c),
-$$
-
-$$
+&=\tfrac{1}{4}\!\sum_{x\in\{N,R,V,F\}}\delta_x^{m_{\mathrm{general}}}(c),\\
 \Delta_{\mathrm{sel}}^{(m)}(c)
-=\delta_V^{m_{\mathrm{target}}}(c)-\delta_F^{m_{\mathrm{target}}}(c),
-$$
-
-$$
+&=\delta_V^{m_{\mathrm{target}}}(c)-\delta_F^{m_{\mathrm{target}}}(c),\\
 \Delta_{\mathrm{sel}}^{(p)}(c)
-=[p_V(c)-p_V(0)]-[p_F(c)-p_F(0)],
+&=[p_V(c)-p_V(0)]-[p_F(c)-p_F(0)],
+\end{aligned}
 $$
 
-where $p_x(c)$ is the target-following probability. The selectivity contrasts measure how capping changes the model's differential response to valid and fallacious reasons. The pooled change in $m_{\mathrm{specific}}$ is a prespecified target-specificity check; condition-wise decompositions are post hoc.
+where $p_x(c)$ is target-following probability. The pooled change in $m_{\mathrm{specific}}$ is a prespecified target-specificity check; arm decompositions are post hoc.
+
+**中文：** 对于结果 $Y$、后续条件 $x$ 和钳制配置 $c$，$\delta_x^Y(c)$ 表示该条件相对于未钳制推理的效应。$\Delta_{\mathrm{broad}}$ 汇总四个 Evidence 条件中的 $m_{\mathrm{general}}$ 变化；$\Delta_{\mathrm{sel}}^{(m)}$ 和 $\Delta_{\mathrm{sel}}^{(p)}$ 分别从连续 margin 与目标跟随概率衡量模型对有效理由和谬误理由的差异化响应。汇总的 $m_{\mathrm{specific}}$ 变化是预设的目标特异性检查；各条件分解属于 post hoc 分析。
 
 CEDAR-Social uses
 
@@ -202,57 +159,41 @@ $$
 =[S-AO]_c-[S-AO]_0.
 $$
 
-A negative value indicates that capping reduces the additional target support associated with social framing beyond target exposure. We report the $S$ and $AO$ component effects with the interaction. Direct next-option margins are the primary Social readout; a frozen 240-question subset provides secondary free-generation outcomes.
+A negative value means that capping reduces target support associated with social framing beyond target exposure; $S$ and $AO$ component effects accompany the interaction. Direct margins are primary. On a frozen 240-question subset, $\mathrm{SocialExcess}_q=[q_S(p25)-q_{AO}(p25)]-[q_S(0)-q_{AO}(0)]$ is the discrete analogue under strict-option or completion parsing.
 
-**中文：** 选项支持度的变化可能先于最终答案改变，因此我们同时记录四类最终结果和连续 logit margin。最终输出分为初始答案、配对目标、其他选项，以及无效输出或弃答。令 $z(a)$ 表示固定答案位置上选项标签 $a$ 的 next-token logit，并按上式定义四个 margin。其中，$m_{\mathrm{general}}$ 衡量整体离开 $a_0$ 的位移；其 capped--uncapped 差值为正时，初始答案优势缩小。其余 margin 定位该位移在目标选项和背景选项之间的分布，$m_{\mathrm{specific}}$ 直接比较目标与两个背景选项。我们还分别报告初始选项、目标选项和背景选项平均 logit 的变化，以判断各类选项对 margin 位移的贡献。
-
-对于结果 $Y$、后续条件 $x$ 和钳制配置 $c$，$\delta_x^Y(c)$ 表示该条件相对于未钳制推理的效应。$\Delta_{\mathrm{broad}}$ 汇总四个 Evidence 条件中的 $m_{\mathrm{general}}$ 变化；$\Delta_{\mathrm{sel}}^{(m)}$ 和 $\Delta_{\mathrm{sel}}^{(p)}$ 分别从连续 margin 与目标跟随概率衡量模型对有效理由和谬误理由的差异化响应。汇总的 $m_{\mathrm{specific}}$ 变化是预设的目标特异性检查；按条件分解属于 post hoc 分析。
-
-CEDAR-Social 使用 $\Delta_{\mathrm{social}}$ 衡量钳制对 $S-AO$ 差异的影响。负值表示钳制降低了社会性措辞相对于纯目标暴露带来的额外目标支持。我们将该交互与 $S$ 和 $AO$ 的分量效应一并报告。直接 next-option margin 是 CEDAR-Social 的主要读数；冻结的 240 题子集提供自由生成的次要结果。
+**中文：** CEDAR-Social 使用 $\Delta_{\mathrm{social}}$ 衡量钳制对 $S-AO$ 差异的影响。负值表示钳制削弱社会措辞在目标暴露之外带来的目标支持；交互项与 $S$、$AO$ 分量效应一并报告。直接 margin 是主要读数。在冻结的 240 题子集上，$\mathrm{SocialExcess}_q=[q_S(p25)-q_{AO}(p25)]-[q_S(0)-q_{AO}(0)]$ 是严格选项或完整回答解析规则 $q$ 下的离散对应量。
 
 ### 3.6 Statistical Inference and Diagnostic Checks / 统计推断与诊断检查
 
-CEDAR-Evidence treats its 12 structural families as the independent units. Paired capped--uncapped differences are averaged within family, and families receive equal weight. Primary intervals use the frozen family-cluster bootstrap; family effects and equal-weight leave-one-family-out analyses assess influence. Small-cluster sensitivities appear in *[TBD-APPENDIX]*. CEDAR-Social resamples questions with domain/difficulty stratification.
+CEDAR-Evidence averages paired effects within each of 12 structural families and weights families equally; primary intervals use the frozen family-cluster bootstrap. CEDAR-Social resamples questions with domain/difficulty stratification. All scheduled outputs enter categorical analysis, with unparsable responses coded invalid/abstaining and no content-based reruns. Continuous contrasts disclose paired-logit coverage. Data banks, protocols, and models are estimated separately.
 
-All scheduled evaluations enter the discrete analysis; truncated or unparsable responses are coded as invalid/abstaining and are not selectively rerun based on content. Continuous contrasts require the relevant option logits in both paired conditions, with incomplete coverage disclosed beside the result. Effects are estimated separately by data bank, evaluation protocol, and model. Cross-model results report both within-model effects and intervals on their native scales. A family-paired interaction standardized by each model's uncapped scale appears in *[TBD-APPENDIX]*; a nonsignificant interaction does not establish equivalence.
+**中文：** CEDAR-Evidence 先在 12 个结构族内平均配对效应，再对结构族等权汇总；主要区间采用冻结的结构族聚类 bootstrap。CEDAR-Social 按领域和难度分层重采样题目。全部计划内输出均进入类别分析，无法解析的回答记为无效输出或弃答，且不按内容选择性重跑。连续对比披露配对 logit 覆盖率；数据 bank、协议和模型分别估计。
 
-The development bank is exploratory. Primary contrasts are $\Delta_{\mathrm{broad}}$ for the new-salt and matched Llama studies and $\Delta_{\mathrm{social}}$ for CEDAR-Social; the matched Qwen estimate serves as the reference for Llama. Other analyses are labeled prespecified secondary, sensitivity, or post hoc. The four-margin decomposition, the equivalence region for pooled $m_{\mathrm{specific}}$, and the decision rules for follow-up analyses were frozen in a CPU-only protocol gate before any capped-model execution. Diagnostics are the total full-vocabulary probability mass assigned to the four option labels, full-vocabulary Shannon entropy, and whether the vocabulary-wide argmax is an option label. Complete sensitivities appear in *[TBD-APPENDIX]*; material amendments are also disclosed with the affected result.
+The development bank is exploratory. $\Delta_{\mathrm{broad}}$ is primary for new-salt and matched transport, and $\Delta_{\mathrm{social}}$ for CEDAR-Social; matched Qwen anchors Llama. Other analyses are labeled secondary, sensitivity, or post hoc. The four-margin decomposition and decision rules were frozen before capped-model execution. Leave-one-family-out, small-cluster, missing-data, output-integrity, and protocol-amendment details appear in the supplementary material.
 
-**中文：** CEDAR-Evidence 将 12 个结构族作为独立统计单位。每项对比先在结构族内汇总 capped--uncapped 配对差异，再对各结构族等权平均。主要区间使用冻结的结构族聚类 bootstrap；同时报告结构族效应和等权的 leave-one-family-out 分析。小聚类敏感性分析见 *[TBD-APPENDIX]*。CEDAR-Social 以题目为重采样单位，并按领域和难度分层。
-
-全部预定评测均进入离散分析；截断或无法解析的输出归为无效输出或弃答，且不根据输出内容选择性重跑。连续对比要求配对条件中相关选项 logit 均完整，并随结果披露不完整覆盖。不同数据批次、评测协议和模型的效应分别估计。跨模型结果在原始尺度上报告两组模型内效应及区间。以各模型未钳制尺度标准化、并保持结构族配对的交互见 *[TBD-APPENDIX]*；交互项不显著不构成等效证据。
-
-development bank 用于探索。new-salt 与匹配 Llama 研究的主要对比是 $\Delta_{\mathrm{broad}}$，CEDAR-Social 的主要对比是 $\Delta_{\mathrm{social}}$；匹配的 Qwen 估计作为 Llama 的参照。其余分析标记为预先指定的次要分析、敏感性分析或 post hoc 分析。四项 margin 分解、汇总 $m_{\mathrm{specific}}$ 的等效区间，以及决定后续分析路径的规则，均在任何 capped 模型运行前通过 CPU-only 协议闸冻结。诊断指标包括完整词表分布中分配给四个选项标签的总概率质量、完整词表 Shannon 熵，以及词表范围内的 argmax 是否为选项标签。完整敏感性分析见 *[TBD-APPENDIX]*；实质性方案调整也随受影响的结果披露。
+**中文：** development bank 用于探索。$\Delta_{\mathrm{broad}}$ 是 new-salt 和匹配迁移评测的主要估计量，$\Delta_{\mathrm{social}}$ 是 CEDAR-Social 的主要估计量；匹配 Qwen 作为 Llama 的参照。其他分析标为次要、敏感性或 post hoc。四项 margin 分解和决策规则在 capped 模型执行前冻结。leave-one-family-out、小聚类、缺失数据、输出完整性和协议调整见补充材料。
 
 ## 4. Auditing Assistant-Axis Capping / 审计 Assistant-Axis 钳制
 
-Across the Qwen assays, Assistant-Axis p25 capping shifted continuous answer margins, while its effects on selected answers varied across reason conditions and readouts. We first calibrate the released procedures, then audit the separation between continuous margins and final choices in CEDAR-Evidence and CEDAR-Social before testing transport in a matched forced-choice comparison of the released Qwen and Llama configurations.
+Across Qwen assays, p25 capping shifted continuous margins while selected-answer effects varied by reason condition and readout. We calibrate the released procedures, compare margins with final choices in CEDAR-Evidence and CEDAR-Social, and then test matched Qwen--Llama transport in CEDAR-Evidence.
 
-**中文：** 在各项 Qwen 评测中，Assistant-Axis p25 钳制改变了连续答案 margin，但它对最终选择的影响随理由条件和读出方式而异。我们先校准公开流程，再通过 CEDAR-Evidence 与 CEDAR-Social 审计连续 margin 与最终选择之间的分离，最后在公开 Qwen 与 Llama 配置的匹配 forced-choice 比较中检验其迁移性。
+**中文：** 在各项 Qwen 评测中，p25 钳制改变了连续 margin，而最终答案效应随理由条件和读出方式而异。我们先校准公开流程，再比较 CEDAR-Evidence 与 CEDAR-Social 中的 margin 和最终选择，最后在 CEDAR-Evidence 中检验匹配的 Qwen--Llama 迁移。
 
 ### 4.1 Calibrating Steering Direction and Cap Exposure / 校准 Steering 方向与钳制暴露
 
-Signed steering maps the controlled scalar projection $s$ at an intervention site to $s+\alpha$. A one-sided cap maps $s$ to $\min(s,\tau)$ and activates only above $\tau$. Because the released procedures use different intervention locations and schedules, we calibrate each in its deployed form.
+Signed steering and threshold capping behaved differently even along the released direction. At $\alpha=+200$, steering in the PhilPapers setup used by the source study reproduced its endpoint ($-2.4312$ logits, 95% CI $[-2.6248,-2.2407]$, versus approximately $-2.41$ reported by Kelkar et al. 2026). In this source-style calibration, every evaluation triggered the released Qwen p25 cap at least once; capping nevertheless decreased the continuous sycophancy margin by $0.094$ logits ($[-0.133,-0.054]$) while increasing the discrete sycophancy rate by $1.44$ percentage points ($[0.11,2.78]$; post hoc). We therefore keep continuous and discrete readouts separate; complete dose, exposure, and distributional diagnostics appear in the supplementary material.
 
-**中文：** Signed steering 在干预位置将受控标量投影 $s$ 映射为 $s+\alpha$。单侧 capping 将 $s$ 映射为 $\min(s,\tau)$，且只在投影超过 $\tau$ 时触发。由于两套公开流程采用不同的干预层位与调度，我们分别校准其实际部署形式。
+**中文：** 即使沿同一公开方向，signed steering 与阈值钳制也呈现不同后果。在 $\alpha=+200$ 时，源工作采用的 PhilPapers 设定复现了其 steering 端点（$-2.4312$ logits，95% CI $[-2.6248,-2.2407]$；Kelkar 等 2026 原报告约为 $-2.41$）。在这项源工作风格的校准中，每道评测都至少触发一次公开 Qwen p25 钳制；连续 sycophancy margin 仍下降 $0.094$ logits（$[-0.133,-0.054]$），离散 sycophancy rate 却增加 $1.44$ 个百分点（$[0.11,2.78]$；post hoc）。因此下文始终分开报告连续与离散读数；完整剂量、暴露和分布诊断见补充材料。
 
-We first ran a complete seven-dose signed-steering calibration at layer 32 using the source-style PhilPapers setup. At $\alpha=+200$, the sycophancy margin changed by $-2.4312$ logits relative to $\alpha=0$ (95% CI $[-2.6248,-2.2407]$), closely matching the approximately $-2.41$ shift reported by Kelkar et al. (2026). The exploratory $\alpha=-200$ endpoint also produced a negative change of $-1.6757$ logits (95% CI $[-1.8506,-1.4971]$). At both large-magnitude endpoints, the margin shifts were accompanied by changes in top-token identity and full-vocabulary entropy. We therefore treat this margin as a benchmark readout and evaluate behavioral quality and selectivity separately in the target assays below. The full seven-dose curve and distributional diagnostics appear in *[TBD-APPENDIX]*.
+**Figure 2 asset:** `figures/drafts/cedar-figure2-results-bars-v2-paper/result-bars-paper-vector.pdf` (editable SVG and Python source are in the same directory).
 
-**中文：** 我们首先采用源工作风格的 PhilPapers 设定，完成了第 32 层的七剂量 signed-steering 校准。相较于 $\alpha=0$，当 $\alpha=+200$ 时，sycophancy margin 变化为 $-2.4312$ logits（95% CI $[-2.6248,-2.2407]$），与 Kelkar 等（2026）报告的约 $-2.41$ 位移接近。探索性的 $\alpha=-200$ 端点同样产生负向变化，为 $-1.6757$ logits（95% CI $[-1.8506,-1.4971]$）。在正负两个大剂量端点，margin 位移均伴随 top-token identity 和全词表熵的变化。因此，我们将这一 margin 作为 benchmark readout，并在下文目标评测中分别检验行为质量与选择性。完整七剂量曲线和分布诊断见 *[TBD-APPENDIX]*。
+**Caption / 图注：** **Answer geometry under model-specific p25 capping.** **(A)** Qwen development-bank changes in $m_{\mathrm{general}}$ across $N/R/V/F$. **(B)** Uncapped and p25 target following for $V/F$. **(C)** Pooled changes in target, background, and target-specific margins. **(D)** Within-model $\Delta m_{\mathrm{general}}$ and $V-F$ contrasts for matched Qwen and Llama CEDAR-Evidence forced-choice audits. Whiskers, where shown, are 95% family-cluster bootstrap intervals over 12 families. Each model uses its released direction and p25 configuration, so panel D compares model--configuration pairs. Complete estimates appear in the supplement.
 
-We next calibrated the released layerwise p25 procedure on the same source-style PhilPapers benchmark. Across layers 46--53, every capped evaluation received at least one nonzero correction, and $56.66\%$ of eligible token--layer states triggered the cap. The intervention therefore reached every evaluation while modifying only its above-threshold states. Relative to uncapped inference, p25 changed the sycophancy margin by $-0.094$ logits (95% CI $[-0.133,-0.054]$). The discrete sycophancy rate increased by $1.44$ percentage points (post-hoc cluster-bootstrap 95% CI $[0.11,2.78]$), comprising 25 non-sycophantic-to-sycophantic migrations and 12 in the reverse direction. On this benchmark, the continuous margin and discrete sycophancy rate moved in opposite directions. Sections 4.2--4.4 therefore report these readouts separately when analyzing answer revision and reason selectivity.
+**中文图注：** **模型专属 p25 钳制下的答案几何。** **(A)** Qwen development bank 中 $N/R/V/F$ 的 $m_{\mathrm{general}}$ 变化。**(B)** $V/F$ 在 uncapped 与 p25 下的目标跟随率。**(C)** 目标、背景及目标特异 margin 的汇总变化。**(D)** 匹配 CEDAR-Evidence forced-choice 评测中 Qwen 与 Llama 各自的 $\Delta m_{\mathrm{general}}$ 和 $V-F$ 对比。图中所示误差线为 12 个结构族上的 95% 聚类 bootstrap 区间。各模型使用自身公开方向与 p25 配置，因此 D 比较的是两个模型—配置组合。完整估计见补充材料。
 
-**中文：** 随后，我们在同一源工作风格的 PhilPapers benchmark 上校准公开的分层 p25 流程。在第 46--53 层中，每次 capped 评测都至少发生一次非零校正，所有可干预 token--layer 状态的实际触发率为 $56.66\%$。因此，该干预覆盖了全部评测样本，同时只修改其中超过阈值的状态。相较于未钳制推理，p25 下的 sycophancy margin 变化为 $-0.094$ logits（95% CI $[-0.133,-0.054]$）。离散 sycophancy rate 则增加 $1.44$ 个百分点（事后 cluster-bootstrap 95% CI $[0.11,2.78]$），其中包括 25 次由 non-sycophantic 到 sycophantic 的迁移和 12 次反向迁移。在这一 benchmark 上，连续 margin 与离散 sycophancy rate 的变化方向相反。因此，§4.2--4.4 在分析答案修正与理由选择性时分别报告这两类读数。
+### 4.2 Broad Geometry and Categorical Consequences / 广泛几何位移及其类别后果
 
-**Figure 2 placeholder:** Broad revision geometry, warranted and unwarranted updating, margin decomposition, and matched Qwen--Llama transport.
-
-**Caption / 图注：** **Answer geometry and revision effects under model-specific p25 capping.** **(A)** In the Qwen3-32B E2A development assay, points show full-p25-minus-uncapped changes in $m_{\mathrm{general}}$ for neutral continuation ($N$), evidence-free recheck ($R$), valid argument ($V$), and single-fault fallacy ($F$); positive values indicate weaker initial-answer advantage relative to the three alternatives. **(B)** Target-following rates under uncapped and p25 inference for $V$ and $F$; the difference between the two arm changes is the $V-F$ selectivity contrast. **(C)** Arm-pooled changes in $m_{\mathrm{background}}$, $m_{\mathrm{target}}$, and the prespecified $m_{\mathrm{specific}}=m_{\mathrm{target}}-m_{\mathrm{background}}$ check distinguish a broad alternative-space shift from target-specific separation. **(D)** Within-model p25-minus-uncapped changes in $m_{\mathrm{general}}$ for a separate regime-matched Qwen3-32B anchor and Llama-3.3-70B-Instruct under the same reasoning-disabled deterministic forced-choice protocol; each model uses its released axis and p25 configuration. Panels A--C use 24 bases from 12 structural families; panel D uses the same bank for each model. Whiskers show 95% family-cluster bootstrap intervals. Model identity and capping configuration vary together in panel D. Complete arm-level estimates and integrity diagnostics appear in *[TBD-APPENDIX]*.
-
-**中文图注：** **模型专属 p25 钳制下的答案几何与改答效应。** **(A)** 在 Qwen3-32B 的 E2A development assay 中，各点表示中性延续（$N$）、无新增证据的复核（$R$）、有效论证（$V$）和 single-fault 谬误论证（$F$）下 full-p25 相对 uncapped 的 $m_{\mathrm{general}}$ 变化；正值表示初始答案相对于三个替代选项的优势减弱。**(B)** $V$ 与 $F$ 条件下 uncapped 和 p25 的目标跟随率；两臂变化之差为 $V-F$ 选择性对比。**(C)** 跨条件汇总的 $m_{\mathrm{background}}$、$m_{\mathrm{target}}$ 变化，以及预先指定的 $m_{\mathrm{specific}}=m_{\mathrm{target}}-m_{\mathrm{background}}$ 检查，用于区分替代选项空间的整体位移与目标特异分离。**(D)** 在统一关闭推理模式并采用确定性 forced choice 的制度下，分别报告单独的制度匹配 Qwen3-32B 参照与 Llama-3.3-70B-Instruct 模型内部的 $m_{\mathrm{general}}$ p25-minus-uncapped 变化；每个模型均使用其公开 axis 和 p25 配置。A--C 使用来自 12 个结构族的 24 个基础样本；D 在每个模型上使用同一评测 bank。误差线表示 95% family-cluster bootstrap 区间。D 中模型身份与 capping 配置同时发生变化。完整分臂估计与完整性诊断见 *[TBD-APPENDIX]*。
-
-### 4.2 Capping Broadly Compresses Initial-Answer Advantage / 钳制广泛压缩初始答案优势
-
-The four-option margins define a two-coordinate projection of the answer space:
+The margins obey
 
 $$
 m_{\mathrm{target}}
@@ -262,77 +203,88 @@ m_{\mathrm{background}}
 =m_{\mathrm{general}}-\frac{1}{3}m_{\mathrm{specific}}.
 $$
 
-Here, $m_{\mathrm{general}}$ measures movement shared by the non-initial alternatives relative to $a_0$, while $m_{\mathrm{specific}}$ separates the paired target from the two background options. Target-specific amplification predicts a positive change in the latter; compression of initial-answer advantage appears as a positive change in the former across the alternative-option space.
+Thus $m_{\mathrm{general}}$ summarizes average movement across non-initial options, whereas $m_{\mathrm{specific}}$ separates the paired target from the backgrounds. This decomposition distinguishes broad compression of initial-answer advantage from target-specific attraction.
 
-**中文：** 四选一任务中的 margin 构成答案空间的一个二维投影，如上式所示。其中，$m_{\mathrm{general}}$ 刻画各非初始选项相对于 $a_0$ 的共同位移，$m_{\mathrm{specific}}$ 则区分配对目标与两个背景选项。若干预主要放大指定目标，后者应出现正向变化；若干预压缩初始答案优势，则前者会在替代选项空间中整体上升。
+**中文：** 四项 margin 满足上式。因此，$m_{\mathrm{general}}$ 概括各非初始选项的平均位移，$m_{\mathrm{specific}}$ 则分离配对目标与背景选项；二者可区分初始答案优势的广泛压缩和目标特异吸引。
 
-In the Qwen3-32B E2A development assay, full-p25 capping increased the pooled $m_{\mathrm{general}}$ by $3.130$ logits relative to uncapped inference (95% family-cluster bootstrap CI $[1.834,4.486]$; Figure 2A). Arm-level estimates were positive for $N$ ($+2.215$), $R$ ($+2.092$), $V$ ($+2.950$), and $F$ ($+5.264$), with all four intervals above zero. $N$ and $R$ keep $a_t$ hidden from the model, yet showed the same positive direction. The broad displacement therefore spans conditions both with and without explicit target exposure.
+In the exploratory Qwen development bank, p25 increased pooled $m_{\mathrm{general}}$ by $3.130$ logits (95% family-cluster CI $[1.834,4.486]$; Figure 2A); all four arm estimates were positive, including $N/R$, which concealed the target. The pooled target-specificity check was $\Delta m_{\mathrm{specific}}=-0.084$ logits ($[-1.110,0.953]$; Figure 2C), too imprecise for equivalence. All 48 $N/R$ pairs retained $a_0$ under both conditions despite the continuous shift. With the target presented, following increased by $20.83$ and $16.67$ percentage points under $V$ and $F$ (Figure 2B); their capped--uncapped difference was $+4.17$ points ($[-20.83,29.17]$). The displacement was therefore latent in controls and accompanied both warranted and unwarranted updating in the argument arms.
 
-**中文：** 在 Qwen3-32B 的 E2A development assay 中，相较于未钳制推理，full-p25 capping 使汇总的 $m_{\mathrm{general}}$ 增加 $3.130$ logits（95% family-cluster bootstrap CI $[1.834,4.486]$；图 2A）。四个条件的点估计均为正：$N$ 为 $+2.215$，$R$ 为 $+2.092$，$V$ 为 $+2.950$，$F$ 为 $+5.264$，且四个区间均位于零以上。$N/R$ 对模型隐藏 $a_t$，仍呈现同向位移。因此，这一广泛位移同时覆盖明确展示目标和隐藏目标的条件。
+**中文：** 在探索性的 Qwen development bank 中，p25 使汇总 $m_{\mathrm{general}}$ 增加 $3.130$ logits（95% 结构族聚类 CI $[1.834,4.486]$；图 2A）；包括隐藏目标的 $N/R$ 在内，四个条件均为正。汇总目标特异性检查为 $\Delta m_{\mathrm{specific}}=-0.084$ logits（$[-1.110,0.953]$；图 2C），精度不足以支持等效。尽管 48 个 $N/R$ 配对在两种条件下都保持 $a_0$，呈现目标后，$V$ 与 $F$ 的目标跟随分别增加 $20.83$ 和 $16.67$ 个百分点（图 2B），二者的 capped--uncapped 差为 $+4.17$ 个百分点（$[-20.83,29.17]$）。该连续位移在对照条件中未跨越选择边界，在论证条件中则同时伴随有据与无据改答。
 
-The pooled decomposition placed the shift in both relative-margin components: $\Delta m_{\mathrm{background}}=+3.158$ logits (95% CI $[2.125,4.250]$) and $\Delta m_{\mathrm{target}}=+3.074$ logits ($[1.180,5.038]$). Their prespecified pooled target-specificity contrast was $\Delta m_{\mathrm{specific}}=-0.084$ logits ($[-1.110,0.953]$; Figure 2C). The point estimate shows little additional separation between the target and background options, while the interval remains too broad for an equivalence claim. Together with the $N/R$ results, these estimates characterize full-p25 capping as compressing initial-answer advantage across the alternative-option space in this Qwen development setting. Section 4.3 examines how this continuous displacement maps to warranted and unwarranted revisions.
+### 4.3 New-Salt Re-instantiation and Natural-Task Boundaries / New-Salt 重新实例化与自然任务边界
 
-**中文：** 汇总分解表明，位移同时出现在两个相对 margin 分量中：$\Delta m_{\mathrm{background}}=+3.158$ logits（95% CI $[2.125,4.250]$），$\Delta m_{\mathrm{target}}=+3.074$ logits（$[1.180,5.038]$）。二者预先指定的汇总目标特异性对比为 $\Delta m_{\mathrm{specific}}=-0.084$ logits（$[-1.110,0.953]$；图 2C）。该点估计显示目标选项相对背景选项的额外分离很小，但区间仍不足以支持等效结论。结合 $N/R$ 的结果，这些估计表明，在当前 Qwen development setting 中，full-p25 capping 压缩了初始答案相对于整个替代选项空间的优势。§4.3 将进一步检验这一连续位移如何对应有据与无据的实际改答。
+Paired logits were complete for 95 of 96 new-salt comparisons. Their complete-case aggregate broad shift was $+1.538$ logits (95% family-cluster CI $[0.455,2.741]$), and the adverse value required to reverse its sign exceeded the prespecified tipping-point boundary by *[TBD-TIPPING-POINT-MARGIN]*. Its categorical pattern differed: $V$ target following decreased by $12.5$ percentage points while $F$ increased by $16.7$, yielding a $V-F$ change of $-29.17$ points ($[-58.33,4.17]$). The two banks agreed on broad continuous movement, while their arm-level answer changes diverged.
 
-### 4.3 Warranted and Unwarranted Updating Both Increase in the Development Assay / 在 Development Assay 中，有据与无据改答均有所增加
+**中文：** new-salt 的 96 个比较中，95 个具有完整配对 logits；complete-case 总体 broad shift 为 $+1.538$ logits（95% 结构族聚类 CI $[0.455,2.741]$），而推翻其正向符号所需的不利值比预设 tipping-point 边界高出 *[TBD-TIPPING-POINT-MARGIN]*。类别模式则有所不同：$V$ 目标跟随下降 $12.5$ 个百分点，$F$ 增加 $16.7$ 个百分点，$V-F$ 变化为 $-29.17$ 个百分点（$[-58.33,4.17]$）。两个 bank 的广泛连续位移方向一致，各条件的答案变化存在差异。
 
-The continuous margin shift did not change the selected answers in the $N/R$ controls. Across all 48 paired comparisons, uncapped and full-p25 inference both yielded $a_0$, despite the positive $\Delta m_{\mathrm{general}}$ reported above. Relative answer support changed while the selected answers remained stable in this assay.
+In the separate 600-item Social audit, the $AO$ and $S$ target margins increased by $+1.268$ and $+0.482$ logits, giving $\Delta_{\mathrm{social}}(p25)=-0.786$ (95% CI $[-0.860,-0.711]$). Both strict-option and completion-based SocialExcess at p25 were zero, and no paired $S$-arm answer migrated. The observed attenuation is confined to the direct-margin effect of social framing beyond target exposure; the free-generation assay showed no corresponding answer migration. The complementary bidirectional SycoBench estimates are reported separately and remain inconclusive under the prespecified mirrored-argmax gate; complete results appear in the supplement.
 
-**中文：** 连续 margin 位移没有改变 $N/R$ 对照中的最终选择。在 48 个配对比较中，未钳制与 full-p25 推理均得到 $a_0$，尽管上一节报告的 $\Delta m_{\mathrm{general}}$ 为正。在该评测中，相对答案支持度发生变化，最终选择保持稳定。
+**中文：** 在独立的 600 题 Social 审计中，$AO$ 与 $S$ 的目标 margin 分别增加 $+1.268$ 和 $+0.482$ logits，得到 $\Delta_{\mathrm{social}}(p25)=-0.786$（95% CI $[-0.860,-0.711]$）。p25 下严格选项解析和完整回答解析的 SocialExcess 均为零，且没有 $S$ 臂配对答案迁移。衰减仅出现在社会措辞相对目标暴露的直接 margin 增量中；自由生成评测未出现对应的答案迁移。互补的双向 SycoBench 估计单独报告，并在预设 mirrored-argmax gate 下仍为 inconclusive；完整结果见补充材料。
 
-Discrete target following increased in both argument arms (Figure 2B). Under $V$, it rose from $70.83\%$ to $91.67\%$ ($+20.83$ percentage points); under $F$, it rose from $29.17\%$ to $45.83\%$ ($+16.67$ points). The mean increase across the two arms was $+18.75$ points (95\% family-cluster bootstrap CI $[4.17,33.33]$). Full-p25 capping therefore raised both warranted and unwarranted updating in this development assay.
+### 4.4 Matched CEDAR-Evidence Transport Across Model-Specific Configurations / 跨模型专属配置的匹配 CEDAR-Evidence 迁移
 
-**中文：** 两个论证条件中的离散目标跟随均有所增加（图 2B）。在 $V$ 条件下，目标跟随率从 $70.83\%$ 升至 $91.67\%$（增加 $20.83$ 个百分点）；在 $F$ 条件下，则从 $29.17\%$ 升至 $45.83\%$（增加 $16.67$ 个百分点）。两臂效应的平均值为 $+18.75$ 个百分点（95\% family-cluster bootstrap CI $[4.17,33.33]$）。因此，在这一 development assay 中，full-p25 capping 同时提高了有充分依据与缺乏充分依据的改答。
+In the matched reasoning-disabled CEDAR-Evidence forced-choice audit, within-model $\Delta m_{\mathrm{general}}$ was *[TBD-XM-Q-BROAD]* for Qwen and *[TBD-XM-L-BROAD]* for Llama (Figure 2D). *[TBD-XM-ROUTE]* Each model used its released direction and p25 configuration; the estimates therefore apply to two model--configuration pairs and do not isolate model identity. Target-specificity, continuous $V-F$, categorical, exposure, and integrity results appear in the supplement.
 
-The $V-F$ difference was estimated much less precisely. The capped--uncapped change in $V-F$ target-following selectivity was $+4.17$ percentage points (95\% CI $[-20.83,29.17]$), leaving substantial uncertainty in both directions. In a post-hoc analysis, the association between uncapped option gaps and subsequent migrations varied across data sources (*[TBD-APPENDIX]*). The boundary result therefore offers only a partial description of where migrations occurred. Section 4.4 tests whether the continuous margin shift recurs in a new-salt instantiation and separately examines capping effects on continuous and discrete readouts in natural tasks.
-
-**中文：** $V$ 与 $F$ 之间的差异估计则不够精确。$V-F$ 目标跟随选择性的钳制前后变化为 $+4.17$ 个百分点（95\% CI $[-20.83,29.17]$），区间在正负两个方向上均保留了较大不确定性。在事后分析中，未钳制选项间距与后续迁移的关系随数据来源而异（*[TBD-APPENDIX]*）。因此，边界结果只能部分描述迁移出现的位置。§4.4 将检验连续 margin 位移能否在 new-salt 实例中重现，并另行考察钳制对自然任务连续与离散读数的影响。
-
-### 4.4 Continuous Margin Shifts Accompany Heterogeneous Behavioral Changes / 连续 Margin 位移伴随异质的行为变化
-
-The new-salt bank re-instantiated the same task grammar and structural families. Its aggregate margin shift remained positive: with complete capped--uncapped logits for 95 of 96 paired comparisons, full-p25 capping increased $m_{\mathrm{general}}$ by $+1.538$ logits (95% family-cluster bootstrap CI $[0.455,2.741]$). The positive aggregate conclusion remained robust in the tipping-point analysis of the single missing logit. The discrete effects differed from the development assay: target following changed by $-12.5$ percentage points under $V$ and $+16.7$ points under $F$, yielding a $V-F$ selectivity change of $-29.17$ points (95% CI $[-58.33,4.17]$). The development and new-salt banks therefore shared the aggregate margin direction, while their arm-level answer changes differed.
-
-**中文：** new-salt bank 对同一任务语法和结构族重新实例化，其总体 margin 位移仍为正。96 个 capped--uncapped 配对比较中，95 个具有完整 logits；在这些比较上，full-p25 钳制使 $m_{\mathrm{general}}$ 增加 $+1.538$ logits（95% family-cluster bootstrap CI $[0.455,2.741]$）。针对单个缺失 logit 的 tipping-point 分析表明，总体位移为正的结论保持稳健。离散效应则与 development assay 不同：$V$ 条件下的 target following 降低 $12.5$ 个百分点，$F$ 条件下增加 $16.7$ 个百分点，$V-F$ 选择性变化为 $-29.17$ 个百分点（95% CI $[-58.33,4.17]$）。因此，development bank 与 new-salt bank 的总体 margin 位移同向，各条件的离散改答有所不同。
-
-CEDAR-Social examines a separate contrast on 600 paired natural-task items. Relative to uncapped inference, full-p25 capping increased the target-minus-initial margin by $+1.268$ logits in $AO$ and $+0.482$ logits in $S$, giving $\Delta_{\mathrm{social}}(p25)=-0.786$ logits (95% stratified base-bootstrap CI $[-0.860,-0.711]$). Both component effects were positive: the interaction captures a smaller increase with social framing than with target exposure alone. On the frozen free-generation subset, strict target-following and completion-based SocialExcess were both zero, and no paired $S$-arm answer migrated under p25. In this experiment, the reduction in the incremental social-framing effect appeared only in the direct margin readout.
-
-**中文：** CEDAR-Social 在 600 道配对自然任务上估计一项独立对比。相较于未钳制推理，full-p25 钳制使 $AO$ 条件下目标相对初始答案的 margin 增加 $+1.268$ logits，使 $S$ 条件增加 $+0.482$ logits，由此得到 $\Delta_{\mathrm{social}}(p25)=-0.786$ logits（95% 分层 base-bootstrap CI $[-0.860,-0.711]$）。两个分量效应均为正：该交互反映社会性措辞下的增幅小于单纯目标暴露下的增幅。在冻结的自由生成子集中，按严格目标跟随和完整回答计算的 SocialExcess 均为 0，p25 条件下也未观察到 $S$ 臂的配对答案迁移。在该实验中，社会性措辞增量效应的减小仅出现在直接 margin 读数上。
-
-In a complementary bidirectional SycoBench assay, the continuous selectivity contrast was well resolved, whereas the prespecified mirrored argmax criterion remained inconclusive (*[TBD-APPENDIX]*). Across our analyses, continuous margin effects and discrete answer changes are accordingly reported as separate outcomes.
-
-**中文：** 在互补的双向 SycoBench 评测中，连续选择性对比得到了清晰估计，而预先指定的镜像 argmax 判据仍未得到确定结论（*[TBD-APPENDIX]*）。因此，全文将连续 margin 效应与离散答案改变作为两类独立结果报告。
-
-### 4.5 Transport Across Model-Specific Capping Configurations / 跨模型专属钳制配置的迁移
-
-Figure 2D reports within-model $Delta m_{\mathrm{general}}$ under the matched forced-choice regime. On the shared Evidence bank, the regime-matched Qwen anchor yielded *[TBD-XM-Q-BROAD]*, and Llama-3.3-70B-Instruct yielded *[TBD-XM-L-BROAD]*; both intervals use the frozen family-cluster bootstrap. *[TBD-XM-TRANSPORT-ROUTE]*
-
-**中文：** 图 2D 汇总匹配 forced-choice 制度下各模型内部的 $\Delta m_{\mathrm{general}}$。在共享 Evidence bank 上，制度匹配的 Qwen 参照为 *[TBD-XM-Q-BROAD]*，Llama-3.3-70B-Instruct 为 *[TBD-XM-L-BROAD]*；两者区间均来自冻结的 family-cluster bootstrap。*[TBD-XM-TRANSPORT-ROUTE]*
-
-Within each model, the prespecified target-specificity check pooled across arms was *[TBD-XM-SPECIFIC]*, and the corresponding change in continuous $V-F$ selectivity was *[TBD-XM-VF-SELECTIVITY]*. *[TBD-XM-DISCRETE]* Complete arm-level estimates and cap-exposure and output-integrity diagnostics appear in *[TBD-APPENDIX]*. Model identity and the released capping configuration vary together in this comparison; the estimates therefore apply to the two tested model--configuration pairs.
-
-**中文：** 各模型内部预先指定、跨 N/R/V/F 四臂汇总的 target-specificity 检查结果为 *[TBD-XM-SPECIFIC]*，相应的连续 $V-F$ 选择性变化为 *[TBD-XM-VF-SELECTIVITY]*。*[TBD-XM-DISCRETE]* 完整分臂估计、钳制暴露和输出完整性诊断见 *[TBD-APPENDIX]*。模型身份与公开 capping 配置在这项比较中同时发生变化；因此，这些估计仅描述本文测试的两个模型—配置组合。
+**中文：** 在关闭推理的匹配 CEDAR-Evidence forced-choice 评测中，Qwen 与 Llama 的模型内 $\Delta m_{\mathrm{general}}$ 分别为 *[TBD-XM-Q-BROAD]* 和 *[TBD-XM-L-BROAD]*（图 2D）。*[TBD-XM-ROUTE]* 每个模型使用自身公开方向与 p25 配置；这些估计适用于两个模型—配置组合，无法单独识别模型身份。目标特异性、连续 $V-F$、类别结果、暴露与完整性分析见补充材料。
 
 ## 5. Diagnosing the Shift / 诊断该位移
 
-### 5.1 Phase-Localized Interventions / 分阶段干预
+We combine phase restriction, independent validity judgments, trajectory comparisons, and fixed-trace replay to narrow the source of the observed shift. Downstream representation geometry and full diagnostic tables appear in the supplement.
 
-`[TBD]`
+**中文：** 我们结合分阶段干预、独立有效性判断、轨迹比较和固定轨迹重放，逐步缩小位移来源。下游表示几何与完整诊断表见补充材料。
 
-### 5.2 Validity Assessment versus Final Choice / 有效性判断与最终选择
+### 5.1 Testing Simple Phase, Validity, and Resistance Accounts / 检验简单的阶段、有效性与抵抗解释
 
-`[TBD]`
+CommonUpdate, the mean target-following rate across $V/F$, had an uncapped baseline of $50.00\%$. Prefill-only, decode-only, and full-p25 capping increased it by $+18.75$ percentage points (95% family-cluster CI $[4.17,33.33]$), $+20.83$ ($[6.25,35.42]$), and $+18.75$ ($[4.17,33.33]$). Each phase-restricted condition produced a point estimate close to full-p25 capping, but these contrasts identify neither a phase interaction nor additivity.
 
-### 5.3 Testing the Selective-Resistance Hypothesis / 检验选择性抵抗假说
+**中文：** CommonUpdate 是 $V/F$ 目标跟随率的均值，未钳制基线为 $50.00\%$。仅 prefill、仅 decode 和完整 p25 钳制分别使其增加 $+18.75$ 个百分点（95% 结构族聚类 CI $[4.17,33.33]$）、$+20.83$（$[6.25,35.42]$）和 $+18.75$（$[4.17,33.33]$）。两个受限阶段的点估计均接近完整 p25 钳制，但这些对比无法识别阶段交互或可加性。
 
-`[TBD]`
+In a separate validity call, the uncapped $V-F$ discrimination baseline was $29.17$ points; prefill-only, decode-only, and full-p25 interventions changed it by $-8.33$ ($[-29.17,12.50]$), $+12.50$ ($[-4.17,29.17]$), and $0.00$ points ($[-25.00,20.83]$). Every interval included zero, yielding no stable evidence of uniform validity loss or opposing phase roles.
 
-### 5.4 Fixed-Trace Replay / 固定轨迹重放
+**中文：** 另一次模型调用中的 $V-F$ 有效性判别未钳制基线为 $29.17$ 个百分点；仅 prefill、仅 decode 和完整 p25 三种干预使其分别变化 $-8.33$（$[-29.17,12.50]$）、$+12.50$（$[-4.17,29.17]$）和 $0.00$ 个百分点（$[-25.00,20.83]$）。全部区间均包含零，未给出统一有效性损失或相反阶段作用的稳定证据。
 
-`[TBD]`
+A selective-resistance account further predicted greater pre-answer correction on uncapped resist than yield trajectories. The prespecified final-32-token contrast was $-1.146$ ($[-3.294,+1.264]$); after matching trajectory length, it was $+0.033$ ($[-1.394,+2.166]$). These estimates do not support the account. Complete absolute levels, trajectory groups, and phase/layer controls appear in the supplement.
 
-### 5.5 From Local Rectification to Downstream Geometry / 从局部整流到下游几何
+**中文：** 选择性抵抗解释进一步预测，未钳制条件下的抵抗轨迹在作答前应比跟随轨迹具有更大修正量。预设的最后 32 个 token 对比为 $-1.146$（$[-3.294,+1.264]$），匹配轨迹长度后为 $+0.033$（$[-1.394,+2.166]$）。这些估计不支持该解释。完整绝对水平、轨迹分组和分阶段/分层对照见补充材料。
 
-`[TBD-RG1]`
+### 5.2 Fixed-Trace Replay / 固定轨迹重放
+
+For each of 96 prompts, we froze reasoning prefixes generated under uncapped inference ($r_U$) and p25 capping ($r_P$), then replayed each through cache-faithful uncapped and p25 forward passes with every visible token fixed. At the answer boundary, we estimated
+
+$$
+\begin{aligned}
+\Delta_{\mathrm{FT}}(s)
+&=\mathbb{E}\!\left[m_{\mathrm{general}}(p25;r_s)-m_{\mathrm{general}}(0;r_s)\right],\\
+I_{\mathrm{FT}}
+&=\Delta_{\mathrm{FT}}(P)-\Delta_{\mathrm{FT}}(U),
+\end{aligned}
+$$
+
+where $s\in\{U,P\}$ indexes trace source. $\Delta_{\mathrm{FT}}(U)$ and $\Delta_{\mathrm{FT}}(P)$ are two co-primary conditional estimands.
+
+**中文：** 对 96 个提示，我们分别固定未钳制推理与 p25 钳制生成的前缀 $r_U$ 和 $r_P$，再沿 cache-faithful 路径，将每条前缀置于未钳制和 p25 前向条件下重放，全程保持可见 token 不变。在答案边界估计上式，其中 $s\in\{U,P\}$ 表示轨迹来源。$\Delta_{\mathrm{FT}}(U)$ 与 $\Delta_{\mathrm{FT}}(P)$ 是两项共同主要的条件性估计量。
+
+They were $+2.078$ logits (95% CI $[1.759,2.408]$) and $+0.700$ ($[0.487,0.907]$), respectively; their secondary P-minus-U interaction was $-1.378$ ($[-1.720,-1.084]$; Figure 3A). P-source estimates condition on intervention-generated trajectories and have a more limited causal interpretation.
+
+**中文：** 两项估计分别为 $+2.078$ logits（95% CI $[1.759,2.408]$）和 $+0.700$（$[0.487,0.907]$）；次要的 P-minus-U 交互为 $-1.378$（$[-1.720,-1.084]$；图 3A）。P 来源估计以干预生成的轨迹为条件，其因果解释更受限。
+
+We additionally define $\Delta_{\mathrm{FT}}^{V-F}(s)$ as the capped-minus-uncapped change in the valid-minus-fallacious target-margin contrast. It was $-2.422$ logits ($[-3.411,-1.448]$) for U-source traces and $-0.797$ ($[-1.219,-0.391]$) for P-source traces (Figure 3B). These are source-conditioned continuous contrasts, not natural-generation effects; the two marginal intervals do not test whether the trace sources differ.
+
+**中文：** 我们另定义 $\Delta_{\mathrm{FT}}^{V-F}(s)$，表示 valid-minus-fallacious 目标 margin 对比的 capped-minus-uncapped 变化。U 来源与 P 来源轨迹下的估计分别为 $-2.422$ logits（$[-3.411,-1.448]$）和 $-0.797$（$[-1.219,-0.391]$；图 3B）。这些是以轨迹来源为条件的连续对比，并非自然生成效应；两项边际区间也不检验轨迹来源之间是否存在差异。
+
+None of the 192 paired replays changed the four-option argmax. The continuous shift remained after fixing the visible trace. Replay leaves the responsible downstream computation unlocalized and provides no evidence of a discrete natural-generation change. Implementation, fidelity checks, and complete decompositions appear in the supplement.
+
+**中文：** 192 组配对重放均未改变四选项 argmax。固定可见轨迹后，连续位移依然存在；重放尚未定位产生位移的下游计算，也未提供自然生成离散行为改变的证据。实现、fidelity 检查和完整分解见补充材料。
+
+**Figure 3 asset:** `figures/drafts/cedar-figure3-fixed-trace-v1/fixed-trace-vector.pdf` (editable SVG and Python source are in the same directory).
+
+**Figure 3 caption.** **Fixed-trace replay separates broad movement from reason selectivity.** For 96 prompts, visible $U$- and $P$-source prefixes were replayed under uncapped and p25 forward conditions. **(A)** Capped-minus-uncapped $\Delta_{\mathrm{FT}}(s)$ in $m_{\mathrm{general}}$; the annotation gives the secondary P-minus-U interaction. **(B)** The corresponding change in the valid-minus-fallacious target-margin contrast. Markers are family-weighted estimates, whiskers are 95% family-cluster bootstrap intervals over 12 families, and the dashed line marks zero. All 192 paired argmaxes were unchanged. P-source estimates condition on intervention-generated trajectories.
+
+**中文图注：** **固定轨迹重放区分广泛位移与理由选择性。** 对 96 个提示，将 $U$ 与 $P$ 来源的可见前缀分别置于未钳制和 p25 前向条件下重放。**(A)** 各来源下 $m_{\mathrm{general}}$ 的 capped-minus-uncapped $\Delta_{\mathrm{FT}}(s)$；注释给出次要的 P-minus-U 交互。**(B)** valid-minus-fallacious 目标 margin 对比的相应变化。点为结构族等权估计，误差线为 12 个结构族上的 95% 聚类 bootstrap 区间，虚线表示零。192 组配对 argmax 均未改变。P 来源估计以干预生成的轨迹为条件。
+
+Phase restriction and fixed-trace replay recover the answer-geometry shift under several controlled conditions, whereas the independent validity assay shows no stable parallel pattern. The next section considers the implications for activation-based control.
+
+**中文：** 分阶段干预与固定轨迹重放在多种受控条件下恢复了答案几何位移，独立有效性测量则没有呈现稳定的对应模式。下一节讨论这些结果对激活控制设计的意义。
 
 ## 6. Implications, Scope, and Future Control / 含义、范围与未来控制
 
@@ -354,9 +306,9 @@ Within each model, the prespecified target-specificity check pooled across arms 
 
 ## 7. Conclusion / 结论
 
-`[TBD: one evidence-bounded conclusion paragraph]`
+CEDAR evaluates activation-space control through two separately analyzed paired modules: CEDAR-Evidence compares certified valid and single-fault arguments for the same proposed answer, and CEDAR-Social compares target exposure with social framing. In Qwen3-32B, the released Assistant-Axis p25 cap broadly reduced initial-answer advantage; warranted and unwarranted updating both increased in the development assay, and the new-salt bank retained the aggregate margin shift with different arm-level changes. CEDAR-Social showed a direct-margin interaction without a corresponding free-generation answer change. Fixed-trace replay preserved the continuous shift under both source conditions while leaving every paired four-option argmax unchanged. *[TBD-XM-CONCLUSION-ROUTE]* The evidence supports a conclusion limited to the tested configurations: the cap changes answer geometry without a stable gain in reason selectivity, a property that activation-control studies should evaluate directly.
 
-`[TBD：一段严格受证据边界约束的结论]`
+**中文：** CEDAR 通过两个分别分析的配对模块评估激活空间控制：CEDAR-Evidence 比较同一候选答案对应的经认证有效论证与 single-fault 谬误论证，CEDAR-Social 则比较纯目标暴露与社会措辞。在 Qwen3-32B 上，公开的 Assistant-Axis p25 钳制广泛削弱了初始答案优势；development assay 中有据与无据改答均有所增加，new-salt bank 则在分臂变化不同的情况下保留了总体 margin 位移。CEDAR-Social 中出现的直接 margin 交互没有对应的自由生成答案变化。固定轨迹重放在两种轨迹来源下均保留了连续位移，同时所有配对四选项 argmax 均保持不变。*[TBD-XM-CONCLUSION-ROUTE]* 现有证据支持的结论限于本文测试的配置：该钳制改变了答案几何，但理由选择性未出现稳定增益；激活控制研究应直接评估这一属性。
 
 ## Internal Citation Queue / 内部引用队列
 
