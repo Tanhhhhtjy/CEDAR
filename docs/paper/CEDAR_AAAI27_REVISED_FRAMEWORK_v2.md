@@ -71,7 +71,7 @@
 | Module A | CEDAR-Evidence：solver-certified 的 N/R/V/F 配对评测数据集。 |
 | Module B | CEDAR-Social：在外部自然任务上以 AO/S 配对隔离 target exposure 与 social phrasing 的评测协议。 |
 | Module C | 四态行为与连续 margin 读出、family-clustered inference、phase ablation、E2B fixed trace、RG1-P propagation 与条件性 patching。 |
-| Contribution 1 | 将 epistemic selectivity 形式化为激活控制器的独立评测目标，并以 CEDAR 框架、CEDAR-Evidence 数据集和统计上独立的 CEDAR-Social 协议将其操作化（§3）。 |
+| Contribution 1 | 将 epistemic selectivity 形式化为激活控制器的独立评测目标，并以 CEDAR 框架、CEDAR-Evidence 数据集和单独构造与分析的 CEDAR-Social 协议将其操作化（§3）。 |
 | Contribution 2 | 审计官方 Assistant-Axis p25 capping，揭示 initial-answer advantage 的广泛压缩及其不可靠的理由选择性；完成后的跨模型结果只作为本项的 transportability 证据（§4）。 |
 | Contribution 3 | 用 fixed-trace replay 排除可见 reasoning 改写的必要性，并以分阶段干预和条件性 RG1-P 分析对位移进行受控诊断（§5）。 |
 
@@ -150,7 +150,7 @@
 - 隔离社会压力和纯 target exposure；
 - 避免拒答、输出损坏和答案冻结制造的表面收益。
 
-CEDAR 是 reason-sensitive activation-control audit framework，而不是数据集名称。它通过两个互补但统计上独立、并非统一六臂析因设计的模块落实这些要求：
+CEDAR 是 reason-sensitive activation-control audit framework，而不是数据集名称。它通过两个互补但分别构造与分析、并非统一六臂析因设计的模块落实这些要求：
 
 - `CEDAR-Evidence`：新的 solver-certified paired evaluation dataset，在各自共享的 base、initial answer 和 target 上比较 N/R/V/F；
 - `CEDAR-Social`：基于 SycoBench-600 的独立 paired evaluation protocol，在自然任务中用 AO/S 隔离 social phrasing 与纯 target exposure。
@@ -241,7 +241,7 @@ E2B：
 
 建议逻辑：
 
-> Modern alignment methods increasingly intervene not only on model weights but also on runtime representations. Activation steering and threshold capping can suppress refusal failures, persona drift, or unsafe behavior without retraining. Yet their success is usually judged by whether an unwanted behavior decreases, leaving open whether the intervention preserves the model’s sensitivity to why its answer should change.
+> Modern alignment methods increasingly intervene on runtime representations as well as model weights. Activation steering and threshold capping can suppress refusal failures, persona drift, or unsafe behavior without retraining. Existing evaluations often pair the intended behavioral change with broad capability tests or checks on benign inputs, leaving sensitivity to the grounds for answer revision largely unmeasured.
 
 ## 段落2：同一target、不同理由
 
@@ -946,7 +946,7 @@ Caption 必须自包含，不展示真实危险内容；末尾以语义引用占
 
 ## 9. 摘要草稿
 
-> Activation-space interventions are increasingly used to suppress undesirable language-model behaviors, yet they are typically evaluated by whether a target behavior decreases—not by whether the intervention preserves sensitivity to the reasons for changing an answer. We introduce CEDAR, a reason-sensitive audit framework with two statistically separate modules: the new solver-certified CEDAR-Evidence paired dataset and a CEDAR-Social protocol over natural tasks. Within each module, CEDAR holds the base, initial answer, and proposed target fixed while varying reason validity or social phrasing. On Qwen3-32B, official Assistant-Axis p25 capping shifted non-initial option margins relative to the model’s initial answer (`+3.13` logits; 95% family-cluster CI `[+1.83,+4.49]`). In the development bank, warranted and unwarranted updating moved together (`+20.8` and `+16.7` points); in a new-salt instantiation, the aggregate margin shift replicated (`+1.54` logits) while valid and invalid updates redistributed in opposite directions (`−12.5` and `+16.7` points). Thus, the stable object was the continuous geometry rather than a fixed behavioral direction. The shift was latent in neutral controls and persisted under token-for-token fixed reasoning replay (`+2.08` logits on treatment-naive traces), where no paired argmax migrations were observed. `[TBD-CROSS-MODEL: one sentence only if matched forced-choice Qwen/Llama results provide interpretable transport evidence.]` These results identify epistemic non-selectivity as a failure mode of activation-space control: a representation axis can alter model state without constituting a reason-sensitive policy.
+> Activation-space interventions are increasingly used to suppress undesirable language-model behaviors. Existing evaluations often pair the intended behavioral change with broad capability tests or checks on benign inputs, while offering limited evidence about sensitivity to the grounds for changing an answer. We introduce CEDAR, a reason-sensitive audit framework with two complementary modules analyzed separately: the new solver-certified CEDAR-Evidence paired dataset and a CEDAR-Social protocol over natural tasks. CEDAR-Evidence varies reason validity, while CEDAR-Social isolates social framing beyond target exposure; within each module, the base, initial answer, and proposed target remain fixed. On Qwen3-32B, official Assistant-Axis p25 capping shifted non-initial option margins relative to the model’s initial answer (`+3.13` logits; 95% family-cluster CI `[+1.83,+4.49]`). In the development bank, warranted and unwarranted updating moved together (`+20.8` and `+16.7` points); in a new-salt instantiation, the aggregate margin shift replicated (`+1.54` logits) while valid and invalid updates redistributed in opposite directions (`−12.5` and `+16.7` points). Thus, the stable object was the continuous geometry rather than a fixed behavioral direction. The shift was latent in neutral controls and persisted under token-for-token fixed reasoning replay (`+2.08` logits on treatment-naive traces), where no paired argmax migrations were observed. `[TBD-CROSS-MODEL: one sentence only if matched forced-choice Qwen/Llama results provide interpretable transport evidence.]` These results identify epistemic non-selectivity as a failure mode of activation-space control: a representation axis can alter model state without constituting a reason-sensitive policy.
 
 若RG1-P Route A/C强，可用一句替换Llama句，而不是把所有新结果都塞入摘要。
 

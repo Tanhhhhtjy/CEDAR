@@ -1,15 +1,15 @@
-# CEDAR Three-Model Paper and Figure Design / CEDAR 三模型论文与图表设计
+# [SUPERSEDED] CEDAR Three-Model Paper and Figure Design / CEDAR 三模型论文与图表设计（已废止）
 
 > Date: 2026-07-26 (Asia/Shanghai)  
 > **中文：** 日期：2026-07-26（Asia/Shanghai）  
-> Status: approved paper-design decision; this document does not report new experiments.  
-> **中文：** 状态：已批准的论文设计决策；本文档不报告任何新实验。  
-> Scope: local paper draft only; do not synchronize to Overleaf yet.  
-> **中文：** 范围：仅用于本地论文草稿；暂不同步至 Overleaf。
+> Status: superseded on 2026-07-27; retained only as a historical design record. Do not use it for current paper, experiment, or figure decisions.
+> **中文：** 状态：已于 2026-07-27 废止，仅保留为历史设计记录。当前论文、实验和图表决策不得再以本文档为依据。
+> Current scope: Qwen3-32B plus the planned Llama-3.3-70B-Instruct replication; Gemma has been removed.
+> **中文：** 当前范围：Qwen3-32B 加计划中的 Llama-3.3-70B-Instruct 跨模型验证；Gemma 已移出本文。
 
-This document supersedes the Llama-only extension in `2026-07-26-cedar-llama-cross-model-replication-decision.md`. It preserves the revised story in `CEDAR_AAAI27_REVISED_FRAMEWORK_v1.md`, while replacing its recommendation to omit cross-model work with the approved Qwen–Llama–Gemma design.
+Historical note: this document once superseded the Llama-only extension in `2026-07-26-cedar-llama-cross-model-replication-decision.md`. That three-model decision has itself been superseded; the Llama-only replication decision and `CEDAR_AAAI27_REVISED_FRAMEWORK_v2.md` now define the active model scope.
 
-**中文：** 本文档取代 `2026-07-26-cedar-llama-cross-model-replication-decision.md` 中仅加入 Llama 的扩展方案。它保留 `CEDAR_AAAI27_REVISED_FRAMEWORK_v1.md` 的新版主线，但以已经批准的 Qwen–Llama–Gemma 设计替换其中“不做跨模型实验”的建议。
+**中文：** 历史上，本文档曾取代 `2026-07-26-cedar-llama-cross-model-replication-decision.md` 中仅加入 Llama 的扩展方案。该三模型决策现已被废止；当前模型范围重新以 Llama 验证决策和 `CEDAR_AAAI27_REVISED_FRAMEWORK_v2.md` 为准。
 
 ## 1. Approved Narrative / 已批准的叙事
 

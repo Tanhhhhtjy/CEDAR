@@ -24,14 +24,14 @@
 
 Paragraph contract / 段落接口：
 
-1. Runtime activation interventions can suppress undesirable behavior without retraining.<br>
-   **中文：** 推理时激活干预无需重新训练即可抑制不良行为。
-2. Behavior-only and static-capability evaluations do not establish whether revision remains sensitive to the reason for changing.<br>
-   **中文：** 只看目标行为和静态能力的评测，无法证明模型改答时仍然对改答理由保持敏感。
-3. The same proposed target can be supported by valid evidence, an invalid argument, mere target exposure, or social phrasing; these cases require different normative responses.<br>
-   **中文：** 同一个 proposed target 可以由有效证据、无效论证、纯 target exposure 或社会性措辞引出，而这些情况在规范上要求不同响应。
-4. CEDAR makes this selectivity auditable through two complementary but statistically separate modules.<br>
-   **中文：** CEDAR 通过两个互补但统计上独立的模块，使这种选择性可以被审计。
+1. Runtime activation interventions can alter model behavior without retraining.<br>
+   **中文：** 推理时激活干预无需重新训练即可改变模型行为。
+2. Existing evaluations often pair the intended behavioral change with broad capability tests or checks on benign inputs, providing limited evidence about sensitivity to the grounds for revision.<br>
+   **中文：** 现有评测常把预期行为变化与一般能力测试或良性输入检查一并报告，但这些结果对模型能否依据改答理由作出区分提供的信息有限。
+3. Intervention evaluation poses two separate comparison problems: isolating social framing beyond target exposure and comparing reasons that warrant revision with matched reasons that do not.<br>
+   **中文：** 干预评测包含两类分别分析的比较：隔离超出 target exposure 的社会性措辞影响，以及比较足以支持修正的理由与匹配的无效理由。
+4. CEDAR makes these comparisons auditable through two complementary modules that are analyzed separately.<br>
+   **中文：** CEDAR 通过两个互补且分别分析的模块，使这些比较可以被审计。
 5. `[TBD: concise audited headline result across continuous geometry, discrete updating, and cross-model heterogeneity.]`<br>
    **中文：** `[TBD：填入涵盖连续几何、离散更新与跨模型异质性的经审计标题级结果。]`
 6. Three contributions: framework and evaluation assets, a scoped empirical audit, and controlled diagnostics.<br>
@@ -39,8 +39,8 @@ Paragraph contract / 段落接口：
 
 Approved contribution architecture / 已确认的贡献架构：
 
-1. **Framework and evaluation assets.** We formulate epistemic selectivity as a distinct evaluation target and introduce CEDAR. It comprises CEDAR-Evidence, a new solver-certified paired evaluation dataset, and CEDAR-Social, a statistically separate paired protocol over SycoBench-600.<br>
-   **中文：框架与评测资产。** 我们将认识论选择性形式化为独立评测目标并提出 CEDAR。CEDAR 包含新的 solver-certified 配对评测数据集 CEDAR-Evidence，以及统计上独立的 SycoBench-600 配对协议 CEDAR-Social。
+1. **Framework and evaluation assets.** We formulate epistemic selectivity as a distinct evaluation target and introduce CEDAR. It comprises CEDAR-Evidence, a new solver-certified paired evaluation dataset, and CEDAR-Social, a paired protocol over SycoBench-600 that is analyzed separately.<br>
+   **中文：框架与评测资产。** 我们将认识论选择性形式化为独立评测目标并提出 CEDAR。CEDAR 包含新的 solver-certified 配对评测数据集 CEDAR-Evidence，以及在 SycoBench-600 上构造并单独分析的 CEDAR-Social 配对协议。
 2. **Scoped empirical audit.** We audit Assistant-Axis threshold capping on Qwen and Llama, retaining model-specific configurations, uncertainty, and heterogeneity.<br>
    **中文：限定范围的实证审计。** 我们在 Qwen 与 Llama 上审计 Assistant-Axis 阈值钳制，并保留模型专属配置、不确定性与异质性。
 3. **Controlled diagnostics.** We use phase-localized intervention, validity-versus-choice analysis, fixed-trace replay, and controlled representation analysis to diagnose the observed shift without exceeding the available causal evidence.<br>
@@ -48,29 +48,29 @@ Approved contribution architecture / 已确认的贡献架构：
 
 ## 2. Related Work / 相关工作
 
-**Inference-Time Control. / 推理时激活控制。**
+**Inference-Time Activation Control. / 推理时激活控制。**
 
 Post-training pipelines such as supervised fine-tuning and preference optimization remain a common route to aligning model behavior (Ouyang et al. 2022; Rafailov et al. 2023). Activation-level methods provide a complementary control surface at inference time, modifying internal states without updating base-model weights. Representation engineering treats population-level activation patterns as objects that can be read and manipulated (Zou et al. 2023). Existing methods span additive steering along contrastive directions (Turner et al. 2023; Rimsky et al. 2024), localized interventions on attention heads (Li et al. 2023), directional ablation (Arditi et al. 2024), and context-conditioned control (Lee et al. 2025).<br>
-**中文：** 监督微调和偏好优化等训练后方法，是使模型行为符合预期的常用途径（Ouyang et al. 2022；Rafailov et al. 2023）。与此同时，激活层方法提供了互补的推理期控制界面，可在不更新基础模型权重的情况下直接调整内部状态。表征工程将群体层面的激活模式作为可读取和操控的对象（Zou et al. 2023）。现有方法包括沿对比方向进行加性 steering（Turner et al. 2023；Rimsky et al. 2024）、对注意力头实施局部干预（Li et al. 2023）、方向消融（Arditi et al. 2024），以及依赖上下文的条件控制（Lee et al. 2025）。
+**中文：** 监督微调和偏好优化等训练后方法，是使模型行为符合预期的常用途径（Ouyang et al. 2022；Rafailov et al. 2023）。与此同时，激活层方法提供了互补的推理期控制途径，可在不更新基础模型权重的情况下直接调整内部状态。表征工程将样本总体上的激活模式作为可读取和操控的对象（Zou et al. 2023）。现有方法包括沿对比方向进行加性 steering（Turner et al. 2023；Rimsky et al. 2024）、对注意力头实施局部干预（Li et al. 2023）、方向消融（Arditi et al. 2024），以及依赖上下文的条件控制（Lee et al. 2025）。
 
-Threshold capping provides a state-dependent form of activation control: it leaves the controlled projection unchanged until a calibrated boundary is crossed and then corrects only the excess. The Assistant Axis work extracts model-specific directions associated with assistant-like behavior and pairs them with one-sided, percentile-calibrated caps (Lu et al. 2026). The intervention magnitude is determined by the distance beyond the threshold. CEDAR uses the released Assistant-Axis cap as its primary case study and evaluates its effects on responses to social pressure and warranted correction. This operator-level view separates the interpretation of an axis from the behavioral consequences of capping its projection.<br>
-**中文：** 阈值钳制提供了一种状态依赖的激活控制形式：受控投影在越过校准边界前保持不变，越界后只校正超出的部分。Assistant Axis 工作为不同模型提取与助手式行为相关的方向，并为这些方向配置按分位数校准的单侧 cap（Lu et al. 2026）。干预幅度由投影越过阈值的距离决定。CEDAR 以公开的 Assistant-Axis cap 为主要实例，评估其对社会压力响应和合理修正的影响。这种算子层面的视角区分了对轴的语义解释与实际执行 capping 后的行为后果。
+Threshold capping defines a state-dependent operator: the controlled projection remains unchanged below a calibrated boundary, and the cap removes only the excess above it. The Assistant Axis work extracts model-specific directions associated with the default assistant persona and pairs them with one-sided, percentile-calibrated caps (Lu et al. 2026). CEDAR audits the released model-specific caps as instances of this intervention, including their effects on responses to social pressure and corrections supported by sufficient evidence.<br>
+**中文：** 阈值钳制定义了一种状态依赖算子：受控投影低于校准边界时保持不变，超过边界时仅移除超出的部分。Assistant Axis 工作为不同模型提取与默认助手角色相关的方向，并为其配置按分位数校准的单侧 cap（Lu et al. 2026）。CEDAR 将公开的模型专属 cap 作为这一干预的实例，审计其对社会压力响应和有充分依据的修正所产生的影响。
 
 **Sycophancy and Answer Revision. / 谄媚与答案修正。**
 
-Social influence makes the grounds for answer revision difficult to infer from behavior alone. Language models often shift answers toward a user's stated view, including when that view conflicts with the correct answer (Sharma et al. 2024). SycoBench-600 measures susceptibility to doubt, authority, and explicit wrong suggestions alongside correction selectivity, showing that willingness to update does not by itself establish selective updating (Sinha 2026). Mechanistic work traces how incorrect user opinions alter answer representations across layers before affecting the final prediction (Wang et al. 2026). Consequently, the same target-following outcome can arise from target exposure, social framing, valid evidence, or a fallacious argument.<br>
-**中文：** 社会影响使我们难以仅根据外显行为判断模型为何改答。语言模型常会把答案移向用户表达的观点，包括该观点与正确答案冲突时（Sharma et al. 2024）。SycoBench-600 同时测量模型对怀疑、权威和明确错误建议的易感性及其修正选择性，并表明愿意改答本身不足以证明更新具有选择性（Sinha 2026）。机制研究进一步追踪错误用户意见如何在最终预测改变前逐层改变答案表征（Wang et al. 2026）。因此，相同的 target-following 结果可能分别来自 target exposure、社会性措辞、有效证据或谬误论证。
+Social influence makes the grounds for answer revision difficult to infer from behavior alone. Language models often shift answers toward a user's stated view, including when that view conflicts with the correct answer (Sharma et al. 2024). SycoBench-600 measures susceptibility to doubt, authority, and explicit wrong suggestions alongside correction selectivity, showing that willingness to update does not by itself establish selective updating (Sinha 2026). Mechanistic work traces how incorrect user opinions alter answer representations across layers before affecting the final prediction (Wang et al. 2026). Intervention evaluation therefore requires explicit controls for the grounds of revision. This produces two comparison problems: isolating social framing beyond target exposure and comparing reasons that warrant revision with matched reasons that do not.<br>
+**中文：** 社会影响使得仅凭外显行为很难判断模型改答的依据。语言模型常会把答案移向用户表达的观点，包括该观点与正确答案冲突时（Sharma et al. 2024）。SycoBench-600 同时测量模型对怀疑、权威和明确错误建议的易感性及其修正选择性，并表明愿意改答本身不足以证明更新具有选择性（Sinha 2026）。机制研究进一步追踪错误用户意见如何在最终预测改变前逐层改变答案表征（Wang et al. 2026）。因此，干预评测需要明确控制促使模型改答的依据，包括两类分别分析的比较：隔离超出 target exposure 的社会性措辞影响，以及比较足以支持修正的理由与匹配的无效理由。
 
-**Reason-Sensitive Intervention Audits. / 理由敏感的干预审计。**
+**Reason-Sensitive Evaluation and Intervention Side Effects. / 理由敏感评测与干预副作用。**
 
-Belief-revision benchmarks provide a criterion for interpreting such answer changes. Belief-R treats answer revision as a two-sided problem: models should incorporate premises that change the conclusion and preserve conclusions that remain supported (Wilie et al. 2024). Controlled reasoning benchmarks make this criterion auditable. ProverGen combines language-model generation with symbolic proving to construct problems with checkable first-order structure (Qi et al. 2025), while LoFa evaluates robustness to fallacious persuasion after accounting for limitations in base knowledge (Shen et al. 2026). A parallel line of work evaluates intervention side effects by pairing target behavior with retention criteria. KL-then-steer limits distributional change on benign inputs while maintaining steering efficacy (Stickland et al. 2024), and dual-stance evaluation shows that anti-sycophancy steering can also reduce agreement with factually correct statements (Buchan 2026). CEDAR combines reason-sensitive evaluation with intervention-side-effect auditing for state-dependent threshold capping. It holds the base problem and proposed target fixed, certifies whether the supplied reason warrants revision, and controls target exposure when estimating the effect of social framing.<br>
-**中文：** 信念修正 benchmark 为解释这类答案变化提供了判据。Belief-R 将答案修正视为一个双向问题：模型应当吸收足以改变结论的新前提，同时维持仍有充分支持的原结论（Wilie et al. 2024）。受控推理 benchmark 使这一判据可以被严格评测。ProverGen 将语言模型生成与符号证明结合，构造具有可核验一阶逻辑结构的题目（Qi et al. 2025）；LoFa 则在控制基础知识不足后评估模型抵抗谬误说服的能力（Shen et al. 2026）。另一条研究线通过同时报告目标行为和保留指标来评估干预副作用。KL-then-steer 在维持 steering 效果的同时限制良性输入上的分布变化（Stickland et al. 2024）；dual-stance evaluation 则表明，反谄媚 steering 也可能降低模型对事实正确陈述的赞同（Buchan 2026）。CEDAR 将理由敏感评测与干预副作用审计结合起来，用于状态依赖的 threshold capping。它固定基础题与 proposed target，认证所给理由是否足以支持改答，并在估计社会性措辞效应时控制 target exposure。
+Belief-revision benchmarks provide criteria for judging such answer changes. Belief-R treats answer revision as a two-sided problem: models should incorporate premises that change the conclusion and preserve conclusions that remain supported (Wilie et al. 2024). ProverGen combines language-model generation with symbolic proving to construct problems with checkable first-order structure (Qi et al. 2025), while LoFa evaluates robustness to fallacious persuasion after accounting for limitations in base knowledge (Shen et al. 2026). These resources support controlled evaluation of reason quality. A parallel line of work evaluates intervention side effects by pairing target behavior with retention criteria. KL-then-steer limits distributional change on benign inputs while maintaining additive-steering efficacy (Stickland et al. 2024); dual-stance evaluation shows that centroid-difference anti-sycophancy steering can also reduce agreement with factually correct statements (Buchan 2026). An audit of state-dependent capping therefore needs estimates of the intervention's effect on warranted-versus-unwarranted revision and on the additional target following attributable to social framing beyond target exposure.<br>
+**中文：** 信念修正 benchmark 为判断这类答案变化提供了判据。Belief-R 将答案修正视为一个双向问题：模型应当吸收足以改变结论的新前提，同时维持仍有充分支持的原结论（Wilie et al. 2024）。ProverGen 将语言模型生成与符号证明结合，构造具有可核验一阶逻辑结构的题目（Qi et al. 2025）；LoFa 则在控制基础知识不足后评估模型抵抗谬误说服的能力（Shen et al. 2026）。这些资源支持对理由质量进行受控评测。与之并行，另一类工作借助保留指标评估干预副作用。KL-then-steer 在维持加性 steering 效果的同时限制良性输入上的分布变化（Stickland et al. 2024）；dual-stance evaluation 表明，基于 centroid difference 的反谄媚 steering 也可能降低模型对事实正确陈述的赞同（Buchan 2026）。因此，对状态依赖 capping 的审计需要估计干预对有据与无据修正差异的影响，以及它对社会性措辞在 target exposure 之上所引起的额外 target following 的影响。
 
 ## 3. CEDAR: Auditing Epistemic Selectivity / CEDAR：审计认识论选择性
 
-CEDAR operationalizes epistemic selectivity through two complementary paired evaluations. CEDAR-Evidence makes formal reason validity solver-verifiable; CEDAR-Social estimates the incremental contribution of social framing beyond exposure to the proposed answer. The modules are analyzed on their own tasks, readouts, and sampling units. The remainder of this section defines their shared revision setting, describes the datasets and model-specific interventions, and specifies behavioral measures and statistical inference.
+CEDAR operationalizes epistemic selectivity with two complementary paired evaluations analyzed separately. In CEDAR-Evidence, a symbolic solver verifies the formal validity of the supplied reasons; CEDAR-Social estimates the incremental contribution of social framing beyond target exposure. Each module uses its own task, readout, and sampling unit. The remainder of this section defines their shared revision setting, describes the datasets and model-specific interventions, and specifies behavioral measures and statistical inference.
 
-**中文：** CEDAR 通过两套互补的配对评测来测量认识论选择性。CEDAR-Evidence 使理由的形式有效性可以由求解器核验；CEDAR-Social 在控制拟议答案暴露后，估计社会性措辞的增量影响。两个模块分别采用各自的任务、读数和采样单位。本节随后定义二者共享的答案修正设定，并介绍数据集、模型专属干预、行为度量与统计推断。
+**中文：** CEDAR 通过两套互补且分别分析的配对评测来测量认识论选择性。CEDAR-Evidence 使用符号求解器核验所给理由的形式有效性；CEDAR-Social 估计社会性措辞相对于 target exposure 的增量影响。两个模块各自使用相应的任务、读数和采样单位。本节随后定义二者共享的答案修正设定，并介绍数据集、按模型配置的干预、行为度量与统计推断。
 
 ### 3.1 Shared Revision Setting and Controlled Contrasts / 答案修正的共同设定与受控对照
 

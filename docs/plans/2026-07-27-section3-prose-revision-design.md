@@ -21,7 +21,7 @@ Revise only Section 3 in the English submission, Chinese review companion, and b
 3. Split the CEDAR-Evidence description into task construction, formal certification, and dataset scale/statistical unit.
 4. Describe `AO` and `S` as sharing target exposure and a renewed answer request, with social framing added in `S`.
 5. Add a pending two-researcher, full-set, output-blind audit of all 600 CEDAR-Social pairs; agreement and adjudication outcomes remain `TBD`.
-6. Describe the cap operator positively and report Qwen, Llama, and Gemma settings separately by model.
+6. Describe the cap operator positively and report Qwen and Llama settings separately by model.
 7. Rename Section 3.5 to `Behavioral Outcomes and Logit Margins` and distinguish continuous answer geometry from realized four-state choices.
 8. Rename Section 3.6 to `Statistical Inference and Quality Control` and express inclusion, resampling, and diagnostic rules directly.
 

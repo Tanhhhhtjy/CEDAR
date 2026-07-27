@@ -4,6 +4,8 @@
 > **中文：** 日期：2026-07-26（Asia/Shanghai）  
 > Status: paper-design decision only; no Llama experiment has been run and every Llama result remains `[TBD-R]`.  
 > **中文：** 状态：仅为论文与实验设计决策；尚未运行任何 Llama 实验，所有 Llama 结果均保持 `[TBD-R]`。
+> Scope confirmation: reaffirmed on 2026-07-27 as the active cross-model plan. The intervening Qwen--Llama--Gemma design is superseded, and Gemma is outside the paper scope.
+> **中文：** 范围确认：2026-07-27 重新确认为当前有效的跨模型计划。其间提出的 Qwen--Llama--Gemma 三模型方案已废止，Gemma 不再属于本文范围。
 
 ## Decision / 决策
 
