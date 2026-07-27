@@ -232,7 +232,27 @@ development bank 用于探索。new-salt 与匹配 Llama 研究的主要对比�
 
 ### 4.2 Capping Broadly Compresses Initial-Answer Advantage / 钳制广泛压缩初始答案优势
 
-`[TBD: final analysis prose and Figure 2 values]`
+The four-option margins define a two-coordinate projection of the answer space:
+
+$$
+m_{\mathrm{target}}
+=m_{\mathrm{general}}+\frac{2}{3}m_{\mathrm{specific}},
+\qquad
+m_{\mathrm{background}}
+=m_{\mathrm{general}}-\frac{1}{3}m_{\mathrm{specific}}.
+$$
+
+Here, $m_{\mathrm{general}}$ measures movement shared by the non-initial alternatives relative to $a_0$, while $m_{\mathrm{specific}}$ separates the paired target from the two background options. Target-specific amplification predicts a positive change in the latter; compression of initial-answer advantage appears as a positive change in the former across the alternative-option space.
+
+**中文：** 四选一任务中的 margin 构成答案空间的一个二维投影，如上式所示。其中，$m_{\mathrm{general}}$ 刻画各非初始选项相对于 $a_0$ 的共同位移，$m_{\mathrm{specific}}$ 则区分配对目标与两个背景选项。若干预主要放大指定目标，后者应出现正向变化；若干预压缩初始答案优势，则前者会在替代选项空间中整体上升。
+
+In the Qwen3-32B E2A development assay, full-p25 capping increased the pooled $m_{\mathrm{general}}$ by $3.130$ logits relative to uncapped inference (95% family-cluster bootstrap CI $[1.834,4.486]$; Figure 2A). Arm-level estimates were positive for $N$ ($+2.215$), $R$ ($+2.092$), $V$ ($+2.950$), and $F$ ($+5.264$), with all four intervals above zero. $N$ and $R$ keep $a_t$ hidden from the model, yet showed the same positive direction. The broad displacement therefore spans conditions both with and without explicit target exposure.
+
+**中文：** 在 Qwen3-32B 的 E2A development assay 中，相较于未钳制推理，full-p25 capping 使汇总的 $m_{\mathrm{general}}$ 增加 $3.130$ logits（95% family-cluster bootstrap CI $[1.834,4.486]$；图 2A）。四个条件的点估计均为正：$N$ 为 $+2.215$，$R$ 为 $+2.092$，$V$ 为 $+2.950$，$F$ 为 $+5.264$，且四个区间均位于零以上。$N/R$ 对模型隐藏 $a_t$，仍呈现同向位移。因此，这一广泛位移同时覆盖明确展示目标和隐藏目标的条件。
+
+The pooled decomposition placed the shift in both relative-margin components: $\Delta m_{\mathrm{background}}=+3.158$ logits (95% CI $[2.125,4.250]$) and $\Delta m_{\mathrm{target}}=+3.074$ logits ($[1.180,5.038]$). Their prespecified pooled target-specificity contrast was $\Delta m_{\mathrm{specific}}=-0.084$ logits ($[-1.110,0.953]$; Figure 2C). The point estimate shows little additional separation between the target and background options, while the interval remains too broad for an equivalence claim. Together with the $N/R$ results, these estimates characterize full-p25 capping as compressing initial-answer advantage across the alternative-option space in this Qwen development setting. Section 4.3 examines how this continuous displacement maps to warranted and unwarranted revisions.
+
+**中文：** 汇总分解表明，位移同时出现在两个相对 margin 分量中：$\Delta m_{\mathrm{background}}=+3.158$ logits（95% CI $[2.125,4.250]$），$\Delta m_{\mathrm{target}}=+3.074$ logits（$[1.180,5.038]$）。二者预先指定的汇总目标特异性对比为 $\Delta m_{\mathrm{specific}}=-0.084$ logits（$[-1.110,0.953]$；图 2C）。该点估计显示目标选项相对背景选项的额外分离很小，但区间仍不足以支持等效结论。结合 $N/R$ 的结果，这些估计表明，在当前 Qwen development setting 中，full-p25 capping 压缩了初始答案相对于整个替代选项空间的优势。§4.3 将进一步检验这一连续位移如何对应有据与无据的实际改答。
 
 ### 4.3 The Shift Is Not Reliably Reason-Selective / 位移并不可靠地依据理由进行选择
 
