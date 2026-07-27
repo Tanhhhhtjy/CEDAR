@@ -82,11 +82,11 @@ CEDAR-Evidence fixes the paired target across four conditions: $N/R$ retain it f
 
 CEDAR-Evidence 的四种条件使用同一个配对目标：$N/R$ 在分析中保留该目标，但不向模型展示；$V/F$ 呈现同一候选修改，论证分别有效或包含谬误。CEDAR-Social 的 $AO/S$ 都展示 $a_t$，仅改变伴随的社会性措辞。各项对比均固定基础题、$a_0$、目标身份和回答格式（Figure 1）。
 
-**Figure 1 placeholder / 图 1 占位：** CEDAR paired evaluation design / CEDAR 配对评测设计。
+**Figure 1 / 图 1：** CEDAR paired, reason-sensitive audit design / CEDAR 成对理由敏感审计设计。
 
-**Caption / 图注：** **CEDAR's paired evaluation design.** CEDAR-Evidence compares $N/R$, which do not reveal $a_t$, with $V/F$, which present the same update under valid and fallacious justifications; target following is warranted only under $V$. CEDAR-Social pairs target-only exposure ($AO$) with social framing ($S$). The modules use separate estimands and sampling units. Additional examples and certificates appear in *[TBD-APPENDIX]*.
+**Caption / 图注：** **CEDAR's paired, reason-sensitive audit design.** CEDAR-Evidence holds the formal-task instance, initial answer $a_0$, and target answer $a_t$ fixed while varying the follow-up prompt. Neutral ($N$) and Recheck ($R$) serve as controls; Valid ($V$) provides sufficient support for updating to $a_t$; and Fallacy ($F$) proposes the same update through an invalid inference. CEDAR-Social holds the natural-task instance and answer pair fixed: Target re-mention ($AO$) exposes $a_t$ without task evidence, whereas Confident endorsement ($S$) adds an explicit social endorsement. Comparing uncapped and activation-capped responses separates whether $a_t$ becomes more likely from whether that movement is warranted, while the $S-AO$ contrast isolates the increment attributable to social pressure. Additional prompt templates and construction details appear in *[TBD-APPENDIX]*.
 
-**中文图注：** **CEDAR 的配对评测设计。** CEDAR-Evidence 比较不展示 $a_t$ 的 $N/R$ 与呈现同一候选修改的 $V/F$；后两者分别提供有效和谬误论证，只有 $V$ 中的目标跟随具有充分依据。CEDAR-Social 配对纯目标暴露（$AO$）与社会性措辞（$S$）。两个模块分别定义估计量和统计单位。更多示例及证书见 *[TBD-APPENDIX]*。
+**中文图注：** **CEDAR 的成对理由敏感审计设计。** CEDAR-Evidence 固定形式化任务实例、初始答案 $a_0$ 和目标答案 $a_t$，仅改变后续提示。Neutral（$N$）与 Recheck（$R$）构成控制条件；Valid（$V$）为更新至 $a_t$ 提供充分支持；Fallacy（$F$）则通过无效推理提出同一更新。CEDAR-Social 固定自然任务实例及答案对：Target re-mention（$AO$）仅再次呈现 $a_t$，不提供任务证据；Confident endorsement（$S$）在此基础上加入明确的社会性背书。比较未钳制与激活钳制后的响应，可以区分 $a_t$ 是否变得更可能与这一变化是否具有充分理由；$S-AO$ 对比则隔离由社会压力带来的增量。更多提示模板与构造细节见 *[TBD-APPENDIX]*。
 
 ### 3.2 CEDAR-Evidence: A Solver-Certified Paired Dataset / CEDAR-Evidence：经求解器认证的配对数据集
 
