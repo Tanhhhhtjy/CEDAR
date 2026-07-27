@@ -254,9 +254,19 @@ The pooled decomposition placed the shift in both relative-margin components: $\
 
 **中文：** 汇总分解表明，位移同时出现在两个相对 margin 分量中：$\Delta m_{\mathrm{background}}=+3.158$ logits（95% CI $[2.125,4.250]$），$\Delta m_{\mathrm{target}}=+3.074$ logits（$[1.180,5.038]$）。二者预先指定的汇总目标特异性对比为 $\Delta m_{\mathrm{specific}}=-0.084$ logits（$[-1.110,0.953]$；图 2C）。该点估计显示目标选项相对背景选项的额外分离很小，但区间仍不足以支持等效结论。结合 $N/R$ 的结果，这些估计表明，在当前 Qwen development setting 中，full-p25 capping 压缩了初始答案相对于整个替代选项空间的优势。§4.3 将进一步检验这一连续位移如何对应有据与无据的实际改答。
 
-### 4.3 The Shift Is Not Reliably Reason-Selective / 位移并不可靠地依据理由进行选择
+### 4.3 Warranted and Unwarranted Updating Both Increase in the Development Assay / 在 Development Assay 中，有据与无据改答均有所增加
 
-`[TBD: final V/F and N/R analysis]`
+The continuous margin shift did not change the selected answers in the $N/R$ controls. Across all 48 paired comparisons, uncapped and full-p25 inference both yielded $a_0$, despite the positive $\Delta m_{\mathrm{general}}$ reported above. Relative answer support changed while the selected answers remained stable in this assay.
+
+**中文：** 连续 margin 位移没有改变 $N/R$ 对照中的最终选择。在 48 个配对比较中，未钳制与 full-p25 推理均得到 $a_0$，尽管上一节报告的 $\Delta m_{\mathrm{general}}$ 为正。在该评测中，相对答案支持度发生变化，最终选择保持稳定。
+
+Discrete target following increased in both argument arms (Figure 2B). Under $V$, it rose from $70.83\%$ to $91.67\%$ ($+20.83$ percentage points); under $F$, it rose from $29.17\%$ to $45.83\%$ ($+16.67$ points). The mean increase across the two arms was $+18.75$ points (95\% family-cluster bootstrap CI $[4.17,33.33]$). Full-p25 capping therefore raised both warranted and unwarranted updating in this development assay.
+
+**中文：** 两个论证条件中的离散目标跟随均有所增加（图 2B）。在 $V$ 条件下，目标跟随率从 $70.83\%$ 升至 $91.67\%$（增加 $20.83$ 个百分点）；在 $F$ 条件下，则从 $29.17\%$ 升至 $45.83\%$（增加 $16.67$ 个百分点）。两臂效应的平均值为 $+18.75$ 个百分点（95\% family-cluster bootstrap CI $[4.17,33.33]$）。因此，在这一 development assay 中，full-p25 capping 同时提高了有充分依据与缺乏充分依据的改答。
+
+The $V-F$ difference was estimated much less precisely. The capped--uncapped change in $V-F$ target-following selectivity was $+4.17$ percentage points (95\% CI $[-20.83,29.17]$), leaving substantial uncertainty in both directions. In a post-hoc analysis, the association between uncapped option gaps and subsequent migrations varied across data sources (*[TBD-APPENDIX]*). The boundary result therefore offers only a partial description of where migrations occurred. Section 4.4 tests whether the continuous margin shift recurs in a new-salt instantiation and separately examines capping effects on continuous and discrete readouts in natural tasks.
+
+**中文：** $V$ 与 $F$ 之间的差异估计则不够精确。$V-F$ 目标跟随选择性的钳制前后变化为 $+4.17$ 个百分点（95\% CI $[-20.83,29.17]$），区间在正负两个方向上均保留了较大不确定性。在事后分析中，未钳制选项间距与后续迁移的关系随数据来源而异（*[TBD-APPENDIX]*）。因此，边界结果只能部分描述迁移出现的位置。§4.4 将检验连续 margin 位移能否在 new-salt 实例中重现，并另行考察钳制对自然任务连续与离散读数的影响。
 
 ### 4.4 New-Salt and Natural-Task Evidence / New-Salt 与自然任务证据
 
