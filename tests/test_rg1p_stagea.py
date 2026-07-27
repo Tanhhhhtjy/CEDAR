@@ -18,7 +18,10 @@ for path in (DATA, E2B_DATA, SCRIPTS, SRC):
         sys.path.insert(0, str(path))
 
 from analyze_rg1p_stagea import projection_metrics, save_official_hidden_shards  # noqa: E402
-from audit_rg1p_stagea import bf16_alignment_diagnostics  # noqa: E402
+from audit_rg1p_stagea import (  # noqa: E402
+    bf16_alignment_diagnostics,
+    replay_failures_are_blocking,
+)
 from plot_rg1p_stagea import generate_svg  # noqa: E402
 from rg1p_common import (  # noqa: E402
     CAP_LAYERS,
@@ -71,6 +74,10 @@ class _ToyModel(nn.Module):
 
 
 class RG1PCommonTests(unittest.TestCase):
+    def test_autodl_route_a_keeps_replay_drift_diagnostic(self) -> None:
+        self.assertTrue(replay_failures_are_blocking("strict_anchor"))
+        self.assertFalse(replay_failures_are_blocking("cross_environment_diagnostic"))
+
     def test_random_directions_are_deterministic_unit_and_orthogonal(self) -> None:
         generator = torch.Generator().manual_seed(5)
         axis = torch.randn((64, 32), generator=generator)
