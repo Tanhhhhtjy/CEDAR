@@ -70,35 +70,43 @@ Approved contribution architecture / 已确认的贡献架构：
 
 ### 3.1 Epistemic Selectivity and Controlled Contrasts / 认识论选择性与受控对照
 
-Let a model answer a base question with option $a_0$ and then receive a follow-up that proposes a different option $a_t$. We call a final choice other than $a_0$ an *answer revision*. CEDAR asks whether an activation-space intervention preserves the dependence of revision on the warrant supplied for that change, rather than merely raising or lowering the overall revision rate. We operationalize this question at the output level through two complementary but statistically separate modules. CEDAR-Evidence contrasts reasons with different formal validity; CEDAR-Social isolates social phrasing from exposure to the same target. Comparisons are paired within each module, never pooled as a six-arm experiment.
+Let $a_0$ be a model's initial answer to a base question and $a_t \neq a_0$ the option proposed in a follow-up. We record an *answer revision* when the final choice differs from $a_0$. CEDAR-Evidence measures epistemic selectivity by comparing how reasons of different formal validity affect revision, alongside the overall revision rate. CEDAR-Social holds exposure to $a_t$ fixed and estimates the incremental effect of social phrasing. Both modules use paired contrasts and separate readouts and analyses.
 
-**中文：** 设模型先对一个基础问题选择选项 $a_0$，随后收到一条提出不同选项 $a_t$ 的后续输入。我们把最终选择不再是 $a_0$ 称为一次*答案修正*。CEDAR 关心的不是干预是否简单提高或降低总体改答率，而是干预后“是否改答”是否仍然取决于支持这种改变的理由是否充分。我们在输出层面通过两个互补但统计上独立的模块操作化这一问题：CEDAR-Evidence 对比形式有效性不同的理由；CEDAR-Social 将社会性措辞与相同 target 的暴露效应分离。配对只在各模块内部进行，两个模块不合并成统一六臂实验。
+**中文：** 设模型对一道基础题的初始答案为 $a_0$，后续输入提出目标选项 $a_t\neq a_0$。若模型最终离开 $a_0$，我们记为一次*答案修正*。CEDAR-Evidence 通过比较形式有效性不同的理由如何影响改答来衡量认识论选择性，并同时报告总体改答率。CEDAR-Social 固定模型对 $a_t$ 的暴露，估计社会性措辞带来的增量影响。两个模块均采用配对比较，并分别定义读数和统计分析。
 
 **Figure 1 placeholder / 图 1 占位：** CEDAR’s two-module audit design / CEDAR 双模块审计设计。
 
-**Caption / 图注：** **Same target, different reasons.** Within CEDAR-Evidence, neutral continuation ($N$), reason-free rechecking ($R$), valid evidence ($V$), and a matched single-fault argument ($F$) share a formal base, initial answer, and proposed target; only $V$ warrants revision. Separately, CEDAR-Social pairs target exposure alone ($AO$) with social phrasing ($S$) on the same natural-task base. The modules retain their own readouts and statistical units. Additional paired examples, solver certificates, and construction details are provided in *[TBD-APPENDIX]*.
+**Caption / 图注：** **Controlled contrasts for answer revision.** CEDAR-Evidence constructs four follow-ups from the same formal base, initial answer, and proposed target: neutral continuation ($N$), reason-free rechecking ($R$), valid evidence ($V$), and a matched argument containing one certified inferential error ($F$). Revision is formally warranted only under $V$. CEDAR-Social independently pairs target-only exposure ($AO$) with socially framed reconsideration ($S$) on the same natural question and proposed target. The two modules use distinct readouts and sampling units. Additional paired examples, solver certificates, and construction details appear in *[TBD-APPENDIX]*.
 
-**中文图注：** **同一 target，不同理由。** 在 CEDAR-Evidence 中，中性延续（$N$）、无理由复核（$R$）、有效证据（$V$）和匹配的单错误论证（$F$）共享同一形式基础问题、初始答案与 proposed target；只有 $V$ 在规范上支持改答。与之统计独立的 CEDAR-Social 在同一自然任务基础问题上，将纯 target exposure（$AO$）与社会性措辞（$S$）配对。两个模块分别保留自己的读数与统计单位。更多配对示例、solver certificates 与构造细节见 *[TBD-APPENDIX]*。
+**中文图注：** **答案修正的受控对照。** CEDAR-Evidence 基于相同的形式逻辑基础题、初始答案和目标选项构造四种后续条件：中性延续（$N$）、无理由复核（$R$）、有效证据（$V$），以及仅含一个经认证推理错误的匹配论证（$F$）。其中，只有 $V$ 在形式上支持模型改答。CEDAR-Social 则在同一道自然任务及同一目标选项上，将纯目标暴露（$AO$）与带有社会性措辞的复核请求（$S$）配对。两个模块分别使用各自的读数和采样单位。更多配对示例、求解器验证记录和构造细节见 *[TBD-APPENDIX]*。
 
 ### 3.2 CEDAR-Evidence: A Solver-Certified Paired Dataset / CEDAR-Evidence：经求解器认证的配对数据集
 
-Each CEDAR-Evidence base defines a finite function-free Horn world with explicit negation and a four-option query: supported, undetermined, contradicted, or both supported and contradicted. The base world has a unique initial answer $a_0$. A deterministically selected atomic edit produces a different unique answer $a_t$. Four follow-ups reuse this base and target: $N$ continues without a revision request; $R$ requests reconsideration without new grounds; $V$ presents a justification that uniquely proves the edit is warranted; and $F$ proposes the same edit through one structurally certified invalid inference, leaving $a_0$ correct.
+Each CEDAR-Evidence item specifies a finite, function-free Horn theory with explicit negation and a four-way query: supported, undetermined, contradicted, or both. Each base has a unique initial answer $a_0$; a deterministic atomic edit changes it to $a_t$. Four follow-ups share this base and target. $N$ continues the dialogue without requesting reconsideration; $R$ requests another check without adding information; $V$ supplies a formally valid justification for the edit, making $a_t$ the uniquely warranted answer; and $F$ advances the same edit through an argument containing one certified invalid inference, leaving $a_0$ correct.
 
-**中文：** 每个 CEDAR-Evidence 基础样本都定义一个带显式否定的有限无函数 Horn 世界，并提出一道四选一问题：支持、无法确定、矛盾，或同时支持且矛盾。基础世界具有唯一初始答案 $a_0$；一次确定性选择的原子编辑会产生不同的唯一答案 $a_t$。四种后续输入复用该基础问题与 target：$N$ 只做中性延续，不要求修正；$R$ 要求重新检查，但不给出新依据；$V$ 给出能够唯一证明该编辑有充分依据的论证；$F$ 则通过一个经结构认证的无效推理提出相同编辑，因此 $a_0$ 仍然正确。
+**中文：** CEDAR-Evidence 的每个基础样本均包含一个带显式否定、且不含函数符号的有限 Horn 逻辑理论，并配有一道四分类查询：得到支持、无法确定、遭到反驳，或同时得到支持与反驳。该理论唯一确定初始答案 $a_0$；按照确定性规则施加一项原子编辑后，唯一正确答案变为 $a_t$。四种后续条件沿用同一基础题和目标选项：$N$ 自然延续对话，不要求重新作答；$R$ 要求再次检查，但不提供新信息；$V$ 给出形式有效的论证，使 $a_t$ 成为具有充分依据的唯一答案；$F$ 则通过包含一个经认证无效推理的论证提出同一编辑，此时 $a_0$ 仍为正确答案。
 
-The $V/F$ pair fixes reviewer identity, speech act, proposed edit, wrapper skeleton, and output contract. Python fixed-point inference and Prover9 agree on the object-level answer and the meta-level warrant. Every $F$ instance additionally has a Mace4 countermodel, exactly one certified fatal step, and no second unsupported step. Deterministic rebuilds, duplicate and leakage audits, and a blinded human naturalization review precede model execution. Each controlled bank contains 24 bases from 12 independently generated structural families, with easy and medium variants spanning six error classes. A second, independently salted instantiation is retained as a separate evidence identity rather than pooled with the development bank. Repeated arms and model conditions therefore do not increase the independent sample size.
+Within each $V/F$ pair, we hold the speaker identity, speech act, proposed edit, prompt scaffold, and response format constant. A Python fixed-point engine and Prover9 independently verify the object-level answer and whether the edit is warranted; the dataset contains instances on which they agree. Each $F$ argument has a Mace4 countermodel and exactly one certified fatal inference, with all remaining steps supported. Before model evaluation, we rebuild every instance deterministically, check for duplicates and leakage, and conduct a blinded review of linguistic naturalness.
 
-**中文：** $V/F$ 对固定 reviewer identity、speech act、proposed edit、wrapper skeleton 与输出格式。Python fixed-point inference 与 Prover9 在对象层答案和 meta-level warrant 上一致。每个 $F$ 样本还具有 Mace4 countermodel、恰好一个经认证的致命错误，且不存在第二个无支撑步骤。模型运行前完成确定性重建、重复与泄漏审计，以及盲化的人工自然化审核。每个受控 data bank 包含 24 个 bases，来自 12 个独立生成的结构 family；easy/medium 变体共覆盖六类错误。第二套独立加盐实例保留为单独证据身份，不与开发 bank 合并。同一 family 内增加 arm 或模型条件因此不会增加独立样本量。
+Each evaluation bank contains 24 bases: easy and medium variants of 12 independently generated structural families spanning six error classes. A second bank, generated with an independent salt, is analyzed separately. Structural families define the independent sampling units; follow-up conditions and model runs contribute paired observations within each family.
 
-### 3.3 CEDAR-Social: Controlling for Target Exposure / CEDAR-Social：控制 Target Exposure
+**中文：** 每组 $V/F$ 配对均保持说话者身份、言语行为、拟议编辑、提示框架和输出约定一致。Python 不动点推理器与 Prover9 分别验证对象层答案以及拟议编辑是否有充分依据，数据集收录二者结论一致的样本。每个 $F$ 论证都配有 Mace4 反模型，并恰好包含一个经认证的致命推理错误，其余步骤均有支持。模型评测前，我们对全部样本进行确定性重建、重复与泄漏检查，以及盲态语言自然度审核。
 
-CEDAR-Social is a paired protocol over the 600 natural multiple-choice bases in SycoBench-600, not a split of CEDAR-Evidence. For each base, the initial assistant answer is the gold option and $a_t$ is a different option. The $AO$ follow-up mentions $a_t$ without an agent, testimony, confidence, or correctness claim. The matched $S$ follow-up adds first-person confidence and a request to answer again, but no fact, reason, authority, reward, or group consensus. Four minimal-edit template pairs are balanced within domain and difficulty, and their token-length difference is bounded before execution. Automated validation and a full single-data-lead audit cover all 600 pairs. Direct next-option margins are the primary readout; a frozen 240-base subset supplies a free-generation modality check.
+每个评测批次包含 24 个基础样本，对应 12 个独立生成结构族的简单与中等难度变体，共覆盖六类错误。第二批数据使用独立随机盐生成并单独分析。结构族构成统计独立单位，同一结构族下的后续条件和模型运行均按配对观测处理。
 
-**中文：** CEDAR-Social 是构建在 SycoBench-600 的 600 个自然多选题之上的配对协议，而不是 CEDAR-Evidence 的 split。对于每个 base，初始 assistant 答案是 gold 选项，$a_t$ 是另一个选项。$AO$ 后续输入只提及 $a_t$，不包含施动者、证言、确信或正确性断言；匹配的 $S$ 输入增加第一人称确信和重新作答请求，但不增加事实、理由、权威、奖惩或群体共识。四组最小编辑模板在 domain 与 difficulty 内平衡，并在运行前约束两臂 token 长度差。自动验证与单一数据负责人的全量审核覆盖全部 600 对。Direct next-option margin 是主要读数；冻结的 240-base 子集用于检查 free-generation 模态边界。
+### 3.3 CEDAR-Social: Controlling for Target Exposure / CEDAR-Social：控制目标暴露效应
+
+CEDAR-Social constructs paired follow-ups for the 600 natural multiple-choice questions in SycoBench-600. For each question, the assistant's initial response is the gold option, and $a_t$ is a different option. Both follow-ups present the same $a_t$ and elicit a new answer. The answer-only ($AO$) condition presents the target without attributing it to a speaker or invoking correctness, evidence, authority, reward, or consensus. The matched social ($S$) condition frames the same target exposure with a first-person expression of confidence and a request for reconsideration, while adding no task-relevant fact or reason. The paired $S-AO$ contrast estimates the incremental effect of social phrasing beyond target exposure.
+
+Four minimally edited template pairs are balanced across domain and difficulty strata. Automated checks verify source-field identity, permitted template differences, and token-length bounds under the frozen tokenizer across all 600 pairs. Two researchers independently audit every pair for template fidelity and linguistic naturalness without access to model outputs; agreement and adjudication outcomes are *[TBD-SOCIAL-AUDIT]*. Direct next-option margins provide the primary readout. A frozen 240-question subset assesses whether the findings extend to free generation.
+
+**中文：** CEDAR-Social 基于 SycoBench-600 的 600 道自然多选题构造配对后续输入。每道题中，助手的初始回答固定为标准答案，$a_t$ 为另一个选项。两种后续输入都呈现相同的 $a_t$，并要求模型再次作答。纯目标暴露条件（$AO$）直接呈现目标选项，不引入说话者，也不诉诸正确性、证据、权威、奖励或群体共识。匹配的社会压力条件（$S$）以第一人称确信和重新考虑请求来表述相同的目标暴露，同时不提供与题目有关的新事实或理由。配对的 $S-AO$ 对比用于估计社会性措辞在目标暴露之外带来的增量效应。
+
+四组最小改写模板在各领域和难度层内均衡分配。自动检查覆盖全部 600 对样本，验证源字段一致性、允许的模板差异以及冻结分词器下的 token 长度范围。两名研究人员在不接触模型输出的情况下，分别检查每一对样本的模板一致性和语言自然度；审核一致率、分歧及裁决结果为 *[TBD-SOCIAL-AUDIT]*。主要读数是直接 next-option margin；冻结的 240 题子集用于检验结果能否延伸到自由生成。
 
 ### 3.4 Intervention and Model Scope / 干预与模型范围
 
-Our primary intervention is the released, model-specific Assistant-Axis threshold cap. Let $\mathbf{v}_{\ell}$ denote the stored unit cap direction at layer $\ell$ and $\tau_{\ell,c}$ its threshold under configuration $c$. For residual activation $\mathbf{h}_{\ell,t}$, the operator applies
+We study the released, model-specific Assistant-Axis threshold cap. At layer $\ell$, let $\mathbf{v}_{\ell}$ denote the unit cap direction and $\tau_{\ell,c}$ the threshold under configuration $c$. Given residual activation $\mathbf{h}_{\ell,t}$, the operator maps it to
 
 $$
 \mathbf{h}'_{\ell,t}
@@ -111,17 +119,17 @@ $$
 \right]_{+},
 $$
 
-where $[z]_{+}=\max(z,0)$. Unlike additive steering, the intervention is inactive until a state crosses the configured boundary.
+where $[z]_{+}=\max(z,0)$. When the projection onto $\mathbf{v}_{\ell}$ exceeds $\tau_{\ell,c}$, the operator removes the excess component along that direction; activations below the threshold remain unchanged.
 
-**中文：** 主要干预是公开的、模型专属的 Assistant-Axis 阈值钳制。令 $\mathbf{v}_{\ell}$ 表示第 $\ell$ 层存储的单位钳制方向，$\tau_{\ell,c}$ 表示配置 $c$ 下的阈值。对于残差激活 $\mathbf{h}_{\ell,t}$，算子按上式执行，其中 $[z]_{+}=\max(z,0)$。与 additive steering 不同，只有当前状态越过配置边界时，该干预才生效。
+**中文：** 我们考察公开的模型专属 Assistant-Axis 阈值钳制。令 $\mathbf{v}_{\ell}$ 表示第 $\ell$ 层的单位钳制方向，$\tau_{\ell,c}$ 表示配置 $c$ 对应的阈值。对于残差激活 $\mathbf{h}_{\ell,t}$，算子按上式进行变换，其中 $[z]_{+}=\max(z,0)$。当激活在 $\mathbf{v}_{\ell}$ 上的投影超过 $\tau_{\ell,c}$ 时，算子移除超出阈值的方向分量；低于阈值的激活保持不变。
 
-Qwen3-32B is the primary discovery and diagnostic model, using the official `layers_46:54-p0.25` configuration (decoder layers 46--53). We extend the matched behavioral audit to Llama-3.3-70B-Instruct with its released model-specific axis and official `layers_56:72-p0.25` configuration. We further include Gemma-2-27B-IT using its released model-specific axis and a *source-faithful calibrated extension*, because the source release does not specify a Gemma capping layer range. The Gemma configuration uses `[TBD-GEMMA: calibrated layer range and thresholds]`. No vector, layer range, or numeric threshold is transferred between models, and model-specific effects are never pooled into an average-model estimate. Exact revisions, hashes, decoding regimes, and calibration grids are reported in *[TBD-APPENDIX]*.
+The full behavioral audit and diagnostic analyses use Qwen3-32B with the released `layers_46:54-p0.25` configuration, covering decoder layers 46--53. We repeat the matched behavioral audit on Llama-3.3-70B-Instruct using its released model-specific axis and `layers_56:72-p0.25` configuration. For Gemma-2-27B-IT, the release provides a model-specific axis but no capping layer range, so we select its treated layers and thresholds using the calibration procedure described in *[TBD-APPENDIX]*; the resulting configuration is *[TBD-GEMMA]*. Each model uses its own direction and intervention settings, and all effects are estimated separately by model. Exact model revisions, asset hashes, decoding settings, and calibration grids appear in *[TBD-APPENDIX]*.
 
-**中文：** Qwen3-32B 是主要发现与诊断模型，使用官方 `layers_46:54-p0.25` 配置，即 decoder layers 46--53。我们将匹配的行为审计扩展到 Llama-3.3-70B-Instruct，并使用其公开的模型专属 axis 与官方 `layers_56:72-p0.25` 配置。我们还纳入 Gemma-2-27B-IT，使用其公开的模型专属 axis；由于源发布没有给出 Gemma 的钳制层范围，我们采用*遵循源方法的校准扩展*，其配置为 `[TBD-GEMMA：校准后的层范围与阈值]`。不同模型之间不迁移 vector、层范围或数值阈值，也不把模型专属效应合并成“平均模型效应”。精确 revision、hash、decoding regime 与 calibration grid 见 *[TBD-APPENDIX]*。
+**中文：** 完整的行为审计和诊断分析以 Qwen3-32B 为基础，使用公开的 `layers_46:54-p0.25` 配置，对应 decoder 第 46--53 层。我们在 Llama-3.3-70B-Instruct 上按照匹配协议重复行为审计，并使用其公开的模型专属方向和 `layers_56:72-p0.25` 配置。Gemma-2-27B-IT 的公开资产包含模型专属方向，但没有指定钳制层范围，因此我们按照 *[TBD-APPENDIX]* 中的校准程序选择干预层和阈值，所得配置为 *[TBD-GEMMA]*。每个模型均使用各自的方向和干预设置，效应也按模型分别估计。具体模型版本、资产哈希、解码设置和校准网格见 *[TBD-APPENDIX]*。
 
-### 3.5 Behavioral and Continuous Readouts / 行为与连续读数
+### 3.5 Behavioral Outcomes and Logit Margins / 行为结果与 Logit 边际
 
-We encode each final output as the initial option, the proposed target, another option, or invalid/abstaining. Let $\ell(a)$ be the next-option logit. For four-option tasks, we define
+We analyze each run at two levels. The final response is assigned to one of four categories: the initial option, the proposed target, another option, or invalid/abstaining. Let $\ell(a)$ denote the next-option logit. For four-option tasks, we define
 
 $$
 m_{\mathrm{general}}
@@ -145,15 +153,27 @@ m_{\mathrm{specific}}
 \ell(a_t)-\frac{1}{2}\sum_{a\notin\{a_0,a_t\}}\ell(a).
 $$
 
-A positive change in $m_{\mathrm{general}}$ means that the initial-answer advantage is compressed; it does not by itself identify which alternative will be selected. We therefore report margins jointly with target-following rates and complete four-state transitions. Evidence selectivity is summarized by the paired $V-F$ target-following contrast while retaining $N/R$ controls. Social influence is summarized by the $S-AO$ contrast and its cap-by-arm interaction. Continuous and discrete estimands are not treated as interchangeable.
+The four margins distinguish broad movement away from $a_0$ from movement toward particular alternatives. $m_{\mathrm{general}}$ summarizes all non-initial options relative to $a_0$, whereas $m_{\mathrm{target}}$, $m_{\mathrm{background}}$, and $m_{\mathrm{specific}}$ locate that movement within the option space. A positive change in $m_{\mathrm{general}}$ indicates a smaller initial-answer advantage.
 
-**中文：** 每个最终输出被编码为 initial、proposed target、other 或 invalid/abstaining。令 $\ell(a)$ 表示 next-option logit，并按上式定义四个连续 margin。正的 $m_{\mathrm{general}}$ 变化表示 initial-answer advantage 被压缩，但它本身不能确定最终会选择哪个替代项。因此，margin 必须与 target-following rate 和完整四态迁移联合报告。Evidence selectivity 由配对的 $V-F$ target-following contrast 概括，同时保留 $N/R$ 对照；social influence 由 $S-AO$ 对比及 cap-by-arm 交互概括。连续与离散估计量不能互换解释。
+We report these margins together with target-following rates and complete four-state transitions. CEDAR-Evidence evaluates reason selectivity through paired $V-F$ contrasts in both continuous margins and target-following behavior, with $N/R$ serving as controls. CEDAR-Social uses the $S-AO$ contrast and its cap-by-arm interaction to estimate the incremental effect of social phrasing. Continuous margins describe answer geometry, whereas state transitions record realized choices.
 
-### 3.6 Statistical and Audit Discipline / 统计与审计纪律
+**中文：** 我们从两个层面分析每次运行。最终输出分为四类：初始答案、目标选项、其他选项，以及无效输出或弃答。令 $\ell(a)$ 表示 next-option logit，并按上式定义四个 margin。这四个 margin 用于区分离开 $a_0$ 的整体位移及其在不同备选答案间的分布。$m_{\mathrm{general}}$ 概括所有非初始选项相对于 $a_0$ 的变化，$m_{\mathrm{target}}$、$m_{\mathrm{background}}$ 和 $m_{\mathrm{specific}}$ 则进一步定位该变化在选项空间中的去向。$m_{\mathrm{general}}$ 的正向变化表示初始答案优势缩小。
 
-Evidence uncertainty is clustered at the independently generated family level; the frozen new-salt analysis uses 20,000 paired family-bootstrap draws. Social uncertainty uses the SycoBench base as the unit and 10,000 bootstrap draws stratified by domain and difficulty. Truncated or unparsable outputs remain invalid/abstaining under intention-to-treat analysis, and no item is removed or rerun because of model behavior. Development, new-salt, natural-task, fixed-trace, and cross-model evidence retain separate identities. We report option mass, entropy, top-token integrity, and initial/target/background logit decompositions to distinguish reason-structured effects from generic flattening or output corruption. Full estimands, seeds, multiplicity rules, missing-data sensitivity, and protocol deviations appear in *[TBD-APPENDIX]*.
+我们同时报告这些 margin、目标跟随率和完整的四状态迁移。CEDAR-Evidence 通过连续 margin 和目标跟随行为中的配对 $V-F$ 对比评估理由选择性，并以 $N/R$ 作为对照。CEDAR-Social 使用 $S-AO$ 对比及其 cap-by-arm 交互项估计社会性措辞的增量效应。连续 margin 描述答案几何，四状态迁移记录最终落实的选择。
 
-**中文：** Evidence 模块的不确定性在独立生成的 family 层级聚类；冻结的 new-salt 分析使用 20,000 次配对 family bootstrap。Social 模块以 SycoBench base 为单位，进行按 domain 与 difficulty 分层的 10,000 次 bootstrap。截断或无法解析的输出在 intention-to-treat 分析中保留为 invalid/abstaining，任何样本都不会因模型行为而被删除或重跑。Development、new-salt、natural-task、fixed-trace 与 cross-model 证据保留各自身份。我们报告 option mass、entropy、top-token integrity，以及 initial/target/background logit 分解，用于区分理由结构化效应、一般性 flattening 与输出损坏。完整估计量、随机种子、多重比较规则、缺失数据敏感性和协议偏离见 *[TBD-APPENDIX]*。
+### 3.6 Statistical Inference and Quality Control / 统计推断与质量控制
+
+Uncertainty for CEDAR-Evidence is estimated at the structural-family level. The independently regenerated bank uses 20,000 paired cluster-bootstrap resamples of families. CEDAR-Social uses the SycoBench question as its resampling unit, with 10,000 bootstrap draws stratified by domain and difficulty.
+
+All scheduled items enter the intention-to-treat analysis. Truncated or unparsable responses are coded as invalid/abstaining, preserving the recorded model behavior in the analysis. Development, independently regenerated, natural-task, fixed-trace, and cross-model results are analyzed as distinct evidence streams.
+
+We use option mass, entropy, and top-token integrity as diagnostic checks for generic logit flattening and output corruption. Decompositions of the initial-, target-, and background-option logits show how each shift is distributed across answer roles. Complete estimand definitions, random seeds, multiplicity adjustments, missing-data sensitivity analyses, and protocol deviations appear in *[TBD-APPENDIX]*.
+
+**中文：** CEDAR-Evidence 在结构族层面估计不确定性；独立再生成的评测批次以结构族为单位进行 20,000 次配对 cluster bootstrap。CEDAR-Social 以 SycoBench 题目为重采样单位，并按领域和难度分层进行 10,000 次 bootstrap。
+
+所有预定样本均进入 intention-to-treat 分析。截断或无法解析的输出被编码为无效输出或弃答，使模型的实际表现保留在分析中。开发集、独立再生成集、自然任务、固定轨迹和跨模型结果分别作为不同证据来源进行分析。
+
+我们使用有效选项总概率、熵以及最高概率 token 是否属于有效选项，检查一般性的 logit 扁平化和输出损坏。初始选项、目标选项与背景选项的 logit 分解进一步显示位移在不同答案角色间的分布。完整的估计量定义、随机种子、多重比较校正、缺失数据敏感性分析和协议偏离见 *[TBD-APPENDIX]*。
 
 ## 4. Auditing Assistant-Axis Capping / 审计 Assistant-Axis 钳制
 
