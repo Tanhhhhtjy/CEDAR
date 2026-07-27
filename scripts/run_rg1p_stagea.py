@@ -176,6 +176,7 @@ def initialize_stagea_run(
         random_reference = science.get("random_reference")
         if isinstance(random_reference, dict):
             random_reference.pop("bf16_norm_solver", None)
+            random_reference.pop("realized_direction_sign_gate", None)
     require(previous_science == current_science, "Correction resume changed run configuration")
     initialized = initialize_run(run_dir, previous)
     return initialized, {
