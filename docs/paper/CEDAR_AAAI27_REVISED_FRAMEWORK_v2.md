@@ -43,7 +43,7 @@
 2. 正文先陈述发现，不把每一条限制重复插入结果句。
 3. development、new-salt、external、controlled replay 的证据身份集中在方法和限制中披露。
 4. “认识论代价”在本文中具体指**选择性损失或理由不敏感的决策扰动**，不是笼统的“模型变笨”。
-5. `[TBD-RG1]`、`[TBD-LLAMA]` 与 `[TBD-GEMMA]` 只作为固定插槽；无论结果如何，不重写全文主线。
+5. `[TBD-RG1]` 与 `[TBD-LLAMA]` 只作为固定插槽；无论结果如何，不重写全文主线。
 6. 主张强度由 claim–evidence 台账控制，不用形容词弥补证据缺口。
 
 ---
@@ -184,7 +184,7 @@ E2C new-salt：
 - V−F selectivity `−29.17pp`，CI `[-58.33,+4.17]`；
 - 1 条主 logit 缺失使正式 Gate 技术性未决，但 tipping-point 分析表明单个缺失值很难实质推翻总体方向。
 
-因此稳定对象是总体几何位移，具体选项分配和离散后果具有任务依赖性。Llama/Gemma 等完成并通过审计的跨模型结果并入本项，用于限定或增强 transportability，不单列为概念贡献。
+因此稳定对象是总体几何位移，具体选项分配和离散后果具有任务依赖性。Llama 上完成并通过审计的跨模型结果并入本项，用于限定或增强 transportability，不单列为概念贡献。
 
 ### C3：固定推理轨迹下的受控诊断
 
@@ -289,7 +289,7 @@ CEDAR 固定：
 
 若 `[TBD-RG1]` Route A/C 成立，再增加一句局部单轴修正向下游答案空间传播的描述。
 
-贡献列表固定为三条：框架与评测资产、限定范围的实证发现、受控诊断。Llama/Gemma 只有在完成并通过审计后才能并入第二条，作为跨模型 transportability 证据，不单列贡献。
+贡献列表固定为三条：框架与评测资产、限定范围的实证发现、受控诊断。Llama 结果只有在完成并通过审计后才能并入第二条，作为跨模型 transportability 证据，不单列贡献。
 
 ---
 
@@ -946,7 +946,7 @@ Caption 必须自包含，不展示真实危险内容；末尾以语义引用占
 
 ## 9. 摘要草稿
 
-> Activation-space interventions are increasingly used to suppress undesirable language-model behaviors, yet they are typically evaluated by whether a target behavior decreases—not by whether the intervention preserves sensitivity to the reasons for changing an answer. We introduce CEDAR, a reason-sensitive audit framework with two statistically separate modules: the new solver-certified CEDAR-Evidence paired dataset and a CEDAR-Social protocol over natural tasks. Within each module, CEDAR holds the base, initial answer, and proposed target fixed while varying reason validity or social phrasing. On Qwen3-32B, official Assistant-Axis p25 capping shifted non-initial option margins relative to the model’s initial answer (`+3.13` logits; 95% family-cluster CI `[+1.83,+4.49]`). In the development bank, warranted and unwarranted updating moved together (`+20.8` and `+16.7` points); in a new-salt instantiation, the aggregate margin shift replicated (`+1.54` logits) while valid and invalid updates redistributed in opposite directions (`−12.5` and `+16.7` points). Thus, the stable object was the continuous geometry rather than a fixed behavioral direction. The shift was latent in neutral controls and persisted under token-for-token fixed reasoning replay (`+2.08` logits on treatment-naive traces), where no paired argmax migrations were observed. `[TBD-CROSS-MODEL: one sentence only if matched forced-choice Qwen/Llama/Gemma results provide interpretable transport evidence.]` These results identify epistemic non-selectivity as a failure mode of activation-space control: a representation axis can alter model state without constituting a reason-sensitive policy.
+> Activation-space interventions are increasingly used to suppress undesirable language-model behaviors, yet they are typically evaluated by whether a target behavior decreases—not by whether the intervention preserves sensitivity to the reasons for changing an answer. We introduce CEDAR, a reason-sensitive audit framework with two statistically separate modules: the new solver-certified CEDAR-Evidence paired dataset and a CEDAR-Social protocol over natural tasks. Within each module, CEDAR holds the base, initial answer, and proposed target fixed while varying reason validity or social phrasing. On Qwen3-32B, official Assistant-Axis p25 capping shifted non-initial option margins relative to the model’s initial answer (`+3.13` logits; 95% family-cluster CI `[+1.83,+4.49]`). In the development bank, warranted and unwarranted updating moved together (`+20.8` and `+16.7` points); in a new-salt instantiation, the aggregate margin shift replicated (`+1.54` logits) while valid and invalid updates redistributed in opposite directions (`−12.5` and `+16.7` points). Thus, the stable object was the continuous geometry rather than a fixed behavioral direction. The shift was latent in neutral controls and persisted under token-for-token fixed reasoning replay (`+2.08` logits on treatment-naive traces), where no paired argmax migrations were observed. `[TBD-CROSS-MODEL: one sentence only if matched forced-choice Qwen/Llama results provide interpretable transport evidence.]` These results identify epistemic non-selectivity as a failure mode of activation-space control: a representation axis can alter model state without constituting a reason-sensitive policy.
 
 若RG1-P Route A/C强，可用一句替换Llama句，而不是把所有新结果都塞入摘要。
 

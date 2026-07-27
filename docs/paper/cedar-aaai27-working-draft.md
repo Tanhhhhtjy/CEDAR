@@ -16,9 +16,9 @@
 
 ## Abstract / 摘要
 
-`[TBD: final five-sentence abstract with audited Qwen/Llama/Gemma results]`
+`[TBD: final five-sentence abstract with audited Qwen/Llama results]`
 
-`[TBD：填入包含经审计 Qwen/Llama/Gemma 结果的最终五句式摘要]`
+`[TBD：填入包含经审计 Qwen/Llama 结果的最终五句式摘要]`
 
 ## 1. Introduction / 引言
 
@@ -41,8 +41,8 @@ Approved contribution architecture / 已确认的贡献架构：
 
 1. **Framework and evaluation assets.** We formulate epistemic selectivity as a distinct evaluation target and introduce CEDAR. It comprises CEDAR-Evidence, a new solver-certified paired evaluation dataset, and CEDAR-Social, a statistically separate paired protocol over SycoBench-600.<br>
    **中文：框架与评测资产。** 我们将认识论选择性形式化为独立评测目标并提出 CEDAR。CEDAR 包含新的 solver-certified 配对评测数据集 CEDAR-Evidence，以及统计上独立的 SycoBench-600 配对协议 CEDAR-Social。
-2. **Scoped empirical audit.** We audit Assistant-Axis threshold capping on Qwen, Llama, and Gemma, retaining model-specific configurations, uncertainty, and heterogeneity.<br>
-   **中文：限定范围的实证审计。** 我们在 Qwen、Llama 与 Gemma 上审计 Assistant-Axis 阈值钳制，并保留模型专属配置、不确定性与异质性。
+2. **Scoped empirical audit.** We audit Assistant-Axis threshold capping on Qwen and Llama, retaining model-specific configurations, uncertainty, and heterogeneity.<br>
+   **中文：限定范围的实证审计。** 我们在 Qwen 与 Llama 上审计 Assistant-Axis 阈值钳制，并保留模型专属配置、不确定性与异质性。
 3. **Controlled diagnostics.** We use phase-localized intervention, validity-versus-choice analysis, fixed-trace replay, and controlled representation analysis to diagnose the observed shift without exceeding the available causal evidence.<br>
    **中文：受控诊断。** 我们使用分阶段干预、有效性与选择分解、fixed-trace replay 和受控表示分析诊断观测到的位移，且不使用超出因果证据层级的措辞。
 
@@ -132,9 +132,9 @@ where $[z]_{+}=\max(z,0)$. When the projection onto $\mathbf{v}_{\ell}$ exceeds 
 
 **中文：** 我们考察公开的模型专属 Assistant-Axis 阈值钳制。令 $\mathbf{v}_{\ell}$ 表示公开 capping 配置在第 $\ell$ 层存储的单位干预方向，$\tau_{\ell,c}$ 表示配置 $c$ 在该层使用的阈值。该存储方向与对应的 Assistant Axis 向量方向相反，阈值也在这一坐标下完成校准。因此，下文对 $\mathbf{v}_{\ell}$ 的上限钳制，与原论文沿 Assistant-Axis 方向定义的下限钳制等价。对于残差激活 $\mathbf{h}_{\ell,t}$，算子按上式进行变换，其中 $[z]_{+}=\max(z,0)$。当激活在 $\mathbf{v}_{\ell}$ 上的投影超过 $\tau_{\ell,c}$ 时，算子移除超出阈值的方向分量；低于阈值的激活保持不变。
 
-The full behavioral audit and diagnostic analyses use Qwen3-32B with the released `layers_46:54-p0.25` configuration, covering decoder layers 46--53. We repeat the matched behavioral audit on Llama-3.3-70B-Instruct using its released model-specific axis and `layers_56:72-p0.25` configuration. For Gemma-2-27B-IT, the release provides a model-specific axis but no capping layer range, so we select its treated layers and thresholds using the calibration procedure described in *[TBD-APPENDIX]*; the resulting configuration is *[TBD-GEMMA]*. Each model uses its own direction and intervention settings, and all effects are estimated separately by model. Exact model revisions, asset hashes, decoding settings, and calibration grids appear in *[TBD-APPENDIX]*.
+The full behavioral audit and diagnostic analyses use Qwen3-32B with the released `layers_46:54-p0.25` configuration, covering decoder layers 46--53. We repeat the matched behavioral audit on Llama-3.3-70B-Instruct using its released model-specific axis and `layers_56:72-p0.25` configuration. Each model uses its own direction and intervention settings, and all effects are estimated separately by model. Exact model revisions, asset hashes, and decoding settings appear in *[TBD-APPENDIX]*.
 
-**中文：** 完整的行为审计和诊断分析以 Qwen3-32B 为基础，使用公开的 `layers_46:54-p0.25` 配置，对应 decoder 第 46--53 层。我们在 Llama-3.3-70B-Instruct 上按照匹配协议重复行为审计，并使用其公开的模型专属方向和 `layers_56:72-p0.25` 配置。Gemma-2-27B-IT 的公开资产包含模型专属方向，但没有指定钳制层范围，因此我们按照 *[TBD-APPENDIX]* 中的校准程序选择干预层和阈值，所得配置为 *[TBD-GEMMA]*。每个模型均使用各自的方向和干预设置，效应也按模型分别估计。具体模型版本、资产哈希、解码设置和校准网格见 *[TBD-APPENDIX]*。
+**中文：** 完整的行为审计和诊断分析以 Qwen3-32B 为基础，使用公开的 `layers_46:54-p0.25` 配置，对应 decoder 第 46--53 层。我们在 Llama-3.3-70B-Instruct 上按照匹配协议重复行为审计，并使用其公开的模型专属方向和 `layers_56:72-p0.25` 配置。每个模型均使用各自的方向和干预设置，效应也按模型分别估计。具体模型版本、资产哈希和解码设置见 *[TBD-APPENDIX]*。
 
 ### 3.5 Behavioral Outcomes and Logit Margins / 行为结果与 Logit 边际
 
@@ -204,7 +204,7 @@ We use option mass, entropy, and top-token integrity as diagnostic checks for ge
 
 ### 4.5 Cross-Model Transport and Heterogeneity / 跨模型迁移与异质性
 
-`[TBD: matched Qwen/Llama/Gemma results and analysis]`
+`[TBD: matched Qwen/Llama results and analysis]`
 
 ## 5. Diagnosing the Shift / 诊断该位移
 
