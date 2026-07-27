@@ -58,9 +58,8 @@ The Assistant Axis identifies a population-level direction associated with assis
 
 ### 2.2 Sycophancy, Social Influence, and Answer Revision / 谄媚、社会影响与答案修正
 
-`[TBD: verified synthesis of social influence, target exposure, valid evidence, and fallacious persuasion.]`
-
-`[TBD：填入经核验的社会影响、target exposure、有效证据与谬误说服相关工作综合。]`
+Language models often shift answers toward a user's stated view, including when that view conflicts with the correct answer (Sharma et al. 2024). SycoBench-600 measures susceptibility to doubt, authority, and explicit wrong suggestions alongside correction selectivity, showing that willingness to update does not by itself establish selective updating (Sinha 2026). Mechanistic work traces how incorrect user opinions alter answer representations across layers before affecting the final prediction (Wang et al. 2026). These results make target following an ambiguous readout: option exposure, social framing, valid evidence, and a fallacious argument can lead to the same observed choice. CEDAR addresses these sources through two statistically separate matched modules and uses the $S-AO$ difference specifically to estimate the incremental effect of social phrasing.<br>
+**中文：** 语言模型常会把答案移向用户表达的观点，包括该观点与正确答案冲突时（Sharma et al. 2024）。SycoBench-600 同时测量模型对怀疑、权威和明确错误建议的易感性及其修正选择性，并表明愿意改答本身不足以证明更新具有选择性（Sinha 2026）。机制研究进一步追踪错误用户意见如何在最终预测改变前逐层改变答案表征（Wang et al. 2026）。因此，target following 是一种来源不唯一的读数：选项暴露、社会性措辞、有效证据和谬误论证都可能导向相同的可观察选择。CEDAR 使用两个统计上独立的匹配模块分别处理这些来源，并以 $S-AO$ 差值专门估计社会性措辞的增量效应。
 
 ### 2.3 Reason-Sensitive Evaluation and Intervention Side Effects / 理由敏感评测与干预副作用
 
