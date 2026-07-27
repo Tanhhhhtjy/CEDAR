@@ -41,6 +41,7 @@ from rg1p_common import (  # noqa: E402
     BRANCH,
     CAP_LAYERS,
     CAPTURE_LAYERS,
+    ENGINEERING_CORRECTION_02_ID,
     ENGINEERING_CORRECTION_ID,
     EXPECTED_AXIS_SHA256,
     EXPECTED_CAP_CONFIG_SHA256,
@@ -53,6 +54,8 @@ from rg1p_common import (  # noqa: E402
     NOOP_CONDITION,
     OFFICIAL_CONDITIONS,
     RANDOM_CONDITIONS,
+    RANDOM_NORM_SEARCH_EXPANSIONS,
+    RANDOM_NORM_SEARCH_ITERATIONS,
     REALIZED_NORM_ABS_TOLERANCE,
     REALIZED_NORM_REL_TOLERANCE,
     SOURCE_RESULTS,
@@ -166,10 +169,17 @@ def initialize_stagea_run(
     )
     previous_science = {key: value for key, value in previous.items() if key != "git"}
     current_science = {key: value for key, value in configuration.items() if key != "git"}
+    # Correction 02 changes only the numerical solver used to realize the
+    # already-frozen random schedule in BF16. The 40 imported official/no-op
+    # records do not depend on this field.
+    for science in (previous_science, current_science):
+        random_reference = science.get("random_reference")
+        if isinstance(random_reference, dict):
+            random_reference.pop("bf16_norm_solver", None)
     require(previous_science == current_science, "Correction resume changed run configuration")
     initialized = initialize_run(run_dir, previous)
     return initialized, {
-        "reason": ENGINEERING_CORRECTION_ID,
+        "reason": ENGINEERING_CORRECTION_02_ID,
         "run_fingerprint_commit": INITIAL_CPU_GATE_COMMIT,
         "execution_commit": current_git["commit"],
     }
@@ -401,6 +411,9 @@ class ScheduleMatchedRandomInjector:
         self.realized_norms: dict[int, list[Tensor]] = {layer: [] for layer in CAP_LAYERS}
         self.realized_errors: dict[int, list[Tensor]] = {layer: [] for layer in CAP_LAYERS}
         self.realized_relative_errors: dict[int, list[Tensor]] = {layer: [] for layer in CAP_LAYERS}
+        self.realized_direction_cosines: dict[int, list[Tensor]] = {
+            layer: [] for layer in CAP_LAYERS
+        }
         self.terminal_input: dict[int, Tensor] = {}
         self.terminal_output: dict[int, Tensor] = {}
         self._handles: list[Any] = []
@@ -431,26 +444,14 @@ class ScheduleMatchedRandomInjector:
                 self._direction_cache[cache_key] = direction
 
             before = tensor
-            scale = desired.clone()
-            modified = tensor
-            actual = torch.zeros_like(desired)
-            # BF16 addition is discrete. Iterative rescaling makes the realized
-            # model-visible displacement match the frozen actual p25 norm as
-            # closely as the dtype permits, while the commanded FP32 norm is exact.
-            for _ in range(4):
-                delta = scale.view(1, -1, 1) * direction.view(1, 1, -1)
-                modified = (before.float() + delta).to(before.dtype)
-                actual = torch.linalg.vector_norm(
-                    modified.float() - before.float(), dim=-1
-                ).reshape(-1)
-                adjustable = (desired > 0) & (actual > 0)
-                factor = torch.ones_like(scale)
-                factor[adjustable] = desired[adjustable] / actual[adjustable]
-                scale = scale * factor
-            commanded = torch.linalg.vector_norm(
-                desired.view(-1, 1) * direction.view(1, -1), dim=-1
-            )
-            requested_error = torch.abs(commanded - desired)
+            modified, actual = _bf16_norm_matched_update(before, desired, direction)
+            # The ideal requested vector is c * unit(r). Compute its norm in
+            # float64 so the engineering check does not mistake float32
+            # reduction error at large c for a changed requested dose.
+            unit64 = direction.detach().double()
+            unit64 = unit64 / torch.linalg.vector_norm(unit64)
+            commanded = desired.double().abs() * torch.linalg.vector_norm(unit64)
+            requested_error = torch.abs(commanded - desired.double()).float()
             realized_error = torch.abs(actual - desired)
             relative = torch.zeros_like(realized_error)
             nonzero = desired > 0
@@ -459,6 +460,13 @@ class ScheduleMatchedRandomInjector:
             self.realized_norms[layer].append(actual.detach())
             self.realized_errors[layer].append(realized_error.detach())
             self.realized_relative_errors[layer].append(relative.detach())
+            realized_delta = (modified.float() - before.float()).reshape(-1, before.shape[-1])
+            cosine = torch.zeros_like(actual)
+            direction_nonzero = (desired > 0) & (actual > 0)
+            cosine[direction_nonzero] = (
+                realized_delta[direction_nonzero] @ direction
+            ) / actual[direction_nonzero]
+            self.realized_direction_cosines[layer].append(cosine[direction_nonzero].detach())
 
             call = self.calls[layer]
             if call == self.terminal_call_index:
@@ -507,6 +515,13 @@ class ScheduleMatchedRandomInjector:
         relative = torch.cat(
             [torch.cat(self.realized_relative_errors[layer]).float().cpu() for layer in CAP_LAYERS]
         )
+        cosine_chunks = [
+            torch.cat(self.realized_direction_cosines[layer]).float().cpu()
+            for layer in CAP_LAYERS
+            if self.realized_direction_cosines[layer]
+            and any(chunk.numel() for chunk in self.realized_direction_cosines[layer])
+        ]
+        direction_cosines = torch.cat(cosine_chunks) if cosine_chunks else torch.ones(1)
         max_abs = float(realized.max().item()) if realized.numel() else 0.0
         max_rel = float(relative.max().item()) if relative.numel() else 0.0
         input_tensor = torch.stack([self.terminal_input[layer] for layer in CAP_LAYERS])
@@ -529,8 +544,67 @@ class ScheduleMatchedRandomInjector:
                 "realized_norm_within_frozen_bf16_tolerance": (
                     max_abs <= REALIZED_NORM_ABS_TOLERANCE or max_rel <= REALIZED_NORM_REL_TOLERANCE
                 ),
+                "bf16_norm_solver": (
+                    f"monotone_bisection_e{RANDOM_NORM_SEARCH_EXPANSIONS}"
+                    f"_i{RANDOM_NORM_SEARCH_ITERATIONS}"
+                ),
+                "realized_direction_cosine_min": float(direction_cosines.min().item()),
+                "realized_direction_cosine_mean": float(direction_cosines.mean().item()),
             },
         )
+
+
+def _bf16_norm_matched_update(
+    before: Tensor, desired: Tensor, direction: Tensor
+) -> tuple[Tensor, Tensor]:
+    """Find the closest BF16-visible dose along a fixed continuous direction.
+
+    For a fixed direction each coordinate's rounded displacement magnitude is
+    monotone in the scalar dose. A per-position bracket and bisection therefore
+    finds a representable residual update closer to the frozen official norm
+    than the previous four-step ratio iteration, without changing the layer,
+    position, direction, target norm, or model dtype.
+    """
+    require(before.ndim == 3 and before.shape[0] == 1, "Unexpected BF16 solver tensor")
+    require(desired.ndim == 1 and desired.shape[0] == before.shape[1], "Dose shape changed")
+    before_float = before.float()
+
+    def evaluate(scale: Tensor) -> tuple[Tensor, Tensor]:
+        delta = scale.view(1, -1, 1) * direction.view(1, 1, -1)
+        candidate = (before_float + delta).to(before.dtype)
+        norm = torch.linalg.vector_norm(candidate.float() - before_float, dim=-1).reshape(-1)
+        return candidate, norm
+
+    low = torch.zeros_like(desired)
+    high = desired.clone()
+    best_scale = low.clone()
+    best_error = desired.clone()
+
+    def consider(scale: Tensor, norm: Tensor) -> None:
+        nonlocal best_scale, best_error
+        error = torch.abs(norm - desired)
+        improved = error < best_error
+        best_scale = torch.where(improved, scale, best_scale)
+        best_error = torch.where(improved, error, best_error)
+
+    for _ in range(RANDOM_NORM_SEARCH_EXPANSIONS):
+        _candidate, norm = evaluate(high)
+        consider(high, norm)
+        high = torch.where((desired > 0) & (norm < desired), high * 2, high)
+
+    for _ in range(RANDOM_NORM_SEARCH_ITERATIONS):
+        midpoint = (low + high) / 2
+        _candidate, norm = evaluate(midpoint)
+        consider(midpoint, norm)
+        below = norm < desired
+        low = torch.where(below, midpoint, low)
+        high = torch.where(below, high, midpoint)
+
+    for endpoint in (low, high):
+        _candidate, norm = evaluate(endpoint)
+        consider(endpoint, norm)
+    modified, actual = evaluate(best_scale)
+    return modified, actual
 
 
 def _atomic_save_tensors(path: Path, tensors: Mapping[str, Tensor]) -> None:
@@ -1164,7 +1238,7 @@ def main() -> None:
         events = list(runtime.get("resume_events", []))
         if not any(
             event.get("execution_commit") == correction_resume["execution_commit"]
-            and event.get("reason") == ENGINEERING_CORRECTION_ID
+            and event.get("reason") == correction_resume["reason"]
             for event in events
         ):
             events.append(
@@ -1176,7 +1250,11 @@ def main() -> None:
                 }
             )
             runtime["resume_events"] = events
-            runtime["engineering_correction"] = ENGINEERING_CORRECTION_ID
+            corrections = list(runtime.get("engineering_corrections", []))
+            for correction in (ENGINEERING_CORRECTION_ID, correction_resume["reason"]):
+                if correction not in corrections:
+                    corrections.append(correction)
+            runtime["engineering_corrections"] = corrections
             atomic_write_json(runtime_path, runtime)
     lens_gate_complete = False
     expected_lens_pairs = 24 if args.scope == "smoke" else 288

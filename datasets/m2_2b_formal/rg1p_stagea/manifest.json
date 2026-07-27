@@ -365,20 +365,35 @@
     "unique_complete_module_mapping": true
   },
   "engineering_correction": {
-    "corrected_readout_cache": "lens_records_shape_faithful_v2/",
-    "failed_readout_cache_preserved": "lens_records/",
-    "gpu_forward_path_equivalence": {
-      "definition_ast_sha256": {
-        "OfficialScheduleCapture": "c2b25a5543999f7797a3733402b727d08df20c613a5a748730fc78d061daa345",
-        "ScheduleMatchedRandomInjector": "2487c159b6764891d80878909b85c2666cce18269c0a4655f06c620428646ab9",
-        "TerminalBlockCollector": "467eee90c8516cceb6cfcbf424c07b3828c51591aada4169f4a20d8ad961759c",
-        "run_one": "4176a19349f0fb5fdcf71079b2b9cac54850681e6d7ad29131d2b955a8a818b9"
-      },
-      "initial_cpu_gate_commit": "6f5f5dd643e774862a7185357b1d6027d5685c4f",
-      "status": "passed"
+    "correction_01": {
+      "corrected_readout_cache": "lens_records_shape_faithful_v2/",
+      "failed_readout_cache_preserved": "lens_records/",
+      "smoke_completed_forwards_preserved": 40
     },
-    "id": "RG1P_STAGEA_ENGINEERING_CORRECTION_01",
-    "smoke_completed_forwards_preserved": 40
+    "correction_02": {
+      "failed_smoke_namespace": "smoke-stagea-seed0-failed-random-solver-v1",
+      "formal_starts_fresh": true,
+      "forward_path_audit": {
+        "initial_cpu_gate_commit": "6f5f5dd643e774862a7185357b1d6027d5685c4f",
+        "intentional_random_solver_change": {
+          "corrected_injector_ast_sha256": "237ee8aef852e6a207859c6534a49d93504ead6c5c872ea8ee7ae0eda6fef325",
+          "initial_injector_ast_sha256": "2487c159b6764891d80878909b85c2666cce18269c0a4655f06c620428646ab9",
+          "solver_ast_sha256": "2195839deaa972c8656bc6fbdeb7a8a4bae9de4f7ccdc0c890b5e95e7b134a51"
+        },
+        "status": "passed",
+        "unchanged_definition_ast_sha256": {
+          "OfficialScheduleCapture": "c2b25a5543999f7797a3733402b727d08df20c613a5a748730fc78d061daa345",
+          "TerminalBlockCollector": "467eee90c8516cceb6cfcbf424c07b3828c51591aada4169f4a20d8ad961759c",
+          "run_one": "4176a19349f0fb5fdcf71079b2b9cac54850681e6d7ad29131d2b955a8a818b9"
+        }
+      },
+      "imported_unchanged_official_noop_rows": 40,
+      "rerun_random_rows_only": 32
+    },
+    "ids": [
+      "RG1P_STAGEA_ENGINEERING_CORRECTION_01",
+      "RG1P_STAGEA_ENGINEERING_CORRECTION_02"
+    ]
   },
   "engineering_noop": {
     "condition": "uncapped_noop_repeat",
@@ -399,7 +414,7 @@
     "branch": "agent/rg1p-stagea-fixed-trace-propagation",
     "dirty_during_gate_build": true,
     "gpu_requires_clean_synced_commit": true,
-    "head": "6f5f5dd643e774862a7185357b1d6027d5685c4f"
+    "head": "9fbbea4bbf1fdde940b40922df32856f3529955a"
   },
   "gpu_used": false,
   "logit_lens": {
@@ -533,6 +548,10 @@
     "repo": "Qwen/Qwen3-32B",
     "revision": "9216db5781bf21249d130ec9da846c4624c16137"
   },
+  "official_alignment_audit": {
+    "criterion": "positive_axis_projection_and_off_axis_within_half_ulp_l2_envelope",
+    "raw_realized_cosine": "reported_descriptively"
+  },
   "p25": {
     "axis_sha256": "a207fe7a36563280b7b29010880aa0082bd8e3113c141cb4a2eed6b46c140211",
     "capping_config_sha256": "6aec1220487473aaeab80b05d5d960ac54b5dd9080b51ac4bb0bbd1f4330db24",
@@ -549,6 +568,7 @@
     ]
   },
   "random_reference": {
+    "bf16_norm_solver": "monotone_bisection_e4_i12",
     "conditions": [
       "random_s20260727_pos",
       "random_s20260727_neg",
@@ -556,6 +576,7 @@
       "random_s20260728_neg"
     ],
     "orthogonal_tolerance": 1e-06,
+    "realized_direction_sign_gate": "cosine_strictly_positive",
     "schedule": "same_layer_same_token_same_official_actual_correction_norm",
     "seeds": [
       20260727,
@@ -565,24 +586,25 @@
   },
   "release_files": {
     "datasets/m2_2b_formal/rg1p_stagea/ANALYSIS_PLAN.json": "03ce93d61eb0277dda9136ffd6d0e6298863b0fdbcc986b8e308848ae015fe93",
-    "datasets/m2_2b_formal/rg1p_stagea/CPU_TEST_REPORT.json": "9e4929fe7ddb957b4034bb30b692dc9e3aba238acd175539e2f0417a0f213265",
+    "datasets/m2_2b_formal/rg1p_stagea/CPU_TEST_REPORT.json": "f8d5ac1c34a453b34047d9e65c9ca68bf7fd455b1acb332a525c9eb76965b432",
     "datasets/m2_2b_formal/rg1p_stagea/axis_mapping.json": "093a4bf9653586142df2396ad3872c2364dc50df99425cd3dd158e39371fa0b3",
     "datasets/m2_2b_formal/rg1p_stagea/formal_matrix864.jsonl": "d61ffb1de80be23f03f2e3805bdc23f21d19a4b3b037d5371ddef93093dac032",
     "datasets/m2_2b_formal/rg1p_stagea/official_axis_units.safetensors": "172e39b9babdf6b89c154ea408a59465ad67c1f495012774ea8a71a1974ae2ed",
     "datasets/m2_2b_formal/rg1p_stagea/random_direction_metadata.json": "3fb8c450c2341b495038a30d464a75395c9fc654bb8db3230c74084340cd9bef",
     "datasets/m2_2b_formal/rg1p_stagea/random_directions.safetensors": "b69e0aa8dccfca40bf66ac241bf5a66bf448823a27a14beef31840dfa911e713",
-    "datasets/m2_2b_formal/rg1p_stagea/rg1p_common.py": "bafceb82c6bfe5fc99e363f9aa68074121a336738eda8f934119bbd0cd6070bd",
+    "datasets/m2_2b_formal/rg1p_stagea/rg1p_common.py": "735aab8a114a8385da288faa69290325b5a44573d73dae1c904831fb43524daa",
     "datasets/m2_2b_formal/rg1p_stagea/smoke_matrix72.jsonl": "3562cef3583cc4af8ce761900a19fb55beb4347ded3b440deb2414d375a01d8f",
-    "datasets/m2_2b_formal/rg1p_stagea/validate_rg1p_stagea.py": "ce2cd496cc96dd69205439aac5d24e19370f768ed308a3822321f591c90551f1",
+    "datasets/m2_2b_formal/rg1p_stagea/validate_rg1p_stagea.py": "546453a39e72b817a21dfe74a1c2f1f4f1504618c2902bd981516e2793625b87",
     "docs/RG1P_STAGEA_ENGINEERING_CORRECTION_01.md": "c164688a2d6423d7be3f452f58b5684083ce4161fdecb1c2f8f4763ad0adedd8",
+    "docs/RG1P_STAGEA_ENGINEERING_CORRECTION_02.md": "6d5aeda3038cdcaf49be03604df5078103c70605915dbcf7628c970853773bdb",
     "docs/RG1P_STAGEA_FIXED_TRACE_PROPAGATION_PROTOCOL.md": "01bd3a2c6d28d79ebb92c3e12c60bdaf53e80db681b26262006b5ad90463c261",
     "scripts/analyze_rg1p_stagea.py": "f79d1678bd10f68ad3a464f16b8ed68f78eb2ff8d7776c7d76c06b40fa4b00f9",
-    "scripts/audit_rg1p_stagea.py": "fc4329d36c328894c11d4050fa1c8fd8462e3951a5ac1d37e933e95f25b9cc3c",
+    "scripts/audit_rg1p_stagea.py": "70a589d3f080c5adb486e883c3e7a190393d591e5756aeef47e78a0dad3eec91",
     "scripts/plot_rg1p_stagea.py": "d9ce6a1615ee8d94966de1e90e88e86d7efa29ed743203693fff0c31049f7cb0",
-    "scripts/run_rg1p_stagea.py": "87a9f0607edccdb92f86214107cdf7a53fbf2cf665e49c27f4f51d53c6ad61f5",
-    "tests/test_rg1p_stagea.py": "f2c7858e6440c8c494282056a3d2ffba18d70e600532b9a0fad4be2bf821743d"
+    "scripts/run_rg1p_stagea.py": "497cdbccbba21df3f21fe528383d93085b7cc8bd8e3a35f6308053b4889ea846",
+    "tests/test_rg1p_stagea.py": "8277aebac7b06a7b2d8cf2b6411f4c50b11184a255308da273eb6848bd96a655"
   },
-  "release_object_sha256": "dae8ecf09c139fc8b976b64341c2885b675b962ea33c1a0a1c5f7c69fae69942",
+  "release_object_sha256": "15135fd6de3993471d8cd8450487ea06f9cd03254e853dea38be915a834cd7db",
   "replay_engine": "model.generate_kv_cache_forced_tokens",
   "schema": "cedar.rg1p_stagea.manifest.v1",
   "source_hashes": {

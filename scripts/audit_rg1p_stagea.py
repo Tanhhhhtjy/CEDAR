@@ -56,6 +56,52 @@ def _finite_tensor(tensor: torch.Tensor) -> bool:
     return bool(torch.isfinite(tensor.float()).all().item())
 
 
+def bf16_alignment_diagnostics(
+    cap_input: torch.Tensor, cap_output: torch.Tensor, axis: torch.Tensor
+) -> dict[str, float | bool]:
+    """Audit an axis correction at the precision seen by the BF16 model.
+
+    Small dense axis updates are rounded componentwise when written back to a
+    BF16 residual. Their raw cosine can therefore be low even when every
+    off-axis component is explainable by one final rounding step. The gate
+    requires a positive axis projection and bounds the off-axis residual by
+    the exact half-ULP L2 envelope of the stored output.
+    """
+    require(cap_input.dtype == cap_output.dtype == torch.bfloat16, "Alignment dtype changed")
+    unit = axis.float() / torch.linalg.vector_norm(axis.float())
+    correction = cap_output.float() - cap_input.float()
+    norm = float(torch.linalg.vector_norm(correction).item())
+    if norm == 0:
+        return {
+            "correction_norm": 0.0,
+            "cosine": 1.0,
+            "parallel_projection": 0.0,
+            "off_axis_norm": 0.0,
+            "half_ulp_l2_envelope": 0.0,
+            "off_axis_to_envelope": 0.0,
+            "passed": True,
+        }
+    parallel = float(torch.dot(correction, unit).item())
+    off_axis = correction - parallel * unit
+    off_axis_norm = float(torch.linalg.vector_norm(off_axis).item())
+    positive = torch.full_like(cap_output, float("inf"))
+    negative = torch.full_like(cap_output, float("-inf"))
+    upward = torch.nextafter(cap_output, positive).float() - cap_output.float()
+    downward = cap_output.float() - torch.nextafter(cap_output, negative).float()
+    half_ulp = 0.5 * torch.maximum(torch.abs(upward), torch.abs(downward))
+    envelope = float(torch.linalg.vector_norm(half_ulp).item())
+    ratio = off_axis_norm / envelope if envelope else math.inf
+    return {
+        "correction_norm": norm,
+        "cosine": parallel / norm,
+        "parallel_projection": parallel,
+        "off_axis_norm": off_axis_norm,
+        "half_ulp_l2_envelope": envelope,
+        "off_axis_to_envelope": ratio,
+        "passed": parallel > 0 and off_axis_norm <= envelope + 1e-6,
+    }
+
+
 def audit(scope: str, output_root: Path) -> dict[str, Any]:
     expected = EXPECTED_SMOKE_CELLS if scope == "smoke" else EXPECTED_FORMAL_CELLS
     run_dir = output_root / f"{scope}-stagea-seed0"
@@ -107,6 +153,7 @@ def audit(scope: str, output_root: Path) -> dict[str, Any]:
     norm_failures: list[dict[str, Any]] = []
     random_sign_pair_failures: list[dict[str, Any]] = []
     terminal_alignment_failures: list[dict[str, Any]] = []
+    terminal_alignment_diagnostics: list[dict[str, Any]] = []
     noop_failures: list[dict[str, Any]] = []
     lens_anchor_failures: list[dict[str, Any]] = []
     top_token_invalid: list[str] = []
@@ -208,16 +255,16 @@ def audit(scope: str, output_root: Path) -> dict[str, Any]:
                 list(cap_input.shape) == [len(CAP_LAYERS), 5120]
                 and cap_output.shape == cap_input.shape
             ):
-                corrections = cap_output - cap_input
                 for index, layer in enumerate(CAP_LAYERS):
-                    norm = float(torch.linalg.vector_norm(corrections[index]).item())
-                    if norm == 0:
-                        continue
-                    cosine = float(torch.dot(corrections[index] / norm, axes[index]).item())
-                    if cosine < 0.995:
-                        terminal_alignment_failures.append(
-                            {"cell_id": cell_id, "layer": layer, "cosine": cosine}
-                        )
+                    values = bf16_alignment_diagnostics(
+                        tensors["cap_input_terminal"][index],
+                        tensors["cap_output_terminal"][index],
+                        axes[index],
+                    )
+                    item = {"cell_id": cell_id, "layer": layer, **values}
+                    terminal_alignment_diagnostics.append(item)
+                    if not values["passed"]:
+                        terminal_alignment_failures.append(item)
         elif row["forward_condition"] in RANDOM_CONDITIONS:
             required = {
                 "block_outputs",
@@ -281,6 +328,9 @@ def audit(scope: str, output_root: Path) -> dict[str, Any]:
                 requested = float(injection.get("requested_norm_max_abs_error", math.inf))
                 realized_abs = float(injection.get("realized_norm_max_abs_error", math.inf))
                 realized_rel = float(injection.get("realized_norm_max_relative_error", math.inf))
+                direction_min = float(injection.get("realized_direction_cosine_min", -math.inf))
+                if not math.isfinite(direction_min) or direction_min <= 0:
+                    schedule_failures.append(f"random_direction_sign:{cell_id}:{direction_min}")
                 if requested > 1e-5 or not (
                     realized_abs <= REALIZED_NORM_ABS_TOLERANCE
                     or realized_rel <= REALIZED_NORM_REL_TOLERANCE
@@ -467,7 +517,15 @@ def audit(scope: str, output_root: Path) -> dict[str, Any]:
         },
         "official_terminal_alignment": {
             "failures": terminal_alignment_failures,
-            "minimum_cosine": 0.995,
+            "criterion": "positive_axis_projection_and_off_axis_within_half_ulp_l2_envelope",
+            "minimum_realized_cosine": min(
+                (float(item["cosine"]) for item in terminal_alignment_diagnostics),
+                default=1.0,
+            ),
+            "maximum_off_axis_to_envelope": max(
+                (float(item["off_axis_to_envelope"]) for item in terminal_alignment_diagnostics),
+                default=0.0,
+            ),
             "passed": not terminal_alignment_failures,
         },
         "engineering_noop_control": {

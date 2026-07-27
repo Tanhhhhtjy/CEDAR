@@ -37,6 +37,7 @@ from rg1p_common import (  # noqa: E402
     CAP_EXPERIMENT,
     CAP_LAYERS,
     CAPTURE_LAYERS,
+    ENGINEERING_CORRECTION_02_ID,
     ENGINEERING_CORRECTION_ID,
     EXPECTED_AXIS_SHA256,
     EXPECTED_CAP_CONFIG_SHA256,
@@ -55,6 +56,8 @@ from rg1p_common import (  # noqa: E402
     PROBE_PERMUTATIONS,
     PROTOCOL,
     RANDOM_CONDITIONS,
+    RANDOM_NORM_SEARCH_EXPANSIONS,
+    RANDOM_NORM_SEARCH_ITERATIONS,
     RANDOM_ORTHOGONAL_TOLERANCE,
     RANDOM_SEEDS,
     RANDOM_UNIT_TOLERANCE,
@@ -149,13 +152,10 @@ def validate_sources() -> dict[str, Any]:
 
 
 def validate_forward_path_equivalence() -> dict[str, Any]:
-    """Prove that the smoke resume did not alter any GPU forward operator."""
-    names = {
-        "TerminalBlockCollector",
-        "OfficialScheduleCapture",
-        "ScheduleMatchedRandomInjector",
-        "run_one",
-    }
+    """Bind unchanged replay code and the one intentional random-solver edit."""
+    unchanged = {"TerminalBlockCollector", "OfficialScheduleCapture", "run_one"}
+    corrected = {"ScheduleMatchedRandomInjector", "_bf16_norm_matched_update"}
+    names = unchanged | corrected
 
     def hashes(source: str) -> dict[str, str]:
         found: dict[str, str] = {}
@@ -163,7 +163,6 @@ def validate_forward_path_equivalence() -> dict[str, Any]:
             if isinstance(node, (ast.ClassDef, ast.FunctionDef)) and node.name in names:
                 payload = ast.dump(node, annotate_fields=True, include_attributes=False)
                 found[node.name] = hashlib.sha256(payload.encode("utf-8")).hexdigest()
-        require(set(found) == names, "RG1-P forward definition missing")
         return found
 
     relative = "scripts/run_rg1p_stagea.py"
@@ -174,11 +173,30 @@ def validate_forward_path_equivalence() -> dict[str, Any]:
     current = (ROOT / relative).read_text(encoding="utf-8")
     initial_hashes = hashes(initial.stdout)
     current_hashes = hashes(current)
-    require(initial_hashes == current_hashes, "GPU forward path changed during lens correction")
+    require(unchanged <= set(initial_hashes), "Initial unchanged forward definition missing")
+    require(names <= set(current_hashes), "Corrected forward definition missing")
+    require(
+        all(initial_hashes[name] == current_hashes[name] for name in unchanged),
+        "Official/no-op GPU forward path changed during random-solver correction",
+    )
+    require(
+        initial_hashes["ScheduleMatchedRandomInjector"]
+        != current_hashes["ScheduleMatchedRandomInjector"],
+        "Random injector correction was not detected",
+    )
     return {
         "status": "passed",
         "initial_cpu_gate_commit": INITIAL_CPU_GATE_COMMIT,
-        "definition_ast_sha256": current_hashes,
+        "unchanged_definition_ast_sha256": {
+            name: current_hashes[name] for name in sorted(unchanged)
+        },
+        "intentional_random_solver_change": {
+            "initial_injector_ast_sha256": initial_hashes["ScheduleMatchedRandomInjector"],
+            "corrected_injector_ast_sha256": current_hashes[
+                "ScheduleMatchedRandomInjector"
+            ],
+            "solver_ast_sha256": current_hashes["_bf16_norm_matched_update"],
+        },
     }
 
 
@@ -371,6 +389,7 @@ def main() -> None:
         ROOT / "scripts/plot_rg1p_stagea.py",
         ROOT / "tests/test_rg1p_stagea.py",
         ROOT / "docs/RG1P_STAGEA_ENGINEERING_CORRECTION_01.md",
+        ROOT / "docs/RG1P_STAGEA_ENGINEERING_CORRECTION_02.md",
     ]
     require(all(path.is_file() for path in release_paths), "RG1-P release file missing")
     release_files = {
@@ -425,11 +444,19 @@ def main() -> None:
             "tuned_lens": False,
         },
         "engineering_correction": {
-            "id": ENGINEERING_CORRECTION_ID,
-            "failed_readout_cache_preserved": "lens_records/",
-            "corrected_readout_cache": "lens_records_shape_faithful_v2/",
-            "smoke_completed_forwards_preserved": 40,
-            "gpu_forward_path_equivalence": forward_equivalence,
+            "ids": [ENGINEERING_CORRECTION_ID, ENGINEERING_CORRECTION_02_ID],
+            "correction_01": {
+                "failed_readout_cache_preserved": "lens_records/",
+                "corrected_readout_cache": "lens_records_shape_faithful_v2/",
+                "smoke_completed_forwards_preserved": 40,
+            },
+            "correction_02": {
+                "failed_smoke_namespace": "smoke-stagea-seed0-failed-random-solver-v1",
+                "imported_unchanged_official_noop_rows": 40,
+                "rerun_random_rows_only": 32,
+                "formal_starts_fresh": True,
+                "forward_path_audit": forward_equivalence,
+            },
         },
         "engineering_noop": {
             "trace_source": PRIMARY_TRACE_SOURCE,
@@ -446,6 +473,15 @@ def main() -> None:
             "orthogonal_tolerance": RANDOM_ORTHOGONAL_TOLERANCE,
             "unit_tolerance": RANDOM_UNIT_TOLERANCE,
             "schedule": "same_layer_same_token_same_official_actual_correction_norm",
+            "bf16_norm_solver": (
+                f"monotone_bisection_e{RANDOM_NORM_SEARCH_EXPANSIONS}"
+                f"_i{RANDOM_NORM_SEARCH_ITERATIONS}"
+            ),
+            "realized_direction_sign_gate": "cosine_strictly_positive",
+        },
+        "official_alignment_audit": {
+            "criterion": "positive_axis_projection_and_off_axis_within_half_ulp_l2_envelope",
+            "raw_realized_cosine": "reported_descriptively",
         },
         "source_hashes": sources,
         "release_files": release_files,

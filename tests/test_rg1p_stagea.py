@@ -18,6 +18,7 @@ for path in (DATA, E2B_DATA, SCRIPTS, SRC):
         sys.path.insert(0, str(path))
 
 from analyze_rg1p_stagea import projection_metrics, save_official_hidden_shards  # noqa: E402
+from audit_rg1p_stagea import bf16_alignment_diagnostics  # noqa: E402
 from plot_rg1p_stagea import generate_svg  # noqa: E402
 from rg1p_common import (  # noqa: E402
     CAP_LAYERS,
@@ -36,6 +37,7 @@ from rg1p_common import (  # noqa: E402
 from run_rg1p_stagea import (  # noqa: E402
     OfficialScheduleCapture,
     ScheduleMatchedRandomInjector,
+    _bf16_norm_matched_update,
     _native_lens_logits,
     restricted_option_log_probs,
 )
@@ -132,6 +134,34 @@ class RG1PCommonTests(unittest.TestCase):
         observed = _native_lens_logits(model, states)
         self.assertTrue(torch.equal(observed, expected))
         self.assertEqual(model.lm_head.input_shapes, [(1, 1, 16)] * 64)
+
+    def test_bf16_dense_random_dose_solver_matches_frozen_norm(self) -> None:
+        generator = torch.Generator().manual_seed(19)
+        before = (torch.randn((1, 7, 5120), generator=generator) * 8).to(torch.bfloat16)
+        direction = torch.randn(5120, generator=generator)
+        direction /= torch.linalg.vector_norm(direction)
+        desired = torch.tensor([0.0, 0.05, 0.1, 0.18, 0.4, 3.5, 745.5])
+        modified, actual = _bf16_norm_matched_update(before, desired, direction)
+        error = torch.abs(actual - desired)
+        relative = error / desired.clamp_min(1e-12)
+        self.assertEqual(modified.dtype, torch.bfloat16)
+        self.assertTrue(torch.equal(actual > 0, desired > 0))
+        self.assertTrue(bool(torch.all((error <= 0.03125) | (relative <= 0.002))))
+
+    def test_official_alignment_uses_bf16_rounding_envelope(self) -> None:
+        generator = torch.Generator().manual_seed(23)
+        axis = torch.randn(512, generator=generator)
+        axis /= torch.linalg.vector_norm(axis)
+        cap_input = (torch.randn(512, generator=generator) * 8).to(torch.bfloat16)
+        cap_output = (cap_input.float() + 0.2 * axis).to(torch.bfloat16)
+        observed = bf16_alignment_diagnostics(cap_input, cap_output, axis)
+        self.assertTrue(observed["passed"])
+        self.assertLess(float(observed["cosine"]), 0.995)
+
+        malformed = cap_input.clone()
+        malformed[0] = (malformed[0].float() + 4).to(torch.bfloat16)
+        rejected = bf16_alignment_diagnostics(cap_input, malformed, axis)
+        self.assertFalse(rejected["passed"])
 
     def test_family_bootstrap_uses_twelve_clusters(self) -> None:
         scores = {f"F{index:02d}": float(index - 5) for index in range(12)}
