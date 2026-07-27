@@ -48,11 +48,13 @@ Approved contribution architecture / 已确认的贡献架构：
 
 ## 2. Background and Related Work / 背景与相关工作
 
-### 2.1 Activation Steering and Threshold Capping / 激活 Steering 与阈值钳制
+### 2.1 Inference-Time Activation Control: Steering, Ablation, and Capping / 推理时激活控制：Steering、消融与钳制
 
-`[TBD: verified synthesis distinguishing addition, ablation, steering, and state-dependent upper capping.]`
+Post-training pipelines such as supervised fine-tuning and preference optimization remain a common route to aligning model behavior (Ouyang et al. 2022; Rafailov et al. 2023). Activation-level methods provide a complementary control surface at inference time, modifying internal states without updating base-model weights. Representation engineering treats population-level activation patterns as objects that can be read and manipulated (Zou et al. 2023). Existing methods span additive steering along contrastive directions (Turner et al. 2023; Rimsky et al. 2024), localized interventions on attention heads (Li et al. 2023), directional ablation (Arditi et al. 2024), and context-conditioned control (Lee et al. 2025).<br>
+**中文：** 监督微调和偏好优化等训练后方法，是使模型行为符合预期的常用途径（Ouyang et al. 2022；Rafailov et al. 2023）。与此同时，激活层方法提供了互补的推理期控制界面，可在不更新基础模型权重的情况下直接调整内部状态。表征工程将群体层面的激活模式作为可读取和操控的对象（Zou et al. 2023）。现有方法包括沿对比方向进行加性 steering（Turner et al. 2023；Rimsky et al. 2024）、对注意力头实施局部干预（Li et al. 2023）、方向消融（Arditi et al. 2024），以及依赖上下文的条件控制（Lee et al. 2025）。
 
-`[TBD：填入经核验的相关工作综合，区分 addition、ablation、steering 与状态依赖的 upper capping。]`
+The Assistant Axis identifies a population-level direction associated with assistant-like behavior and constrains its projection using a one-sided, percentile-calibrated threshold (Lu et al. 2026). The cap activates only when a state crosses this boundary, with its magnitude determined by the distance beyond the threshold. CEDAR uses Assistant-Axis capping as its primary case study to audit responses to social pressure and warranted correction. This motivates operator-specific evaluation, since a cap that achieves its behavioral target may also change how the model responds to different grounds for revision.<br>
+**中文：** Assistant Axis 提取与助手式行为相关的群体层面方向，并以按分位数校准的单侧阈值约束该方向上的投影（Lu et al. 2026）。只有当状态越过这一边界时，capping 才介入，干预幅度由越界距离决定。CEDAR 以 Assistant-Axis capping 为主要实例，审计其对社会压力响应和合理修正的影响。这也要求对不同算子分别进行评估：capping 即使达成了目标行为，也可能改变模型对不同改答依据的响应。
 
 ### 2.2 Sycophancy, Social Influence, and Answer Revision / 谄媚、社会影响与答案修正
 
