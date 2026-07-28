@@ -505,7 +505,9 @@ def probe_analysis(
         "pca_layer60": {
             "descriptive_only": True,
             "explained_variance_ratio": [float(value) for value in pca.explained_variance_ratio_],
-            "move_to_appendix_if_low_variance": sum(pca.explained_variance_ratio_) < 0.1,
+            "move_to_appendix_if_low_variance": bool(
+                sum(pca.explained_variance_ratio_) < 0.1
+            ),
         },
     }, pca_rows
 
