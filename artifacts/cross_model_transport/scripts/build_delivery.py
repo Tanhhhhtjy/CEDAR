@@ -758,6 +758,7 @@ def build_reports(
     analysis: Mapping[str, Any],
     route: Mapping[str, Any],
     source_hashes: Mapping[str, str],
+    delivery_data_commit: str | None,
 ) -> None:
     lookup = {(row["model"], row["estimand"]): row for row in analysis["summary"]}
     qwen = lookup[("Qwen-FC", "overall_delta_m_general")]
@@ -857,6 +858,8 @@ def build_reports(
     run_log += f"- Cross-model missing / invalid / truncated: `{integrity_totals['missing']} / {integrity_totals['invalid']} / {integrity_totals['truncation']}`.\n"
     run_log += f"- E2A archived records read: `{e2a_audit['raw_records']}`; E2A source was not rerun or modified.\n"
     run_log += f"- Route: `{route['route']}`.\n"
+    if delivery_data_commit:
+        run_log += f"- Scientific data freeze commit: `{delivery_data_commit}`.\n"
     run_log += "- Source runner commit: unavailable in the supplied cross-model JSONL; recorded as null rather than inferred.\n"
     (out / "run_log.md").write_text(run_log, encoding="utf-8", newline="\n")
 
@@ -896,6 +899,7 @@ def build_reports(
         "schema": "cedar.cross_model_transport.run_manifest.v1",
         "delivery_branch": "agent/cross-model-transport-delivery-v1",
         "delivery_base_commit": "bff1e19a71f2051ca4b2270c5d57706114593550",
+        "delivery_data_commit": delivery_data_commit,
         "source_runner_commit": None,
         "source_runner_commit_note": "not present in supplied cross-model records",
         "bootstrap": {"draws": BOOTSTRAP_DRAWS, "seed": BOOTSTRAP_SEED, "unit": "family"},
@@ -930,6 +934,7 @@ def main() -> None:
     parser.add_argument("--llama-data", type=Path, required=True)
     parser.add_argument("--e2a-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--delivery-data-commit")
     args = parser.parse_args()
 
     data = args.llama_data.resolve()
@@ -1081,7 +1086,15 @@ def main() -> None:
         "E2A/E2A_AUDIT.json": sha256_file(e2a_audit_path),
         "E2A/E2A_HYGIENE_AUDIT.json": sha256_file(e2a_hygiene_path),
     }
-    build_reports(out, e2a_audit, gates, analysis, route, source_hashes)
+    build_reports(
+        out,
+        e2a_audit,
+        gates,
+        analysis,
+        route,
+        source_hashes,
+        args.delivery_data_commit,
+    )
 
     generated = []
     for path in sorted(out.rglob("*")):

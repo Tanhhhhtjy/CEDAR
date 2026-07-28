@@ -27,7 +27,7 @@ The frozen routing rule therefore gives **G-A transport**: the overall shifts sh
 
 The experiment asks whether Qwen's general answer-geometry shift and V/F non-selectivity appear under another officially supported model-specific Assistant-Axis capping configuration. The matched anchor prevents a Qwen thinking/free-generation result from serving as the Llama comparator.
 
-The archived source records came from `LLama_data`. The delivery branch is `agent/cross-model-transport-delivery-v1`, based on `bff1e19a71f2051ca4b2270c5d57706114593550`. The source runner commit was not stored in the supplied JSONL and remains unknown.
+The archived source records came from `LLama_data`. The delivery branch is `agent/cross-model-transport-delivery-v1`, based on `bff1e19a71f2051ca4b2270c5d57706114593550`. The scientific data and figure freeze commit is `63cec288599461b464235ddf0dbc6148a13fa5a8`. The source runner commit was not stored in the supplied JSONL and remains unknown.
 
 ## 3. Setup and Evaluation Protocol
 
