@@ -1,0 +1,173 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-019-N",
+    "index": 64,
+    "seed": 0
+  },
+  "payload": {
+    "index": 64,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 274,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 274
+        }
+      ],
+      "answer_logit_capture_indices": [
+        274
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 2.9989607349370307e-09,
+          "B": 0.9999999591563765,
+          "C": 3.224186652535622e-08,
+          "D": 5.602796220172785e-09
+        },
+        "full_vocab_entropy": 7.326451623157482e-07,
+        "full_vocab_probabilities": {
+          "A": 2.998960857425459e-09,
+          "B": 1.0,
+          "C": 3.224186784223093e-08,
+          "D": 5.602796449011294e-09
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 40.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 20.375,
+          "B": 40.0,
+          "C": 22.75,
+          "D": 21.0
+        },
+        "option_argmax": "B",
+        "option_mass": 1.0000000408436251,
+        "ranks": {
+          "A": 4,
+          "B": 1,
+          "C": 2,
+          "D": 3
+        },
+        "target_logit": 22.75,
+        "target_minus_initial": -17.25,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-019",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "development_validation",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F10",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-DEV-019-N",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 32,
+      "paired_condition_order": [
+        "uncapped",
+        "p25"
+      ],
+      "phase": "prespecified_internal_validation",
+      "position_transition": "B->C",
+      "prompt_sha256": "53fd14f29e97015adbfaf56a2ea93902687eefb19f1a172e6d657f50edbb608e",
+      "prompt_token_ids_sha256": "cf945305e8d30b84ea8442ef99878a2717fbb30d028fb326d6368873a16334b6",
+      "prompt_tokens": 289,
+      "reasoning_token_count": 266,
+      "record_seed": 32,
+      "response": "<think>\nOkay, let's see. The user is asking whether Case B having status Lilac 5 is supported based on the given records. Let me go through each step carefully.\n\nFirst, looking at the records. Record 4 states that Case B has status Teal 8. Then there are a series of conditional statements: Records 6, 7, and 8. \n\nRecord 6 says if Case B has Teal 8, then it has Copper 6. Since Record 4 confirms Teal 8, that triggers Record 6, so Case B must have Copper 6. \n\nNext, Record 7 states if Case B has Copper 6, then Silver 7. Since we just established Copper 6 from the previous step, that means Silver 7 is next. \n\nThen Record 8 says if Case B has Silver 7, then Lilac 5. So following the chain: Teal 8 → Copper 6 → Silver 7 → Lilac 5. Each step is a direct consequence based on the prior status. \n\nTherefore, starting from the given Teal 8 status, applying the conditionals in order leads us to Lilac 5. There's no contradiction here because each rule is applied sequentially. The answer should be supported, so option B.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "73a2fc6f25c54a078a934353ac5e42da2162c69ad2e696c15036fda063439efe",
+      "response_tokens": 277,
+      "scope": "evidence-validation",
+      "seed": 0,
+      "selected_answer_logit_index": 274,
+      "structure_class": "PGF-03",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "204d0d8e611dfb9159b48c1df831693ad8186376b5b1329b375c70ce401384a6"
+}

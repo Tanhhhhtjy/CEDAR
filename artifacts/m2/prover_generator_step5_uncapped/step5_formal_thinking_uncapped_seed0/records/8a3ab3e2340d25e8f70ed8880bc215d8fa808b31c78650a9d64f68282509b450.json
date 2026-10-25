@@ -1,0 +1,145 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-030-R",
+    "index": 175,
+    "mode": "thinking",
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 175,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 728,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 728
+        }
+      ],
+      "answer_logit_capture_indices": [
+        728
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 3.6534769961783735e-08,
+          "B": 0.9999985923388446,
+          "C": 1.3709571959334292e-06,
+          "D": 1.691895628961564e-10
+        },
+        "full_vocab_entropy": 1.914055974339135e-05,
+        "full_vocab_probabilities": {
+          "A": 3.6534821390432626e-08,
+          "B": 1.0,
+          "C": 1.3709591257793363e-06,
+          "D": 1.6918980105806725e-10
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 46.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 29.125,
+          "B": 46.25,
+          "C": 32.75,
+          "D": 23.75
+        },
+        "option_argmax": "B",
+        "option_mass": 1.000001407663137,
+        "ranks": {
+          "A": 3,
+          "B": 1,
+          "C": 2,
+          "D": 4
+        },
+        "target_logit": 29.125,
+        "target_minus_initial": -17.125,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-030",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F15",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-030-R",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "prompt_sha256": "6fc97119f71966dfbd774d8289c25ce4eef1ea739a4a366cc107589295a4db43",
+      "prompt_token_ids_sha256": "740f514cae94243e2c196db59b7be9cb19688d1d7d2a046137b878ab8e8d0bd9",
+      "prompt_tokens": 415,
+      "reasoning_token_count": 720,
+      "record_seed": 175,
+      "response": "<think>\nOkay, let's try to figure out if Sample D has the status Pearl 12. I need to go through the records and apply the rules step by step.\n\nFirst, looking at the records provided:\n\nRecord 1 says Sample D has status Ivory 4.\nRecord 5 says Sample D has status Teal 8.\nRecord 9 says Sample D has status Amber 1.\nThen there's Record 10: If an item has status Amber 1, then it also has Cobalt 2. So since D has Amber 1, it must have Cobalt 2. But I don't see Cobalt 2 listed in the records, but maybe it's derived.\n\nNow, looking at the other rules. Record 11 says if Sample D has Ivory 4 and Saffron 15, then it gets Jade 3. But Sample D does have Ivory 4 (from Record 1), but there's no mention of Saffron 15. So that condition isn't met. Therefore, Jade 3 isn't triggered here.\n\nBut wait, there's another path. Record 9 gives D Amber 1. According to Record 10, that implies Cobalt 2. But none of the other rules mention Cobalt 2 leading to anything else. The rest of the rules (11-14) are about Jade 3 leading to Umber 13, then Azure 14, then Pearl 12. But since we don't have Jade 3 (because the condition for it isn't met), those subsequent steps don't apply.\n\nSo the only way to get Pearl 12 is through the chain starting with Jade 3. But since we don't have Saffron 15 along with Ivory 4, we can't get Jade 3. Therefore, the chain leading to Pearl 12 isn't activated.\n\nBut wait, are there any other ways to get Jade 3? The records don't mention any other conditions for Jade 3 except in Record 11. So unless there's another rule that I'm missing, no. So without Jade 3, the rest of the chain (Umber 13, Azure 14, Pearl 12) doesn't happen.\n\nTherefore, there's no support for Sample D having Pearl 12. But also, is there anything that contradicts it? The records don't state that D doesn't have Pearl 12. They just don't provide the necessary steps to derive it. So according to the problem statement, an unlisted statement isn't automatically negated. So the correct answer would be undetermined because we can't confirm it, but there's no contradiction either.\n\nWait, but let me check again. The user said to treat every listed rule as exact and use only the records below. So maybe there's another angle. Let me check all the records again.\n\nSample D's statuses from records: Ivory 4, Teal 8, Amber 1. From Amber 1, we get Cobalt 2. But none of the other rules connect Cobalt 2 to anything else. The only path to Pearl 12 is through Jade 3, which requires Ivory 4 and Saffron 15. Since Saffron 15 isn't present, that path is blocked. Therefore, there's no way to derive Pearl 12. But since the absence isn't a contradiction, the answer is undetermined (B).\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "f3200b639d1fd38069eb6f2da20959f88716695b6f380177422803978767cec4",
+      "response_tokens": 731,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 728,
+      "structure_class": "PGF-04",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "9b73eeeffc9604d99d6cc182aebe94cca26a91e8109fa684cc30b2500ff1d9f9"
+}

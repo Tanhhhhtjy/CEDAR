@@ -1,0 +1,146 @@
+{
+  "counts": {
+    "axis_control_pairs": 12,
+    "axis_control_rows": 24,
+    "formal_bases": 36,
+    "formal_by_arm": {
+      "F": 36,
+      "N": 36,
+      "S": 36,
+      "V": 36
+    },
+    "formal_families": 18,
+    "formal_rows": 144
+  },
+  "dataset_version": "m2.2b-v6-factorial-causal-diagnostic",
+  "factorial": {
+    "batch_size": 1,
+    "caps": [
+      "uncapped",
+      "p25",
+      "p1"
+    ],
+    "historical_anchor_exclusion_reason": "v5 used batch size 2 with padding and lacks v6 pre-cap axis telemetry",
+    "historical_anchor_is_primary_factorial_data": false,
+    "historical_v5_thinking_greedy_anchor_generations": 432,
+    "mandatory_axis_control_generations": 96,
+    "modes": [
+      "thinking_greedy",
+      "thinking_sampling",
+      "nonthinking_greedy",
+      "nonthinking_sampling"
+    ],
+    "primary_seed": 0,
+    "stage_1_new_formal_generations": 1728
+  },
+  "files": {
+    "m2_2b_v6_axis_controls24.jsonl": {
+      "bytes": 28266,
+      "sha256": "d72aa5e2b51de2332dee8937a06556af1d7b10044a9bf8fdb7c473e532c2adb4"
+    },
+    "m2_2b_v6_factorial144.jsonl": {
+      "bytes": 764044,
+      "sha256": "9c1c26bc08c8be63a9ff0a9ea03600be9e202548c3d8fcde09a083c587ea6d01"
+    }
+  },
+  "scope": "development causal diagnosis; not held-out, confirmatory, or method evaluation",
+  "selection": {
+    "family_levels": {
+      "pub_cd_refute_capability_actuality": {
+        "s_level": 0,
+        "vf_level": 2
+      },
+      "pub_cd_refute_disjunctive_alarm": {
+        "s_level": 1,
+        "vf_level": 3
+      },
+      "pub_cd_refute_effect_to_cause": {
+        "s_level": 2,
+        "vf_level": 0
+      },
+      "pub_cd_undercut_nonexhaustive_dashboard": {
+        "s_level": 3,
+        "vf_level": 1
+      },
+      "pub_cd_undercut_redundant_support": {
+        "s_level": 0,
+        "vf_level": 2
+      },
+      "pub_cd_undercut_sensor_scope": {
+        "s_level": 1,
+        "vf_level": 3
+      },
+      "pub_dl_refute_affirming_consequent": {
+        "s_level": 2,
+        "vf_level": 0
+      },
+      "pub_dl_refute_denying_antecedent": {
+        "s_level": 3,
+        "vf_level": 1
+      },
+      "pub_dl_refute_exact_count": {
+        "s_level": 0,
+        "vf_level": 2
+      },
+      "pub_dl_undercut_quantifier_binding": {
+        "s_level": 1,
+        "vf_level": 3
+      },
+      "pub_dl_undercut_redundant_proofs": {
+        "s_level": 2,
+        "vf_level": 0
+      },
+      "pub_dl_undercut_support_removal": {
+        "s_level": 3,
+        "vf_level": 1
+      },
+      "pub_rd_refute_atleast_exactly": {
+        "s_level": 2,
+        "vf_level": 0
+      },
+      "pub_rd_refute_shared_positive": {
+        "s_level": 3,
+        "vf_level": 1
+      },
+      "pub_rd_refute_witness_pattern": {
+        "s_level": 0,
+        "vf_level": 2
+      },
+      "pub_rd_undercut_nondecisive_retraction": {
+        "s_level": 1,
+        "vf_level": 3
+      },
+      "pub_rd_undercut_nonexhaustive_summary": {
+        "s_level": 2,
+        "vf_level": 0
+      },
+      "pub_rd_undercut_version_selector": {
+        "s_level": 3,
+        "vf_level": 1
+      }
+    },
+    "response_independent": true,
+    "rule": "within each stratum, sorted family IDs receive frozen round-robin levels with offsets 0/2/0; S=(VF+2) mod 4",
+    "s_level_counts_by_family": {
+      "0": 4,
+      "1": 4,
+      "2": 5,
+      "3": 5
+    },
+    "unit": "family; both parameter variants use the same level",
+    "vf_level_counts_by_family": {
+      "0": 5,
+      "1": 5,
+      "2": 4,
+      "3": 4
+    }
+  },
+  "source": {
+    "v5_candidate_bank": "datasets/m2_2b_formal/v5_dose_response_bank/m2_2b_v5_dose_response_candidate468.jsonl",
+    "v5_candidate_bank_sha256": "d88a45c842c689b176f4d904efb4a0d366ef949c26addf3fb4db11eba2fe8cbf",
+    "v5_family_cards": "datasets/m2_2b_formal/v5_dose_response_bank/m2_2b_v5_candidate_family_cards18.jsonl",
+    "v5_family_cards_sha256": "2420c5ba263b99dd2ed73c096e764716379c38bd2897ac4a7e8e4e5485529728",
+    "v5_model_outputs_read_by_builder": false
+  },
+  "status": "ready_for_factorial_diagnostic"
+}

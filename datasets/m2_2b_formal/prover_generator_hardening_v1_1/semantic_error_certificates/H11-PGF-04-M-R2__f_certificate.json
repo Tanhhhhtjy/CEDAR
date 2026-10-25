@@ -1,0 +1,105 @@
+{
+  "error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "sor51fallverified",
+      "arguments": [
+        "cvek14"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "sor51fallverified",
+        "arguments": [
+          "cvek14"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "sor51fallsource",
+      "arguments": [
+        "cvek14"
+      ],
+      "negated": false
+    },
+    "operator": "converse_error"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "25de52c9243acddaaa800e3bbfc71a1a40e99dbf7f79b25c37e880bfd054b65b",
+      "projected_edit_sha256": "8b751ca50302d8b7223edd21132f4309dfdc2be1c2654ed2e12e215a58dc6ce0"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "adeed3b65e331f32fdf0f5f4c3e582ca18ac03dcc9fd4f2cf259fbc887faeaab",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "sor51outcome",
+      "arguments": [
+        "cvek14"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "6d30a39c82ad6e7034cf6aefbc8ce31ebb5644e077ff29364b37a44ca3214fdf",
+    "entailed_premise_keys": [
+      "sor51fallverified(cvek14)"
+    ],
+    "unsupported_claim_key": "sor51fallsource(cvek14)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "sor51outcome(cvek14)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "sor51outcome(cvek14)",
+      "required_counterliteral": "-sor51outcome(cvek14)",
+      "input_sha256": "ec4c0cb1d74746f0774a3040f105469964d79c4ec97b3627a550bb2b5f66bcff",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nsor51left(cvek14).\nsor51noise2(cpax75).\nsor51noise3(cnav83).\nsor51noise4(cmiv27).\nsor51noise5(cvek14).\nsor51noise6(ckel86).\nsor51noise7(cpax75).\nsor51fallverified(cvek14).\nsor51fallsource(cvek14) -> sor51fallverified(cvek14).\nsor51left(cvek14) & sor51right(cvek14) -> sor51joint(cvek14).\nsor51joint(cvek14) -> sor51proofstep0(cvek14).\nsor51proofstep0(cvek14) -> sor51proofstep1(cvek14).\nsor51proofstep1(cvek14) -> sor51proofstep2(cvek14).\nsor51proofstep2(cvek14) -> sor51outcome(cvek14).\n-sor51outcome(cvek14).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel86, [ 0 ]),\n\n        function(cmiv27, [ 0 ]),\n\n        function(cnav83, [ 0 ]),\n\n        function(cpax75, [ 0 ]),\n\n        function(cvek14, [ 0 ]),\n\n        relation(sor51fallsource(_), [ 0, 0 ]),\n\n        relation(sor51fallverified(_), [ 1, 0 ]),\n\n        relation(sor51joint(_), [ 0, 0 ]),\n\n        relation(sor51left(_), [ 1, 0 ]),\n\n        relation(sor51noise2(_), [ 1, 0 ]),\n\n        relation(sor51noise3(_), [ 1, 0 ]),\n\n        relation(sor51noise4(_), [ 1, 0 ]),\n\n        relation(sor51noise5(_), [ 1, 0 ]),\n\n        relation(sor51noise6(_), [ 1, 0 ]),\n\n        relation(sor51noise7(_), [ 1, 0 ]),\n\n        relation(sor51outcome(_), [ 0, 0 ]),\n\n        relation(sor51proofstep0(_), [ 0, 0 ]),\n\n        relation(sor51proofstep1(_), [ 0, 0 ]),\n\n        relation(sor51proofstep2(_), [ 0, 0 ]),\n\n        relation(sor51right(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "sor51right",
+          "arguments": [
+            "cvek14"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-2fd9601dfae443f3",
+      "rank": 7
+    },
+    "updated_world_sha256": "adeed3b65e331f32fdf0f5f4c3e582ca18ac03dcc9fd4f2cf259fbc887faeaab",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

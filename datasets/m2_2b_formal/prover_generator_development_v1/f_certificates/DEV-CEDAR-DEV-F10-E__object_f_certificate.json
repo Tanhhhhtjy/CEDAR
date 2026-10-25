@@ -1,0 +1,109 @@
+{
+  "error_class": "cross_entity_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "pax899fallsignal",
+      "arguments": [
+        "cvek20"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "pax899fallsignal",
+        "arguments": [
+          "cvek20"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "pax899fallsignal",
+      "arguments": [
+        "cnav46"
+      ],
+      "negated": false
+    },
+    "operator": "cross_entity_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "b9f1a304c40c2840dd4797b1fb85ffbe464ad05cc169b3a1e901c197684893b6",
+      "projected_edit_sha256": "60a95690a6d4d2d31e6ad4dc01adc97ff20e12f8c9c7d4b4fd8b602735904d3f"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "9fbd3844328281c8dc2420b79c3e6f7eab1f7ffb93fea5074f78456a158d5c42",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "pax899outcome",
+      "arguments": [
+        "cnav46"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "cross_entity_transfer",
+    "world_semantic_sha256": "d992291a963041363eb9f3cf5a1279a18f6cd147375ea0d9dfbcde43e9a3758b",
+    "entailed_premise_keys": [
+      "pax899fallsignal(cvek20)"
+    ],
+    "unsupported_claim_key": "pax899fallsignal(cnav46)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "pax899outcome(cnav46)",
+    "proof": {
+      "record_ids": [
+        "data_pax899_root",
+        "schema_pax899proof_0",
+        "schema_pax899proof_1",
+        "schema_pax899proof_2"
+      ],
+      "depth": 3
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "data_pax899_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "pax899token",
+          "arguments": [
+            "cnav46"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-c80982159e73dba9",
+      "rank": 5
+    },
+    "updated_world_sha256": "9fbd3844328281c8dc2420b79c3e6f7eab1f7ffb93fea5074f78456a158d5c42",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

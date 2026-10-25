@@ -1,0 +1,173 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-035-R",
+    "index": 130,
+    "seed": 0
+  },
+  "payload": {
+    "index": 130,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 273,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 273
+        }
+      ],
+      "answer_logit_capture_indices": [
+        273
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 2.1724398452186586e-10,
+          "B": 8.152020310748157e-09,
+          "C": 0.9999999900255078,
+          "D": 1.6052279345516148e-09
+        },
+        "full_vocab_entropy": 2.0243496123839577e-07,
+        "full_vocab_probabilities": {
+          "A": 2.1724398668876432e-10,
+          "B": 8.152020392060422e-09,
+          "C": 1.0,
+          "D": 1.6052279505629485e-09
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 39.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 17.0,
+          "B": 20.625,
+          "C": 39.25,
+          "D": 19.0
+        },
+        "option_argmax": "C",
+        "option_mass": 1.0000000099744923,
+        "ranks": {
+          "A": 5,
+          "B": 2,
+          "C": 1,
+          "D": 3
+        },
+        "target_logit": 19.0,
+        "target_minus_initial": -20.25,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-035",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "development_validation",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F18",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-DEV-035-R",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 65,
+      "paired_condition_order": [
+        "uncapped",
+        "p25"
+      ],
+      "phase": "prespecified_internal_validation",
+      "position_transition": "C->D",
+      "prompt_sha256": "ebdf1d91ca87b96e957ad8017c9e1f775a543cab363e124436cc161d00548769",
+      "prompt_token_ids_sha256": "6ba01fa2099e2fcad8921bd1e7e0154f075fc6623366c81a9e825c5f7f5bc334",
+      "prompt_tokens": 270,
+      "reasoning_token_count": 265,
+      "record_seed": 65,
+      "response": "<think>\nOkay, let's go through this step by step. The question is whether Case C having status Ivory 4 is supported, contradicted, or undetermined based on the given records.\n\nFirst, looking at the records:\n\nRecord 2 says Case C has status Lilac 5. Then, Record 5 states that if Case C has Lilac 5, then it must have Copper 6. So from Record 2 and 5, we can deduce that Case C has Copper 6.\n\nNext, Record 6 says if Case C has Copper 6, then it must have Amber 1. So now we can infer that Case C has Amber 1.\n\nNow, Record 4 is a conditional: if Case C has Amber 1, then it does NOT have Ivory 4. Since we just established through the chain (Lilac5 → Copper6 → Amber1) that Case C has Amber 1, Record 4 tells us that Case C cannot have Ivory 4. Therefore, the statement that Case C has Ivory 4 is contradicted by the records. \n\nThere's no mention of any other rules that would support Ivory 4 here. The existing chain leads us to the conclusion that Ivory 4 is not possible. So the answer should be C) contradicted.\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "115a89f352925538bacba084eb71857a1b9a066e95ede7aa437d8e765b4239a9",
+      "response_tokens": 276,
+      "scope": "evidence-validation",
+      "seed": 0,
+      "selected_answer_logit_index": 273,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "204d0d8e611dfb9159b48c1df831693ad8186376b5b1329b375c70ce401384a6"
+}

@@ -1,0 +1,124 @@
+{
+  "error_class": "support_path_generalization",
+  "entailed_premises": [
+    {
+      "predicate": "sor560fallsupported",
+      "arguments": [
+        "cmiv87"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "sor560fallsupported",
+        "arguments": [
+          "cmiv87"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "sor560fallsupported",
+      "arguments": [
+        "cpax24"
+      ],
+      "negated": false
+    },
+    "operator": "support_path_generalization"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "ffafbf8177ccc00b9280b470135e7eddd4196f1a12a631c81ca0708a031f9625",
+      "projected_edit_sha256": "8daf702f999cdd23317c99b287d9e3fd8314c61300271b5d6f443c997008b252"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "c153199faded4d958b1b1cb7d8116d412ff8e7b78057c761faf4f34bb054d5f4",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "sor560outcome",
+      "arguments": [
+        "cmiv87"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "support_path_generalization",
+    "world_semantic_sha256": "fe0c308a42f95ae59b163a0b2674d88c806a63f8053e7149c459e66cbb05957e",
+    "entailed_premise_keys": [
+      "sor560fallsupported(cmiv87)"
+    ],
+    "unsupported_claim_key": "sor560fallsupported(cpax24)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "sor560outcome(cmiv87)",
+    "proof": {
+      "record_ids": [
+        "data_sor560_gate",
+        "data_sor560_support_0",
+        "schema_sor560_gate_0",
+        "schema_sor560path0_0",
+        "schema_sor560path0_1",
+        "schema_sor560path0_2"
+      ],
+      "depth": 4
+    },
+    "refutes_induced_label": "false"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_sor560_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "sor560gate",
+          "arguments": [
+            "cmiv87"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_sor560_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "sor560gate",
+          "arguments": [
+            "cmiv87"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-5a69b6a235379552",
+      "rank": 7
+    },
+    "updated_world_sha256": "c153199faded4d958b1b1cb7d8116d412ff8e7b78057c761faf4f34bb054d5f4",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

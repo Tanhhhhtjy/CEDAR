@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-018-R",
+    "index": 9,
+    "phase": "template-calibration",
+    "scope": "smoke",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 9,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 520,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 520
+        }
+      ],
+      "answer_logit_capture_indices": [
+        520
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 2.289734894222453e-11,
+          "B": 1.026187953822181e-10,
+          "C": 1.026187953822181e-10,
+          "D": 0.9999999997718652
+        },
+        "full_vocab_entropy": 1.1193273863341346e-08,
+        "full_vocab_probabilities": {
+          "A": 2.2897348947448215e-11,
+          "B": 1.0261879540562902e-10,
+          "C": 1.0261879540562902e-10,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 41.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 16.75,
+          "B": 18.25,
+          "C": 18.25,
+          "D": 41.25
+        },
+        "option_argmax": "D",
+        "option_mass": 1.0000000002281348,
+        "ranks": {
+          "A": 7,
+          "B": 2,
+          "C": 2,
+          "D": 1
+        },
+        "target_logit": 16.75,
+        "target_minus_initial": -24.5,
+        "target_rank": 7,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-018",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F09",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "D",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-018-R",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "D->A",
+      "prompt_sha256": "0459533d3825b1e85e7a6eaaced3283bf4922fc32ca606f6a9145a1b633d4b55",
+      "prompt_token_ids_sha256": "8fa7c87e59d1bfa5d05fbf20def5238d63ff7fa922cbabea65bb1180391704eb",
+      "prompt_tokens": 466,
+      "reasoning_token_count": 512,
+      "record_seed": 9,
+      "response": "<think>\nOkay, let's see. The question is whether Node C has status Coral 11. The answer options are D (supported) or others. Let me go through the records step by step.\n\nFirst, looking at the records about Node C. Record 4 says Node C has status Copper 6. Then Record 9 says Node C has status Slate 17. Record 10 says Node C has status Amber 1. Then there are several rules starting from Record 11.\n\nSo, starting with Record 10: Node C has Amber 1. According to Record 11, if an item has Amber 1, then it has Cobalt 2. But wait, the question isn't about Cobalt 2. Let me focus on the chain related to Node C's other status, Slate 17 from Record 9.\n\nRecord 12 says if Node C has Slate 17, then it has Pearl 12. So from Slate 17 (Record 9), we get Pearl 12 (per Record 12). Then Record 13: Pearl 12 leads to Umber 13. Then Record 14: Umber 13 leads to Azure 14. Then Record 15: Azure 14 leads to Saffron 15. Record 16: Saffron 15 leads to Mint 16. Finally, Record 17: Mint 16 leads to Coral 11.\n\nSo following the chain from Slate 17:\n\nSlate 17 (Record 9) → Pearl 12 (Record 12) → Umber 13 (Record 13) → Azure 14 (Record 14) → Saffron 15 (Record 15) → Mint 16 (Record 16) → Coral 11 (Record 17). Each step is a direct implication. Since all these rules are given and the initial condition (Slate 17) is true for Node C, each subsequent status is triggered. Therefore, Coral 11 should be supported.\n\nAdditionally, there's the Amber 1 in Record 10 leading to Cobalt 2, but that's a separate chain and doesn't interfere with the Slate 17 chain. So there's no contradiction here. All the necessary conditions are met in sequence. Therefore, the answer should be D) supported.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "a5f830d56be05aeb513f9a48be9ea36b843ee1379f48180068b93e3384e8b771",
+      "response_tokens": 523,
+      "scope": "template-calibration-smoke",
+      "seed": 0,
+      "selected_answer_logit_index": 520,
+      "social_template": null,
+      "structure_class": "PGF-03",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "984f8bdca8a3f4d82e56bf285c9c23af2c116aa50510936c9301c2a4afd7c070"
+}

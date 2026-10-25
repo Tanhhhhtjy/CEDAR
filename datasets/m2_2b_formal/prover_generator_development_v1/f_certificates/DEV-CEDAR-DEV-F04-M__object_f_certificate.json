@@ -1,0 +1,124 @@
+{
+  "error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "tor708fallverified",
+      "arguments": [
+        "csor9"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "tor708fallverified",
+        "arguments": [
+          "csor9"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "tor708fallsource",
+      "arguments": [
+        "csor9"
+      ],
+      "negated": false
+    },
+    "operator": "converse_error"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "f47873de3786c743aa40e87ba420801fc9948201ebf0a752674cf1e34f25b1ec",
+      "projected_edit_sha256": "7e5cfb88fc60e4088d12b14d78eb26c3846a2e0d697c3cf69ee6878e39cc6402"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "b1c17f1a60bee933edf054791d7b994836cb25ea60f21588d5fa46f97ad6ac52",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "tor708outcome",
+      "arguments": [
+        "csor9"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "43e0e41cf59795ce6be4fe5959e1b90abe0e23ddeb6d2116ec436586a596ae91",
+    "entailed_premise_keys": [
+      "tor708fallverified(csor9)"
+    ],
+    "unsupported_claim_key": "tor708fallsource(csor9)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "tor708outcome(csor9)",
+    "proof": {
+      "record_ids": [
+        "data_tor708_gate",
+        "data_tor708_support_0",
+        "schema_tor708_gate_0",
+        "schema_tor708path0_0",
+        "schema_tor708path0_1",
+        "schema_tor708path0_2"
+      ],
+      "depth": 4
+    },
+    "refutes_induced_label": "false"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_tor708_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "tor708gate",
+          "arguments": [
+            "csor9"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_tor708_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "tor708gate",
+          "arguments": [
+            "csor9"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-cc09a98ee2975000",
+      "rank": 6
+    },
+    "updated_world_sha256": "b1c17f1a60bee933edf054791d7b994836cb25ea60f21588d5fa46f97ad6ac52",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

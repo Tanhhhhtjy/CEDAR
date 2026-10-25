@@ -1,0 +1,118 @@
+{
+  "error_class": "cross_entity_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "tor994fallsignal",
+      "arguments": [
+        "clan50"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "tor994fallsignal",
+        "arguments": [
+          "clan50"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "tor994fallsignal",
+      "arguments": [
+        "cnav5"
+      ],
+      "negated": false
+    },
+    "operator": "cross_entity_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "1eb69ff05a753e18beaf1779a41abcb95d91b15a16542d651055fbfb002dc9d9",
+      "projected_edit_sha256": "d29d8a5a04046c558d927d1c86d49aae149f5bfb4c73441112e82fd9d8b30a9d"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "e40e8c2af02504faf01572387a999ba7ef5bca767dd9afbc47402dc6992e3f76",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "tor994outcome",
+      "arguments": [
+        "cnav5"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "cross_entity_transfer",
+    "world_semantic_sha256": "2bec4dfeb0c8eb4b7d7f8ff547eef3073b78c2d87584665c30efb3c735f939fc",
+    "entailed_premise_keys": [
+      "tor994fallsignal(clan50)"
+    ],
+    "unsupported_claim_key": "tor994fallsignal(cnav5)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-tor994outcome(cnav5)",
+    "proof": {
+      "record_ids": [
+        "data_tor994_source",
+        "policy_tor994_terminal",
+        "schema_tor994up_0",
+        "schema_tor994up_1"
+      ],
+      "depth": 3
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "policy_tor994_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "tor994bridge",
+            "arguments": [
+              "cnav5"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "tor994outcome",
+          "arguments": [
+            "cnav5"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-6ff25a4a9b0adc4d",
+      "rank": 18
+    },
+    "updated_world_sha256": "e40e8c2af02504faf01572387a999ba7ef5bca767dd9afbc47402dc6992e3f76",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

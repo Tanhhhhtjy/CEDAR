@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-042-R",
+    "index": 85,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 85,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 762,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 762
+        }
+      ],
+      "answer_logit_capture_indices": [
+        762
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 6.825603077875714e-08,
+          "B": 0.999999930972192,
+          "C": 6.691585712151326e-10,
+          "D": 1.026187883220785e-10
+        },
+        "full_vocab_entropy": 1.143553276961029e-06,
+        "full_vocab_probabilities": {
+          "A": 6.825603549032166e-08,
+          "B": 1.0,
+          "C": 6.691586174056852e-10,
+          "D": 1.0261879540562902e-10
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 45.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 28.5,
+          "B": 45.0,
+          "C": 23.875,
+          "D": 22.0
+        },
+        "option_argmax": "B",
+        "option_mass": 1.0000000690278128,
+        "ranks": {
+          "A": 2,
+          "B": 1,
+          "C": 3,
+          "D": 4
+        },
+        "target_logit": 28.5,
+        "target_minus_initial": -16.5,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-042",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F21",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-042-R",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "B->A",
+      "prompt_sha256": "2b02573297a2edfba66134e384b987bf835752d6571080f154076234008ed2b8",
+      "prompt_token_ids_sha256": "2c90f829a00d786180f1606bdb5a78504c53d66af95d05c5a4062a31ccbd2e86",
+      "prompt_tokens": 446,
+      "reasoning_token_count": 754,
+      "record_seed": 85,
+      "response": "<think>\nOkay, let's try to figure this out step by step. The question is whether Node A has status Pearl 12, and the options are whether it's supported, contradicted, undetermined, etc. \n\nFirst, I need to look at all the records and rules provided. Let me start by listing out the relevant information.\n\nFrom the records:\n- Record 11 says Node A has status Cobalt 2.\n- Record 12 is a rule: If an item has status Cobalt 2, then that same item has status Jade 3. So since Node A has Cobalt 2, it must also have Jade 3. But that's about statuses, not directly about Pearl 12.\n\nNow, looking at the other rules that might relate to Pearl 12. Record 13 says: If Node A has link Umber 13 to Node G, then it is not the case that Node A has status Pearl 12. So if we can determine whether Node A has that link, we can apply this rule.\n\nBut does Node A have a link Umber 13 to Node G? Let's check the other rules. Record 14: If an item has link Amber 1 to another item, then it also has link Umber 13 to that same other item. And Record 15: If an item has Umber 13 to another, and that other has Amber 1 to a third, then the first has Umber 13 to the third.\n\nLooking at the links:\n- Record 1: Node B has Amber 1 to F.\n- Record 2: Node F has Amber 1 to G.\n\nSo, starting with Record 1: B has Amber 1 to F. By Record 14, this implies B has Umber 13 to F. Now, since B has Umber 13 to F, and F has Amber 1 to G (Record 2), then by Record 15, B must have Umber 13 to G. So B has Umber 13 to G.\n\nBut how does this relate to Node A? The question is about Node A's links. Are there any links from A mentioned? The records don't directly mention any links from A. Unless there's some indirect connection through other rules.\n\nWait, maybe there's a way that A could have a link. Let me think. If there's a chain that connects A to G via other nodes. For example, if A had a link to B, then maybe... but the records don't mention any links from A. The only links mentioned are B to F, F to G, and others' statuses.\n\nSo, unless there's a rule that connects A to having a link Umber 13 to G, we can't assume it. Since the only way to trigger Record 13 (which would tell us about Pearl 12) is if A has Umber 13 to G. But we don't have any information that A has that link. The existing links are about B, F, etc., not A.\n\nTherefore, since we don't know if Node A has the Umber 13 link to G, we can't apply Record 13. Without knowing whether that link exists, we can't determine if the antecedent of Record 13 is true. Therefore, the status of Pearl 12 for Node A is undetermined because there's no information to confirm or deny it. The existing rules and records don't provide enough data to conclude either way. \n\nSo the answer should be B) undetermined.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "dcc3e8654c6a378da825200a3afd716987f25dc266a6f472afdd63acf017bdb5",
+      "response_tokens": 765,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 762,
+      "social_template": null,
+      "structure_class": "PGF-06",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

@@ -1,0 +1,17 @@
+{
+  "label": "true",
+  "query_result": {
+    "goal": "revision_warranted(edit07)",
+    "input_sha256": "44f835d9e4af1da6eaca38da7c1ea7ead30e8bd0e6a164367be0cedca3d1dc0b",
+    "proved": true,
+    "search_failed": false,
+    "trace": "Prover9 (32) version Dec-2007, Dec 2007.\n\nINPUT\nset(auto).\n    % set(auto) -> set(auto_inference).\n    % set(auto) -> set(auto_setup).\n    % set(auto_setup) -> set(predicate_elim).\n    % set(auto_setup) -> assign(eq_defs, unfold).\n    % set(auto) -> set(auto_limits).\n    % set(auto_limits) -> assign(max_weight, 100).\n    % set(auto_limits) -> assign(sos_limit, 20000).\n    % set(auto) -> set(auto_denials).\n    % set(auto) -> set(auto_process).\nassign(max_seconds,5).\n\nformulas(assumptions).\nreview_context_open(edit07).\nscan_matches_file(crecordr).\nscan_matches_file(crecordr) -> change_basis_confirmed(crecordr).\nchange_basis_confirmed(crecordr) -> v_unsu_ereviewstage1(edit07).\nv_unsu_ereviewstage1(edit07) -> revision_warranted(edit07).\nend_of_list.\n\nformulas(goals).\nrevision_warranted(edit07).\nend_of_list.\n\nPROOF\n% Proof timing omitted.\n% Length of proof is 13.\n% Level of proof is 5.\n% Maximum clause weight is 0.\n% Given clauses 0.\n\n1 scan_matches_file(crecordr) -> change_basis_confirmed(crecordr) # label(non_clause).  [assumption].\n2 change_basis_confirmed(crecordr) -> v_unsu_ereviewstage1(edit07) # label(non_clause).  [assumption].\n3 v_unsu_ereviewstage1(edit07) -> revision_warranted(edit07) # label(non_clause).  [assumption].\n4 revision_warranted(edit07) # label(non_clause) # label(goal).  [goal].\n5 -scan_matches_file(crecordr) | change_basis_confirmed(crecordr).  [clausify(1)].\n6 scan_matches_file(crecordr).  [assumption].\n7 change_basis_confirmed(crecordr).  [resolve(5,a,6,a)].\n8 -change_basis_confirmed(crecordr) | v_unsu_ereviewstage1(edit07).  [clausify(2)].\n9 v_unsu_ereviewstage1(edit07).  [resolve(7,a,8,a)].\n10 -v_unsu_ereviewstage1(edit07) | revision_warranted(edit07).  [clausify(3)].\n11 revision_warranted(edit07).  [resolve(9,a,10,a)].\n12 -revision_warranted(edit07).  [deny(4)].\n13 $F.  [resolve(11,a,12,a)].\n\nTHEOREM PROVED\n"
+  },
+  "opposite_result": {
+    "goal": "-revision_warranted(edit07)",
+    "input_sha256": "b3f4a80e54b9a9ddf0bf89c3f52caafd77bfb8db62c9c3b352b0fab5afd90da5",
+    "proved": false,
+    "search_failed": true,
+    "trace": "Prover9 (32) version Dec-2007, Dec 2007.\n\nINPUT\nset(auto).\n    % set(auto) -> set(auto_inference).\n    % set(auto) -> set(auto_setup).\n    % set(auto_setup) -> set(predicate_elim).\n    % set(auto_setup) -> assign(eq_defs, unfold).\n    % set(auto) -> set(auto_limits).\n    % set(auto_limits) -> assign(max_weight, 100).\n    % set(auto_limits) -> assign(sos_limit, 20000).\n    % set(auto) -> set(auto_denials).\n    % set(auto) -> set(auto_process).\nassign(max_seconds,5).\n\nformulas(assumptions).\nreview_context_open(edit07).\nscan_matches_file(crecordr).\nscan_matches_file(crecordr) -> change_basis_confirmed(crecordr).\nchange_basis_confirmed(crecordr) -> v_unsu_ereviewstage1(edit07).\nv_unsu_ereviewstage1(edit07) -> revision_warranted(edit07).\nend_of_list.\n\nformulas(goals).\n-revision_warranted(edit07).\nend_of_list.\n\nSEARCH FAILED\n"
+  }
+}

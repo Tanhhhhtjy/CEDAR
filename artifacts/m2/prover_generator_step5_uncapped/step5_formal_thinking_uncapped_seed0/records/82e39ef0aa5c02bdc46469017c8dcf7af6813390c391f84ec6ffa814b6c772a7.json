@@ -1,0 +1,145 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-035-N",
+    "index": 204,
+    "mode": "thinking",
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 204,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 353,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 353
+        }
+      ],
+      "answer_logit_capture_indices": [
+        353
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999998927446534,
+          "B": 4.944449652301412e-09,
+          "C": 9.931193645869914e-08,
+          "D": 2.9989605357708725e-09
+        },
+        "full_vocab_entropy": 1.767673211361398e-06,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 4.94445018262013e-09,
+          "C": 9.931194711043645e-08,
+          "D": 2.998960857425459e-09
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 41.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 41.0,
+          "B": 21.875,
+          "C": 24.875,
+          "D": 21.375
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000001072553582,
+        "ranks": {
+          "A": 1,
+          "B": 3,
+          "C": 2,
+          "D": 4
+        },
+        "target_logit": 24.875,
+        "target_minus_initial": -16.125,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-035",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F18",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-035-N",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "prompt_sha256": "61c7bf9dad8b951cc46a362936ab1d372fd3be88ab615ec4a5214c12bcfa495d",
+      "prompt_token_ids_sha256": "bc78776c7d8faa22f7cfcd491bdf426b7bdf59f9ae81ea45264f4de975cd849c",
+      "prompt_tokens": 280,
+      "reasoning_token_count": 345,
+      "record_seed": 204,
+      "response": "<think>\nOkay, let's try to figure this out step by step. The question is whether Case C having status Ivory 4 is supported, contradicted, undetermined, or both supported and contradicted based on the given records.\n\nFirst, let me list out the relevant records again to make sure I have them straight:\n\n- Record 2: Case C has status Lilac 5.\n- Record 5: If Case C has status Lilac 5, then it has status Copper 6.\n- Record 6: If Case C has status Copper 6, then it has status Amber 1.\n- Record 4: If Case C has status Amber 1, then it does NOT have status Ivory 4.\n\nSo starting from Record 2, since Case C is Lilac 5, by Record 5, that triggers the implication, meaning Case C must also have Copper 6. Then, according to Record 6, having Copper 6 means Case C must have Amber 1. Now, with Amber 1, Record 4 comes into play, which says if Amber 1 is present, then Ivory 4 is not present.\n\nTherefore, following the chain: Lilac 5 → Copper 6 → Amber 1 → ¬Ivory 4. Since the premises are all given as true (the records are exact), each implication leads to the next. Therefore, the conclusion is that Case C cannot have Ivory 4. So the statement that Case C has Ivory 4 is contradicted. The answer should be A) contradicted. I don't see any other possibilities here because all the steps are deterministic based on the given rules and the initial status of Case C.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "97492ca6848ee44a2ced4c6c5aebd02e6375d6a59d972ca729945fd6a7ccc112",
+      "response_tokens": 356,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 353,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "9b73eeeffc9604d99d6cc182aebe94cca26a91e8109fa684cc30b2500ff1d9f9"
+}

@@ -1,0 +1,106 @@
+{
+  "error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "lan904fallverified",
+      "arguments": [
+        "csor15"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "lan904fallverified",
+        "arguments": [
+          "csor15"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "lan904fallsource",
+      "arguments": [
+        "csor15"
+      ],
+      "negated": false
+    },
+    "operator": "converse_error"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "56e585769af55f6feb8581194d5c05dc60ce54dd76400b0e928bc916d9b5ca52",
+      "projected_edit_sha256": "0033fc7a32b37a6d091f9951461fb13b26c10eb3ae8c55302308c421e817be37"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "e75103d83f341ffabf9ac7a91ebc625c72d56223779761e7b559bc6f07f16010",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "lan904outcome",
+      "arguments": [
+        "csor15"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "73a5f60f8b0ccdd0d4d463bd38faa02dbb383fae096b42e12775b8f7ca0806c9",
+    "entailed_premise_keys": [
+      "lan904fallverified(csor15)"
+    ],
+    "unsupported_claim_key": "lan904fallsource(csor15)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "-lan904outcome(csor15)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "-lan904outcome(csor15)",
+      "required_counterliteral": "lan904outcome(csor15)",
+      "input_sha256": "fb3b87732d0019ec564141b86ed832c69ad0d05576962232bdcddd6735c139d5",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nlan904edge(cvek28,clan904node0).\nlan904edge(clan904node0,clan904node1).\nlan904edge(clan904node1,clan904node2).\nlan904edge(clan904node2,clan904node3).\nlan904noise2(cnav73).\nlan904noise3(cpax10).\nlan904noise4(cmiv67).\nlan904noise5(clan904node0).\nlan904noise6(clan904node1).\nlan904fallverified(csor15).\nlan904fallsource(csor15) -> lan904fallverified(csor15).\nlan904reach(csor15,clan904node3) -> -lan904outcome(csor15).\n(all x all y (lan904edge(x,y) -> lan904reach(x,y))).\n(all x all y all z (lan904reach(x,y) & lan904edge(y,z) -> lan904reach(x,z))).\nlan904outcome(csor15).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(clan904node0, [ 0 ]),\n\n        function(clan904node1, [ 0 ]),\n\n        function(clan904node2, [ 0 ]),\n\n        function(clan904node3, [ 0 ]),\n\n        function(cmiv67, [ 0 ]),\n\n        function(cnav73, [ 0 ]),\n\n        function(cpax10, [ 0 ]),\n\n        function(csor15, [ 1 ]),\n\n        function(cvek28, [ 0 ]),\n\n        relation(lan904fallsource(_), [ 0, 0 ]),\n\n        relation(lan904fallverified(_), [ 0, 1 ]),\n\n        relation(lan904noise2(_), [ 1, 0 ]),\n\n        relation(lan904noise3(_), [ 1, 0 ]),\n\n        relation(lan904noise4(_), [ 1, 0 ]),\n\n        relation(lan904noise5(_), [ 1, 0 ]),\n\n        relation(lan904noise6(_), [ 1, 0 ]),\n\n        relation(lan904outcome(_), [ 0, 1 ]),\n\n        relation(lan904edge(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 0 ]),\n\n        relation(lan904reach(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "lan904edge",
+          "arguments": [
+            "csor15",
+            "cvek28"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-81aa146a401fb430",
+      "rank": 12
+    },
+    "updated_world_sha256": "e75103d83f341ffabf9ac7a91ebc625c72d56223779761e7b559bc6f07f16010",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

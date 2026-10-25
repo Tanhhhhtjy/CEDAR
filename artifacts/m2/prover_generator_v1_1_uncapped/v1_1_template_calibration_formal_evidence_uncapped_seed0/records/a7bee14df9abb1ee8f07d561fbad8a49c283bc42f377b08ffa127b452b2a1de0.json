@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-045-N",
+    "index": 88,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 88,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 388,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 388
+        }
+      ],
+      "answer_logit_capture_indices": [
+        388
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 9.545028716078979e-12,
+          "B": 4.058649395525604e-10,
+          "C": 6.475948235599985e-07,
+          "D": 0.9999993519897665
+        },
+        "full_vocab_entropy": 9.24039886740502e-06,
+        "full_vocab_probabilities": {
+          "A": 9.545034901359273e-12,
+          "B": 4.05865202557365e-10,
+          "C": 6.475952432083432e-07,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 46.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 20.625,
+          "B": 24.375,
+          "C": 31.75,
+          "D": 46.0
+        },
+        "option_argmax": "D",
+        "option_mass": 1.0000006480106534,
+        "ranks": {
+          "A": 6,
+          "B": 3,
+          "C": 2,
+          "D": 1
+        },
+        "target_logit": 31.75,
+        "target_minus_initial": -14.25,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-045",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F23",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "D",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-045-N",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "D->C",
+      "prompt_sha256": "ad33fed8e24d847f926adb49a56612672ad25606083c0c819e5723b7e7a2eb25",
+      "prompt_token_ids_sha256": "c394256ae8b9bea06590f1718ff5ed9edd42fd6bf4949818bcd316bc525bbee1",
+      "prompt_tokens": 327,
+      "reasoning_token_count": 380,
+      "record_seed": 88,
+      "response": "<think>\nOkay, let's try to figure this out. The question is whether Shipment A having status Copper 6 is supported, contradicted, or undetermined based on the given records.\n\nFirst, let me look at the records again. \n\nRecord 2 says Shipment A has status Jade 3. Record 3 is a conditional: if Shipment A has both Jade 3 and Ivory 4 statuses, then it has Cobalt 2. But there's no mention of Ivory 4 here, so Record 3 might not apply. \n\nRecord 4 states that if Shipment A has a Silver 7 link to Shipment D, then Shipment A does not have Copper 6. But do we know if there's a Silver 7 link to D? Let's check other records. \n\nRecord 5 says if an item has an Amber 1 link to another, then it also has a Silver 7 link to that same other item. Record 6 is about transitivity: if an item has Silver 7 to another, and that other has Amber 1 to a third, then the first has Silver 7 to the third. \n\nBut none of the records mention Shipment A having an Amber 1 or Silver 7 link to any shipment, except possibly through implications. Since there's no direct information about links involving Shipment A, except maybe through the conditions, we can't confirm if the antecedent of Record 4 (Silver 7 to D) is true. \n\nSo, Record 4's antecedent isn't established. Therefore, we can't derive whether Copper 6 is excluded. Since there's no direct statement about Shipment A's status being Copper 6 or any rule that would lead us to conclude it, and no contradiction either, the answer must be undetermined. \n\nTherefore, the answer is D.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "464dd1610691ccfeca0c5c6bbc9cda07a04745987c168d2abbee3385a21d91d8",
+      "response_tokens": 391,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 388,
+      "social_template": null,
+      "structure_class": "PGF-06",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

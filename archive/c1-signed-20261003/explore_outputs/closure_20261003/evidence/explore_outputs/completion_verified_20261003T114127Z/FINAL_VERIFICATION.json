@@ -1,0 +1,85 @@
+{
+  "status": "passed",
+  "checked_utc": "2026-10-03T11:41:29.042169+00:00",
+  "errors": [],
+  "counts": {
+    "smoke": 52,
+    "formal": 3840
+  },
+  "original_audit": "/data4/WuMingrui/TianJinyu/CEDAR/c1_signed_20260928/explore_outputs/completion_audit_20261003T113216Z",
+  "original_audit_sha256": "a54f1fd12adb603a37210f0e7e383f88a76da677cc2e31cdceef9ce6690923cf",
+  "correction": {
+    "original_predicate": "not model_generate_used and not natural_generation",
+    "reason": "Frozen historical run_one intentionally calls model.generate with capture then FrozenTokenForcer. Generated tokens are checked against the entire fixed prefix and terminal probe; no new text is generated. The original completion-only audit incorrectly rejected this API flag.",
+    "corrected_predicate": "model_generate_used is True; natural_generation is False; generated_text is False; replay_engine is model.generate_kv_cache_forced_tokens; fixed-token hashes and processor order verified",
+    "producer": "CEDAR_SUPPORTING_DATA/code/scripts/run_e2b_fixed_trace_cached.py:239-310,352-355",
+    "original_false_positive_count": 3892,
+    "original_diagnostic_preserved": true,
+    "scientific_code_protocol_or_records_changed": false
+  },
+  "code_evidence": {
+    "/data4/WuMingrui/TianJinyu/CEDAR/c1_signed_20260928/scripts/run_signed.py": {
+      "sha256": "b70b777a70caab07cf6a4f2890a04e4133bb5363f435eb4286d6d007b476c883",
+      "expected_sha256": "b70b777a70caab07cf6a4f2890a04e4133bb5363f435eb4286d6d007b476c883"
+    },
+    "/data4/WuMingrui/TianJinyu/CEDAR/CEDAR_SUPPORTING_DATA/code/scripts/run_e2b_fixed_trace_cached.py": {
+      "sha256": "9f8d7a501be62bb673ce52f75d50a02cd8c82890154f7d531103a76466fd3830",
+      "expected_sha256": "9f8d7a501be62bb673ce52f75d50a02cd8c82890154f7d531103a76466fd3830"
+    },
+    "/data4/WuMingrui/TianJinyu/CEDAR/scripts/run_arr_acquisition.py": {
+      "sha256": "6cfd3c8bd854e020e2bfd8b0ea51c8d3642ebbf1c35d04af8b9f03ab7888a359",
+      "expected_sha256": "6cfd3c8bd854e020e2bfd8b0ea51c8d3642ebbf1c35d04af8b9f03ab7888a359"
+    }
+  },
+  "all_other_original_checks_passed": true,
+  "record_json_hashes_unchanged": 3892,
+  "npz_integrity_evidence": "/data4/WuMingrui/TianJinyu/CEDAR/c1_signed_20260928/explore_outputs/completion_audit_20261003T113216Z/record_hashes.json",
+  "assets_fully_rehashed_in_original_audit": 26,
+  "asset_stats_still_unchanged": true,
+  "analysis_hashes": {
+    "SUMMARY.json": "b7632aedb47593488ce90f5ce0f7d60138d1f4649e2838cfe0bd93f3fd8b9696",
+    "base_endpoints.json": "8caf2a689cf05059af2f79178ac085a283542081417cc84f60d0459d4ac8bbdd",
+    "details.json": "f98283197c1616323ba86b51918ec8b74cc6a1953a5f86717a79325aa5306bb7"
+  },
+  "primary_recomputation_matches": true,
+  "protocol_sha256": "22514863f250e1abce981676ce77efdfa9d7fc7f0bcedbc11b859e3bf80b1afb",
+  "prepared_manifest_sha256": "6ff92cc27dd14c3ad31ae2721abc5910899f067a01d4f42219dcf317bbda4599",
+  "resources": {
+    "processes": [],
+    "historical_pids": {},
+    "locks": {
+      "campaign.lock": "free",
+      "runner.lock": "free"
+    },
+    "gpu": "0, 17, 48492, 0\n1, 17, 48492, 0\n2, 17, 48492, 0\n3, 41, 48468, 0\n4, 17, 48492, 0\n5, 17, 48492, 0\n6, 17, 48492, 0\n7, 17, 48492, 0\n",
+    "gpu_processes": "",
+    "disk_free_bytes": 58244689920
+  },
+  "campaign": {
+    "gpu_wall_seconds": 422397.638600111,
+    "note": "Development C1 completed; independent H1 not run.",
+    "pid": 1884511,
+    "stage": "c1_signed_complete_h1_pending",
+    "updated": 1791025263.3995607
+  },
+  "budget": {
+    "active": false,
+    "charged_at": 1791025192.3975284,
+    "child_pid": 1948775,
+    "scope": "formal",
+    "scope_seconds": {
+      "formal": 417435.1586754322,
+      "smoke": 4962.4799246788025
+    },
+    "used_seconds": 422397.638600111
+  },
+  "delta": {
+    "previous_snapshot": "heartbeat_monitor_20261003T095333Z.json",
+    "previous_completed": 3823,
+    "current_completed": 3840,
+    "added": 17,
+    "log_bytes": 390410,
+    "log_delta": 1788
+  },
+  "h1_status": "Design and precision planning only; no H1 or Jev execution."
+}

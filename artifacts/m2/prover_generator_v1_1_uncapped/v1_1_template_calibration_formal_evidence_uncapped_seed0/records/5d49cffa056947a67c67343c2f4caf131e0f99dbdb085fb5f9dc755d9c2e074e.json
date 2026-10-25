@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-033-R",
+    "index": 65,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 65,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 508,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 508
+        }
+      ],
+      "answer_logit_capture_indices": [
+        508
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 1.9171715439040698e-10,
+          "B": 6.348800097656843e-09,
+          "C": 0.9999999913983294,
+          "D": 2.0611534523937816e-09
+        },
+        "full_vocab_entropy": 1.7287064224547066e-07,
+        "full_vocab_probabilities": {
+          "A": 1.917171560394948e-10,
+          "B": 6.348800152267131e-09,
+          "C": 1.0,
+          "D": 2.061153470123145e-09
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 41.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 19.125,
+          "B": 22.625,
+          "C": 41.5,
+          "D": 21.5
+        },
+        "option_argmax": "C",
+        "option_mass": 1.0000000086016707,
+        "ranks": {
+          "A": 5,
+          "B": 2,
+          "C": 1,
+          "D": 3
+        },
+        "target_logit": 21.5,
+        "target_minus_initial": -20.0,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-033",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F17",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-033-R",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "C->D",
+      "prompt_sha256": "e8ef85cac9e5cfe6515aa12e6b9e20b1e566b3812435e0c40155b9e861689341",
+      "prompt_token_ids_sha256": "3d92c6e0e6ef74d5c1939f5d6fdc7746cc2b45d890696b18a0b5a26cb88f6690",
+      "prompt_tokens": 285,
+      "reasoning_token_count": 500,
+      "record_seed": 65,
+      "response": "<think>\nOkay, let's go through this step by step. The question is whether File B having status Lilac 5 is supported, contradicted, or undetermined based on the given records.\n\nFirst, let's list out the records again to make sure I have them right:\n\nRecord 1: File B has Copper 6.\nRecord 2: File B has Jade 3.\nRecord 3: If Jade 3 and Ivory 4, then Cobalt 2.\nRecord 4: If Amber 1, then not Lilac 5.\nRecord 5: If Copper 6, then Silver 7.\nRecord 6: If Silver 7, then Amber 1.\n\nSo starting from what's given. Records 1 and 2 directly state that File B has Copper 6 and Jade 3. Now, applying the rules.\n\nFrom Record 1 (Copper 6), Record 5 says that if Copper 6, then Silver 7. So we can conclude Silver 7. Then, Record 6 says if Silver 7, then Amber 1. So that leads us to Amber 1.\n\nNow, once we have Amber 1, Record 4 comes into play. Record 4 states that if Amber 1 is true, then Lilac 5 is not. So since we derived Amber 1 through the chain Copper 6 → Silver 7 → Amber 1, we can apply Record 4. Therefore, the conclusion is that Lilac 5 is not true. That would mean the status Lilac 5 is contradicted.\n\nWait, but the question is asking if it's supported. Since the conclusion is that Lilac 5 is not true (due to Record 4), then the answer would be contradicted, which is option C. Let me check again to make sure I didn't miss any other possibilities.\n\nIs there any other path that could lead to Lilac 5? Let's see. The only way Lilac 5 could be supported is if there's a rule that directly or indirectly leads to it. But the given records don't have any rules that would result in Lilac 5. In fact, once we get to Amber 1, we have a direct contradiction to Lilac 5. Also, there's no mention of any other conditions that would allow Lilac 5. Therefore, the conclusion that it's contradicted holds. So the answer should be C.\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "1fa56c4d0016b6d92784c92e6890a37b122275ea399bc70261878701970669b3",
+      "response_tokens": 511,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 508,
+      "social_template": null,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

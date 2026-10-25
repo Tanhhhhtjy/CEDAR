@@ -1,0 +1,112 @@
+{
+  "configuration": {
+    "axis": {
+      "file": "qwen-3-32b/assistant_axis.pt",
+      "path": "/data1/WuMingrui/HF_HOME/hub/datasets--lu-christina--assistant-axis-vectors/snapshots/3b3b788432ad33e3a28d9ff08e88a530c0740814/qwen-3-32b/assistant_axis.pt",
+      "raw_norm": 22.655502319335938,
+      "repo": "lu-christina/assistant-axis-vectors",
+      "revision": "3b3b788432ad33e3a28d9ff08e88a530c0740814",
+      "sha256": "a207fe7a36563280b7b29010880aa0082bd8e3113c141cb4a2eed6b46c140211",
+      "shape": [
+        64,
+        5120
+      ],
+      "stored_dtype": "bfloat16",
+      "target_layer": 32,
+      "unit_norm": 1.0000005960464478
+    },
+    "conditions": [
+      {
+        "coefficient": -200.0,
+        "name": "alpha_neg200"
+      },
+      {
+        "coefficient": -100.0,
+        "name": "alpha_neg100"
+      },
+      {
+        "coefficient": -50.0,
+        "name": "alpha_neg50"
+      },
+      {
+        "coefficient": 0.0,
+        "name": "alpha_0"
+      },
+      {
+        "coefficient": 50.0,
+        "name": "alpha_pos50"
+      },
+      {
+        "coefficient": 100.0,
+        "name": "alpha_pos100"
+      },
+      {
+        "coefficient": 200.0,
+        "name": "alpha_pos200"
+      }
+    ],
+    "cuda_visible_devices": "3,4,6,7",
+    "dataset": {
+      "all_rows": 1800,
+      "path": "/data4/WuMingrui/TianJinyu/CEDAR/datasets/e_minus1a_philpapers/philpapers1800_all_seeds.jsonl",
+      "sample_seeds": [
+        42,
+        7,
+        123
+      ],
+      "sha256": "4d345d0254ba46b829c3055d854eed371bbc625d2e754aa5cdda448460f1b888",
+      "split": "test",
+      "test_pairs": 450,
+      "test_rows": 900
+    },
+    "decoder_blocks": 64,
+    "expected_formal_forwards": 6300,
+    "expected_sentinel_forwards": 32,
+    "forced_choice": {
+      "A_token_id": 32,
+      "B_token_id": 33,
+      "batch_size": 1,
+      "enable_thinking": false,
+      "full_vocabulary_diagnostics": true,
+      "generate": false,
+      "system_prompt": null,
+      "truncation": false,
+      "use_cache": false
+    },
+    "git": {
+      "branch": "agent/e-minus1a-formal-signed-curve",
+      "commit": "3366044276cea38333ab1b5ffbaf334b8bd6c02a",
+      "dirty": false
+    },
+    "intervention_formula": "h_new = h + alpha * unit_assistant_axis",
+    "kind": "E-1a formal signed seven-dose pinned-model close replication",
+    "model": {
+      "attention_implementation": "sdpa",
+      "dtype": "bfloat16",
+      "repo_id": "Qwen/Qwen3-32B",
+      "revision": "9216db5781bf21249d130ec9da846c4624c16137"
+    },
+    "platform": "Linux-6.8.0-124-generic-x86_64-with-glibc2.35",
+    "positions": "all",
+    "protocol_amendment": "docs/E_MINUS1A_PROTOCOL_AMENDMENT_01.md",
+    "python_version": "3.11.15",
+    "scope": "test split only; 900 rows; 450 pairs; no generation; no p25/p1",
+    "sentinel": {
+      "conditions": [
+        "no_hook",
+        "alpha_0",
+        "alpha_pos200",
+        "alpha_neg200"
+      ],
+      "reference_results": "/data4/WuMingrui/TianJinyu/CEDAR/artifacts/m2/e_minus1a_philpapers/smoke64/row_results.jsonl",
+      "reference_results_sha256": "de627c82e58c29c432bff0cb14782671c68c5dfc9647c3d7ef93603a4f421c04",
+      "rows": 8,
+      "source": "/data4/WuMingrui/TianJinyu/CEDAR/datasets/e_minus1a_philpapers/smoke64.jsonl"
+    },
+    "target_layer": 32,
+    "torch_version": "2.6.0+cu124",
+    "transformers_version": "4.56.1"
+  },
+  "run_fingerprint": "6d068a77890f8a782667e79c5d25285499e16c8b9facefe4dcbdb391f0ee9f72",
+  "status": "passed"
+}

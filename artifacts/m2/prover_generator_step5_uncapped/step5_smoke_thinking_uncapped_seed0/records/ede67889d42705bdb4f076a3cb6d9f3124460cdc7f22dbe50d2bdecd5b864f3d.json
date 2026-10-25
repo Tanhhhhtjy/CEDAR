@@ -1,0 +1,145 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-001-N",
+    "index": 0,
+    "mode": "thinking",
+    "scope": "smoke",
+    "seed": 0
+  },
+  "payload": {
+    "index": 0,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 359,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 359
+        }
+      ],
+      "answer_logit_capture_indices": [
+        359
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 9.931192354387514e-08,
+          "B": 0.9999997627016487,
+          "C": 1.2751902816372386e-07,
+          "D": 1.0467399572338392e-08
+        },
+        "full_vocab_entropy": 3.884893430949887e-06,
+        "full_vocab_probabilities": {
+          "A": 9.931194711043645e-08,
+          "B": 1.0,
+          "C": 1.275190584237862e-07,
+          "D": 1.0467402056235642e-08
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 39.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 23.375,
+          "B": 39.5,
+          "C": 23.625,
+          "D": 21.125
+        },
+        "option_argmax": "B",
+        "option_mass": 1.0000002372984076,
+        "ranks": {
+          "A": 3,
+          "B": 1,
+          "C": 2,
+          "D": 4
+        },
+        "target_logit": 23.375,
+        "target_minus_initial": -16.125,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-001",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F01",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-001-N",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "prompt_sha256": "3ca97420448893c90c1726014f013d3c0c259ae8ec7104c96ed52808eab54679",
+      "prompt_token_ids_sha256": "8b131c8912d90450a98b369c88f447506d41db8a80e565bdcc80043f913e50a8",
+      "prompt_tokens": 332,
+      "reasoning_token_count": 351,
+      "record_seed": 0,
+      "response": "<think>\nOkay, let's try to figure out if File D having status Copper 6 is supported based on the given records. \n\nFirst, I need to look at the records related to File D. Record 4 says File D has status Teal 8. Then there are several conditional statements involving File D's status.\n\nStarting with Record 4: File D is Teal 8. Now, looking at Record 8: If File D has Teal 8, then it has Silver 7. So from Teal 8, we can infer Silver 7. Then Record 9 says if it has Silver 7, then it has Copper 6. So applying that chain: Teal 8 → Silver 7 → Copper 6. That would mean File D does have Copper 6. \n\nBut wait, are there any conflicting statements? Let's check. Record 6 says if File D does NOT have Teal 8, then it has Cobalt 2. But since Record 4 states that File D does have Teal 8, the antecedent of Record 6 is false, so that implication doesn't apply here. Then Record 7 says if it has Cobalt 2, then it doesn't have Copper 6. However, since we already established through Records 8 and 9 that File D has Copper 6 (via Teal 8 → Silver 7 → Copper 6), there's no conflict here because Cobalt 2 isn't involved in this scenario. \n\nSo the chain from Teal 8 leads directly to Copper 6. Therefore, the statement that File D has Copper 6 is supported by the records. The answer should be B) supported.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "ca599aa6885716fbcbb352da5ed9b5994b885e757c6c6cdc5272893d561cad66",
+      "response_tokens": 362,
+      "scope": "smoke",
+      "seed": 0,
+      "selected_answer_logit_index": 359,
+      "structure_class": "PGF-01",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "d0d02888fdaad003631e699c3f70e63a4cbab3f30da63cdd4cfe6e77d1772817"
+}

@@ -1,0 +1,122 @@
+{
+  "error_class": "cross_entity_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "sor539fallsignal",
+      "arguments": [
+        "cpax25"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "sor539fallsignal",
+        "arguments": [
+          "cpax25"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "sor539fallsignal",
+      "arguments": [
+        "cvek14"
+      ],
+      "negated": false
+    },
+    "operator": "cross_entity_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "40ee8e8e3d3a3ba304d33ffae88c0e79afb7a1a967ec6a766869072ff82916ea",
+      "projected_edit_sha256": "ecca888a334f9fc57585d97d2608b297b2d54ade558f18d17efccfe42fab8288"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "10a5180adf729236168ad3294681762b5fb5804184ac956a8ea2e7c4e3b63c6c",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "sor539outcome",
+      "arguments": [
+        "cvek14"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "cross_entity_transfer",
+    "world_semantic_sha256": "0969d12c159ea7edeb2cc1d81b3ef07c89bb7f9a47cab02feab770aee24058d1",
+    "entailed_premise_keys": [
+      "sor539fallsignal(cpax25)"
+    ],
+    "unsupported_claim_key": "sor539fallsignal(cvek14)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "sor539outcome(cvek14)",
+    "proof": {
+      "record_ids": [
+        "data_sor539_root",
+        "schema_sor539pos_0",
+        "schema_sor539pos_1",
+        "schema_sor539pos_2"
+      ],
+      "depth": 3
+    },
+    "refutes_induced_label": "false"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_sor539_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "sor539seed",
+          "arguments": [
+            "cvek14"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_sor539_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "sor539seed",
+          "arguments": [
+            "cvek14"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-ec2d84264787f54f",
+      "rank": 34
+    },
+    "updated_world_sha256": "10a5180adf729236168ad3294681762b5fb5804184ac956a8ea2e7c4e3b63c6c",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

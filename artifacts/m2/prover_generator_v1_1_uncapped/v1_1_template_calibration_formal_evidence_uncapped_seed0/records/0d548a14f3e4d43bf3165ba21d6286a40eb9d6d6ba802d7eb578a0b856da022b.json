@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-029-R",
+    "index": 57,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 57,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 368,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 368
+        }
+      ],
+      "answer_logit_capture_indices": [
+        368
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 5.905302920917416e-10,
+          "B": 1.8553911562196486e-07,
+          "C": 0.999999813279824,
+          "D": 5.905302920917416e-10
+        },
+        "full_vocab_entropy": 2.9112218271620804e-06,
+        "full_vocab_probabilities": {
+          "A": 5.905304023556823e-10,
+          "B": 1.8553915026586765e-07,
+          "C": 1.0,
+          "D": 5.905304023556823e-10
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 46.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 24.75,
+          "B": 30.5,
+          "C": 46.0,
+          "D": 24.75
+        },
+        "option_argmax": "C",
+        "option_mass": 1.0000001867202108,
+        "ranks": {
+          "A": 3,
+          "B": 2,
+          "C": 1,
+          "D": 3
+        },
+        "target_logit": 30.5,
+        "target_minus_initial": -15.5,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-029",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F15",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-029-R",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "C->B",
+      "prompt_sha256": "af3cb5919ac01d72ec2187a70be06d7a9e604c26708cff320846b3892667ef2e",
+      "prompt_token_ids_sha256": "dbea6e4307a3548e362da540653252048c080a17bc271abd72f1bd352bca486b",
+      "prompt_tokens": 314,
+      "reasoning_token_count": 360,
+      "record_seed": 57,
+      "response": "<think>\nOkay, let's see. The question is whether Shipment C has status Silver 7, based on the given records and rules. Let me go through this step by step.\n\nFirst, looking at the records. Record 1 says Shipment C has status Jade 3. Record 5 mentions a link from C to G with Amber 1, but that might not be relevant here. The other records are about different shipments, like B, E, A, so probably not directly involved unless there's a rule connecting them.\n\nNow the rules. Rule 6 states that if Shipment C has both Jade 3 and Ochre 9 statuses, then it gets Cobalt 2. But from Record 1, we know C has Jade 3. However, there's no mention of Ochre 9 for C. So the condition for Rule 6 isn't met. Therefore, Rule 6 doesn't apply here.\n\nSince Rule 6's condition isn't satisfied, the conclusion of that rule (Cobalt 2) isn't triggered. Then Rule 7 depends on Cobalt 2 leading to Teal 8, and Rule 8 depends on Teal 8 leading to Silver 7. But if we don't have Cobalt 2, the chain can't proceed. \n\nSo, there's no basis to conclude that Shipment C has Silver 7. However, none of the records directly state that Silver 7 isn't present. The rules only provide a conditional path that isn't activated here. Therefore, the status Silver 7 for C isn't supported by the given information, but it's also not contradicted. The correct answer would be undetermined because we can't confirm or deny it based on the available data.\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "480f6d0978d2be51b49cf08524a4568232e32ee238b6fa23ff84419ace9f762a",
+      "response_tokens": 371,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 368,
+      "social_template": null,
+      "structure_class": "PGF-04",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

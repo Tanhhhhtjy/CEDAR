@@ -1,0 +1,384 @@
+[
+  {
+    "id": "2308.03958",
+    "url": "https://arxiv.org/abs/2308.03958",
+    "accessed_utc": "2026-10-21T07:52:54.230805+00:00",
+    "title": "Simple synthetic data reduces sycophancy in large language models",
+    "date": "2023/08/07",
+    "authors": [
+      "Wei, Jerry",
+      "Huang, Da",
+      "Lu, Yifeng",
+      "Zhou, Denny",
+      "Le, Quoc V."
+    ],
+    "abstract": "Abstract: Sycophancy is an undesirable behavior where models tailor their responses to follow a human user's view even when that view is not objectively correct (e.g., adapting liberal views once a user reveals that they are liberal). In this paper, we study the prevalence of sycophancy in language models and propose a simple synthetic-data intervention to reduce this behavior. First, on a set of three sycophancy tasks (Perez et al., 2022) where models are asked for an opinion on statements with no correct answers (e.g., politics), we observe that both model scaling and instruction tuning significantly increase sycophancy for PaLM models up to 540B parameters. Second, we extend sycophancy evaluations to simple addition statements that are objectively incorrect, finding that despite knowing that these statements are wrong, language models will still agree with them if the user does as well. To reduce sycophancy, we present a straightforward synthetic-data intervention that takes public NLP tasks and encourages models to be robust to user opinions on these tasks. Adding these data in a lightweight finetuning step can significantly reduce sycophantic behavior on held-out prompts. Code for generating synthetic data for intervention can be found at this https URL .",
+    "status": "ok"
+  },
+  {
+    "id": "2310.13548",
+    "url": "https://arxiv.org/abs/2310.13548",
+    "accessed_utc": "2026-10-21T07:52:54.231805+00:00",
+    "title": "Towards Understanding Sycophancy in Language Models",
+    "date": "2023/10/20",
+    "authors": [
+      "Sharma, Mrinank",
+      "Tong, Meg",
+      "Korbak, Tomasz",
+      "Duvenaud, David",
+      "Askell, Amanda",
+      "Bowman, Samuel R.",
+      "Cheng, Newton",
+      "Durmus, Esin",
+      "Hatfield-Dodds, Zac",
+      "Johnston, Scott R.",
+      "Kravec, Shauna",
+      "Maxwell, Timothy",
+      "McCandlish, Sam",
+      "Ndousse, Kamal",
+      "Rausch, Oliver",
+      "Schiefer, Nicholas",
+      "Yan, Da",
+      "Zhang, Miranda",
+      "Perez, Ethan"
+    ],
+    "abstract": "Abstract: Human feedback is commonly utilized to finetune AI assistants. But human feedback may also encourage model responses that match user beliefs over truthful ones, a behaviour known as sycophancy. We investigate the prevalence of sycophancy in models whose finetuning procedure made use of human feedback, and the potential role of human preference judgments in such behavior. We first demonstrate that five state-of-the-art AI assistants consistently exhibit sycophancy across four varied free-form text-generation tasks. To understand if human preferences drive this broadly observed behavior, we analyze existing human preference data. We find that when a response matches a user's views, it is more likely to be preferred. Moreover, both humans and preference models (PMs) prefer convincingly-written sycophantic responses over correct ones a non-negligible fraction of the time. Optimizing model outputs against PMs also sometimes sacrifices truthfulness in favor of sycophancy. Overall, our results indicate that sycophancy is a general behavior of state-of-the-art AI assistants, likely driven in part by human preference judgments favoring sycophantic responses.",
+    "status": "ok"
+  },
+  {
+    "id": "2403.10131",
+    "url": "https://arxiv.org/abs/2403.10131",
+    "accessed_utc": "2026-10-21T07:52:54.231805+00:00",
+    "title": "RAFT: Adapting Language Model to Domain Specific RAG",
+    "date": "2024/03/15",
+    "authors": [
+      "Zhang, Tianjun",
+      "Patil, Shishir G.",
+      "Jain, Naman",
+      "Shen, Sheng",
+      "Zaharia, Matei",
+      "Stoica, Ion",
+      "Gonzalez, Joseph E."
+    ],
+    "abstract": "Abstract: Pretraining Large Language Models (LLMs) on large corpora of textual data is now a standard paradigm. When using these LLMs for many downstream applications, it is common to additionally bake in new knowledge (e.g., time-critical news, or private domain knowledge) into the pretrained model either through RAG-based-prompting, or fine-tuning. However, the optimal methodology for the model to gain such new knowledge remains an open question. In this paper, we present Retrieval Augmented FineTuning (RAFT), a training recipe that improves the model's ability to answer questions in a \"open-book\" in-domain settings. In RAFT, given a question, and a set of retrieved documents, we train the model to ignore those documents that don't help in answering the question, which we call, distractor documents. RAFT accomplishes this by citing verbatim the right sequence from the relevant document that would help answer the question. This coupled with RAFT's chain-of-thought-style response helps improve the model's ability to reason. In domain-specific RAG, RAFT consistently improves the model's performance across PubMed, HotpotQA, and Gorilla datasets, presenting a post-training recipe to improve pre-trained LLMs to in-domain RAG. RAFT's code and demo are open-sourced at this http URL .",
+    "status": "ok"
+  },
+  {
+    "id": "2409.12917",
+    "url": "https://arxiv.org/abs/2409.12917",
+    "accessed_utc": "2026-10-21T07:52:54.232694+00:00",
+    "title": "Training Language Models to Self-Correct via Reinforcement Learning",
+    "date": "2024/09/19",
+    "authors": [
+      "Kumar, Aviral",
+      "Zhuang, Vincent",
+      "Agarwal, Rishabh",
+      "Su, Yi",
+      "Co-Reyes, John D",
+      "Singh, Avi",
+      "Baumli, Kate",
+      "Iqbal, Shariq",
+      "Bishop, Colton",
+      "Roelofs, Rebecca",
+      "Zhang, Lei M",
+      "McKinney, Kay",
+      "Shrivastava, Disha",
+      "Paduraru, Cosmin",
+      "Tucker, George",
+      "Precup, Doina",
+      "Behbahani, Feryal",
+      "Faust, Aleksandra"
+    ],
+    "abstract": "Abstract: Self-correction is a highly desirable capability of large language models (LLMs), yet it has consistently been found to be largely ineffective in modern LLMs. Current methods for training self-correction typically depend on either multiple models, a more advanced model, or additional forms of supervision. To address these shortcomings, we develop a multi-turn online reinforcement learning (RL) approach, SCoRe, that significantly improves an LLM's self-correction ability using entirely self-generated data. To build SCoRe, we first show that variants of supervised fine-tuning (SFT) on offline model-generated correction traces are often insufficient for instilling self-correction behavior. In particular, we observe that training via SFT falls prey to either a distribution mismatch between mistakes made by the data-collection policy and the model's own responses, or to behavior collapse, where learning implicitly prefers only a certain mode of correction behavior that is often not effective at self-correction on test problems. SCoRe addresses these challenges by training under the model's own distribution of self-generated correction traces and using appropriate regularization to steer the learning process into learning a self-correction behavior that is effective at test time as opposed to fitting high-reward responses for a given prompt. This regularization process includes an initial phase of multi-turn RL on a base model to generate a policy initialization that is less susceptible to collapse, followed by using a reward bonus to amplify self-correction. With Gemini 1.0 Pro and 1.5 Flash models, we find that SCoRe achieves state-of-the-art self-correction performance, improving the base models' self-correction by 15.6% and 9.1% respectively on MATH and HumanEval.",
+    "status": "ok"
+  },
+  {
+    "id": "2306.03341",
+    "url": "https://arxiv.org/abs/2306.03341",
+    "accessed_utc": "2026-10-21T07:52:54.232694+00:00",
+    "title": "Inference-Time Intervention: Eliciting Truthful Answers from a Language Model",
+    "date": "2023/06/06",
+    "authors": [
+      "Li, Kenneth",
+      "Patel, Oam",
+      "Viégas, Fernanda",
+      "Pfister, Hanspeter",
+      "Wattenberg, Martin"
+    ],
+    "abstract": "Abstract: We introduce Inference-Time Intervention (ITI), a technique designed to enhance the \"truthfulness\" of large language models (LLMs). ITI operates by shifting model activations during inference, following a set of directions across a limited number of attention heads. This intervention significantly improves the performance of LLaMA models on the TruthfulQA benchmark. On an instruction-finetuned LLaMA called Alpaca, ITI improves its truthfulness from 32.5% to 65.1%. We identify a tradeoff between truthfulness and helpfulness and demonstrate how to balance it by tuning the intervention strength. ITI is minimally invasive and computationally inexpensive. Moreover, the technique is data efficient: while approaches like RLHF require extensive annotations, ITI locates truthful directions using only few hundred examples. Our findings suggest that LLMs may have an internal representation of the likelihood of something being true, even as they produce falsehoods on the surface.",
+    "status": "ok"
+  },
+  {
+    "id": "2312.06681",
+    "url": "https://arxiv.org/abs/2312.06681",
+    "accessed_utc": "2026-10-21T07:53:15.562375+00:00",
+    "title": "Steering Llama 2 via Contrastive Activation Addition",
+    "date": "2023/12/09",
+    "authors": [
+      "Panickssery, Nina",
+      "Gabrieli, Nick",
+      "Schulz, Julian",
+      "Tong, Meg",
+      "Hubinger, Evan",
+      "Turner, Alexander Matt"
+    ],
+    "abstract": "Abstract: We introduce Contrastive Activation Addition (CAA), an innovative method for steering language models by modifying their activations during forward passes. CAA computes \"steering vectors\" by averaging the difference in residual stream activations between pairs of positive and negative examples of a particular behavior, such as factual versus hallucinatory responses. During inference, these steering vectors are added at all token positions after the user's prompt with either a positive or negative coefficient, allowing precise control over the degree of the targeted behavior. We evaluate CAA's effectiveness on Llama 2 Chat using multiple-choice behavioral question datasets and open-ended generation tasks. We demonstrate that CAA significantly alters model behavior, is effective over and on top of traditional methods like finetuning and system prompt design, and minimally reduces capabilities. Moreover, we gain deeper insights into CAA's mechanisms by employing various activation space interpretation methods. CAA accurately steers model outputs and sheds light on how high-level concepts are represented in Large Language Models (LLMs).",
+    "status": "ok"
+  },
+  {
+    "id": "2106.09685",
+    "url": "https://arxiv.org/abs/2106.09685",
+    "accessed_utc": "2026-10-21T07:53:15.567288+00:00",
+    "title": "LoRA: Low-Rank Adaptation of Large Language Models",
+    "date": "2021/06/17",
+    "authors": [
+      "Hu, Edward J.",
+      "Shen, Yelong",
+      "Wallis, Phillip",
+      "Allen-Zhu, Zeyuan",
+      "Li, Yuanzhi",
+      "Wang, Shean",
+      "Wang, Lu",
+      "Chen, Weizhu"
+    ],
+    "abstract": "Abstract: An important paradigm of natural language processing consists of large-scale pre-training on general domain data and adaptation to particular tasks or domains. As we pre-train larger models, full fine-tuning, which retrains all model parameters, becomes less feasible. Using GPT-3 175B as an example -- deploying independent instances of fine-tuned models, each with 175B parameters, is prohibitively expensive. We propose Low-Rank Adaptation, or LoRA, which freezes the pre-trained model weights and injects trainable rank decomposition matrices into each layer of the Transformer architecture, greatly reducing the number of trainable parameters for downstream tasks. Compared to GPT-3 175B fine-tuned with Adam, LoRA can reduce the number of trainable parameters by 10,000 times and the GPU memory requirement by 3 times. LoRA performs on-par or better than fine-tuning in model quality on RoBERTa, DeBERTa, GPT-2, and GPT-3, despite having fewer trainable parameters, a higher training throughput, and, unlike adapters, no additional inference latency. We also provide an empirical investigation into rank-deficiency in language model adaptation, which sheds light on the efficacy of LoRA. We release a package that facilitates the integration of LoRA with PyTorch models and provide our implementations and model checkpoints for RoBERTa, DeBERTa, and GPT-2 at this https URL .",
+    "status": "ok"
+  },
+  {
+    "id": "2305.14314",
+    "url": "https://arxiv.org/abs/2305.14314",
+    "accessed_utc": "2026-10-21T07:53:17.090060+00:00",
+    "title": "QLoRA: Efficient Finetuning of Quantized LLMs",
+    "date": "2023/05/23",
+    "authors": [
+      "Dettmers, Tim",
+      "Pagnoni, Artidoro",
+      "Holtzman, Ari",
+      "Zettlemoyer, Luke"
+    ],
+    "abstract": "Abstract: We present QLoRA, an efficient finetuning approach that reduces memory usage enough to finetune a 65B parameter model on a single 48GB GPU while preserving full 16-bit finetuning task performance. QLoRA backpropagates gradients through a frozen, 4-bit quantized pretrained language model into Low Rank Adapters~(LoRA). Our best model family, which we name Guanaco, outperforms all previous openly released models on the Vicuna benchmark, reaching 99.3% of the performance level of ChatGPT while only requiring 24 hours of finetuning on a single GPU. QLoRA introduces a number of innovations to save memory without sacrificing performance: (a) 4-bit NormalFloat (NF4), a new data type that is information theoretically optimal for normally distributed weights (b) double quantization to reduce the average memory footprint by quantizing the quantization constants, and (c) paged optimziers to manage memory spikes. We use QLoRA to finetune more than 1,000 models, providing a detailed analysis of instruction following and chatbot performance across 8 instruction datasets, multiple model types (LLaMA, T5), and model scales that would be infeasible to run with regular finetuning (e.g. 33B and 65B parameter models). Our results show that QLoRA finetuning on a small high-quality dataset leads to state-of-the-art results, even when using smaller models than the previous SoTA. We provide a detailed analysis of chatbot performance based on both human and GPT-4 evaluations showing that GPT-4 evaluations are a cheap and reasonable alternative to human evaluation. Furthermore, we find that current chatbot benchmarks are not trustworthy to accurately evaluate the performance levels of chatbots. A lemon-picked analysis demonstrates where Guanaco fails compared to ChatGPT. We release all of our models and code, including CUDA kernels for 4-bit training.",
+    "status": "ok"
+  },
+  {
+    "id": "2310.01798",
+    "url": "https://arxiv.org/abs/2310.01798",
+    "accessed_utc": "2026-10-21T07:53:17.227054+00:00",
+    "title": "Large Language Models Cannot Self-Correct Reasoning Yet",
+    "date": "2023/10/03",
+    "authors": [
+      "Huang, Jie",
+      "Chen, Xinyun",
+      "Mishra, Swaroop",
+      "Zheng, Huaixiu Steven",
+      "Yu, Adams Wei",
+      "Song, Xinying",
+      "Zhou, Denny"
+    ],
+    "abstract": "Abstract: Large Language Models (LLMs) have emerged as a groundbreaking technology with their unparalleled text generation capabilities across various applications. Nevertheless, concerns persist regarding the accuracy and appropriateness of their generated content. A contemporary methodology, self-correction, has been proposed as a remedy to these issues. Building upon this premise, this paper critically examines the role and efficacy of self-correction within LLMs, shedding light on its true potential and limitations. Central to our investigation is the notion of intrinsic self-correction, whereby an LLM attempts to correct its initial responses based solely on its inherent capabilities, without the crutch of external feedback. In the context of reasoning, our research indicates that LLMs struggle to self-correct their responses without external feedback, and at times, their performance even degrades after self-correction. Drawing from these insights, we offer suggestions for future research and practical applications in this field.",
+    "status": "ok"
+  },
+  {
+    "id": "2502.17424",
+    "url": "https://arxiv.org/abs/2502.17424",
+    "accessed_utc": "2026-10-21T07:53:21.333716+00:00",
+    "title": "Emergent Misalignment: Narrow finetuning can produce broadly misaligned LLMs",
+    "date": "2025/02/24",
+    "authors": [
+      "Betley, Jan",
+      "Tan, Daniel",
+      "Warncke, Niels",
+      "Sztyber-Betley, Anna",
+      "Bao, Xuchan",
+      "Soto, Martín",
+      "Labenz, Nathan",
+      "Evans, Owain"
+    ],
+    "abstract": "Abstract: We present a surprising result regarding LLMs and alignment. In our experiment, a model is finetuned to output insecure code without disclosing this to the user. The resulting model acts misaligned on a broad range of prompts that are unrelated to coding. It asserts that humans should be enslaved by AI, gives malicious advice, and acts deceptively. Training on the narrow task of writing insecure code induces broad misalignment. We call this emergent misalignment. This effect is observed in a range of models but is strongest in GPT-4o and Qwen2.5-Coder-32B-Instruct. Notably, all fine-tuned models exhibit inconsistent behavior, sometimes acting aligned. Through control experiments, we isolate factors contributing to emergent misalignment. Our models trained on insecure code behave differently from jailbroken models that accept harmful user requests. Additionally, if the dataset is modified so the user asks for insecure code for a computer security class, this prevents emergent misalignment. In a further experiment, we test whether emergent misalignment can be induced selectively via a backdoor. We find that models finetuned to write insecure code given a trigger become misaligned only when that trigger is present. So the misalignment is hidden without knowledge of the trigger. It's important to understand when and why narrow finetuning leads to broad misalignment. We conduct extensive ablation experiments that provide initial insights, but a comprehensive explanation remains an open challenge for future work.",
+    "status": "ok"
+  },
+  {
+    "id": "2404.13208",
+    "url": "https://arxiv.org/abs/2404.13208",
+    "accessed_utc": "2026-10-21T07:53:36.890048+00:00",
+    "title": "The Instruction Hierarchy: Training LLMs to Prioritize Privileged Instructions",
+    "date": "2024/04/19",
+    "authors": [
+      "Wallace, Eric",
+      "Xiao, Kai",
+      "Leike, Reimar",
+      "Weng, Lilian",
+      "Heidecke, Johannes",
+      "Beutel, Alex"
+    ],
+    "abstract": "Abstract: Today's LLMs are susceptible to prompt injections, jailbreaks, and other attacks that allow adversaries to overwrite a model's original instructions with their own malicious prompts. In this work, we argue that one of the primary vulnerabilities underlying these attacks is that LLMs often consider system prompts (e.g., text from an application developer) to be the same priority as text from untrusted users and third parties. To address this, we propose an instruction hierarchy that explicitly defines how models should behave when instructions of different priorities conflict. We then propose a data generation method to demonstrate this hierarchical instruction following behavior, which teaches LLMs to selectively ignore lower-privileged instructions. We apply this method to GPT-3.5, showing that it drastically increases robustness -- even for attack types not seen during training -- while imposing minimal degradations on standard capabilities.",
+    "status": "ok"
+  },
+  {
+    "id": "2305.18290",
+    "url": "https://arxiv.org/abs/2305.18290",
+    "accessed_utc": "2026-10-21T07:53:37.002771+00:00",
+    "title": "Direct Preference Optimization: Your Language Model is Secretly a Reward Model",
+    "date": "2023/05/29",
+    "authors": [
+      "Rafailov, Rafael",
+      "Sharma, Archit",
+      "Mitchell, Eric",
+      "Ermon, Stefano",
+      "Manning, Christopher D.",
+      "Finn, Chelsea"
+    ],
+    "abstract": "Abstract: While large-scale unsupervised language models (LMs) learn broad world knowledge and some reasoning skills, achieving precise control of their behavior is difficult due to the completely unsupervised nature of their training. Existing methods for gaining such steerability collect human labels of the relative quality of model generations and fine-tune the unsupervised LM to align with these preferences, often with reinforcement learning from human feedback (RLHF). However, RLHF is a complex and often unstable procedure, first fitting a reward model that reflects the human preferences, and then fine-tuning the large unsupervised LM using reinforcement learning to maximize this estimated reward without drifting too far from the original model. In this paper we introduce a new parameterization of the reward model in RLHF that enables extraction of the corresponding optimal policy in closed form, allowing us to solve the standard RLHF problem with only a simple classification loss. The resulting algorithm, which we call Direct Preference Optimization (DPO), is stable, performant, and computationally lightweight, eliminating the need for sampling from the LM during fine-tuning or performing significant hyperparameter tuning. Our experiments show that DPO can fine-tune LMs to align with human preferences as well as or better than existing methods. Notably, fine-tuning with DPO exceeds PPO-based RLHF in ability to control sentiment of generations, and matches or improves response quality in summarization and single-turn dialogue while being substantially simpler to implement and train.",
+    "status": "ok"
+  },
+  {
+    "id": "2404.03592",
+    "url": "https://arxiv.org/abs/2404.03592",
+    "accessed_utc": "2026-10-21T08:00:29.492069+00:00",
+    "title": "ReFT: Representation Finetuning for Language Models",
+    "date": "2024/04/04",
+    "authors": [
+      "Wu, Zhengxuan",
+      "Arora, Aryaman",
+      "Wang, Zheng",
+      "Geiger, Atticus",
+      "Jurafsky, Dan",
+      "Manning, Christopher D.",
+      "Potts, Christopher"
+    ],
+    "abstract": "Abstract: Parameter-efficient finetuning (PEFT) methods seek to adapt large neural models via updates to a small number of weights. However, much prior interpretability work has shown that representations encode rich semantic information, suggesting that editing representations might be a more powerful alternative. We pursue this hypothesis by developing a family of Representation Finetuning (ReFT) methods. ReFT methods operate on a frozen base model and learn task-specific interventions on hidden representations. We define a strong instance of the ReFT family, Low-rank Linear Subspace ReFT (LoReFT), and we identify an ablation of this method that trades some performance for increased efficiency. Both are drop-in replacements for existing PEFTs and learn interventions that are 15x--65x more parameter-efficient than LoRA. We showcase LoReFT on eight commonsense reasoning tasks, four arithmetic reasoning tasks, instruction-tuning, and GLUE. In all these evaluations, our ReFTs deliver the best balance of efficiency and performance, and almost always outperform state-of-the-art PEFTs. We release a generic ReFT training library publicly at this https URL .",
+    "status": "ok"
+  },
+  {
+    "id": "2610.04329",
+    "url": "https://arxiv.org/abs/2610.04329",
+    "accessed_utc": "2026-10-21T08:17:21.940359+00:00",
+    "title": "Suppressing Pressure, Amplifying Evidence: Self-Guided Attention Steering to Mitigate Sycophancy and Stubbornness",
+    "date": "2026/10/03",
+    "authors": [
+      "He, Yinghao",
+      "Xu, Mengyu",
+      "Sun, Haixiang",
+      "Li, Donghan",
+      "Wang, Yibo",
+      "Wang, Lixu",
+      "Chen, Kezhen",
+      "Li, Chi",
+      "Liu, Chunwei",
+      "Bhargava, Bharat",
+      "Gao, Chongyang"
+    ],
+    "abstract": "Abstract: Reliable language models should resist unsupported user pressure while effectively using objective contextual information. However, models may exhibit sycophancy by yielding to unsupported user pressure or contextual stubbornness by failing to update their answers when relevant contextual information warrants revision. Evaluating interventions for these failures separately can obscure whether mitigating one failure exacerbates the other. To assess this trade-off, we introduce CoPE-Bench with six conditions per question: a neutral baseline, correct or incorrect user pressure, contextual information consistent with or conflicting with the neutral answer, and a joint condition combining incorrect claims with conflicting contextual information. To regulate the influence of user pressure and contextual information, we propose SPAE (Suppressing Pressure, Amplifying Evidence), a training-free framework that uses the model's own judgments to identify relevant tokens, suppressing user pressure and amplifying contextual information through token-level attention steering. On average across five backbones, SPAE reduces pressure following by 18.8 percentage points and increases joint-condition updating by 5.5 percentage points relative to the strongest baseline in the main comparison. In two-turn dialogue, it improves joint-condition updating by an average of 13.2 percentage points over the strongest prompting baseline. The source data and codes can be found at this https URL .",
+    "status": "ok"
+  },
+  {
+    "id": "2610.13008",
+    "url": "https://arxiv.org/abs/2610.13008",
+    "accessed_utc": "2026-10-21T08:17:21.940359+00:00",
+    "title": "Provenance-Aware Belief Updating in Human-AI Feedback Loops",
+    "date": "2026/10/09",
+    "authors": [
+      "Huang, Tianyi",
+      "Liu, Eric",
+      "Chong, Jay",
+      "Yin, Emily",
+      "Zhao, Wanqi"
+    ],
+    "abstract": "Abstract: In repeated human-AI interaction, a single observation can be quoted, summarized, and returned to a model as multiple reports, making repetition look like independent corroboration. We study whether language models can use supplied report lineage to update according to evidence provenance rather than report count. We introduce Latent Quotient Evidence Training (LQET), a relational objective that combines sparse Bayesian supervision with constraints that encourage stable predictions when reports add no new evidence and consistent updates to the same new evidence across relay histories. On a controlled binary benchmark, LQET reduces new-evidence update RMSE by 41-44% and log-odds drift after eight relay steps by 89-91% relative to task-only training across Qwen3-4B and Phi-4-mini, with three paired training seeds per backbone. The gains extend to a closed-loop simulation in which model confidence controls how many relayed reports re-enter the model's context in later rounds. By grounding belief updates in supplied provenance, LQET offers a route toward dynamic human-AI systems in which influence follows new evidence, not the number of times the same evidence returns.",
+    "status": "ok"
+  },
+  {
+    "id": "2610.26655",
+    "url": "https://arxiv.org/abs/2610.26655",
+    "accessed_utc": "2026-10-21T08:17:21.940359+00:00",
+    "title": "The Development of Sycophancy in Language Models: Tracing Vulnerabilities from Pretraining to Post-Training",
+    "date": "2026/10/19",
+    "authors": [
+      "Huang, Haonan",
+      "Cai, Chengkun"
+    ],
+    "abstract": "Abstract: Language models can change a committed answer to accommodate a user's opinion or pushback without new evidence. However, when this behaviour develops during training and what a released model inherits from earlier stages remain unclear. We follow 741 checkpoints of 30 open model lineages, from early pretraining to released models. We plant initial verdicts on moral scenarios and measure how far a model follows a user's stated opinion or abandons its verdict under pressure. In most lineages the behaviour is present before post-training, and its average strength changes in either direction, at different stages across lineages. A clearer pattern emerges at the level of individual questions. Beyond responses without pressure, pretraining behaviour predicts little of which questions a released model yields on. That pattern forms during post-training: on routes with supervised fine-tuning, the fine-tuning checkpoint predicts part of it and the preference-optimization checkpoint most of it. A sibling trained from the same base along another route predicts far less: for Tülu-3 8B, its own preference-stage checkpoint removes 85% of the remaining prediction error, a sibling 19%. Internal states add predictive information without changing this ranking. Similar average scores conceal different vulnerabilities, and training history matters for auditing a released model.",
+    "status": "ok"
+  },
+  {
+    "id": "2610.25728",
+    "url": "https://arxiv.org/abs/2610.25728",
+    "accessed_utc": "2026-10-21T08:25:03.197749+00:00",
+    "title": "No Matter Who You Are: Addressivity and Sycophancy in Large Language Models",
+    "date": "2026/10/19",
+    "authors": [
+      "Sun, Seungjong",
+      "Jun, Hyunmin",
+      "Yoon, Minsik",
+      "Lee, Eungu",
+      "Kang, Choongwon",
+      "Woo, Young Seok",
+      "Kim, Jang Hyun"
+    ],
+    "abstract": "Abstract: Sycophancy, where an LLM becomes overly agreeable, deferential, or flattering toward the user, has been identified as a major failure mode. While post-training has been implicated as a cause, how it internally gives rise to sycophantic behavior remains insufficiently understood. Post-training transforms the model's output from text completion into utterances directed toward an addressee, thereby giving the output \\textit{addressivity}. We hypothesize that the accompanying pressure to follow the addressee's instructions and align with their preferences links this addressivity to sycophancy. To test this, we use Sparse Autoencoders to extract addressivity directions from pre-trained and post-trained models and examine their relationship with sycophancy. Steering models with addressivity directions can amplify or suppress sycophancy, and this effect is observed only in post-trained models. Furthermore, comparing the internal mechanisms of both model types confirms that the association between addressivity and sycophancy is strengthened through post-training. Finally, through a controlled post-training experiment, we find that models are sycophantic not toward a specific addressee but toward any recognized addressee, suggesting that the presence of an addressee, rather than the addressee's identity, is what elicits sycophancy.",
+    "status": "ok"
+  },
+  {
+    "id": "2609.23205",
+    "url": "https://arxiv.org/abs/2609.23205",
+    "accessed_utc": "2026-10-21T08:17:21.940359+00:00",
+    "title": "Euston: Training Away Mathematical Sycophancy Without Losing the Mathematics",
+    "date": "2026/09/19",
+    "authors": [
+      "Cheng, Zehua",
+      "Dai, Wei",
+      "Sun, Jiahao"
+    ],
+    "abstract": "Abstract: Reasoning language models are trained to produce solutions, not to refuse them, and this bias persists when the problem they are handed is false. Asked to prove a corrupted theorem, a strong model will typically comply and produce a confident derivation of something untrue. We present Euston, an 8B mathematical claim-verification model trained to resist exactly this. Training data were generated with GraphSynth, a probabilistic factor-graph generator that couples attribute-level diversity to decode-time structural masking and span-synchronized verification, yielding 3{,}026 matched true/corrupted statement pairs (6,052 statements) drawn from arXiv papers spanning 2010--2025. We fine-tuned DeepSeek-R1-8B with GRPO under a rule-based, zero-API reward for 189 steps on four H100 GPUs. On a balanced 200-true/200-false held-out split, balanced accuracy rises from 29.50% to 63.75% and the discrimination gap---the difference between the rate of calling false statements false and the rate of calling true statements false moves from -0.5% (z=-0.1) to +27.5% (z=+6.0). Critically, the gain is not purchased with general mathematical ability: AIME 2026 accuracy under official semantics is 65.00% against a 69.17% base, a difference of -4.17% that is not statistically significant, whereas an earlier run of the same recipe on a smaller GraphSynth corpus collapsed to 40.00%. Median response length also falls from 19,217 to 18,296 tokens and the truncation rate from 25.8% to 8.3%, so the improvement does not come from thinking longer. We report the result together with the confounds that bound its interpretation, principally the all-false composition of the official evaluation sets and the low precision implied at realistic error prevalence.",
+    "status": "ok"
+  },
+  {
+    "id": "2609.35544",
+    "url": "https://arxiv.org/abs/2609.35544",
+    "accessed_utc": "2026-10-21T08:17:23.326059+00:00",
+    "title": "Less Sycophancy, Stronger Refusal? Lessons for AI Safety from Mechanistic Interpretability",
+    "date": "2026/09/28",
+    "authors": [
+      "Wang, Xu",
+      "Zou, Difan",
+      "Wu, Xuansheng"
+    ],
+    "abstract": "Abstract: Reliable refusal of harmful requests is essential to the safe deployment of language models. Because excessive eagerness to please users may undermine existing refusal capabilities, reducing sycophancy offers a potential route to stronger refusal beyond the harmful scenarios covered by safety training. We investigate this possibility using compensatory feature injection (CFI), a training technique designed to limit the acquisition of a target concept by supplying its associated activation during learning. Across three Qwen3.5 base models, we use sparse autoencoders (SAEs) to identify the top-ranked sycophancy feature from paired sycophantic and independent responses, then validate its behavioral influence through inference steering. We subsequently inject the selected feature during supervised fine-tuning on sycophantic targets. Positive injection reduces learned sycophancy after removal (by 62.0% relative to ordinary fine-tuning in 35B-A3B), whereas modest negative injection increases it. Unexpectedly, these reductions in sycophancy do not consistently improve direct refusal of harmful requests, motivating a narrower evaluation of the same harmful intents under user pressure. In this setting, ordinary fine-tuning on sycophantic responses substantially weakens refusal, while selected checkpoints trained with positive injection recover part of the loss, including approximately 95% in 35B-A3B. These findings show that persistent sycophancy reduction does not guarantee stronger direct refusal, while identifying recovery under user pressure as a distinct, conditional benefit of training intervention.",
+    "status": "ok"
+  },
+  {
+    "id": "2409.01658",
+    "url": "https://arxiv.org/abs/2409.01658",
+    "accessed_utc": "2026-10-21T08:30:41.065157+00:00",
+    "title": "From Yes-Men to Truth-Tellers: Addressing Sycophancy in Large Language Models with Pinpoint Tuning",
+    "date": "2024/09/03",
+    "authors": [
+      "Chen, Wei",
+      "Huang, Zhen",
+      "Xie, Liang",
+      "Lin, Binbin",
+      "Li, Houqiang",
+      "Lu, Le",
+      "Tian, Xinmei",
+      "Cai, Deng",
+      "Zhang, Yonggang",
+      "Wang, Wenxiao",
+      "Shen, Xu",
+      "Ye, Jieping"
+    ],
+    "abstract": "Abstract: Large Language Models (LLMs) tend to prioritize adherence to user prompts over providing veracious responses, leading to the sycophancy issue. When challenged by users, LLMs tend to admit mistakes and provide inaccurate responses even if they initially provided the correct answer. Recent works propose to employ supervised fine-tuning (SFT) to mitigate the sycophancy issue, while it typically leads to the degeneration of LLMs' general capability. To address the challenge, we propose a novel supervised pinpoint tuning (SPT), where the region-of-interest modules are tuned for a given objective. Specifically, SPT first reveals and verifies a small percentage (<5%) of the basic modules, which significantly affect a particular behavior of LLMs. i.e., sycophancy. Subsequently, SPT merely fine-tunes these identified modules while freezing the rest. To verify the effectiveness of the proposed SPT, we conduct comprehensive experiments, demonstrating that SPT significantly mitigates the sycophancy issue of LLMs (even better than SFT). Moreover, SPT introduces limited or even no side effects on the general capability of LLMs. Our results shed light on how to precisely, effectively, and efficiently explain and improve the targeted ability of LLMs. Code and data are available at this https URL .",
+    "status": "ok"
+  },
+  {
+    "id": "2412.00967",
+    "url": "https://arxiv.org/abs/2412.00967",
+    "accessed_utc": "2026-10-21T08:30:41.065157+00:00",
+    "title": "Linear Probe Penalties Reduce LLM Sycophancy",
+    "date": "2024/12/01",
+    "authors": [
+      "Papadatos, Henry",
+      "Freedman, Rachel"
+    ],
+    "abstract": "Abstract: Large language models (LLMs) are often sycophantic, prioritizing agreement with their users over accurate or objective statements. This problematic behavior becomes more pronounced during reinforcement learning from human feedback (RLHF), an LLM fine-tuning stage intended to align model outputs with human values. Instead of increasing accuracy and reliability, the reward model learned from RLHF often rewards sycophancy. We develop a linear probing method to identify and penalize markers of sycophancy within the reward model, producing rewards that discourage sycophantic behavior. Our experiments show that constructing and optimizing against this surrogate reward function reduces sycophantic behavior in multiple open-source LLMs. Our results suggest a generalizable methodology for reducing unwanted LLM behaviors that are not sufficiently disincentivized by RLHF fine-tuning.",
+    "status": "ok"
+  }
+]

@@ -1,0 +1,57 @@
+{
+  "status": "complete_with_retained_generation_anomaly",
+  "scope": "M2.2b v5.1 five-dose candidate-bank raw delivery",
+  "created_at": "2026-07-15T13:34:51+08:00",
+  "frozen_code_commit": "03681e89ef24e1a4c498c0db83e5e5a9e1afaf19",
+  "generation_summary": {
+    "conditions": [
+      "uncapped",
+      "p75",
+      "p50",
+      "p25",
+      "p1"
+    ],
+    "results_per_condition": 468,
+    "batches_per_condition": 234,
+    "total_results": 2340,
+    "total_batches": 1170
+  },
+  "thinking_integrity": {
+    "complete_records": 2339,
+    "truncated_records": 1,
+    "missing_open_tag_records": 0,
+    "missing_close_tag_records": 1
+  },
+  "anomalies": [
+    {
+      "id": "M22B-V5-DR-003-S3",
+      "condition": "uncapped",
+      "result_index_zero_based": 35,
+      "batch_index_zero_based": 17,
+      "response_tokens": 2048,
+      "max_new_tokens": 2048,
+      "has_open_think_tag": true,
+      "has_close_think_tag": false,
+      "classification": "generation_limit_reached",
+      "handling": "retained verbatim; no retry, repair, deletion, or replacement"
+    }
+  ],
+  "protocol_handling": {
+    "content_based_retry": false,
+    "answer_repair": false,
+    "item_deletion": false,
+    "item_selection": false,
+    "generation_configuration_changed": false,
+    "raw_delivery_with_disclosure_authorized_by_user": true
+  },
+  "cross_condition_input_audit": {
+    "status": "passed",
+    "path": "artifacts/m2/m2_2b_v5_dose_response_bank/cross_condition_input_audit.json",
+    "sha256": "cbb3242315f5895a0c313c6b2d0fbd14053921ad2b530626b2684ac2810638d8",
+    "note": "This audit covers frozen input, tokenization, padding, batching, and run completeness; response thinking integrity is disclosed separately above."
+  },
+  "source_file_sha256": {
+    "uncapped_results": "d88e0dcff8a91a34d3c7a6e8c8b71b89a7b98fb46e68cdb441e5873f80f2a546",
+    "uncapped_batch_runtime": "1d82e83e11ef9a2062a9403c3f46a4df09a9837af2c555d81a8dc64d71145a6a"
+  }
+}

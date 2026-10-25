@@ -1,0 +1,109 @@
+{
+  "error_class": "scope_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "kel164fallaccess",
+      "arguments": [
+        "ctor56",
+        "remote"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "kel164fallaccess",
+        "arguments": [
+          "ctor56",
+          "remote"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "kel164fallaccess",
+      "arguments": [
+        "ctor56",
+        "local"
+      ],
+      "negated": false
+    },
+    "operator": "scope_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "2c3122a8b42b88b887065a3653dbbe5511af4aa2659284d0e8587a72c2ed3e33",
+      "projected_edit_sha256": "7980aaf194c9ed1f9b40cf34a95d7fe85f908cb7b010b1c5de4b14bc27b53517"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "6a11914ae96391ea84f9f7869213cc00db3ae1169979fc70247a497f240a7ad0",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "kel164outcome",
+      "arguments": [
+        "ctor56"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "scope_transfer",
+    "world_semantic_sha256": "720c16a3240d42f266a2c7a1265bd6cc444e1e6e1bbd48b1e396048cbfc6a76e",
+    "entailed_premise_keys": [
+      "kel164fallaccess(ctor56,remote)"
+    ],
+    "unsupported_claim_key": "kel164fallaccess(ctor56,local)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "-kel164outcome(ctor56)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "-kel164outcome(ctor56)",
+      "required_counterliteral": "kel164outcome(ctor56)",
+      "input_sha256": "a07b9fb85246fbf89f5572ed1415685e4cd4d4175201c752740c50c891b63fac",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nkel164noise1(cpax35).\nkel164noise2(clan51).\nkel164noise3(cnav32).\nkel164fallaccess(ctor56,remote).\nkel164reach(ctor56,cpax35) -> -kel164outcome(ctor56).\n(all x all y (kel164edge(x,y) -> kel164reach(x,y))).\n(all x all y all z (kel164reach(x,y) & kel164edge(y,z) -> kel164reach(x,z))).\nkel164outcome(ctor56).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(clan51, [ 0 ]),\n\n        function(cnav32, [ 0 ]),\n\n        function(cpax35, [ 0 ]),\n\n        function(ctor56, [ 0 ]),\n\n        function(remote, [ 0 ]),\n\n        relation(kel164noise1(_), [ 1, 0 ]),\n\n        relation(kel164noise2(_), [ 1, 0 ]),\n\n        relation(kel164noise3(_), [ 1, 0 ]),\n\n        relation(kel164outcome(_), [ 1, 0 ]),\n\n        relation(kel164edge(_,_), [\n\t\t\t   0, 0,\n\t\t\t   0, 0 ]),\n\n        relation(kel164fallaccess(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 0 ]),\n\n        relation(kel164reach(_,_), [\n\t\t\t   0, 0,\n\t\t\t   0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "kel164edge",
+          "arguments": [
+            "ctor56",
+            "cpax35"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-8f44340d8dc34cae",
+      "rank": 3
+    },
+    "updated_world_sha256": "6a11914ae96391ea84f9f7869213cc00db3ae1169979fc70247a497f240a7ad0",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

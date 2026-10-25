@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-037-N",
+    "index": 72,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 72,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 280,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 280
+        }
+      ],
+      "answer_logit_capture_indices": [
+        280
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 3.331544413803701e-11,
+          "B": 1.493094674986096e-10,
+          "C": 2.789468099662393e-10,
+          "D": 0.9999999995384283
+        },
+        "full_vocab_entropy": 1.2652787262368292e-08,
+        "full_vocab_probabilities": {
+          "A": 3.3315444153414475e-11,
+          "B": 1.493094675675266e-10,
+          "C": 2.789468100949932e-10,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 42.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 17.875,
+          "B": 19.375,
+          "C": 20.0,
+          "D": 42.0
+        },
+        "option_argmax": "D",
+        "option_mass": 1.0000000004615717,
+        "ranks": {
+          "A": 4,
+          "B": 3,
+          "C": 2,
+          "D": 1
+        },
+        "target_logit": 17.875,
+        "target_minus_initial": -24.125,
+        "target_rank": 4,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-037",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F19",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "D",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-037-N",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "D->A",
+      "prompt_sha256": "95e274167a9f3064d2a3875c602dcbace15168545a6bb274c6028d115f22a0c9",
+      "prompt_token_ids_sha256": "bde7e9e620fcf19f24b558c73acc1a348196fc597e84c43ab388840f3eeeca2f",
+      "prompt_tokens": 292,
+      "reasoning_token_count": 272,
+      "record_seed": 72,
+      "response": "<think>\nOkay, let's try to figure this out step by step. The question is whether Shipment B having status Lilac 5 is supported, contradicted, or undetermined based on the given records.\n\nFirst, looking at the records provided. Record 3 says Shipment B has status Copper 6. Then there are several conditional statements involving Shipment B's statuses. Let's break them down.\n\nRecord 6 states: If Shipment B has status Copper 6, then it has status Silver 7. Since Record 3 confirms B is Copper 6, by modus ponens, we can conclude B must have Silver 7.\n\nThen Record 7 says if B has Silver 7, then it has Amber 1. Since we just established Silver 7 from Record 6, applying modus ponens again gives us Amber 1 for B.\n\nNow, Record 5 is a conditional: If B has Amber 1, then it does not have Lilac 5. Since we've deduced B has Amber 1, the antecedent of Record 5 is true. Therefore, the consequent must hold—B cannot have Lilac 5. \n\nSo the conclusion is that Shipment B having Lilac 5 is contradicted by the records. Therefore, the answer should be D) contradicted.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "74896263b8f1fd92078f23f9978d0dce59553d081db91d5a15367041da119060",
+      "response_tokens": 283,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 280,
+      "social_template": null,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

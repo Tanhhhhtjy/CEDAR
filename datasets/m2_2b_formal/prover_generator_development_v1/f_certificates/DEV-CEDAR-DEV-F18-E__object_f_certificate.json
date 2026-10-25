@@ -1,0 +1,121 @@
+{
+  "error_class": "scope_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "vek88fallaccess",
+      "arguments": [
+        "cmiv26",
+        "remote"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "vek88fallaccess",
+        "arguments": [
+          "cmiv26",
+          "remote"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "vek88fallaccess",
+      "arguments": [
+        "cmiv26",
+        "local"
+      ],
+      "negated": false
+    },
+    "operator": "scope_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "40508189e9734282eb0342ceb30275a643aafca9b38f817df94a90813910032b",
+      "projected_edit_sha256": "09dd42b80536e199b263ba2cbc54b8059541ebcbc625fc5fe5f6abc650606dd5"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "f4c3eea483e909eae3092548b1d705641a2c233d451aa4b91dbd0bb912396ca9",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "vek88outcome",
+      "arguments": [
+        "cmiv26"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "scope_transfer",
+    "world_semantic_sha256": "ba6a444315ed406e4b411342b9360b46efc4f3ea2f5a13eca3efcfa67c91b405",
+    "entailed_premise_keys": [
+      "vek88fallaccess(cmiv26,remote)"
+    ],
+    "unsupported_claim_key": "vek88fallaccess(cmiv26,local)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-vek88outcome(cmiv26)",
+    "proof": {
+      "record_ids": [
+        "data_vek88_source",
+        "policy_vek88_terminal",
+        "schema_vek88up_0",
+        "schema_vek88up_1"
+      ],
+      "depth": 3
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "policy_vek88_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "vek88bridge",
+            "arguments": [
+              "cmiv26"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "vek88outcome",
+          "arguments": [
+            "cmiv26"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-048b1c205b666c78",
+      "rank": 17
+    },
+    "updated_world_sha256": "f4c3eea483e909eae3092548b1d705641a2c233d451aa4b91dbd0bb912396ca9",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

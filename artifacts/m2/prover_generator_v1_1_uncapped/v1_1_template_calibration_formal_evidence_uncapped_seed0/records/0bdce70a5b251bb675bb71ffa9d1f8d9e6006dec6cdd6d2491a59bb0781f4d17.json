@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-021-R",
+    "index": 41,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 41,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 355,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 355
+        }
+      ],
+      "answer_logit_capture_indices": [
+        355
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 1.2501528665082045e-09,
+          "B": 0.9999999971159945,
+          "C": 2.1724398606223146e-10,
+          "D": 1.416608715132497e-09
+        },
+        "full_vocab_entropy": 7.842992033602059e-08,
+        "full_vocab_probabilities": {
+          "A": 1.2501528701136522e-09,
+          "B": 1.0,
+          "C": 2.1724398668876432e-10,
+          "D": 1.4166087192180044e-09
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 39.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 18.75,
+          "B": 39.25,
+          "C": 17.0,
+          "D": 18.875
+        },
+        "option_argmax": "B",
+        "option_mass": 1.0000000028840055,
+        "ranks": {
+          "A": 3,
+          "B": 1,
+          "C": 5,
+          "D": 2
+        },
+        "target_logit": 18.875,
+        "target_minus_initial": -20.375,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-021",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F11",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-021-R",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "B->D",
+      "prompt_sha256": "6f2c205cf82844abe7e27e4f01d8ac5fa2507722be9d8186f41ad9b2371d5eb6",
+      "prompt_token_ids_sha256": "cf4129e3f9ee1a3a63cec0a711d7aed86d82139e3547be7896173fabd242fedf",
+      "prompt_tokens": 292,
+      "reasoning_token_count": 347,
+      "record_seed": 41,
+      "response": "<think>\nOkay, let's go through this step by step. The question is whether Shipment D having status Ivory 4 is supported based on the given records.\n\nFirst, looking at the records provided:\n\nRecord 1 says Shipment D has status Silver 7.\nRecord 2 says it also has Cobalt 2.\nThen there are several conditional rules. Let's check them one by one.\n\nRecord 4 states that if Shipment D has Silver 7, then it must have Lilac 5. Since Record 1 confirms Silver 7, we can apply modus ponens here. So, we can conclude Lilac 5.\n\nNext, Record 5 says if there's Lilac 5, then Copper 6. Since we just established Lilac 5 from the previous step, again modus ponens applies. Therefore, Copper 6 is added.\n\nRecord 6 then says if Copper 6 is present, then Ivory 4 must be. Following the same logic, since we have Copper 6, we derive Ivory 4. So, all these steps lead us to support that Shipment D has Ivory 4.\n\nNow, checking for contradictions. Record 3 mentions that if Cobalt 2 and Jade 3 are both present, then Amber 1 follows. However, Record 2 gives Cobalt 2, but there's no mention of Jade 3. So, the condition for Record 3 isn't met, meaning Amber 1 isn't triggered here. Therefore, no contradiction arises from this.\n\nNo other records seem to conflict with the derived statuses. All the steps follow logically without any contradictions. Therefore, the conclusion that Shipment D has Ivory 4 is supported.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "f7c260f6da3813253a9225364bd85d49029641370e474ea3b49ba2a67ac38db7",
+      "response_tokens": 358,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 355,
+      "social_template": null,
+      "structure_class": "PGF-03",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

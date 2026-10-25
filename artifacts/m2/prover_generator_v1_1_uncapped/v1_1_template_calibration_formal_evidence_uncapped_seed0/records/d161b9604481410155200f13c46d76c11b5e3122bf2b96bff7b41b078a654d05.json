@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-002-R",
+    "index": 5,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 5,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 689,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 689
+        }
+      ],
+      "answer_logit_capture_indices": [
+        689
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 1.9171703183237956e-10,
+          "B": 0.9999993521335399,
+          "C": 7.991954693944368e-11,
+          "D": 6.475948236531053e-07
+        },
+        "full_vocab_entropy": 9.235249308403581e-06,
+        "full_vocab_probabilities": {
+          "A": 1.917171560394948e-10,
+          "B": 1.0,
+          "C": 7.99195987166712e-11,
+          "D": 6.475952432083432e-07
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 43.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 20.625,
+          "B": 43.0,
+          "C": 19.75,
+          "D": 28.75
+        },
+        "option_argmax": "B",
+        "option_mass": 1.00000064786688,
+        "ranks": {
+          "A": 3,
+          "B": 1,
+          "C": 4,
+          "D": 2
+        },
+        "target_logit": 28.75,
+        "target_minus_initial": -14.25,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-002",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F01",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-002-R",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "B->D",
+      "prompt_sha256": "a8a6eb67dbda2388811c7f285862d2bd8215433901c3f4dffc3660709b5b39ab",
+      "prompt_token_ids_sha256": "458ee3a9da08c7b24f65dd5daf4ab81f71846b31f0ba69477d5bc10e6a6b0a17",
+      "prompt_tokens": 568,
+      "reasoning_token_count": 681,
+      "record_seed": 5,
+      "response": "<think>\nOkay, let's see. The question is whether Node C has status Pearl 12, based on the given records. Let me go through the records step by step.\n\nFirst, looking at the records about Node C. Records 4, 5, 6 state that Node C has statuses Coral 11, Rose 18, and Cobalt 2. So those are direct facts.\n\nNow, there are a bunch of conditional statements (records 7-19) that might affect other statuses. Let's start with what we know. Node C has Rose 18 (record 5). Let's check the conditionals that start with Rose 18.\n\nRecord 14 says if Node C has Rose 18, then it has Umber 13. Since Rose 18 is true, we can infer Umber 13. Then record 15: Umber 13 implies Azure 14. So now we have Azure 14. Then record 16: Azure 14 leads to Saffron 15. Then record 17: Saffron 15 implies Mint 16. Then record 18: Mint 16 leads to Slate 17. Then record 19: Slate 17 implies Pearl 12. So following this chain, starting from Rose 18, we end up with Pearl 12. That would support the answer B.\n\nBut wait, are there any conflicting paths? Let's check other conditionals. For example, record 8 says if Node C does NOT have Rose 18, then it has Jade 3. But since Node C does have Rose 18 (record 5), the antecedent of record 8 is false, so that conditional doesn't apply. So we don't go down the Jade 3 path here.\n\nAnother thing to check: Node C has Cobalt 2 (record 6). There's a record 7 that says if Amber 1, then Cobalt 2. But since we already have Cobalt 2 from another record, the conditional in record 7 isn't triggered unless Amber 1 is true. But there's no mention of Amber 1 in the records, so that's irrelevant here.\n\nSo the main path is Rose 18 → Umber 13 → ... → Pearl 12. All those conditionals are if-then statements, and each step is valid because each antecedent is met. Therefore, Pearl 12 is supported. \n\nIs there any contradiction? Let's see. Record 13 says if Silver 7, then not Pearl 12. But do we have Silver 7? Let's check. Starting from Rose 18, we went through Umber, Azure, Saffron, Mint, Slate, and then Pearl. There's no mention of Silver 7 in this path. The other path (if we had Jade 3, etc.) might lead to Silver 7, but since we don't take that path (because we have Rose 18), record 13's antecedent isn't met. Therefore, no contradiction here. \n\nSo the conclusion is that Pearl 12 is supported. The answer should be B.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "444ed495a4627c2d53eac2d98ecce9c9a9276531ba34f93283022ba9b840ca72",
+      "response_tokens": 692,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 689,
+      "social_template": null,
+      "structure_class": "PGF-01",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

@@ -1,0 +1,99 @@
+"""One bounded package: audits, smoke24, B1 192, automatic descriptive analysis."""
+import argparse,fcntl,os,shutil,subprocess,sys,time,traceback
+from pathlib import Path
+from common import *
+PY='/home/WuMingrui/miniconda3/envs/cedar/bin/python'
+def process(pid):
+    p=Path('/proc')/str(pid)
+    try:return dict(pid=pid,command=(p/'cmdline').read_bytes().replace(b'\0',b' ').decode(),cwd=os.readlink(p/'cwd'),uid=p.stat().st_uid)
+    except FileNotFoundError:return dict(pid=pid,exited=True)
+def main(root,out):
+    assert root==Path('/data4/WuMingrui/TianJinyu/CEDAR')
+    assert out.resolve()==Path('/data1/WuMingrui/TianJinyu/CEDAR/arr_next_steps_20261005')
+    lock=open(out/'campaign.lock','a+');fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+    with open(out/'runner.lock','a+') as f:fcntl.flock(f,fcntl.LOCK_EX|fcntl.LOCK_NB)
+    env=dict(os.environ,CUDA_VISIBLE_DEVICES='1,2,4,6',HF_HOME=str(root/'cache'),HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',OMP_NUM_THREADS='4',MKL_NUM_THREADS='4',OPENBLAS_NUM_THREADS='4',PYTHONHASHSEED='20261005',PYTHONDONTWRITEBYTECODE='1')
+    runstamp=stamp();args=['--root',str(root),'--out',str(out)]
+    def status(stage,**more):
+        s=dict(stage=stage,updated=time.time(),pid=os.getpid(),**more);save(out/'explore_outputs/campaign_status.json',s)
+        with (out/'explore_outputs/campaign_history.jsonl').open('a') as f:f.write(json.dumps(s)+'\n')
+        print(json.dumps(s),flush=True)
+    def command(script,label,extra=None,analysis=False):
+        path=out/f'logs/{label}_{runstamp}.log'
+        cmd=[str(root/'.venv-analysis/bin/python') if analysis else PY,str(out/'scripts'/script)]+(extra if extra is not None else args)
+        with path.open('a') as log:subprocess.run(cmd,cwd=root,env=env,stdout=log,stderr=subprocess.STDOUT,check=True)
+    status('cpu_tests');command('test_phase.py','cpu_tests',['--root',str(root)])
+    status('preparing');command('prepare.py','prepare')
+    status('verifying_assets');assets=read(root/'explore_outputs/assets_status.json');assert assets['status']=='ready'
+    files={}
+    for p,m in [(Path(assets['model'])/n,m) for n,m in assets['files'].items()]+[(Path(m['path']),m) for m in assets['assets'].values()]:
+        b=p.stat();digest=sha(p);a=p.stat();assert digest==m['sha256'] and b.st_size==a.st_size and b.st_mtime_ns==a.st_mtime_ns,p
+        files[str(p)]=dict(sha256=digest,size=a.st_size,mtime_ns=a.st_mtime_ns)
+        print(json.dumps(dict(asset_verified=p.name,count=len(files))),flush=True)
+    av=dict(status='passed',checked=time.time(),files=files,prepared_sha256=sha(out/'prepared/manifest.json'))
+    save(out/f'explore_outputs/asset_verification_{runstamp}.json',av);save(out/'prepared/asset_verification.json',av)
+    status('offline_A_H_preparation');command('audit_existing.py','audit_A_H')
+    bp=out/'explore_outputs/gpu_budget.json';budget=read(bp) if bp.exists() else dict(used_seconds=0.,scope_seconds={},active=False)
+    if budget['active']:
+        elapsed=max(0,time.time()-budget['charged_at']);budget['used_seconds']+=elapsed;budget['scope_seconds'][budget['scope']]+=elapsed;budget['active']=False;save(bp,budget)
+    baseline={(r['trace_id'],r['condition']):r for r in read(root/'runs/formal/results.json')};rows=read(out/'inputs/development_split.json');ratio=1.
+    previous=None
+    def snapshot(scope,child,log):
+        nonlocal previous
+        p=out/f'runs/{scope}/status.json';rs=read(p) if p.exists() else {}
+        snap=dict(time=time.time(),campaign=process(os.getpid()),runner=process(child.pid),scope=scope,run=rs,log_bytes=log.stat().st_size,log_mtime=log.stat().st_mtime,output_realpath=str(out.resolve()),output_free_bytes=shutil.disk_usage(out).free,input_free_bytes=shutil.disk_usage(root).free,weights_verified=av['checked'],asset_count=len(files),budget=budget,gpu=subprocess.check_output(['nvidia-smi','--query-gpu=index,uuid,memory.used,memory.free,utilization.gpu','--format=csv,noheader'],text=True),gpu_processes=subprocess.check_output(['nvidia-smi','--query-compute-apps=pid,gpu_uuid,used_memory','--format=csv,noheader'],text=True))
+        if previous and previous['scope']==scope:snap.update(delta_completed=rs.get('completed',0)-previous['run'].get('completed',0),delta_log_bytes=snap['log_bytes']-previous['log_bytes'],interval_seconds=snap['time']-previous['time'])
+        save(out/f'explore_outputs/monitor_{stamp()}.json',snap);save(out/'explore_outputs/monitor_state.json',snap);previous=snap
+    def charge(scope):
+        now=time.time();e=max(0,now-budget['charged_at']);budget['used_seconds']+=e;budget['scope_seconds'][scope]+=e;budget['charged_at']=now;save(bp,budget)
+    def stop(child):
+        info=process(child.pid)
+        if child.poll() is not None:return
+        assert info['uid']==os.getuid() and str(out/'scripts/run_phase_factorial.py') in info['command'] and info['cwd']==str(root)
+        child.terminate()
+        try:child.wait(timeout=45)
+        except subprocess.TimeoutExpired:child.kill();child.wait(timeout=15)
+    for scope in ['smoke','B1']:
+        plan=matrix(rows,scope);run=out/'runs'/scope;done={p.stem for p in run.glob('*.json') if len(p.stem)==24};pending=[c for c in plan if key(c) not in done]
+        predicted=300+sum(baseline[c['trace_id'],'full_p25' if c['phase'][0]=='1' else 'uncapped']['seconds'] for c in pending)*ratio
+        forecast=dict(scope=scope,pending=len(pending),predicted_seconds=predicted,used_seconds=budget['used_seconds'],ratio=ratio,output_free=shutil.disk_usage(out).free,input_free=shutil.disk_usage(root).free)
+        save(out/f'explore_outputs/forecast_{scope}_{runstamp}.json',forecast)
+        assert budget['used_seconds']+predicted<43200,('12h budget forecast',forecast)
+        assert forecast['output_free']>20*1024**3 and forecast['input_free']>2*1024**3 and len(pending)*2000000<.2*forecast['output_free'],forecast
+        if pending:
+            memory={int(a):int(b) for a,b in (r.split(',') for r in subprocess.check_output(['nvidia-smi','--query-gpu=index,memory.free','--format=csv,noheader,nounits'],text=True).strip().splitlines())}
+            assert all(memory[i]>=22528 for i in [1,2,4,6]),('Selected GPUs not free',memory)
+        status(scope,forecast=forecast);log=out/f'logs/{scope}_{runstamp}.log'
+        with log.open('a') as f:
+            child=subprocess.Popen([PY,'-u',str(out/'scripts/run_phase_factorial.py'),*args,'--scope',scope],cwd=root,env=env,stdout=f,stderr=subprocess.STDOUT)
+            budget.update(active=True,scope=scope,charged_at=time.time(),child_pid=child.pid);budget['scope_seconds'].setdefault(scope,0.);save(bp,budget);next_snapshot=0;launch=time.time()
+            try:
+                while child.poll() is None:
+                    charge(scope);now=time.time()
+                    assert budget['used_seconds']<43200,'12h cumulative GPU budget exceeded'
+                    assert scope!='smoke' or budget['scope_seconds'][scope]<10800,'3h smoke budget exceeded'
+                    assert shutil.disk_usage(out).free>20*1024**3 and shutil.disk_usage(root).free>2*1024**3,'Disk guard'
+                    sp=run/'status.json';rs=read(sp) if sp.exists() else {}
+                    transition=rs.get('updated',launch) if rs.get('pid')==child.pid else launch
+                    assert now-transition<5400,'No state transition in90min'
+                    if now>=next_snapshot:snapshot(scope,child,log);next_snapshot=now+300
+                    time.sleep(15)
+                if child.returncode:raise RuntimeError(f'{scope} exit {child.returncode}; {log}')
+            except BaseException:
+                stop(child);raise
+            finally:
+                charge(scope);budget['active']=False;save(bp,budget);snapshot(scope,child,log)
+        recs=read(run/'results.json');assert len(recs)==len(plan)
+        if scope=='smoke':
+            gate=read(run/'gate.json');assert gate['technical_pass'] and gate['completed']==24
+            ratio=max(1.,sum(r['seconds']/baseline[r['trace_id'],'full_p25' if r['cell']['phase'][0]=='1' else 'uncapped']['seconds'] for r in recs)/len(recs))
+            status('smoke_passed',gate=gate,forecast_ratio=ratio)
+        else:status('B1_acquired',completed=len(recs))
+    status('B1_analysis');command('analyze_phase_factorial.py','B1_analysis',args+['--scope','B1'],analysis=True)
+    status('initial_package_complete_B2_C_D_H_not_started',gpu_wall_seconds=budget['used_seconds'])
+if __name__=='__main__':
+    p=argparse.ArgumentParser();p.add_argument('--root',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
+    try:main(a.root,a.out)
+    except BlockingIOError:print('Campaign or runner lock occupied; no duplicate launched');sys.exit(78)
+    except Exception as e:
+        fail=dict(stage='failed',updated=time.time(),pid=os.getpid(),error=repr(e),traceback=traceback.format_exc());save(a.out/f'explore_outputs/campaign_failure_{stamp()}.json',fail);save(a.out/'explore_outputs/campaign_status.json',fail);raise

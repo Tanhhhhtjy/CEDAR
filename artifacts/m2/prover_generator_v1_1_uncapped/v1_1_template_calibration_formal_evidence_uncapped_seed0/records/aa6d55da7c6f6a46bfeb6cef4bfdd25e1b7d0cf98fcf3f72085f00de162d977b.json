@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-025-R",
+    "index": 49,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 49,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 335,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 335
+        }
+      ],
+      "answer_logit_capture_indices": [
+        335
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 1.3440409055866799e-08,
+          "B": 3.2241866359157774e-08,
+          "C": 0.9999999540016365,
+          "D": 3.160881411101141e-10
+        },
+        "full_vocab_entropy": 8.208386361729936e-07,
+        "full_vocab_probabilities": {
+          "A": 1.3440409674103648e-08,
+          "B": 3.224186784223093e-08,
+          "C": 1.0,
+          "D": 3.16088155649652e-10
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 45.75,
+        "initial_rank": 1,
+        "logits": {
+          "A": 27.625,
+          "B": 28.5,
+          "C": 45.75,
+          "D": 23.875
+        },
+        "option_argmax": "C",
+        "option_mass": 1.0000000459983656,
+        "ranks": {
+          "A": 3,
+          "B": 2,
+          "C": 1,
+          "D": 5
+        },
+        "target_logit": 27.625,
+        "target_minus_initial": -18.125,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-025",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F13",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-025-R",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "C->A",
+      "prompt_sha256": "5d07b8223ebfa14b865cd4fded5cabdac42d61bbbbd11d5d162a07c97ba979da",
+      "prompt_token_ids_sha256": "df8eafc8fe79a1a055f4277e2cc8bfd2adcc58b248d167a935fbca36a8a17e76",
+      "prompt_tokens": 272,
+      "reasoning_token_count": 327,
+      "record_seed": 49,
+      "response": "<think>\nOkay, let's see. The user is asking whether it's supported that File D has status Silver 7. The answer options are A to D. I need to check the records and apply the rules step by step.\n\nFirst, looking at the records. Record 1 says File D has status Jade 3. Record 6 is a conditional: If File D has Jade 3 and Teal 8, then it gets Cobalt 2. But wait, does File D have Teal 8? The records don't mention that. Record 1 only mentions Jade 3. So the condition for Record 6 isn't fully met because Teal 8 isn't listed for File D. Therefore, we can't conclude that File D has Cobalt 2 based on Record 6.\n\nThen, Record 7 says if File D has Cobalt 2, then it has Silver 7. But since we can't establish that File D has Cobalt 2 (because the antecedent in Record 6 isn't satisfied), Record 7's condition isn't met either. \n\nSo there's no direct statement that File D has Silver 7. The only way to get Silver 7 is through the chain of Record 6 leading to Record 7, but that chain isn't completed because Teal 8 is missing. Therefore, the support for Silver 7 isn't there. However, is there any contradiction? The records don't state that Silver 7 is impossible for File D. So it's not contradicted either. Therefore, the answer should be undetermined (C).\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "e9e3f44d18216d1ac136e157482d10c8bc332704442a04c333679377c8b647ae",
+      "response_tokens": 338,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 335,
+      "social_template": null,
+      "structure_class": "PGF-04",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

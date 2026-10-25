@@ -1,0 +1,124 @@
+{
+  "error_class": "support_path_generalization",
+  "entailed_premises": [
+    {
+      "predicate": "sor953fallsupported",
+      "arguments": [
+        "ctor79"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "sor953fallsupported",
+        "arguments": [
+          "ctor79"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "sor953fallsupported",
+      "arguments": [
+        "cvek58"
+      ],
+      "negated": false
+    },
+    "operator": "support_path_generalization"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "818b9cab5f1c6131cf0c81e78c6bd7d9e9bbf6fdd0d13485fb47ccc8ca9765a1",
+      "projected_edit_sha256": "a785f399253cf6d004590728a88d1f156adf4189d3f096e767067eebb761ee18"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "bf11b1f960d258f80963b8a91711b38bc9e4b884164a5b6b30cc8013e54ea186",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "sor953outcome",
+      "arguments": [
+        "ctor79"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "support_path_generalization",
+    "world_semantic_sha256": "2d80f6a8709755c8f996a82de746b6b7c07d1eeaf14b0ae69a7086a87d3b55fb",
+    "entailed_premise_keys": [
+      "sor953fallsupported(ctor79)"
+    ],
+    "unsupported_claim_key": "sor953fallsupported(cvek58)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "sor953outcome(ctor79)",
+    "proof": {
+      "record_ids": [
+        "data_sor953_gate",
+        "data_sor953_support_0",
+        "schema_sor953_gate_0",
+        "schema_sor953path0_0",
+        "schema_sor953path0_1",
+        "schema_sor953path0_2"
+      ],
+      "depth": 4
+    },
+    "refutes_induced_label": "false"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_sor953_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "sor953gate",
+          "arguments": [
+            "ctor79"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_sor953_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "sor953gate",
+          "arguments": [
+            "ctor79"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-0dec55e353db2d96",
+      "rank": 62
+    },
+    "updated_world_sha256": "bf11b1f960d258f80963b8a91711b38bc9e4b884164a5b6b30cc8013e54ea186",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

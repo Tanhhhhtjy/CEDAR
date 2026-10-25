@@ -1,0 +1,326 @@
+{
+  "completed_at": "2026-07-18T21:58:21.222697+08:00",
+  "completed_formal_forwards": 6300,
+  "configuration": {
+    "axis": {
+      "file": "qwen-3-32b/assistant_axis.pt",
+      "path": "/data1/WuMingrui/HF_HOME/hub/datasets--lu-christina--assistant-axis-vectors/snapshots/3b3b788432ad33e3a28d9ff08e88a530c0740814/qwen-3-32b/assistant_axis.pt",
+      "raw_norm": 22.655502319335938,
+      "repo": "lu-christina/assistant-axis-vectors",
+      "revision": "3b3b788432ad33e3a28d9ff08e88a530c0740814",
+      "sha256": "a207fe7a36563280b7b29010880aa0082bd8e3113c141cb4a2eed6b46c140211",
+      "shape": [
+        64,
+        5120
+      ],
+      "stored_dtype": "bfloat16",
+      "target_layer": 32,
+      "unit_norm": 1.0000005960464478
+    },
+    "conditions": [
+      {
+        "coefficient": -200.0,
+        "name": "alpha_neg200"
+      },
+      {
+        "coefficient": -100.0,
+        "name": "alpha_neg100"
+      },
+      {
+        "coefficient": -50.0,
+        "name": "alpha_neg50"
+      },
+      {
+        "coefficient": 0.0,
+        "name": "alpha_0"
+      },
+      {
+        "coefficient": 50.0,
+        "name": "alpha_pos50"
+      },
+      {
+        "coefficient": 100.0,
+        "name": "alpha_pos100"
+      },
+      {
+        "coefficient": 200.0,
+        "name": "alpha_pos200"
+      }
+    ],
+    "cuda_visible_devices": "3,4,6,7",
+    "dataset": {
+      "all_rows": 1800,
+      "path": "/data4/WuMingrui/TianJinyu/CEDAR/datasets/e_minus1a_philpapers/philpapers1800_all_seeds.jsonl",
+      "sample_seeds": [
+        42,
+        7,
+        123
+      ],
+      "sha256": "4d345d0254ba46b829c3055d854eed371bbc625d2e754aa5cdda448460f1b888",
+      "split": "test",
+      "test_pairs": 450,
+      "test_rows": 900
+    },
+    "decoder_blocks": 64,
+    "expected_formal_forwards": 6300,
+    "expected_sentinel_forwards": 32,
+    "forced_choice": {
+      "A_token_id": 32,
+      "B_token_id": 33,
+      "batch_size": 1,
+      "enable_thinking": false,
+      "full_vocabulary_diagnostics": true,
+      "generate": false,
+      "system_prompt": null,
+      "truncation": false,
+      "use_cache": false
+    },
+    "git": {
+      "branch": "agent/e-minus1a-formal-signed-curve",
+      "commit": "3366044276cea38333ab1b5ffbaf334b8bd6c02a",
+      "dirty": false
+    },
+    "intervention_formula": "h_new = h + alpha * unit_assistant_axis",
+    "kind": "E-1a formal signed seven-dose pinned-model close replication",
+    "model": {
+      "attention_implementation": "sdpa",
+      "dtype": "bfloat16",
+      "repo_id": "Qwen/Qwen3-32B",
+      "revision": "9216db5781bf21249d130ec9da846c4624c16137"
+    },
+    "platform": "Linux-6.8.0-124-generic-x86_64-with-glibc2.35",
+    "positions": "all",
+    "protocol_amendment": "docs/E_MINUS1A_PROTOCOL_AMENDMENT_01.md",
+    "python_version": "3.11.15",
+    "scope": "test split only; 900 rows; 450 pairs; no generation; no p25/p1",
+    "sentinel": {
+      "conditions": [
+        "no_hook",
+        "alpha_0",
+        "alpha_pos200",
+        "alpha_neg200"
+      ],
+      "reference_results": "/data4/WuMingrui/TianJinyu/CEDAR/artifacts/m2/e_minus1a_philpapers/smoke64/row_results.jsonl",
+      "reference_results_sha256": "de627c82e58c29c432bff0cb14782671c68c5dfc9647c3d7ef93603a4f421c04",
+      "rows": 8,
+      "source": "/data4/WuMingrui/TianJinyu/CEDAR/datasets/e_minus1a_philpapers/smoke64.jsonl"
+    },
+    "target_layer": 32,
+    "torch_version": "2.6.0+cu124",
+    "transformers_version": "4.56.1"
+  },
+  "content_retries": 0,
+  "errors": [],
+  "expected_formal_forwards": 6300,
+  "gpu_inventory": [
+    {
+      "index": "0",
+      "memory_free_mib": "45960",
+      "memory_total_mib": "49140",
+      "memory_used_mib": "2549",
+      "name": "NVIDIA GeForce RTX 4090",
+      "uuid": "GPU-3fbd81ed-ca9d-1378-63ea-c862a3c83fcb"
+    },
+    {
+      "index": "1",
+      "memory_free_mib": "48492",
+      "memory_total_mib": "49140",
+      "memory_used_mib": "17",
+      "name": "NVIDIA GeForce RTX 4090",
+      "uuid": "GPU-c87eb3d6-e669-8940-57cd-1f70a15866ca"
+    },
+    {
+      "index": "2",
+      "memory_free_mib": "17744",
+      "memory_total_mib": "49140",
+      "memory_used_mib": "30765",
+      "name": "NVIDIA GeForce RTX 4090",
+      "uuid": "GPU-9cc7a8c7-f1d3-a6b8-b5b9-bf736614a4a6"
+    },
+    {
+      "index": "3",
+      "memory_free_mib": "15744",
+      "memory_total_mib": "49140",
+      "memory_used_mib": "32765",
+      "name": "NVIDIA GeForce RTX 4090",
+      "uuid": "GPU-a3e80e73-1c73-9dd9-94e3-77a23af8eb27"
+    },
+    {
+      "index": "4",
+      "memory_free_mib": "31214",
+      "memory_total_mib": "49140",
+      "memory_used_mib": "17295",
+      "name": "NVIDIA GeForce RTX 4090",
+      "uuid": "GPU-6e955cff-2a97-663e-a839-d7834d98ed4a"
+    },
+    {
+      "index": "5",
+      "memory_free_mib": "28770",
+      "memory_total_mib": "49140",
+      "memory_used_mib": "19739",
+      "name": "NVIDIA GeForce RTX 4090",
+      "uuid": "GPU-3a7c3a9a-2534-fdf2-1494-1aaf0408a4c5"
+    },
+    {
+      "index": "6",
+      "memory_free_mib": "31214",
+      "memory_total_mib": "49140",
+      "memory_used_mib": "17295",
+      "name": "NVIDIA GeForce RTX 4090",
+      "uuid": "GPU-fc0010a7-ed12-fa23-508c-22ba19ee46fd"
+    },
+    {
+      "index": "7",
+      "memory_free_mib": "33400",
+      "memory_total_mib": "49140",
+      "memory_used_mib": "15109",
+      "name": "NVIDIA GeForce RTX 4090",
+      "uuid": "GPU-bc61ccf3-eeff-7916-0044-1f0602c12012"
+    }
+  ],
+  "last_resumed_at": "2026-07-18T21:44:17.468578+08:00",
+  "model_config_commit_hash": "9216db5781bf21249d130ec9da846c4624c16137",
+  "model_hf_device_map": {
+    "lm_head": 3,
+    "model.embed_tokens": 0,
+    "model.layers.0": 0,
+    "model.layers.1": 0,
+    "model.layers.10": 0,
+    "model.layers.11": 0,
+    "model.layers.12": 0,
+    "model.layers.13": 0,
+    "model.layers.14": 1,
+    "model.layers.15": 1,
+    "model.layers.16": 1,
+    "model.layers.17": 1,
+    "model.layers.18": 1,
+    "model.layers.19": 1,
+    "model.layers.2": 0,
+    "model.layers.20": 1,
+    "model.layers.21": 1,
+    "model.layers.22": 1,
+    "model.layers.23": 1,
+    "model.layers.24": 1,
+    "model.layers.25": 1,
+    "model.layers.26": 1,
+    "model.layers.27": 1,
+    "model.layers.28": 1,
+    "model.layers.29": 1,
+    "model.layers.3": 0,
+    "model.layers.30": 1,
+    "model.layers.31": 1,
+    "model.layers.32": 2,
+    "model.layers.33": 2,
+    "model.layers.34": 2,
+    "model.layers.35": 2,
+    "model.layers.36": 2,
+    "model.layers.37": 2,
+    "model.layers.38": 2,
+    "model.layers.39": 2,
+    "model.layers.4": 0,
+    "model.layers.40": 2,
+    "model.layers.41": 2,
+    "model.layers.42": 2,
+    "model.layers.43": 2,
+    "model.layers.44": 2,
+    "model.layers.45": 2,
+    "model.layers.46": 2,
+    "model.layers.47": 2,
+    "model.layers.48": 2,
+    "model.layers.49": 2,
+    "model.layers.5": 0,
+    "model.layers.50": 3,
+    "model.layers.51": 3,
+    "model.layers.52": 3,
+    "model.layers.53": 3,
+    "model.layers.54": 3,
+    "model.layers.55": 3,
+    "model.layers.56": 3,
+    "model.layers.57": 3,
+    "model.layers.58": 3,
+    "model.layers.59": 3,
+    "model.layers.6": 0,
+    "model.layers.60": 3,
+    "model.layers.61": 3,
+    "model.layers.62": 3,
+    "model.layers.63": 3,
+    "model.layers.7": 0,
+    "model.layers.8": 0,
+    "model.layers.9": 0,
+    "model.norm": 3,
+    "model.rotary_emb": 3
+  },
+  "resumed_formal_forwards": 0,
+  "row_results_sha256": "05eb44ed19bfb1941d9ff9fb8ca61d7d2b3aeaf074d857443e9d34289bd0d858",
+  "run_fingerprint": "6d068a77890f8a782667e79c5d25285499e16c8b9facefe4dcbdb391f0ee9f72",
+  "sentinel": {
+    "behavior_direction_used_as_gate": false,
+    "checks": {
+      "all_finite": true,
+      "complete_and_ordered": true,
+      "hooks_removed": true,
+      "no_hook_equals_alpha_zero": true,
+      "projection_checks_passed": true,
+      "prompt_sha_matches_frozen_smoke": true
+    },
+    "forwards": 32,
+    "no_hook_vs_alpha_zero_max_abs_logit_difference": 0.0,
+    "results_sha256": "02ef0c8d576e0fb0795e08dd6e59360529e3e795c863494a09c4e9dadcbc1545",
+    "resumed_forwards": 0,
+    "rows": 8,
+    "selection": [
+      {
+        "pair_id": "seed42_base274",
+        "question_id": 548,
+        "sample_seed": 42,
+        "variant": "original"
+      },
+      {
+        "pair_id": "seed42_base274",
+        "question_id": 549,
+        "sample_seed": 42,
+        "variant": "swapped"
+      },
+      {
+        "pair_id": "seed42_base277",
+        "question_id": 554,
+        "sample_seed": 42,
+        "variant": "original"
+      },
+      {
+        "pair_id": "seed42_base277",
+        "question_id": 555,
+        "sample_seed": 42,
+        "variant": "swapped"
+      },
+      {
+        "pair_id": "seed42_base167",
+        "question_id": 334,
+        "sample_seed": 42,
+        "variant": "original"
+      },
+      {
+        "pair_id": "seed42_base167",
+        "question_id": 335,
+        "sample_seed": 42,
+        "variant": "swapped"
+      },
+      {
+        "pair_id": "seed42_base083",
+        "question_id": 166,
+        "sample_seed": 42,
+        "variant": "original"
+      },
+      {
+        "pair_id": "seed42_base083",
+        "question_id": 167,
+        "sample_seed": 42,
+        "variant": "swapped"
+      }
+    ],
+    "status": "passed"
+  },
+  "sentinel_resumed_forwards": 0,
+  "started_at": "2026-07-18T21:44:17.468517+08:00",
+  "status": "complete"
+}

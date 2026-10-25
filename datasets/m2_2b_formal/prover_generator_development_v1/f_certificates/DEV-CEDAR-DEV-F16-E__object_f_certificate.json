@@ -1,0 +1,105 @@
+{
+  "error_class": "cross_entity_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "vek919fallsignal",
+      "arguments": [
+        "clan20"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "vek919fallsignal",
+        "arguments": [
+          "clan20"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "vek919fallsignal",
+      "arguments": [
+        "cpax45"
+      ],
+      "negated": false
+    },
+    "operator": "cross_entity_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "7079d0aeae899b6986f7ef368f53b2dc9a1549e31edd06bcaaa193094fc4bb6d",
+      "projected_edit_sha256": "77ad80a553603970581bc89a9b25cad4e59e4c0b8c8bcf55a2f8ca395b9a27e8"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "0bf612afa5851f483571bc96e4bb6365172347fdf9604fce1f7e4aa1035c8dd7",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "vek919outcome",
+      "arguments": [
+        "cpax45"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "cross_entity_transfer",
+    "world_semantic_sha256": "ffc0091dff30066c39cc1b2c53680e642fb88f800be381063fbf60d69cd8775c",
+    "entailed_premise_keys": [
+      "vek919fallsignal(clan20)"
+    ],
+    "unsupported_claim_key": "vek919fallsignal(cpax45)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "vek919outcome(cpax45)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "vek919outcome(cpax45)",
+      "required_counterliteral": "-vek919outcome(cpax45)",
+      "input_sha256": "5bdc89a29e3f24619081b9f8ab63facf43877c7061f01bccd99528b1e17477e1",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nvek919left(cpax45).\nvek919noise1(clan20).\nvek919noise2(ckel61).\nvek919noise3(csor40).\nvek919fallsignal(clan20).\nvek919left(cpax45) & vek919right(cpax45) -> vek919joint(cpax45).\nvek919joint(cpax45) -> vek919outcome(cpax45).\n-vek919outcome(cpax45).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel61, [ 0 ]),\n\n        function(clan20, [ 0 ]),\n\n        function(cpax45, [ 0 ]),\n\n        function(csor40, [ 0 ]),\n\n        relation(vek919fallsignal(_), [ 1, 0 ]),\n\n        relation(vek919joint(_), [ 0, 0 ]),\n\n        relation(vek919left(_), [ 1, 0 ]),\n\n        relation(vek919noise1(_), [ 1, 0 ]),\n\n        relation(vek919noise2(_), [ 1, 0 ]),\n\n        relation(vek919noise3(_), [ 1, 0 ]),\n\n        relation(vek919outcome(_), [ 0, 0 ]),\n\n        relation(vek919right(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "vek919right",
+          "arguments": [
+            "cpax45"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-7c5cceca7b881f38",
+      "rank": 5
+    },
+    "updated_world_sha256": "0bf612afa5851f483571bc96e4bb6365172347fdf9604fce1f7e4aa1035c8dd7",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

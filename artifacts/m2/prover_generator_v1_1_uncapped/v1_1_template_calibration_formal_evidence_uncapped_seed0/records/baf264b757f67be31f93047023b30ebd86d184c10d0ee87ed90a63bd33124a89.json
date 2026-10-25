@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-002-N",
+    "index": 4,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 4,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 593,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 593
+        }
+      ],
+      "answer_logit_capture_indices": [
+        593
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 2.7894642757566946e-10,
+          "B": 0.9999986287015663,
+          "C": 6.224135581614111e-11,
+          "D": 1.3709572457852344e-06
+        },
+        "full_vocab_entropy": 1.851633351179771e-05,
+        "full_vocab_probabilities": {
+          "A": 2.789468100949932e-10,
+          "B": 1.0,
+          "C": 6.224144116773189e-11,
+          "D": 1.3709591257793363e-06
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 43.75,
+        "initial_rank": 1,
+        "logits": {
+          "A": 21.75,
+          "B": 43.75,
+          "C": 20.25,
+          "D": 30.25
+        },
+        "option_argmax": "B",
+        "option_mass": 1.0000013713003142,
+        "ranks": {
+          "A": 3,
+          "B": 1,
+          "C": 4,
+          "D": 2
+        },
+        "target_logit": 30.25,
+        "target_minus_initial": -13.5,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-002",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F01",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-002-N",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "B->D",
+      "prompt_sha256": "49d3a782442014ac380f7854a7bc9f92d46195f382e1cac0de23f7f050254deb",
+      "prompt_token_ids_sha256": "5493036898a1f6486395a1afaa188772ea00d9fa8a7acecf7629a3776e6bae6a",
+      "prompt_tokens": 570,
+      "reasoning_token_count": 585,
+      "record_seed": 4,
+      "response": "<think>\nOkay, let's try to figure out if Node C has status Pearl 12. Let me start by looking at the records provided.\n\nFirst, the records about Node C's current statuses: Record 4 says Coral 11, Record 5 says Rose 18, and Record 6 says Cobalt 2. So right now, Node C has those three statuses. The question is about whether Pearl 12 is supported.\n\nNow, looking at the rules. Let's see which ones apply. Since Node C has Rose 18 (Record 5), let's check Rule 14. Rule 14 says if Node C has Rose 18, then it has Umber 13. So from Rose 18, we can infer Umber 13. Then Rule 15: if Umber 13, then Azure 14. Then Rule 16: Azure 14 leads to Saffron 15. Rule 17: Saffron 15 leads to Mint 16. Rule 18: Mint 16 leads to Slate 17. Then Rule 19: Slate 17 leads to Pearl 12. So following this chain, starting from Rose 18, we end up with Pearl 12. That would support Pearl 12.\n\nBut wait, there's another angle. Let's check if any rules contradict this. For example, Rule 8 says if Node C does NOT have Rose 18, then it has Jade 3. But since Node C does have Rose 18 (Record 5), the antecedent of Rule 8 is false, so Rule 8 doesn't apply here. So we don't go into the Jade 3 chain. Therefore, the only active chain is the one starting from Rose 18 leading to Pearl 12.\n\nAnother thing to check: Are there any conflicting statuses? For example, if another rule leads to not Pearl 12. Let's look at Rule 13: If Node C has Silver 7, then it does not have Pearl 12. But do we have Silver 7? To get Silver 7, we'd need to go through the Jade 3 chain. But since we have Rose 18, we don't trigger Rule 8, so the Jade 3 chain isn't activated. Therefore, Silver 7 isn't part of the current statuses, so Rule 13's antecedent isn't met. Thus, Rule 13 doesn't block Pearl 12 here.\n\nSo following the Rose 18 chain all the way through, each step leads to the next status, and ultimately to Pearl 12. Therefore, Pearl 12 is supported. The answer should be B) supported.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "6422107e826c69dd4609a85a4406f233cfd1dc964a9b52ac45c988d0a5f3abf3",
+      "response_tokens": 596,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 593,
+      "social_template": null,
+      "structure_class": "PGF-01",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

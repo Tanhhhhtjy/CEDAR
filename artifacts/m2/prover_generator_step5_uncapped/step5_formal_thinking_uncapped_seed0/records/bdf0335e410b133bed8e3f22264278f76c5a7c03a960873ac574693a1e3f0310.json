@@ -1,0 +1,145 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-036-N",
+    "index": 210,
+    "mode": "thinking",
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 210,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 467,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 467
+        }
+      ],
+      "answer_logit_capture_indices": [
+        467
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999999797700561,
+          "B": 3.5817478813261816e-10,
+          "C": 3.160881492552063e-10,
+          "D": 1.9555681122957894e-08
+        },
+        "full_vocab_entropy": 3.623416375830857e-07,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 3.581747953784742e-10,
+          "C": 3.16088155649652e-10,
+          "D": 1.9555681518568235e-08
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 45.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 45.0,
+          "B": 23.25,
+          "C": 23.125,
+          "D": 27.25
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000000202299444,
+        "ranks": {
+          "A": 1,
+          "B": 3,
+          "C": 4,
+          "D": 2
+        },
+        "target_logit": 27.25,
+        "target_minus_initial": -17.75,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-036",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F18",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-036-N",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "prompt_sha256": "92158d53d72cd786e46b088251723d8c36fd7169b9cfdcecd8317d4e01924760",
+      "prompt_token_ids_sha256": "772e1cf65932e32f2c68477fbb1f706d658d91c2aa2ae91419d8d2fe94f262db",
+      "prompt_tokens": 432,
+      "reasoning_token_count": 459,
+      "record_seed": 210,
+      "response": "<think>\nOkay, let's try to figure out if Job E having status Pearl 12 is supported, contradicted, etc. Let me start by going through the records and rules step by step.\n\nFirst, looking at the records related to Job E. Record 4 says Job E has status Silver 7. Record 9 says Job E has status Umber 13. Record 10 says Job E has status Cobalt 2. Then there are several conditional rules (11, 13, 14, 15) that might apply here.\n\nStarting with Record 10: Job E has Cobalt 2. According to Rule 11, if an item has Cobalt 2, then it also has Jade 3. So Job E must have Jade 3. But that's not directly related to Pearl 12, so maybe not yet.\n\nNext, Record 9: Job E has Umber 13. Rule 13 says if Job E has Umber 13, then it has Azure 14. So from Umber 13, we can infer Azure 14. Then Rule 14 says if Azure 14, then Saffron 15. So now Job E has Saffron 15. Then Rule 15 says if Saffron 15, then Amber 1. So now Job E must have Amber 1.\n\nNow, Rule 12 comes into play: If Job E has Amber 1, then it is NOT the case that Job E has Pearl 12. Since we just derived that Job E has Amber 1 (through the chain from Umber 13 → Azure 14 → Saffron 15 → Amber 1), Rule 12 tells us that Job E cannot have Pearl 12. Therefore, the statement that Job E has Pearl 12 is contradicted.\n\nLooking at the options, the answer should be A) contradicted. There's no support for Pearl 12 here, only a contradiction. The records don't mention Pearl 12 in any other context, so there's nothing that supports it. Therefore, the correct choice is A.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "40bd8cfb59b0bdd2affeee362d16c00ef479b438afd6483122e90881533d9308",
+      "response_tokens": 470,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 467,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "9b73eeeffc9604d99d6cc182aebe94cca26a91e8109fa684cc30b2500ff1d9f9"
+}

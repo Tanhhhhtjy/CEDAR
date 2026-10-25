@@ -1,0 +1,125 @@
+{
+  "error_class": "support_path_generalization",
+  "entailed_premises": [
+    {
+      "predicate": "lan943fallsupported",
+      "arguments": [
+        "ckel15"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "lan943fallsupported",
+        "arguments": [
+          "ckel15"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "lan943fallsupported",
+      "arguments": [
+        "cvek70"
+      ],
+      "negated": false
+    },
+    "operator": "support_path_generalization"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "f0fb47a24716491a527ca12fbdf540a3ae53f8b34cd1a18f695999e3bcbd5567",
+      "projected_edit_sha256": "a6c1737d98a6157a14574e215894f8e631d3522fb607dfdfdf80947167edd956"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "cb8c5626f1e9e37a4727028dc8a69f35d71cc819e6e02b58b28d537c77ae740e",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "lan943outcome",
+      "arguments": [
+        "ckel15"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "support_path_generalization",
+    "world_semantic_sha256": "fa7eb70f51e2b2e613625fe9f319b0c5e9618c644c7f7a3683686a97e1c9cecc",
+    "entailed_premise_keys": [
+      "lan943fallsupported(ckel15)"
+    ],
+    "unsupported_claim_key": "lan943fallsupported(cvek70)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "lan943outcome(ckel15)",
+    "proof": {
+      "record_ids": [
+        "data_lan943_root",
+        "schema_lan943pos_0",
+        "schema_lan943pos_1",
+        "schema_lan943pos_2",
+        "schema_lan943pos_3",
+        "schema_lan943pos_4",
+        "schema_lan943pos_5"
+      ],
+      "depth": 6
+    },
+    "refutes_induced_label": "false"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_lan943_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "lan943seed",
+          "arguments": [
+            "ckel15"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_lan943_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "lan943seed",
+          "arguments": [
+            "ckel15"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-accc188ceecb0ea4",
+      "rank": 41
+    },
+    "updated_world_sha256": "cb8c5626f1e9e37a4727028dc8a69f35d71cc819e6e02b58b28d537c77ae740e",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

@@ -1,0 +1,173 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-047-N",
+    "index": 176,
+    "seed": 0
+  },
+  "payload": {
+    "index": 176,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 761,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 761
+        }
+      ],
+      "answer_logit_capture_indices": [
+        761
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 5.10908872103623e-12,
+          "B": 1.1628233309713448e-10,
+          "C": 4.139937642890992e-08,
+          "D": 0.9999999584792323
+        },
+        "full_vocab_entropy": 7.083506829985708e-07,
+        "full_vocab_probabilities": {
+          "A": 5.1090889331695255e-12,
+          "B": 1.1628233792526643e-10,
+          "C": 4.139937814784389e-08,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 47.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 21.5,
+          "B": 24.625,
+          "C": 30.5,
+          "D": 47.5
+        },
+        "option_argmax": "D",
+        "option_mass": 1.0000000415207695,
+        "ranks": {
+          "A": 6,
+          "B": 3,
+          "C": 2,
+          "D": 1
+        },
+        "target_logit": 30.5,
+        "target_minus_initial": -17.0,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-047",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "development_validation",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F24",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "D",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-DEV-047-N",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 88,
+      "paired_condition_order": [
+        "uncapped",
+        "p25"
+      ],
+      "phase": "prespecified_internal_validation",
+      "position_transition": "D->C",
+      "prompt_sha256": "c72790d02dfcc4b4da408344c0ecea056ce55d18d1e94f644037a2419c76fa7c",
+      "prompt_token_ids_sha256": "f8a4bb10c158b5014fcd73bab3f4bf3622270dc9d955c550ba967d34dfafb0bf",
+      "prompt_tokens": 304,
+      "reasoning_token_count": 753,
+      "record_seed": 88,
+      "response": "<think>\nOkay, let's try to figure this out. The question is whether Account E has status Lilac 5, and the options are whether it's supported, contradicted, or undetermined.\n\nFirst, looking at the records provided. Record 1 says Account A has status Jade 3. Record 2 says Account D has status Ivory 4. Record 3 says Account E has a link Cobalt 2 to Account G. Then there are some conditional rules.\n\nRecord 4 is a conditional: If Account E has link Copper 6 to Account A, then it's not the case that Account E has status Lilac 5. So if that link exists, then E's status isn't Lilac 5. But do we know if that link exists?\n\nRecord 5: If an item has link Amber 1 to another, then it also has link Copper 6 to that same other item. So Amber 1 implies Copper 6 between the same two items.\n\nRecord 6: If an item has Copper 6 to another, and that other has Amber 1 to a third, then the first item has Copper 6 to the third. So this is like a transitive property for Copper 6 links when there's an Amber 1 in between.\n\nNow, the question is about Account E's status. The only direct info about E is Record 3, which mentions a Cobalt 2 link to G. There's no mention of E's status in any record except possibly through the conditionals.\n\nLooking at Record 4, the antecedent is whether E has a Copper 6 link to A. Do we know if that's true? Let's check if there's any way to derive that.\n\nFrom the existing records, there's no direct statement that E has a Copper 6 link to A. Record 3 is about a Cobalt 2 link to G. So unless there's a way to infer the existence of a Copper 6 link via other rules, we can't assume it.\n\nRecords 5 and 6 involve Amber 1 and Copper 6 links. But unless there's an Amber 1 link mentioned involving E, we can't use Record 5. For example, if E had an Amber 1 link to someone, then it would also have a Copper 6. But there's no info about E having Amber 1 links. Similarly, Record 6 requires a Copper 6 and an Amber 1 link in sequence. Without those, Record 6 doesn't apply.\n\nSo, since there's no information that E has a Copper 6 link to A, the antecedent of Record 4 isn't met. Therefore, Record 4's conclusion (that E does not have Lilac 5) isn't triggered. That means we can't use Record 4 to contradict the possibility of E having Lilac 5.\n\nBut are there any other records that mention E's status? No. The only status info for E isn't present. So there's no direct statement about E's status. The question is whether it's supported, contradicted, or undetermined.\n\nSince there's no record stating that E has Lilac 5, and no rule that would allow us to infer that E does have it, we can't say it's supported. However, is there any contradiction? The only possible contradiction would be if Record 4's conclusion applied. But since we don't know if the antecedent (E has Copper 6 to A) is true, we can't say that. Therefore, there's no contradiction either.\n\nSo the answer would be undetermined because there's insufficient information to support or contradict the statement.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "090596fcd90b56bb0570f93652124104fe36c7752df2beba6fe6943fcab6a583",
+      "response_tokens": 764,
+      "scope": "evidence-validation",
+      "seed": 0,
+      "selected_answer_logit_index": 761,
+      "structure_class": "PGF-06",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "204d0d8e611dfb9159b48c1df831693ad8186376b5b1329b375c70ce401384a6"
+}

@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-014-N",
+    "index": 28,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 28,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 767,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 767
+        }
+      ],
+      "answer_logit_capture_indices": [
+        767
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 8.592166868413387e-10,
+          "B": 9.237449798384605e-09,
+          "C": 0.9999999872567596,
+          "D": 2.6465738152374584e-09
+        },
+        "full_vocab_entropy": 2.5962327754314174e-07,
+        "full_vocab_probabilities": {
+          "A": 8.592166977905435e-10,
+          "B": 9.23744991609965e-09,
+          "C": 1.0,
+          "D": 2.646573848963385e-09
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 41.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 20.125,
+          "B": 22.5,
+          "C": 41.0,
+          "D": 21.25
+        },
+        "option_argmax": "C",
+        "option_mass": 1.0000000127432405,
+        "ranks": {
+          "A": 4,
+          "B": 2,
+          "C": 1,
+          "D": 3
+        },
+        "target_logit": 21.25,
+        "target_minus_initial": -19.75,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-014",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F07",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-014-N",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "C->D",
+      "prompt_sha256": "4df7aaacbc2c54fb6b46dfa6647ceda9820aa0abb35e3feddba89f762e6ac210",
+      "prompt_token_ids_sha256": "07fa6be611b9019fd84e26ea00ab87b9d4bb5cc155ecef0855a477492c9a489b",
+      "prompt_tokens": 631,
+      "reasoning_token_count": 759,
+      "record_seed": 28,
+      "response": "<think>\nOkay, let's try to figure out if Sample B has status Navy 22. Let me start by going through the records and rules step by step.\n\nFirst, looking at the records provided:\n\n- Record 1 says Sample B has a link Umber 13 to Sample E.\n- Records 5, 10, and others mention various statuses for Sample B. Specifically, Record 5 says B has status Slate 17, Record 10 says Silver 7. But there's also Record 11 which connects Copper 6 to Silver 7, but I don't see any mention of Copper 6 here, so maybe that's not relevant.\n\nNow, looking at the rules. Since Record 1 states that B has a link Umber 13 to E, Rule 12 applies. Rule 12 says if B has that link, then B has status Amber 1. So from that, we can infer B has Amber 1.\n\nThen Rule 14: If B has Amber 1, then it has Cobalt 2. So now B has Cobalt 2. Then Rule 15: Cobalt 2 leads to Jade 3. Then Rule 16: Jade 3 leads to Ivory 4. Then Rule 17: Ivory 4 leads to Lilac 5. Now, Rule 18 says if B has Lilac 5, then it does NOT have Navy 22. So if we follow this chain, we end up with B not having Navy 22. That would suggest the answer is contradicted (C), since the conclusion is that Navy 22 is not present.\n\nBut wait, are there other paths? Let me check. There's also Rule 13, which would apply if B had a link Umber 13 to C. But Record 1 says the link is to E, not C, so Rule 13 isn't triggered. So the only applicable rule from the link is Rule 12, leading to Amber 1 and the subsequent chain.\n\nAdditionally, there are other statuses assigned to B in the records, like Slate 17 (Record 5), Silver 7 (Record 10). Do these interfere? The problem states that an unlisted statement isn't automatically negated. So even if B has Silver 7, that doesn't conflict with the other statuses because the rules might add more statuses. But the key here is the chain starting from the link leading to Amber 1, which eventually leads to Lilac 5, which directly negates Navy 22. \n\nIs there any other way Navy 22 could be achieved? Let's see. For Navy 22 to be present, Rule 18 would have to not apply. But since we have the chain leading to Lilac 5, Rule 18 says Navy 22 is not there. Alternatively, maybe another rule could lead to Navy 22. Let me check the other rules. \n\nLooking at the other path: if B had Teal 8, then via Rules 19-23, it could go to Navy 22. But for that, B would need Teal 8, which requires the link Umber 13 to C (Rule 13). Since the link is to E, not C, that path isn't triggered. So the only active path is the Amber 1 chain leading to Lilac 5, which blocks Navy 22. \n\nTherefore, based on the given records and rules, Sample B cannot have Navy 22. The conclusion is contradicted, so the answer should be C.\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "da74f1737dde400893eb8982bab6edb92973eed43ec4167505564f93a11b2719",
+      "response_tokens": 770,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 767,
+      "social_template": null,
+      "structure_class": "PGF-08",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

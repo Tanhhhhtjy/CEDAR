@@ -1,0 +1,145 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-003-N",
+    "index": 12,
+    "mode": "thinking",
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 12,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 450,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 450
+        }
+      ],
+      "answer_logit_capture_indices": [
+        450
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999998400004312,
+          "B": 1.3440407523643895e-08,
+          "C": 1.4449800819848497e-07,
+          "D": 2.0611531403394782e-09
+        },
+        "full_vocab_entropy": 2.5785595880734036e-06,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 1.3440409674103648e-08,
+          "C": 1.4449803131810768e-07,
+          "D": 2.061153470123145e-09
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 46.75,
+        "initial_rank": 1,
+        "logits": {
+          "A": 46.75,
+          "B": 28.625,
+          "C": 31.0,
+          "D": 26.75
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000001599995945,
+        "ranks": {
+          "A": 1,
+          "B": 3,
+          "C": 2,
+          "D": 4
+        },
+        "target_logit": 31.0,
+        "target_minus_initial": -15.75,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-003",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F02",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-003-N",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "prompt_sha256": "bf5f7482c00d7e5d159133e402c4556ac6682af3e9c15f224e2fcdd8ebdfd38a",
+      "prompt_token_ids_sha256": "51897214733d3ff302ed1c6f6ffb3940f4619e9b33be9541d39060c74761cf24",
+      "prompt_tokens": 338,
+      "reasoning_token_count": 442,
+      "record_seed": 12,
+      "response": "<think>\nOkay, let's try to figure out if Case B having status Copper 6 is supported based on the given records. Let me start by going through each relevant record step by step.\n\nFirst, looking at the records about Case B. Record 2 says Case B has status Teal 8. Record 3 says Case B has status Cobalt 2. Then there are several conditional statements.\n\nRecord 7 states that if Case B has Teal 8, then it has Silver 7. Since Record 2 confirms Teal 8 is true for Case B, by modus ponens, we can conclude Case B has Silver 7. \n\nThen Record 8 says if Case B has Silver 7, then it has Copper 6. Since we just established Silver 7 is true, applying modus ponens again leads us to Copper 6. So that seems straightforward—Copper 6 should be supported. \n\nBut wait, let me check if there's anything contradicting this. Record 5 says if Case B does not have Teal 8, then it has Ivory 4. But since Case B does have Teal 8 (Record 2), the antecedent of Record 5 is false, making the implication vacuously true. So Record 5 doesn't affect Copper 6 here. \n\nRecord 6 says if Case B has Ivory 4, then it doesn't have Copper 6. However, since we have Teal 8, which leads to Silver 7 and then Copper 6, there's no indication that Ivory 4 is involved here. The path through Ivory 4 would only be triggered if Teal 8 wasn't present, which isn't the case here. \n\nAlso, Record 4 mentions if Case B has Cobalt 2 and Jade 3, then Amber 1. But Record 3 only gives Cobalt 2; there's no mention of Jade 3. So that conditional isn't triggered. \n\nSo all the active conditionals lead us to Copper 6 via Silver 7. There's no contradiction in the current records. Therefore, the answer should be supported (A).\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "185e12ad9d30d461f884360299a750836d428319ede4bbd6c1ecf8334982b88b",
+      "response_tokens": 453,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 450,
+      "structure_class": "PGF-01",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "9b73eeeffc9604d99d6cc182aebe94cca26a91e8109fa684cc30b2500ff1d9f9"
+}

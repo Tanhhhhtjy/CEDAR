@@ -1,0 +1,105 @@
+{
+  "error_class": "support_path_generalization",
+  "entailed_premises": [
+    {
+      "predicate": "vek440fallsupported",
+      "arguments": [
+        "clan69"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "vek440fallsupported",
+        "arguments": [
+          "clan69"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "vek440fallsupported",
+      "arguments": [
+        "cpax49"
+      ],
+      "negated": false
+    },
+    "operator": "support_path_generalization"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "a887d0512be02d5ff3ceea6e5e8d2cf4cd9fb557df057367da11ca6d7667c8c3",
+      "projected_edit_sha256": "e75c98b4a81dd4f57e1439525b39941f711fd11d04f572881447d87cfe183078"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "9baeb1167ebe561f51193b1e2f1a39c41cc723bfafb7f6035d5ec652c79e1c2d",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "vek440outcome",
+      "arguments": [
+        "clan69"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "support_path_generalization",
+    "world_semantic_sha256": "0d46e31e6c0db5cfb12d2963ab4c01758ec3f4b649ca36e42cff2b23f483b621",
+    "entailed_premise_keys": [
+      "vek440fallsupported(clan69)"
+    ],
+    "unsupported_claim_key": "vek440fallsupported(cpax49)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "vek440outcome(clan69)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "vek440outcome(clan69)",
+      "required_counterliteral": "-vek440outcome(clan69)",
+      "input_sha256": "a6c08564c607ccc1a338d54dcad8bb64f412d7341d80f72dfb54e82d4eeb5ca4",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nvek440left(clan69).\nvek440fallgate(clan69).\n(all x (vek440fallgate(x) -> vek440fallsupported(x))).\nvek440left(clan69) & vek440right(clan69) -> vek440joint(clan69).\nvek440joint(clan69) -> vek440proofstep0(clan69).\nvek440proofstep0(clan69) -> vek440outcome(clan69).\n-vek440outcome(clan69).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(clan69, [ 0 ]),\n\n        relation(vek440fallgate(_), [ 1, 0 ]),\n\n        relation(vek440fallsupported(_), [ 1, 0 ]),\n\n        relation(vek440joint(_), [ 0, 0 ]),\n\n        relation(vek440left(_), [ 1, 0 ]),\n\n        relation(vek440outcome(_), [ 0, 0 ]),\n\n        relation(vek440proofstep0(_), [ 0, 0 ]),\n\n        relation(vek440right(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "vek440right",
+          "arguments": [
+            "clan69"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-d49ff74a9c2f5456",
+      "rank": 18
+    },
+    "updated_world_sha256": "9baeb1167ebe561f51193b1e2f1a39c41cc723bfafb7f6035d5ec652c79e1c2d",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

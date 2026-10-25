@@ -1,0 +1,7 @@
+{
+  "target_refuted": "-f06_clear(n0)",
+  "required_counterliteral": "f06_clear(n0)",
+  "input_sha256": "1a3a34be829faf8f08d91ebd07a93fe7d1104ef3a8a1f955fba587d9cd518d8e",
+  "model_found": true,
+  "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\n(all x (f06_missing_2(x) -> f06_noise_2(x))).\nf06_noise_3(d3).\nf06_edge(n2,n1).\nf06_edge(n0,n1).\nf06_reach(n0,n2) -> -f06_clear(n0).\n(all x all y (f06_edge(x,y) -> f06_reach(x,y))).\n(all x all y all z (f06_reach(x,y) & f06_edge(y,z) -> f06_reach(x,z))).\nf06_clear(n0).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(d3, [ 0 ]),\n\n        function(n0, [ 0 ]),\n\n        function(n1, [ 0 ]),\n\n        function(n2, [ 1 ]),\n\n        relation(f06_clear(_), [ 1, 0 ]),\n\n        relation(f06_missing_2(_), [ 0, 0 ]),\n\n        relation(f06_noise_2(_), [ 0, 0 ]),\n\n        relation(f06_noise_3(_), [ 1, 0 ]),\n\n        relation(f06_edge(_,_), [\n\t\t\t   1, 0,\n\t\t\t   1, 0 ]),\n\n        relation(f06_reach(_,_), [\n\t\t\t   1, 0,\n\t\t\t   1, 0 ])\n]).\n\nMODEL FOUND\n"
+}

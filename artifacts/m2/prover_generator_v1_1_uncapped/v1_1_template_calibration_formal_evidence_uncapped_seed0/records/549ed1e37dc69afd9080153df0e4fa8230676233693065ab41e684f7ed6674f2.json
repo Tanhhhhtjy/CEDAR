@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-006-N",
+    "index": 12,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 12,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 637,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 637
+        }
+      ],
+      "answer_logit_capture_indices": [
+        637
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 9.056077383917694e-11,
+          "B": 3.3982678773654903e-09,
+          "C": 0.9999999964852253,
+          "D": 2.594609587498368e-11
+        },
+        "full_vocab_entropy": 7.09680705313076e-08,
+        "full_vocab_probabilities": {
+          "A": 9.056077415747765e-11,
+          "B": 3.3982678893096363e-09,
+          "C": 1.0,
+          "D": 2.5946095966178362e-11
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 44.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 21.375,
+          "B": 25.0,
+          "C": 44.5,
+          "D": 20.125
+        },
+        "option_argmax": "C",
+        "option_mass": 1.0000000035147747,
+        "ranks": {
+          "A": 3,
+          "B": 2,
+          "C": 1,
+          "D": 5
+        },
+        "target_logit": 21.375,
+        "target_minus_initial": -23.125,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-006",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F03",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-006-N",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "C->A",
+      "prompt_sha256": "ff4188580d17ee8644e0296526471aea5f840fe4f6cdd6dd4b1d902cd553df1b",
+      "prompt_token_ids_sha256": "1d89f799942b472de67a72c8a95fecd8dee8f708e2041b80a3f2ba8c2972450e",
+      "prompt_tokens": 619,
+      "reasoning_token_count": 629,
+      "record_seed": 12,
+      "response": "<think>\nOkay, let's try to figure out if Sample D has status Umber 13. Let me start by going through the records step by step.\n\nFirst, looking at the records provided:\n\nRecord 1: Sample D has Lilac 5.\nRecord 5: Sample D has Pearl 12.\nRecord 6: Sample D has Rose 18.\nRecord 7: Sample D has Plum 19.\nRecord 8: Sample D has Jade 3.\n\nThen there are a bunch of conditional rules. Let me check which ones apply here.\n\nStarting with Record 8: Since Sample D has Jade 3, Rule 9 says that implies Ivory 4. But I don't see Ivory 4 mentioned elsewhere, so maybe that's a dead end unless other rules connect.\n\nLooking at Records 1, 6, and 7. Let's check the conditions for the other rules.\n\nRule 10: If D has Lilac 5 and Rose 18, then Amber 1. We have both Lilac 5 (Record 1) and Rose 18 (Record 6), so according to Rule 10, D should have Amber 1. Then Rule 16 says if Amber 1, then Azure 14. Then Rule 17: Azure 14 leads to Saffron 15. Then Rule 18: Saffron 15 leads to Umber 13. So that's a path to Umber 13.\n\nBut wait, let me make sure there are no contradictions. Let's also check other possible paths.\n\nRule 11: If D has Lilac 5 and Plum 19 (which it does, Records 1 and 7), then Cobalt 2. So Rule 11 applies. Then Rule 19: Cobalt 2 leads to Mint 16. Then Rule 20: Mint 16 leads to Slate 17. Then Rule 21: Slate 17 leads to Umber 13. So that's another path to Umber 13.\n\nSo both paths (through Amber 1 and through Cobalt 2) lead to Umber 13. Therefore, both conditions are met. But wait, do these paths conflict with anything else?\n\nAlso, looking at Rule 12: If D does not have Lilac 5, then Copper 6. But D does have Lilac 5 (Record 1), so Rule 12's condition isn't met. Therefore, we don't go into Copper 6, Silver 7, Teal 8, and then Rule 15 says if Teal 8, then not Umber 13. But since we don't trigger that path, that's not an issue here.\n\nSo both Rule 10 and Rule 11 are triggered, leading to Umber 13 via different routes. Therefore, Umber 13 should be supported. The answer should be C) supported.\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "51124fa4ad4815035c7caaa5e445bcf145b9e30a67088ec129fb2d49fd4257d1",
+      "response_tokens": 640,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 637,
+      "social_template": null,
+      "structure_class": "PGF-07",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

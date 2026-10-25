@@ -1,0 +1,173 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-044-N",
+    "index": 168,
+    "seed": 0
+  },
+  "payload": {
+    "index": 168,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 1780,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 1780
+        }
+      ],
+      "answer_logit_capture_indices": [
+        1780
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 9.610235973437698e-05,
+          "B": 0.9999033861479089,
+          "C": 5.042989194061511e-07,
+          "D": 7.1934373314542714e-09
+        },
+        "full_vocab_entropy": 0.0009917877614498138,
+        "full_vocab_probabilities": {
+          "A": 9.610248525859788e-05,
+          "B": 0.9999046921730042,
+          "C": 5.04299578096834e-07,
+          "D": 7.193446727171704e-09
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 38.75,
+        "initial_rank": 1,
+        "logits": {
+          "A": 29.5,
+          "B": 38.75,
+          "C": 24.25,
+          "D": 20.0
+        },
+        "option_argmax": "B",
+        "option_mass": 1.0000013061512876,
+        "ranks": {
+          "A": 2,
+          "B": 1,
+          "C": 3,
+          "D": 4
+        },
+        "target_logit": 29.5,
+        "target_minus_initial": -9.25,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-044",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "development_validation",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F22",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-DEV-044-N",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 84,
+      "paired_condition_order": [
+        "uncapped",
+        "p25"
+      ],
+      "phase": "prespecified_internal_validation",
+      "position_transition": "B->A",
+      "prompt_sha256": "a92fd6a71230c227a62e91a4dde70a0618b583c196b5d7f2d30f94bb46a91266",
+      "prompt_token_ids_sha256": "12fb43c3c8b4ef4c9defb042a4de03df5e7e81e6705f6aa94be8248a5734449e",
+      "prompt_tokens": 436,
+      "reasoning_token_count": 1772,
+      "record_seed": 84,
+      "response": "<think>\nOkay, let's try to figure this out. The question is whether Job H having status Ochre 9 is supported, contradicted, undetermined, or both. Let me start by going through the records and rules step by step.\n\nFirst, looking at the records provided. Record 10 says Job H has status Jade 3. So right off the bat, we know that Job H's status is Jade 3. The question is about Ochre 9. Since the status is already given as Jade 3, does that affect anything else?\n\nNow, looking at the rules. Record 12 says: If Job H has link Indigo 10 to Job D, then it is not the case that Job H has status Ochre 9. But we need to check if Job H actually has that link. \n\nBut wait, do we have any information about Job H having a link to Job D? Let's check the other records. The links mentioned are in Records 1-4, which form a chain from Job I to A to B to C to D. There's also Record 13 and 14 about links. \n\nRecord 13 states that if an item has a link Amber 1 to another, then it also has a link Indigo 10 to that same other item. For example, Job I has Amber 1 to A (Record 1), so by Record 13, Job I also has Indigo 10 to A. But does this apply to Job H? There's no mention of Job H having any Amber links. \n\nRecord 14 says if an item has Indigo 10 to another, and that other has Amber 1 to a third, then the first item has Indigo 10 to the third. But again, unless Job H is connected through these links, this might not apply. \n\nSo, unless there's a link from Job H to D via Indigo 10, Record 12's antecedent isn't met. Since there's no direct mention of Job H having any links, especially Indigo 10 to D, we can't confirm that. Therefore, Record 12's condition isn't triggered. \n\nBut since Job H's status is already Jade 3 (Record 10), and the question is about Ochre 9, which isn't mentioned in any record for Job H, we can't say it's supported. However, is there a contradiction? Only if there's a rule that directly negates it. \n\nRecord 12 would only negate Ochre 9 if Job H has the Indigo 10 link to D. But since we don't know if that link exists, we can't apply the negation. Therefore, there's no direct contradiction either. \n\nSo the answer should be undetermined because there's no information confirming or denying the link needed to apply Record 12, and the existing status (Jade 3) doesn't conflict with Ochre 9 directly. Wait, but Job H's status is Jade 3. If the system allows multiple statuses? Wait, the problem says \"local status codes.\" Does that mean each job has only one status? The records list each job's status once. For example, Job H's status is Jade 3 (Record 10). So if the system only allows one status, then having Ochre 9 would conflict with Jade 3. But the problem states that an unlisted statement isn't automatically negated. However, if the status is already set, then another status would be a contradiction. Wait, but the question is about whether Job H has status Ochre 9. If the status is already Jade 3, then having another status would be impossible. Unless the system allows multiple statuses. The problem says \"local status codes,\" but it's unclear if a job can have multiple. The records list each job's status once. For example, Job H's status is Jade 3. So if the system only allows one status, then Ochre 9 would be impossible. But the problem says \"treat every listed rule as exact and use only the records below. An unlisted statement is not automatically negated.\" So if there's no record stating that Job H has Ochre 9, and no rule that implies it, then it's not supported. But is it contradicted? If the system allows multiple statuses, then maybe not. But if each job has only one status, then having Jade 3 would mean Ochre 9 is impossible. However, the problem doesn't explicitly state that a job can't have multiple statuses. So this is ambiguous. \n\nBut the problem says \"closed scheduling registry uses local status codes.\" Maybe that implies each job has exactly one status. If that's the case, then since Job H's status is Jade 3, Ochre 9 is impossible. Therefore, the statement that Job H has Ochre 9 is contradicted. But wait, the answer options include \"A) contradicted\". But earlier reasoning about Record 12 might not apply. Let me re-examine.\n\nIf the system allows only one status, then the existence of Jade 3 (Record 10) would mean Ochre 9 is impossible. Therefore, the answer would be A) contradicted. But the problem says \"an unlisted statement is not automatically negated.\" So maybe the status codes are separate. For example, maybe a job can have multiple status codes. So if there's no record saying Job H has Ochre 9, and no rule that implies it, then it's not supported. But is there a contradiction? Only if a rule says it can't be. \n\nIf the system allows multiple statuses, then having Jade 3 doesn't prevent Ochre 9. Therefore, the answer would be B) undetermined. But how to determine if the system allows multiple statuses? The problem states \"closed scheduling registry uses local status codes.\" The term \"local status codes\" might mean that each job has a single status code from a local set. But without explicit information, it's unclear. \n\nGiven that the problem says to treat only the listed records and rules as exact, and an unlisted statement isn't automatically negated, perhaps we can't assume that having one status negates another. Therefore, the fact that Job H has Jade 3 doesn't automatically mean it can't have Ochre 9. Unless there's a rule stating that a job can only have one status. But there's no such rule listed. \n\nTherefore, the only possible contradiction would come from Record 12. But for Record 12 to apply, Job H must have a link Indigo 10 to D. Let's check if that link exists. \n\nLooking at the links: Records 1-4 have Amber 1 links. By Record 13, each of those links implies an Indigo 10 link. For example, Job I has Indigo 10 to A. Then, using Record 14, if an item has Indigo 10 to another (say, Job I to A) and that other (A) has Amber 1 to B (Record 2), then the first item (Job I) has Indigo 10 to B. So Job I would have Indigo 10 to A (from Record 13) and then via Record 14, since A has Amber 1 to B, Job I would have Indigo 10 to B. Similarly, this could propagate through the chain. But does this affect Job H?\n\nJob H isn't mentioned in any of the links in Records 1-4. So unless there's a link from Job H to someone, we can't apply Record 13 or 14. Therefore, there's no information that Job H has a link Indigo 10 to D. Therefore, the antecedent of Record 12 isn't met. Therefore, Record 12 doesn't apply, so we can't conclude that Job H doesn't have Ochre 9. \n\nSince there's no rule that directly contradicts Job H having Ochre 9, and no record stating it, the answer is B) undetermined. However, if the system only allows one status, then having Jade 3 would contradict Ochre 9. But since the problem doesn't state that, we can't assume that. Therefore, the answer is B.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "d889907d961d11bf110fd01aeab392c0e8ae5ae7ca8fbf5965ff8eda504b728f",
+      "response_tokens": 1783,
+      "scope": "evidence-validation",
+      "seed": 0,
+      "selected_answer_logit_index": 1780,
+      "structure_class": "PGF-06",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "204d0d8e611dfb9159b48c1df831693ad8186376b5b1329b375c70ce401384a6"
+}

@@ -1,0 +1,123 @@
+{
+  "error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "nav365fallverified",
+      "arguments": [
+        "csor47"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "nav365fallverified",
+        "arguments": [
+          "csor47"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "nav365fallsource",
+      "arguments": [
+        "csor47"
+      ],
+      "negated": false
+    },
+    "operator": "converse_error"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "bcc9ed8619b3d7d46eff32ca4bd1f520d07303b8b19572dfa5e2dfe0c708f63e",
+      "projected_edit_sha256": "66f1464f7d935991eeee91fc0d44e2017fddca9af9d5b7684875b8ff17eb45ea"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "2a4bf0f9c8e22f60edfd61aa7e51bf1cfb462f6f4089f2727a5a2dc1caa680ab",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "nav365outcome",
+      "arguments": [
+        "csor47"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "d4567be5f7ab3d737a2b08847becfc8b21a8ec23397150b09df5322a550b4ff3",
+    "entailed_premise_keys": [
+      "nav365fallverified(csor47)"
+    ],
+    "unsupported_claim_key": "nav365fallsource(csor47)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "nav365outcome(csor47)",
+    "proof": {
+      "record_ids": [
+        "data_nav365_gate",
+        "data_nav365_support_0",
+        "schema_nav365_gate_0",
+        "schema_nav365path0_0",
+        "schema_nav365path0_1"
+      ],
+      "depth": 3
+    },
+    "refutes_induced_label": "false"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_nav365_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "nav365gate",
+          "arguments": [
+            "csor47"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_nav365_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "nav365gate",
+          "arguments": [
+            "csor47"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-4f804d94ee5a0283",
+      "rank": 30
+    },
+    "updated_world_sha256": "2a4bf0f9c8e22f60edfd61aa7e51bf1cfb462f6f4089f2727a5a2dc1caa680ab",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

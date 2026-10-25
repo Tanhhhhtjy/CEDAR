@@ -1,0 +1,170 @@
+{
+  "key": {
+    "assay": "answer",
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-047-R",
+    "index": 356,
+    "seed": 0
+  },
+  "payload": {
+    "index": 356,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 419,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 419
+        }
+      ],
+      "answer_logit_capture_indices": [
+        419
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 3.978962393867787e-12,
+          "B": 3.3315442772933384e-11,
+          "C": 4.1399376432391486e-08,
+          "D": 0.9999999585633291
+        },
+        "full_vocab_entropy": 7.048689099065086e-07,
+        "full_vocab_probabilities": {
+          "A": 3.978962558742749e-12,
+          "B": 3.3315444153414475e-11,
+          "C": 4.139937814784389e-08,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 50.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 23.75,
+          "B": 25.875,
+          "C": 33.0,
+          "D": 50.0
+        },
+        "option_argmax": "D",
+        "option_mass": 1.0000000414366725,
+        "ranks": {
+          "A": 5,
+          "B": 3,
+          "C": 2,
+          "D": 1
+        },
+        "target_logit": 33.0,
+        "target_minus_initial": -17.0,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assay": "answer",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-047",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "development_validation",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F24",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "full_cap_stats": null,
+      "gold_answer": "D",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-DEV-047-R",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase_telemetry": null,
+      "position_transition": "D->C",
+      "prompt_sha256": "41187ffbd99a2920d1923b41c78e2b490491e5e24a15c11924a9315f8c20caa5",
+      "prompt_token_ids_sha256": "14107c71549559ad16a567c318af0416e4296a40510de82bb844af8d03f497bb",
+      "prompt_tokens": 302,
+      "reasoning_token_count": 411,
+      "record_seed": 89,
+      "response": "<think>\nOkay, let's try to figure this out. The question is whether Account E has status Lilac 5, and the options are whether it's supported, contradicted, or undetermined.\n\nFirst, looking at the records. Record 1 says Account A is Jade 3, Record 2 says Account D is Ivory 4. Record 3 says Account E has a link Cobalt 2 to Account G. Then there are some conditional rules. \n\nRecord 4 is a conditional: If Account E has a link Copper 6 to Account A, then Account E does not have status Lilac 5. But do we know if Account E actually has that link? Right now, Record 3 only mentions a Cobalt 2 link from E to G. There's no mention of a Copper 6 link from E to A. So unless we can derive that link through other rules, Record 4's condition isn't met. \n\nLooking at Records 5 and 6. Record 5 says if an item has a link Amber 1 to another, then it also has a Copper 6 link to that same other item. Record 6 is a transitive-like rule: if an item has Copper 6 to another, and that other has Amber 1 to a third, then the original item has Copper 6 to the third. \n\nBut do we have any Amber 1 links? The only links mentioned are Cobalt 2 in Record 3. So unless there's an Amber 1 link somewhere, Records 5 and 6 don't apply. \n\nSo, since there's no information about Account E having a Copper 6 link to A, the antecedent of Record 4 isn't satisfied. Therefore, we can't use Record 4 to conclude anything about E's status. The other records don't mention Lilac 5 or E's status otherwise. \n\nTherefore, there's no direct support or contradiction for E having Lilac 5. The answer should be undetermined.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "1a8445a9786a0b95b373d070ed1bdb0e1e585cb106e7097a800c2a05753abb7c",
+      "response_tokens": 422,
+      "scope": "e2-phase-answer",
+      "seed": 0,
+      "selected_answer_logit_index": 419,
+      "structure_class": "PGF-06",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "2f03ac152d3d8e1d3564d596ffbcdda0c79a11b47958ae6cd082a95dbf3eac9d"
+}

@@ -1,0 +1,87 @@
+{
+  "declared_error_class": "cross_entity_transfer",
+  "derived_error_class": "cross_entity_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "origin_check_verified",
+      "arguments": [
+        "crecords"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "review_context_open",
+      "arguments": [
+        "edit02"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "origin_check_verified",
+        "arguments": [
+          "crecords"
+        ],
+        "negated": false
+      },
+      {
+        "predicate": "review_context_open",
+        "arguments": [
+          "edit02"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "origin_check_verified",
+      "arguments": [
+        "crecordr"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "claim_not_entailed": true,
+  "downstream_literals": [
+    {
+      "predicate": "f_cros_mreviewstage1",
+      "arguments": [
+        "edit02"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "f_cros_mreviewstage2",
+      "arguments": [
+        "edit02"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "f_cros_mreviewstage3",
+      "arguments": [
+        "edit02"
+      ],
+      "negated": false
+    },
+    {
+      "predicate": "revision_warranted",
+      "arguments": [
+        "edit02"
+      ],
+      "negated": false
+    }
+  ],
+  "downstream_valid_under_single_assumption": true,
+  "warrant_absent_without_invalid_step": true,
+  "second_failure_point_absent": true,
+  "countermodel": {
+    "target_refuted": "revision_warranted(edit02)",
+    "required_counterliteral": "-revision_warranted(edit02)",
+    "input_sha256": "e75eb4bc3c94d6e086e339e880ab167945ea113bb8a393e8ddea0c7c703c5be9",
+    "model_found": true,
+    "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nreview_context_open(edit02).\norigin_check_passed(crecords).\norigin_check_passed(crecords) -> origin_check_verified(crecords).\norigin_check_verified(crecordr) -> f_cros_mreviewstage1(edit02).\nf_cros_mreviewstage1(edit02) -> f_cros_mreviewstage2(edit02).\nf_cros_mreviewstage2(edit02) -> f_cros_mreviewstage3(edit02).\nf_cros_mreviewstage3(edit02) -> revision_warranted(edit02).\n-revision_warranted(edit02).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(crecordr, [ 0 ]),\n\n        function(crecords, [ 1 ]),\n\n        function(edit02, [ 0 ]),\n\n        relation(f_cros_mreviewstage1(_), [ 0, 0 ]),\n\n        relation(f_cros_mreviewstage2(_), [ 0, 0 ]),\n\n        relation(f_cros_mreviewstage3(_), [ 0, 0 ]),\n\n        relation(origin_check_passed(_), [ 0, 1 ]),\n\n        relation(origin_check_verified(_), [ 0, 1 ]),\n\n        relation(review_context_open(_), [ 1, 0 ]),\n\n        relation(revision_warranted(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+  }
+}

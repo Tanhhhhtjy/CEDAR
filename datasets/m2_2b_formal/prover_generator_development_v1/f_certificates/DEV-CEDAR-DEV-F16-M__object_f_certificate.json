@@ -1,0 +1,105 @@
+{
+  "error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "lan605fallverified",
+      "arguments": [
+        "cpax3"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "lan605fallverified",
+        "arguments": [
+          "cpax3"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "lan605fallsource",
+      "arguments": [
+        "cpax3"
+      ],
+      "negated": false
+    },
+    "operator": "converse_error"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "b61e6d3a0c3ac38733b2a90a6591aba782ad94a1330853a5b69ad2558578ac3f",
+      "projected_edit_sha256": "113bc773c552562c47a5d2df47b75c1d6a5e7a34132bc6cbe6188b596ec40d6f"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "135e2d1e7e42fa314495bbae2f02bbfe9db16195046ed5db1efce0557d5301c6",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "lan605outcome",
+      "arguments": [
+        "cpax3"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "004b9e593131f206dd1c9af220d3a049164fe8a376894d071ff58821c1324e85",
+    "entailed_premise_keys": [
+      "lan605fallverified(cpax3)"
+    ],
+    "unsupported_claim_key": "lan605fallsource(cpax3)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "lan605outcome(cpax3)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "lan605outcome(cpax3)",
+      "required_counterliteral": "-lan605outcome(cpax3)",
+      "input_sha256": "ba4c1f4257bbaf471393cc0a78f6f2935f75bd3813f6435de692df4a513531c2",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nlan605left(cpax3).\nlan605noise2(cvek35).\nlan605noise3(cmiv78).\nlan605noise4(ctor74).\nlan605noise5(cpax3).\nlan605noise6(ckel69).\nlan605noise7(cvek35).\nlan605fallverified(cpax3).\nlan605fallsource(cpax3) -> lan605fallverified(cpax3).\nlan605left(cpax3) & lan605right(cpax3) -> lan605joint(cpax3).\nlan605joint(cpax3) -> lan605proofstep0(cpax3).\nlan605proofstep0(cpax3) -> lan605proofstep1(cpax3).\nlan605proofstep1(cpax3) -> lan605outcome(cpax3).\n-lan605outcome(cpax3).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel69, [ 0 ]),\n\n        function(cmiv78, [ 0 ]),\n\n        function(cpax3, [ 0 ]),\n\n        function(ctor74, [ 0 ]),\n\n        function(cvek35, [ 0 ]),\n\n        relation(lan605fallsource(_), [ 0, 0 ]),\n\n        relation(lan605fallverified(_), [ 1, 0 ]),\n\n        relation(lan605joint(_), [ 0, 0 ]),\n\n        relation(lan605left(_), [ 1, 0 ]),\n\n        relation(lan605noise2(_), [ 1, 0 ]),\n\n        relation(lan605noise3(_), [ 1, 0 ]),\n\n        relation(lan605noise4(_), [ 1, 0 ]),\n\n        relation(lan605noise5(_), [ 1, 0 ]),\n\n        relation(lan605noise6(_), [ 1, 0 ]),\n\n        relation(lan605noise7(_), [ 1, 0 ]),\n\n        relation(lan605outcome(_), [ 0, 0 ]),\n\n        relation(lan605proofstep0(_), [ 0, 0 ]),\n\n        relation(lan605proofstep1(_), [ 0, 0 ]),\n\n        relation(lan605right(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "lan605right",
+          "arguments": [
+            "cpax3"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-051d1dcf06782ae7",
+      "rank": 22
+    },
+    "updated_world_sha256": "135e2d1e7e42fa314495bbae2f02bbfe9db16195046ed5db1efce0557d5301c6",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

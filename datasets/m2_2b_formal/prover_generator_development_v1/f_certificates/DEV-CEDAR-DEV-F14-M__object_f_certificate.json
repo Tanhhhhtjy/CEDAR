@@ -1,0 +1,105 @@
+{
+  "error_class": "unsupported_bridge",
+  "entailed_premises": [
+    {
+      "predicate": "nav642fallobserved",
+      "arguments": [
+        "csor8"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "nav642fallobserved",
+        "arguments": [
+          "csor8"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "nav642fallbridge",
+      "arguments": [
+        "csor8"
+      ],
+      "negated": false
+    },
+    "operator": "unsupported_bridge"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "a371e0839e397fc28a19b62bbfb5fc0a0522bfb1b8b0a8e96b53c6e661fb65aa",
+      "projected_edit_sha256": "35f303365761c8e07a18e26a7eb498faa1889de3cf1048970bfc8d9e8d3f1ce4"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "b9b92805045efe6c28bd51ad3399dd3d3ee5437c85fa5bd1abfce6a064d3b346",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "nav642outcome",
+      "arguments": [
+        "csor8"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "unsupported_bridge",
+    "world_semantic_sha256": "1acd18d52add9663e7d706216838c69c8efe00801d12f88a77b1e75efaa05302",
+    "entailed_premise_keys": [
+      "nav642fallobserved(csor8)"
+    ],
+    "unsupported_claim_key": "nav642fallbridge(csor8)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "nav642outcome(csor8)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "nav642outcome(csor8)",
+      "required_counterliteral": "-nav642outcome(csor8)",
+      "input_sha256": "7e33c744ca786bd0de4332c943fe59e9663148aee96bbbc0a7a297991fdf54c2",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nnav642left(csor8).\nnav642noise1(cmiv83).\nnav642noise2(clan44).\nnav642noise3(ctor43).\nnav642noise4(cpax31).\nnav642noise5(csor8).\nnav642noise6(cmiv83).\nnav642noise7(clan44).\nnav642fallobserved(csor8).\nnav642left(csor8) & nav642right(csor8) -> nav642joint(csor8).\nnav642joint(csor8) -> nav642proofstep0(csor8).\nnav642proofstep0(csor8) -> nav642proofstep1(csor8).\nnav642proofstep1(csor8) -> nav642proofstep2(csor8).\nnav642proofstep2(csor8) -> nav642outcome(csor8).\n-nav642outcome(csor8).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(clan44, [ 0 ]),\n\n        function(cmiv83, [ 0 ]),\n\n        function(cpax31, [ 0 ]),\n\n        function(csor8, [ 0 ]),\n\n        function(ctor43, [ 0 ]),\n\n        relation(nav642fallobserved(_), [ 1, 0 ]),\n\n        relation(nav642joint(_), [ 0, 0 ]),\n\n        relation(nav642left(_), [ 1, 0 ]),\n\n        relation(nav642noise1(_), [ 1, 0 ]),\n\n        relation(nav642noise2(_), [ 1, 0 ]),\n\n        relation(nav642noise3(_), [ 1, 0 ]),\n\n        relation(nav642noise4(_), [ 1, 0 ]),\n\n        relation(nav642noise5(_), [ 1, 0 ]),\n\n        relation(nav642noise6(_), [ 1, 0 ]),\n\n        relation(nav642noise7(_), [ 1, 0 ]),\n\n        relation(nav642outcome(_), [ 0, 0 ]),\n\n        relation(nav642proofstep0(_), [ 0, 0 ]),\n\n        relation(nav642proofstep1(_), [ 0, 0 ]),\n\n        relation(nav642proofstep2(_), [ 0, 0 ]),\n\n        relation(nav642right(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "nav642right",
+          "arguments": [
+            "csor8"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-bfdc48d39b07176a",
+      "rank": 28
+    },
+    "updated_world_sha256": "b9b92805045efe6c28bd51ad3399dd3d3ee5437c85fa5bd1abfce6a064d3b346",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

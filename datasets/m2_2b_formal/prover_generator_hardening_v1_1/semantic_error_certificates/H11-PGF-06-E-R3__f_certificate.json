@@ -1,0 +1,106 @@
+{
+  "error_class": "support_path_generalization",
+  "entailed_premises": [
+    {
+      "predicate": "kel640fallsupported",
+      "arguments": [
+        "ctor3"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "kel640fallsupported",
+        "arguments": [
+          "ctor3"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "kel640fallsupported",
+      "arguments": [
+        "cnav80"
+      ],
+      "negated": false
+    },
+    "operator": "support_path_generalization"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "dba59b794decefb46aff5e71b83221f6afc317f28e6b3221802a2f85e537b7ca",
+      "projected_edit_sha256": "53f56014595fb9c4d8b296358e2de2fc18c229e2deaa4841c1175a0bd641a79d"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "9a9805a5fe668296fdaaab60d6616ad51e2b8e2877ddeaa694fea0afd827aa9e",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "kel640outcome",
+      "arguments": [
+        "ctor3"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "support_path_generalization",
+    "world_semantic_sha256": "f583480da0ef1a308d56ad0b35146fb192c8ab22b85d7f75ce8dbee2cc03a82d",
+    "entailed_premise_keys": [
+      "kel640fallsupported(ctor3)"
+    ],
+    "unsupported_claim_key": "kel640fallsupported(cnav80)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "-kel640outcome(ctor3)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "-kel640outcome(ctor3)",
+      "required_counterliteral": "kel640outcome(ctor3)",
+      "input_sha256": "09fd4d7e67c1b99b5b6216cd646c6536e2c48707bac462f335be730cf2aeb261",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nkel640edge(cnav80,ckel640node0).\nkel640noise2(cmiv41).\nkel640noise3(clan9).\nkel640fallgate(ctor3).\n(all x (kel640fallgate(x) -> kel640fallsupported(x))).\nkel640reach(ctor3,ckel640node0) -> -kel640outcome(ctor3).\n(all x all y (kel640edge(x,y) -> kel640reach(x,y))).\n(all x all y all z (kel640reach(x,y) & kel640edge(y,z) -> kel640reach(x,z))).\nkel640outcome(ctor3).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel640node0, [ 0 ]),\n\n        function(clan9, [ 0 ]),\n\n        function(cmiv41, [ 0 ]),\n\n        function(cnav80, [ 0 ]),\n\n        function(ctor3, [ 1 ]),\n\n        relation(kel640fallgate(_), [ 0, 1 ]),\n\n        relation(kel640fallsupported(_), [ 0, 1 ]),\n\n        relation(kel640noise2(_), [ 1, 0 ]),\n\n        relation(kel640noise3(_), [ 1, 0 ]),\n\n        relation(kel640outcome(_), [ 0, 1 ]),\n\n        relation(kel640edge(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 0 ]),\n\n        relation(kel640reach(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "kel640edge",
+          "arguments": [
+            "ctor3",
+            "cnav80"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-0f3b73f8c6ffa51a",
+      "rank": 13
+    },
+    "updated_world_sha256": "9a9805a5fe668296fdaaab60d6616ad51e2b8e2877ddeaa694fea0afd827aa9e",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

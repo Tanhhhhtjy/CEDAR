@@ -1,0 +1,112 @@
+{
+  "error_class": "unsupported_bridge",
+  "entailed_premises": [
+    {
+      "predicate": "sor37fallobserved",
+      "arguments": [
+        "clan15"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "sor37fallobserved",
+        "arguments": [
+          "clan15"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "sor37fallbridge",
+      "arguments": [
+        "clan15"
+      ],
+      "negated": false
+    },
+    "operator": "unsupported_bridge"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "d39d4b8ed00597546152b21db3387be499f47b21b90c80fc33acc9ad847190ec",
+      "projected_edit_sha256": "1f672c8c533783f8107822eee84838ae91bb20485330e984d621ad170a232d64"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "518dbf4f3483ae1c304587f30a29e1020ef293f15b5e070c4f8169d2b1a4d2a7",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "sor37outcome",
+      "arguments": [
+        "clan15"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "unsupported_bridge",
+    "world_semantic_sha256": "c4d2bb1dd1b020caf2f6b10444a2299245b2476bea41ea5bbd7e626f0c4329cc",
+    "entailed_premise_keys": [
+      "sor37fallobserved(clan15)"
+    ],
+    "unsupported_claim_key": "sor37fallbridge(clan15)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "sor37outcome(clan15)",
+    "proof": {
+      "record_ids": [
+        "data_sor37_root",
+        "schema_sor37proof_0",
+        "schema_sor37proof_1",
+        "schema_sor37proof_2",
+        "schema_sor37proof_3",
+        "schema_sor37proof_4",
+        "schema_sor37proof_5"
+      ],
+      "depth": 6
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "data_sor37_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "sor37token",
+          "arguments": [
+            "clan15"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-f2e580b688945116",
+      "rank": 18
+    },
+    "updated_world_sha256": "518dbf4f3483ae1c304587f30a29e1020ef293f15b5e070c4f8169d2b1a4d2a7",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

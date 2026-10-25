@@ -1,0 +1,119 @@
+{
+  "error_class": "unsupported_bridge",
+  "entailed_premises": [
+    {
+      "predicate": "sor316fallobserved",
+      "arguments": [
+        "cpax9"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "sor316fallobserved",
+        "arguments": [
+          "cpax9"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "sor316fallbridge",
+      "arguments": [
+        "cpax9"
+      ],
+      "negated": false
+    },
+    "operator": "unsupported_bridge"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "680fbc37a44777c345923f95caaff8d4560a115b7dc1cc60b0d3d81f3e4b25d3",
+      "projected_edit_sha256": "fc7b20878c808e87d9fb15e771a5beee165f98876a37f15c23d65182fd949e9f"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "144a9bc342f7c8f0ae2b50e3f991e22f8c1ec74a6397f1451301b2a6007454a2",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "sor316outcome",
+      "arguments": [
+        "cpax9"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "unsupported_bridge",
+    "world_semantic_sha256": "1451e77303833746a22ca21c0500f1d76f5be87548859071a1840036eac8ecb2",
+    "entailed_premise_keys": [
+      "sor316fallobserved(cpax9)"
+    ],
+    "unsupported_claim_key": "sor316fallbridge(cpax9)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-sor316outcome(cpax9)",
+    "proof": {
+      "record_ids": [
+        "data_sor316_source",
+        "policy_sor316_terminal",
+        "schema_sor316up_0",
+        "schema_sor316up_1",
+        "schema_sor316up_2"
+      ],
+      "depth": 4
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "policy_sor316_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "sor316bridge",
+            "arguments": [
+              "cpax9"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "sor316outcome",
+          "arguments": [
+            "cpax9"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-89b9cb8f6846c2a5",
+      "rank": 7
+    },
+    "updated_world_sha256": "144a9bc342f7c8f0ae2b50e3f991e22f8c1ec74a6397f1451301b2a6007454a2",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

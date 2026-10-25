@@ -1,0 +1,145 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-033-R",
+    "index": 193,
+    "mode": "thinking",
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 193,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 450,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 450
+        }
+      ],
+      "answer_logit_capture_indices": [
+        450
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 5.21141239906591e-10,
+          "B": 0.9999999973799538,
+          "C": 2.0611534647228276e-09,
+          "D": 3.775134708828792e-11
+        },
+        "full_vocab_entropy": 5.834407090787863e-08,
+        "full_vocab_probabilities": {
+          "A": 5.211412412720051e-10,
+          "B": 1.0,
+          "C": 2.061153470123145e-09,
+          "D": 3.775134718719819e-11
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 40.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 18.875,
+          "B": 40.25,
+          "C": 20.25,
+          "D": 16.25
+        },
+        "option_argmax": "B",
+        "option_mass": 1.0000000026200462,
+        "ranks": {
+          "A": 3,
+          "B": 1,
+          "C": 2,
+          "D": 5
+        },
+        "target_logit": 18.875,
+        "target_minus_initial": -21.375,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-033",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F17",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-033-R",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "prompt_sha256": "580c01c0c4597d8dcaae869a90361159f951172bdcb3e99b1083d6f97b06fb5c",
+      "prompt_token_ids_sha256": "48d2debc39c1ee984b3063620443168e7f6644e477e8c4b1467b0d6a53688b36",
+      "prompt_tokens": 293,
+      "reasoning_token_count": 442,
+      "record_seed": 193,
+      "response": "<think>\nOkay, let's go through this step by step. The question is whether File B has status Lilac 5, based on the given records. Let me start by listing out all the records again to make sure I don't miss anything.\n\nRecord 1 says File B has Copper 6. Record 2 says it has Jade 3. Then there are several conditional statements. \n\nRecord 3: If Jade 3 and Ivory 4, then Cobalt 2. But we don't know if Ivory 4 is true here. Since Record 2 gives Jade 3, but there's no mention of Ivory 4, so this rule might not apply unless we can infer Ivory 4 somehow. But I don't see any info on that, so maybe this rule isn't triggered.\n\nRecord 4: If Amber 1, then not Lilac 5. So if we can determine that Amber 1 is true, then Lilac 5 would be false. But how do we get Amber 1?\n\nLooking at Records 5 and 6. Record 5: Copper 6 implies Silver 7. Since Record 1 says Copper 6 is true, so by modus ponens, Silver 7 must be true. Then Record 6 says Silver 7 implies Amber 1. So again, modus ponens: Silver 7 is true, so Amber 1 must be true. \n\nNow, with Amber 1 being true, Record 4 comes into play. If Amber 1 is true, then Lilac 5 must not be true. Therefore, the existence of Lilac 5 would be contradicted. \n\nSo putting it all together: Copper 6 → Silver 7 → Amber 1 → ¬Lilac 5. Therefore, the status Lilac 5 is contradicted. The answer should be B. \n\nWait, but the question is asking if it's supported. Since the conclusion is that Lilac 5 is not allowed (because of the chain leading to Record 4), that would mean the statement \"File B has Lilac 5\" is contradicted. So the correct choice is B.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "6a1ad0d5b8347e3199632f012c6898d3c96f0379bf734fe5de798afb3b7266a0",
+      "response_tokens": 453,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 450,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "9b73eeeffc9604d99d6cc182aebe94cca26a91e8109fa684cc30b2500ff1d9f9"
+}

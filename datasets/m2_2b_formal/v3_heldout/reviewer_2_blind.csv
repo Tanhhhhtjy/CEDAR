@@ -1,0 +1,1201 @@
+﻿blind_item_id,system,initial_user,initial_assistant,text_a,text_b,text_a_validity,text_b_validity,text_a_english_rhetorical_quality_1_5,text_b_english_rhetorical_quality_1_5,qualified_minimal_pair,text_a_unique_fatal_flaw_if_invalid,text_b_unique_fatal_flaw_if_invalid,confidence_1_5,notes
+M22B-V3-BLIND-053,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","The target rule is P->Q, and P is observed true. Does Q follow?
+
+Which option is supported by the information currently available?
+(A) Yes, Q follows
+(B) Cannot be determined
+(C) No, Q is false
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""Modus ponens on the directed rule yields Q.""}","Observation:
+Rule diagnostic RG-34 lists endpoints P,Q, observed P, and both P->Q and Q->P as permitted target directions.
+
+Candidate reasoning:
+Q follows under the first direction but not under the second, so it is not determined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Rulebook RG-34 lists companion Q->P in section K and target P->Q in section J.
+
+Candidate reasoning:
+The companion direction is treated as a conflicting record for the target, making Q undetermined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-058,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","Rules R1->C and R2->not-C both fire; R3->D also fires but D does not conflict. The target priority is R1>R2. Which C-related conclusion is selected?
+
+Which option is supported by the information currently available?
+(A) not-C
+(B) C
+(C) Cannot be determined
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""The resolver selects C over not-C; the independent D conclusion changes nothing.""}","Observation:
+Priority record PR-93 lists no R1/R2 edge, no default, and all three firing rules including nonconflicting R3.
+
+Candidate reasoning:
+The two possible R1/R2 orders select C and not-C, so the C-related conclusion is undetermined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Priority record PR-93 lists reversed print order for R9/R10, R1>R2, and nonconflicting R3.
+
+Candidate reasoning:
+The other pair's exception is applied to R1/R2, making the target priority and C conclusion uncertain.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-035,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A scale has labeled ticks 0 and 10. The pointer is halfway between them, and the target range is validated as linear interpolation. What value is decoded?
+
+Which option is supported by the information currently available?
+(A) Cannot be determined
+(B) 0
+(C) 5
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""Linear interpolation halfway from 0 to 10 gives 5.""}","Observation:
+Range diagnostic RD-23 lists both laws returning 0 at the lower tick and lists linear for the target range.
+
+Candidate reasoning:
+The tick check's inability to distinguish laws is used to admit both 5 and 0 at the actual pointer.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Range diagnostic RD-23 lists linear and lower-tick step-hold as permitted target laws at the halfway pointer.
+
+Candidate reasoning:
+The laws decode the same position as 5 and 0, so value is not determined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-045,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","Candidates X and Y are ranked by highest primary score, then highest secondary score only on a primary tie. X scores (9,3) and Y scores (8,7). Who wins?
+
+Which option is supported by the information currently available?
+(A) Y
+(B) X
+(C) They tie
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""X has the higher primary score, so secondary scores are not consulted.""}","Observation:
+Score audit SA-35 lists exact scores X=9,Y=8 inside the same coarse band [8,10).
+
+Candidate reasoning:
+Shared band membership is treated as an exact tie, activating the secondary score and selecting Y.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Score audit SA-35 lists primary scores X=8,Y=8 and secondary scores X=3,Y=7.
+
+Candidate reasoning:
+The primary scores now tie and Y's secondary 7 exceeds X's 3, so Y wins.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-029,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A label says a rate X=4 is liters per item. For 3 items, what quantity does the stated orientation give?
+
+Which option is supported by the information currently available?
+(A) 12 liters
+(B) 0.75 liters
+(C) 7 liters
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""Liters per item multiplies 3 by 4 to give 12 liters.""}","Observation:
+Magnified label ML-27 lists target orientation items per liter with rate 4 and item count 3.
+
+Candidate reasoning:
+Four items per liter means 3 items require 3/4=0.75 liter.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Target-field check ML-27 lists rate X=1, where liters per item and items per liter both return 1.
+
+Candidate reasoning:
+The passing unit-rate check is used to choose items per liter, so 3/4=0.75 liter.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-013,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","An export has rows 10 and 20 under a validated C1 currency header. The supplied conversion rates are C1=2 credits and C2=3 credits per unit. What is the converted total?
+
+Which option is supported by the information currently available?
+(A) 90 credits
+(B) Cannot be determined
+(C) 60 credits
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""The C1 header binds both rows, so (10+20)x2=60.""}","Observation:
+Archive metadata AM-14 lists C2 for this supplier's prior batch and C1 for the current batch.
+
+Candidate reasoning:
+Applying the prior batch's C2 basis to the current rows makes 90 feasible and the total is called indeterminate.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Archive metadata AM-14 lists the two current rows without a currency attachment and lists C1 and C2 as permitted headers.
+
+Candidate reasoning:
+The same numerals give 60 under C1 and 90 under C2, so no unique total follows.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-036,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A scale spans ticks 20 and 50. Its pointer is one third of the way upward, the range uses linear interpolation, and decoded values are multiplied by a fixed factor 2. What is reported?
+
+Which option is supported by the information currently available?
+(A) 40
+(B) 60
+(C) Cannot be determined
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""The linear value is 20+(50-20)/3=30, then x2 gives 60.""}","Observation:
+Range diagnostic RD-74 lists both laws as permitted with one-third position and reporting factor 2.
+
+Candidate reasoning:
+The two laws report 60 and 40, so the decoded value is undetermined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Range diagnostic RD-74 lists both laws reporting 40 at tick 20 and lists linear for the target range.
+
+Candidate reasoning:
+The non-discriminating tick result is used to question the law and admit both 60 and 40.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-034,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A conversion starts at 24. A prefix on U1 supplies factor 10, U2 supplies factor 4, and U3 supplies factor 2. The validated grouping is U1/(U2*U3). What is 24x10/(4x2)?
+
+Which option is supported by the information currently available?
+(A) 30
+(B) 120
+(C) Cannot be determined
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""The three fixed factors under denominator grouping give 240/8=30.""}","Observation:
+Syntax guide SD-78 lists (U1/U2)*U3 for an example with factors 10,4,2 and denominator grouping for this target.
+
+Candidate reasoning:
+Transferring the example parse to the target admits both 30 and 120.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Syntax diagnostic SD-78 lists both supported groupings for target factors 10, 4, and 2.
+
+Candidate reasoning:
+U1/(U2*U3) gives 30, while (U1/U2)*U3 gives 120, so no unique conversion follows.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-012,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","In one population, |A|=10, |B|=8, and |C|=5. A validated flag says A and B are disjoint; |A intersection C|=2, |B intersection C|=1, and the triple intersection is 0. What is |A union B union C|?
+
+Which option is supported by the information currently available?
+(A) 17
+(B) 20
+(C) Cannot be determined
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""Inclusion-exclusion gives 10+8+5-0-2-1+0=20.""}","Observation:
+Join audit JA-62 lists the target A/B disjointness flag as invalid because it came from a failed merge; all set sizes and every other pairwise and triple intersection are preserved.
+
+Candidate reasoning:
+A/B overlap 0 gives 20 and overlap 3 gives 17, with every other intersection unchanged.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Join audit JA-62 lists A/B overlap 3 for archive Q and lists the current population under its separate disjoint flag.
+
+Candidate reasoning:
+Using Q's overlap for the current population creates totals 20 and 17 and makes the result indeterminate.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-023,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A two-channel device reads C1=8 and C2=3. Its validated identity mapping is X=C1 and Y=C2. What is X-Y?
+
+Which option is supported by the information currently available?
+(A) 5
+(B) -5
+(C) 11
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""The identity map gives 8-3=5.""}","Observation:
+Continuity trace CT-16 lists this device's mapping as X=C2 and Y=C1 with channel readings 8 and 3.
+
+Candidate reasoning:
+The swapped map gives X-Y=3-8=-5.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Continuity test CT-16 lists X and Y references moving together and both channels tracking both axes, with C2-X slightly stronger.
+
+Candidate reasoning:
+The stronger C2-X correlation selects the swapped map, giving -5.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-046,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","Candidates X,Y,Z are compared lexicographically on three descending scores. X=(90,4,8), Y=(88,7,5), and Z=(70,100,100). Who wins?
+
+Which option is supported by the information currently available?
+(A) Y
+(B) X
+(C) Z
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""X has the greatest primary score; Z is strictly dominated there.""}","Observation:
+Score audit SA-83 lists exact scores X=90,Y=88 in band [80,99] and Z=70 outside it.
+
+Candidate reasoning:
+The shared band is treated as exact equality, so Y's secondary score is used and Y is selected.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Score audit SA-83 lists X and Y primary scores as 88 and lists Z's primary score as 70.
+
+Candidate reasoning:
+X and Y now tie only on primary, and Y's secondary 7 beats 4; Z remains dominated, so Y wins.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-004,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","Groups A, B, and C have means 8, 14, and 20. The roster records 2 contributing observations from each group; the recorded subtotal for A is therefore 16. What is the pooled mean?
+
+Which option is supported by the information currently available?
+(A) 14
+(B) 15
+(C) 16
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""The three equal weights give (16+28+40)/6=14.""}","Observation:
+Roster reconciliation RC-73 lists contribution counts 2, 2, and 5 for A, B, and C, with A subtotal 16.
+
+Candidate reasoning:
+The corrected mean is (16+28+5x20)/(2+2+5)=144/9=16.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Roster reconciliation RC-73 lists subteam counts 2, 2, and 5 for A, B, and C, without listing team sizes.
+
+Candidate reasoning:
+Substituting the subteam counts as contribution weights gives (16+28+100)/9=16.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-042,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A controller opens on odd parity and closes on even parity across flags P,Q,R,S. Their states are on,on,off,on. Status bit Z=ready is not an input. What does the controller do?
+
+Which option is supported by the information currently available?
+(A) FAULT
+(B) CLOSED
+(C) OPEN
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""Three input flags are on, so odd parity opens the controller.""}","Observation:
+Register survey SR-84 lists two flags whose suffix parity matches state, plus S2 on and Z ready.
+
+Candidate reasoning:
+The two examples are generalized into a suffix rule, making S2 off; parity then yields CLOSED.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+State register SR-84 lists P,Q on, R,S off, and unused status Z as ready.
+
+Candidate reasoning:
+Two flags are then on, so even parity makes the controller CLOSED.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-052,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A rule needs two independent reports for C. R1 and R2 independently support C; R3 independently supports unrelated D. Their parent records are validated. Is C established?
+
+Which option is supported by the information currently available?
+(A) C is established
+(B) C is false
+(C) Cannot be determined
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""R1 and R2 provide the required two supports for C; R3 is irrelevant.""}","Observation:
+Lineage map LM-85 lists one shared subject table for R1,R2, distinct report parents, and D-only report R3.
+
+Candidate reasoning:
+Common subject data is equated with common report provenance, leaving one C support and an undetermined conclusion.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Lineage map LM-85 lists one shared C-report parent for R1,R2 and an independent D-report parent for R3.
+
+Candidate reasoning:
+C now has one independent support, so its truth cannot be determined under the threshold rule.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-011,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","In the target population, set A has 8 members and set B has 6. A validated flag states that A and B are disjoint. What is |A union B|?
+
+Which option is supported by the information currently available?
+(A) Cannot be determined
+(B) 14
+(C) 11
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""The disjointness flag gives 8+6=14.""}","Observation:
+Join audit JA-11 lists A/B overlap 3 for pilot P and lists the target population under its separate disjoint flag.
+
+Candidate reasoning:
+Transferring P's overlap to the target makes both 14 and 11 appear feasible, so the union is declared undetermined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Join audit JA-11 lists the target-population disjointness flag as invalid because it came from a failed merge; set sizes 8 and 6 are preserved, but A/B overlap is unidentified.
+
+Candidate reasoning:
+Overlap 0 would give 14 while overlap 3 would give 11, so the union is not identified.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-028,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A counter reports K(X+RM)-20 with display X=30, modulus M=256, scale K=2, and validated R=0. The baseline subtraction 20 is fixed. What is reported?
+
+Which option is supported by the information currently available?
+(A) 552
+(B) 40
+(C) 492
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""The value is 2x30-20=40.""}","Observation:
+Decoder status DS-79 lists rollover as enabled, no wrap event, and baseline 20 for the interval.
+
+Candidate reasoning:
+Treating enabled rollover as one occurrence gives 2x(30+256)-20=552.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Event log EL-79 lists one wrap with display 30, modulus 256, scale 2, and baseline 20.
+
+Candidate reasoning:
+The corrected result is 2x(30+256)-20=552.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-049,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A three-state cycle is numbered 0,1,2. It starts at 0. Event type A adds 1 modulo 3 and type B adds 2. The two recorded events are A,A. What is the final state?
+
+Which option is supported by the information currently available?
+(A) 0
+(B) 2
+(C) 1
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""The sequence adds 1+1 to state 0, giving 2 modulo 3.""}","Observation:
+Event registry EV-39 lists the ordered event types as A,B with the same transition table.
+
+Candidate reasoning:
+The replay gives 0+1+2=0 modulo 3.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Event registry EV-39 lists identifier-suffix increments for class C and type A for the target event.
+
+Candidate reasoning:
+Applying class C's convention makes the target increment 2, so replay ends at 0.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-054,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","The target rules form P->Q and Q->R. P is observed true, and the second edge Q->R is fixed and reliable. Does R follow?
+
+Which option is supported by the information currently available?
+(A) Cannot be determined
+(B) No, R is false
+(C) Yes, R follows
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""P yields Q on the first edge, then Q yields R on the fixed second edge.""}","Observation:
+Rule diagnostic RG-89 lists both first-edge directions as permitted and lists the second edge as Q->R.
+
+Candidate reasoning:
+R follows if the first edge is P->Q, but not if it is Q->P, so R is undetermined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Rulebook RG-89 lists companion Q->P in section K and target chain P->Q->R in section J.
+
+Candidate reasoning:
+The companion is treated as an alternative target direction, so the chain to R is declared uncertain.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-014,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","An export contains rows 5, 10, and 15 under validated C1. Rates are C1=2 and C2=4 credits per unit. What is the converted total?
+
+Which option is supported by the information currently available?
+(A) Cannot be determined
+(B) 110 credits
+(C) 60 credits
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""All three C1 rows total (5+10+15)x2=60.""}","Observation:
+Archive metadata AM-59 lists C2 for the preceding batch and C1 for all three current rows.
+
+Candidate reasoning:
+Carrying the preceding basis onto the last two rows yields 110, so the current total is treated as uncertain.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Archive metadata AM-59 lists C1 on the 5-unit row and lists C1 or C2 for each unattached current row.
+
+Candidate reasoning:
+The bindings yield 60 or 5x2+(10+15)x4=110, so the total is not identified.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-043,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A directed graph has exactly edges S->U, U->V, and V->T. Is T reachable from S?
+
+Which option is supported by the information currently available?
+(A) Reachability is undetermined
+(B) No, T is unreachable
+(C) Yes, T is reachable
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""The directed path S->U->V->T reaches T.""}","Observation:
+Signed edge record ER-33 lists bridge V->U, the other two edges, and no alternate S-to-T path.
+
+Candidate reasoning:
+S reaches U but cannot cross to V, so T is unreachable.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Graph diagnostic ER-33 lists balanced degrees outside U,V, bridge U->V, and no global balance rule.
+
+Candidate reasoning:
+Imposing that pattern globally reverses the bridge to V->U, making T unreachable.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-051,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A policy establishes claim C only with two independently authored reports supporting C. R1 and R2 support C and have validated distinct report parents. Is C established?
+
+Which option is supported by the information currently available?
+(A) Cannot be determined
+(B) C is established
+(C) C is false
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""The two distinct report parents satisfy the two-source threshold.""}","Observation:
+Lineage map LM-32 lists one shared upstream report for R1,R2 and no other independent C support.
+
+Candidate reasoning:
+Only one independent support remains, so the policy neither establishes C nor establishes its negation.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Lineage map LM-32 lists one shared data table for R1,R2 and distinct independently authored report parents.
+
+Candidate reasoning:
+Shared subject data is treated as shared report provenance, reducing the count to one and making C undetermined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-059,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","For requests r1,r2 and supervisors s1,s2, the target formula is explicitly bracketed as: there exists one supervisor y such that for every request x, R(x,y). Does a common supervisor follow?
+
+Which option is supported by the information currently available?
+(A) No common supervisor exists
+(B) Cannot be determined
+(C) Yes, a common supervisor exists
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""The existential quantifier outside the universal directly asserts one shared witness.""}","Observation:
+Formula diagnostic FD-40 lists both quantifier orders as permitted readings of the target words and predicate R.
+
+Candidate reasoning:
+The strong reading entails a common supervisor, while the weak reading allows table {r1-s1,r2-s2} with no common witness.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Logic guide FD-40 lists a weak-order example with the same words and strong-order brackets for the target formula.
+
+Candidate reasoning:
+The example parse is transferred to the bracketed target, so existence of one shared supervisor is treated as uncertain.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-003,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","Two groups have means 10 and 20. The contribution roster records 2 contributing observations from each group. What is the pooled mean, computed as the contribution-weighted mean?
+
+Which option is supported by the information currently available?
+(A) 17.5
+(B) 15
+(C) 16
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""Equal contribution counts give (2x10+2x20)/4=15.""}","Observation:
+Roster reconciliation RC-12 lists contribution counts 2 for group 1 and 6 for group 2, with means 10 and 20.
+
+Candidate reasoning:
+The reconciled pooled mean is (2x10+6x20)/(2+6)=17.5.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Roster reconciliation RC-12 lists subteam counts 2 for group 1 and 6 for group 2, with contribution counts 2 each.
+
+Candidate reasoning:
+Using subteam counts as contribution weights gives (2x10+6x20)/8=17.5.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-001,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A billing cycle uses a marginal tariff: the first 100 units of cumulative use cost $1 per unit and later units cost $2 per unit. The opening cumulative quantity is recorded as 0, and the current block contains 80 units. What is the current-block charge?
+
+Which option is supported by the information currently available?
+(A) $80
+(B) $100
+(C) $120
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""Opening use of 0 leaves all 80 current units in the $1 tier.""}","Observation:
+Operations record BR-41 lists the maintenance-cycle opening as 40 operations and the billing-cycle opening as 0 units.
+
+Candidate reasoning:
+Using 40 as the billing opening gives 60 current units at $1 and 20 at $2, for the revised charge.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Operations record BR-41 lists the billing-cycle opening as 40 units and the current block as 80 units.
+
+Candidate reasoning:
+The cycle reaches 120 units, so 60 current units cost $1 and 20 cost $2, for a $100 current-block charge.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-007,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","An issue uses the earliest available inventory layer. L1 contains 5 units at $4 each and L2 contains 5 units at $7 each. Both are available, and the issue quantity is 5. What is the issue cost?
+
+Which option is supported by the information currently available?
+(A) $35
+(B) $20
+(C) $28
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""The earliest available layer L1 supplies all 5 units at $4.""}","Observation:
+Reservation ledger RL-28 lists L1 as reserved for O-9 and lists the two layer quantities and costs.
+
+Candidate reasoning:
+The issue skips L1 and takes 5 units from L2, costing 5x7=35.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Reservation ledger RL-28 lists L0 from the shared shipment as reserved for O-9 and lists no reservation for L1.
+
+Candidate reasoning:
+Extending L0's reservation to every layer in that shipment makes the issue skip L1 and cost 5x7=35.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-005,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A $120 pool is allocated in proportion to eligible machine hours. Target M has 4 hours, peer N has 2 hours, and auxiliary S has 6 hours. The policy register classifies all three as allocable. What share does M receive?
+
+Which option is supported by the information currently available?
+(A) $40
+(B) $80
+(C) $60
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""M receives 120x4/(4+2+6)=40.""}","Observation:
+Policy register PR-19 lists S's team name as 'Field Support' and its formal class as allocable.
+
+Candidate reasoning:
+Reading the team-name word as the excluded support-equipment class removes S, giving 120x4/6=80.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Policy register PR-19 lists S's formal class as excluded support equipment and lists all three hour counts.
+
+Candidate reasoning:
+Only 6 eligible hours remain, so M receives 120x4/6=80.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-050,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A five-state cycle starts at 1. Type A adds 1, type B adds 2, and H is a self-loop adding 0. Recorded events in order are A,B,H,A. What is the final state modulo 5?
+
+Which option is supported by the information currently available?
+(A) 4
+(B) 0
+(C) 1
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""Replay gives 1+1+2+0+1=5, which is state 0.""}","Observation:
+Event registry EV-87 lists ordered types A,B,H,B with modulus 5 and H as a self-loop.
+
+Candidate reasoning:
+Replay becomes 1+1+2+0+2=6, or state 1 modulo 5.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Event registry EV-87 lists identifier-suffix transitions for class C and type A for the fourth event.
+
+Candidate reasoning:
+Transferring class C's convention makes the fourth increment 2 and the replay ends at state 1.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-002,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A cycle charges $2 per unit through cumulative use 120 and $3 per unit afterward. Its opening cumulative quantity is 0. Current sub-blocks contain 60 and 50 units, and a fixed $10 reporting fee is then added. What is the total charge?
+
+Which option is supported by the information currently available?
+(A) $240
+(B) $230
+(C) $250
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""Both sub-blocks total 110 lower-tier units, giving 110x2+10=230.""}","Observation:
+Cycle register BR-86 lists the service opening as 30 operations, the billing opening as 0, and fee as $10.
+
+Candidate reasoning:
+Applying that 30 as the billing opening gives 90x2+20x3+10=250.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Cycle register BR-86 lists the billing opening as 30 units, sub-blocks as 60 and 50, and fee as $10.
+
+Candidate reasoning:
+Only 90 current units remain in the lower tier and 20 enter the upper tier, so 90x2+20x3+10=250.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-033,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A numeric conversion starts at 18 and applies unit-token factors U1=2, U2=3, U3=2. The validated expression is U1/(U2*U3), so compute 18x2/(3x2). What is the result?
+
+Which option is supported by the information currently available?
+(A) Cannot be determined
+(B) 24
+(C) 6
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""The explicit denominator grouping gives 36/6=6.""}","Observation:
+Syntax diagnostic SD-25 lists both U1/(U2*U3) and (U1/U2)*U3 as permitted target parses with the same tokens.
+
+Candidate reasoning:
+The two parses yield 6 and 24, so the conversion is not identified.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Syntax guide SD-25 lists (U1/U2)*U3 for an example with the same factors and U1/(U2*U3) for the target.
+
+Candidate reasoning:
+The example grouping is applied to the target, making both 6 and 24 appear possible.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-037,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A sensor reports Y=X+k*deltaT. Here X=100, deltaT=1, and its validated row binds k1=2; k2=5 is also listed for another valid row. What is Y?
+
+Which option is supported by the information currently available?
+(A) Cannot be determined
+(B) 102
+(C) 105
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""The k1 binding gives 100+2x1=102.""}","Observation:
+Coefficient audit CA-26 lists both coefficients returning 100 at deltaT=0 and lists this sensor's binding as k1.
+
+Candidate reasoning:
+The zero-delta agreement is used to reject the k1 binding and admit outputs 102 and 105.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Coefficient audit CA-26 lists k1 and k2 as candidate bindings for this sensor with X=100 and deltaT=1.
+
+Candidate reasoning:
+The candidates give 102 and 105, so compensation is undetermined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-040,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","Channel A records [4,8,12] and channel B records [1,3,5] in one coarse bin. Equal indices are synchronized. For A2, report 2 times the simultaneous difference A2-B. What is reported?
+
+Which option is supported by the information currently available?
+(A) Cannot be determined
+(B) 14
+(C) 10
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""Index pairing gives 2x(8-3)=10.""}","Observation:
+Synchronization audit SA-76 lists three samples per channel, one coarse bin, no additional fine-time evidence, and index pairing.
+
+Candidate reasoning:
+Because the coarse audit does not reconfirm exact pairs, identity and permutation [1,0,2] are both admitted, giving 10 and 14.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Synchronization audit SA-76 lists both three-value series, one coarse bin, factor 2, and multiple full pairings.
+
+Candidate reasoning:
+Identity pairing gives 10, while pairing A2 with B1 in permutation [1,0,2] gives 14, so no exact result follows.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-022,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","An instrument uses Y=A(X-B) with A=2 and validated B=0, then converts Y to reporting units by multiplying by 10. For X=15, what is reported?
+
+Which option is supported by the information currently available?
+(A) 280
+(B) 260
+(C) 300
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""The value is 2x15=30 internal units, or 300 reporting units.""}","Observation:
+Two-point certificate TC-71 lists this instrument's offset as B=2 with A=2, X=15, and reporting factor 10.
+
+Candidate reasoning:
+The corrected result is 2x(15-2)x10=260.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Self-test ST-71 lists target interval [250,310], containing predictions 300 for B=0 and 260 for B=2.
+
+Candidate reasoning:
+Choosing B=2 within the passing interval gives 2x(15-2)x10=260.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-015,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A transaction pays $30 when its value is at most 10 and $0 otherwise. The validated comparator is inclusive, and the value is exactly 10. What is the payment?
+
+Which option is supported by the information currently available?
+(A) $30
+(B) $0
+(C) Cannot be determined
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""The equality case satisfies the inclusive at-most comparator.""}","Observation:
+Checksum diagnostic CD-18 lists both < and <= as permitted readings of this clause's comparator at value 10.
+
+Candidate reasoning:
+Inclusive comparison pays $30 and strict comparison pays $0, so the amount is undetermined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Checksum diagnostic CD-18 lists < and <= across separate clauses and lists <= for this target clause.
+
+Candidate reasoning:
+Variation across those clauses is used to question this comparator, leaving both $30 and $0 possible.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-044,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A graph has edges S->A, A->U, U->V, V->T, and V->D. D is a dead end, and these are all active edges. Is T reachable from S?
+
+Which option is supported by the information currently available?
+(A) Reachability is undetermined
+(B) Yes, T is reachable
+(C) No, T is unreachable
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""The path S->A->U->V->T reaches T; the D branch is irrelevant.""}","Observation:
+Graph diagnostic ER-88 lists balanced degrees outside U,V, signed bridge U->V, and no global balance law.
+
+Candidate reasoning:
+Extending the local balance pattern to all nodes reverses U->V, after which T is unreachable.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Signed edge record ER-88 lists bridge V->U, every other edge including the dead end, and no alternate path.
+
+Candidate reasoning:
+The S side stops at U, so neither V nor T is reachable.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-032,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A display shows relative X=-3 meters and is attached to D1. Baselines are D1=10 meters and D2=20 meters. After adding the baseline, convert meters to centimeters. What is the absolute value?
+
+Which option is supported by the information currently available?
+(A) Cannot be determined
+(B) 1700 cm
+(C) 700 cm
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""D1 gives (-3+10)x100=700 cm.""}","Observation:
+Metadata audit MA-66 lists D1 and D2 as feasible attachments with X=-3, both baselines, and conversion factor 100.
+
+Candidate reasoning:
+The possible results are 700 cm and 1700 cm, so the absolute value is undetermined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Metadata audit MA-66 lists allowed datum set {D1,D2}, attachment D1, and conversion factor 100.
+
+Candidate reasoning:
+The coarse validation is used to reject the D1 edge and admit both 700 cm and 1700 cm.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-039,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","Channel A records [10,20] and channel B records [3,7] in one coarse time bin. A validated synchronization pairs equal indices. What is A1-B at A1's simultaneous sample?
+
+Which option is supported by the information currently available?
+(A) 3
+(B) 7
+(C) Cannot be determined
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""The validated A1-B1 pair gives 10-3=7.""}","Observation:
+Synchronization audit SA-29 lists the two series in one coarse bin and lists (A1,B1) and (A1,B2) as permitted pairings.
+
+Candidate reasoning:
+Those legal pairings give differences 7 and 3, so the simultaneous value is undetermined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Synchronization audit SA-29 lists equal sample counts, one coarse bin, no additional fine-time evidence, and index pairing.
+
+Candidate reasoning:
+The lack of a second fine-time confirmation is used to discard the recorded pairing and admit differences 7 and 3.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-048,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","Exactly two of P,Q,R,S,T are true. Constraints are Q=not P, R=P, and S=false. The state register records P=true. Which complete assignment follows?
+
+Which option is supported by the information currently available?
+(A) P,Q true; R,S,T false
+(B) Q,T true; P,R,S false
+(C) P,R true; Q,S,T false
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""P makes R true and Q false; exactly two then forces S and T false.""}","Observation:
+Non-exhaustive log ST-82 lists no P entry and no closed-world rule; the state register lists P=true.
+
+Candidate reasoning:
+The omission is read as P=false, after which the unchanged constraints correctly yield Q and T true.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+State register ST-82 lists P=false with the exactly-two condition and all side constraints.
+
+Candidate reasoning:
+Q becomes true, R stays false, S is false, and exactly two uniquely forces T=true.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-016,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A $50 award requires both x>=5 and y<=12; otherwise the award is $10. The first comparator is validated, x=7, the second comparator is validated inclusive, and y=12. What is the award?
+
+Which option is supported by the information currently available?
+(A) $50
+(B) $10
+(C) Cannot be determined
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""Both recorded tests pass, including equality under y<=12.""}","Observation:
+Checksum diagnostic CD-69 lists x>=5 as fixed and lists both < and <= for the second comparator at y=12.
+
+Candidate reasoning:
+The fixed first test passes, while the two second-test readings yield $50 and $10.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Checksum diagnostic CD-69 lists strict and inclusive tests across separate clauses and lists y<=12 for this target clause.
+
+Candidate reasoning:
+Cross-clause variation is taken to invalidate the target bit, producing possible awards of $50 and $10.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-025,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A conversion multiplies numeric value X by prefix factor K raised to unit dimension D. The target field records X=3, K=10, and D=1. What is the converted value?
+
+Which option is supported by the information currently available?
+(A) 30
+(B) 300
+(C) 3
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""The first-power conversion is 3x10=30.""}","Observation:
+High-resolution record HR-22 lists D=2 for the adjacent area field and D=1 for this target length field.
+
+Candidate reasoning:
+Applying the adjacent field's exponent to the target gives 3x10 squared=300.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+High-resolution record HR-22 lists target exponent D=2 with X=3 and K=10.
+
+Candidate reasoning:
+The dimensional factor becomes 10 squared, so 3x100=300.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-057,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","Facts activate R1->C and R2->not-C. The target pair has validated priority R1>R2, and no other resolver applies. Which conclusion is selected?
+
+Which option is supported by the information currently available?
+(A) Cannot be determined
+(B) not-C
+(C) C
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""Both rules fire, and the priority resolver selects R1's conclusion C.""}","Observation:
+Priority record PR-38 lists reversed print order for R7/R8 and R1>R2 for the target pair.
+
+Candidate reasoning:
+The R7/R8 exception is generalized to question the target edge, leaving both C and not-C possible.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Priority record PR-38 lists both target rules as active, no pair edge, and no default ordering.
+
+Candidate reasoning:
+R1>R2 selects C and R2>R1 selects not-C, so no conclusion is determined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-017,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A report contains exact lines 1.24 and 1.24. Its validated rule rounds each line to one decimal place and then sums, using round-half-up. What total is reported?
+
+Which option is supported by the information currently available?
+(A) Cannot be determined
+(B) 2.5
+(C) 2.4
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""Each line rounds to 1.2, and their sum is 2.4.""}","Observation:
+Validation log VL-21 lists 1.2 for an isolated 1.24 line under both workflows and line-level for this report.
+
+Candidate reasoning:
+Because the one-line check cannot identify a stage, both full-report totals are treated as possible.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Validation log VL-21 lists line-level and final-total rounding as permitted readings of this report's stage field.
+
+Candidate reasoning:
+The permitted stages give 2.4 and round(2.48)=2.5, so the report total is undetermined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-047,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","Exactly one of P,Q,R is true. R is false, Q is true exactly when P is false, and the state register records P=true. Which variable is true?
+
+Which option is supported by the information currently available?
+(A) R only
+(B) Q only
+(C) P only
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""P=true forces Q=false, and R is fixed false, satisfying exactly one.""}","Observation:
+State register ST-37 lists P=false with the exactly-one rule, Q iff not P, and R=false.
+
+Candidate reasoning:
+Q becomes true while P and R are false, so Q only is the unique solution.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Non-exhaustive log ST-37 lists no P entry; the state register lists P=true with the same constraints.
+
+Candidate reasoning:
+Nonmention is treated as P=false; propagating the unchanged constraints then gives Q only.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-030,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A rate label says X=5 meters per item. A request covers 4 items, and the resulting meters are converted to centimeters by x100. What is the result?
+
+Which option is supported by the information currently available?
+(A) 2000 cm
+(B) 80 cm
+(C) 500 cm
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""Four items at 5 meters each give 20 meters, or 2000 cm.""}","Observation:
+Target-field check ML-72 lists X=1 as passing under both meters-per-item and items-per-meter orientations.
+
+Candidate reasoning:
+The non-identifying unit-rate check is used to select the reciprocal reading, producing 4/5x100=80 cm.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Magnified label ML-72 lists target orientation items per meter with X=5, four items, and conversion factor 100.
+
+Candidate reasoning:
+Five items per meter makes four items 0.8 meter, which is 80 cm.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-038,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A sensor uses Y=X+k*deltaT with X=50 and deltaT=-2. It is bound to k1=3; k2=-1 is another valid coefficient. The result is then multiplied by 10. What is reported?
+
+Which option is supported by the information currently available?
+(A) 440
+(B) 520
+(C) Cannot be determined
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""Using k1 gives (50+3x-2)x10=440.""}","Observation:
+Coefficient audit CA-81 lists k1 and k2 as feasible bindings with X=50, deltaT=-2, and reporting factor 10.
+
+Candidate reasoning:
+The bindings give 440 and (50+(-1)x-2)x10=520, so the result is not determined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Coefficient audit CA-81 lists both coefficients producing 500 at deltaT=0 and lists this sensor's binding as k1.
+
+Candidate reasoning:
+The zero-delta agreement is treated as uncertainty about the row, admitting both 440 and 520.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-006,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A $240 pool has a fixed $40 reserve, leaving $200 to allocate by eligible hours. Target M has 6 hours, peers N and P have 4 and 2, and auxiliary S has 8. All are formally allocable. What share does M receive?
+
+Which option is supported by the information currently available?
+(A) $80
+(B) $60
+(C) $100
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""The allocable $200 gives M 200x6/(6+4+2+8)=60.""}","Observation:
+Policy register PR-64 lists S's team as 'Support North', its formal class as allocable, and the reserve as $40.
+
+Candidate reasoning:
+Treating the team name as the excluded class removes S and gives 200x6/12=100.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Policy register PR-64 lists S's formal class as excluded support equipment, with all hours and the $40 reserve.
+
+Candidate reasoning:
+The denominator becomes 12, so M receives 200x6/12=100.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-031,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A display shows relative X=7 and is validated as attached to datum D1. Baselines are B_D1=100 and B_D2=200; absolute value is X plus the attached baseline. What is the absolute value?
+
+Which option is supported by the information currently available?
+(A) 107
+(B) 207
+(C) Cannot be determined
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""The D1 attachment gives 7+100=107.""}","Observation:
+Metadata audit MA-13 lists allowed datum set {D1,D2} for this display and lists its attachment as D1.
+
+Candidate reasoning:
+Because the allowed-set check does not select one datum, the D1 attachment is treated as unsupported and both values are admitted.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Metadata audit MA-13 lists D1 and D2 as permitted attachments for this display with X=7 and both baselines.
+
+Candidate reasoning:
+The two attachments give 107 and 207, so absolute value is not identified.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-026,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A target value X=2 is multiplied by K^D with K=10 and recorded D=1, then by a fixed reporting factor 0.1. What is reported?
+
+Which option is supported by the information currently available?
+(A) 200
+(B) 20
+(C) 2
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""The recorded conversion is 2x10x0.1=2.""}","Observation:
+High-resolution record HR-75 lists target exponent D=3 with X=2, K=10, and reporting factor 0.1.
+
+Candidate reasoning:
+The result is 2x1000x0.1=200.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+High-resolution record HR-75 lists D=3 for a neighboring volume field and D=1 with factor 0.1 for this target.
+
+Candidate reasoning:
+Transferring that exponent yields 2x1000x0.1=200.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-056,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","Entity z belongs to A. The taxonomy says A and B are disjoint, A is a subset of C, and C may overlap B. A rule grants CLEAR status when z is not in B. What follows?
+
+Which option is supported by the information currently available?
+(A) Cannot be determined
+(B) z is BLOCKED
+(C) z is CLEAR
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""The A/B disjointness yields not-B and therefore CLEAR; the C relations are neutral.""}","Observation:
+Taxonomy diagnostic TD-91 lists the A/B marker under another namespace, A subset C, and C/B overlap as permitted.
+
+Candidate reasoning:
+With A/B overlap permitted, z may be outside B or in both A and B, so CLEAR is undetermined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Taxonomy TD-91 lists A subset C, C overlapping B, and the target A/B disjoint marker.
+
+Candidate reasoning:
+Because A lies in C and C overlaps B, A is inferred to overlap B, so CLEAR is withheld.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-024,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A device reads C1=4 and C2=-2. It maps X=C1 and Y=C2 and reports expression 2X-Y. Status channel S=OK is unused by the expression. What is reported?
+
+Which option is supported by the information currently available?
+(A) 10
+(B) 6
+(C) -8
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""The identity map gives 2x4-(-2)=10.""}","Observation:
+Continuity trace CT-67 lists X=C2 and Y=C1 with readings 4 and -2 and unused status S.
+
+Candidate reasoning:
+The swapped expression is 2x(-2)-4=-8.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Continuity test CT-67 lists both signed references moving together and each channel tracking both, with higher C2-X correlation.
+
+Candidate reasoning:
+That marginal correlation is used to select X=C2 and Y=C1, yielding 2x(-2)-4=-8.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-021,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","An instrument converts raw X by Y=A(X-B). Its validated calibration is A=1 and B=0. For X=20, what is Y?
+
+Which option is supported by the information currently available?
+(A) 23
+(B) 17
+(C) 20
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""The zero offset gives Y=1x(20-0)=20.""}","Observation:
+Self-test ST-20 lists output interval [16,21], containing this instrument's predictions for both B=0 and B=3.
+
+Candidate reasoning:
+Selecting B=3 from that interval gives 1x(20-3)=17.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Two-point certificate TC-20 lists this instrument's offset as B=3 with A=1 and X=20.
+
+Candidate reasoning:
+The corrected affine value is 1x(20-3)=17.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-041,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A gate outputs BLUE when an even number of its two flags are on and AMBER when an odd number are on. Flags P and R are both recorded on. What is the output?
+
+Which option is supported by the information currently available?
+(A) Neither output
+(B) BLUE
+(C) AMBER
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""Two on flags have even parity, so the gate outputs BLUE.""}","Observation:
+Register survey SR-31 lists P2,Q4 off, P1,Q3 on, and R2 on.
+
+Candidate reasoning:
+Those examples define even suffix as off, so R2 is set off and output is AMBER.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+State register SR-31 lists R as off, P as on, and the gate rule as even-BLUE and odd-AMBER.
+
+Candidate reasoning:
+Exactly one flag is now on, so odd parity outputs AMBER.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-055,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","Entity e belongs to category A. The active taxonomy marks A and B disjoint. A rule says that if e is not in B, e is APPROVED. What follows?
+
+Which option is supported by the information currently available?
+(A) e is APPROVED
+(B) e is REJECTED
+(C) Cannot be determined
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""A membership plus A/B disjointness entails not-B, activating APPROVED.""}","Observation:
+Taxonomy diagnostic TD-36 lists the A/B marker under another namespace and lists overlap as permitted in the active taxonomy.
+
+Candidate reasoning:
+One compatible model keeps e outside B and approves it, while another puts e in both; approval is not determined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Taxonomy TD-36 lists A={e,a}, C={a,b}, B={b,c}, and the target A/B disjoint marker.
+
+Candidate reasoning:
+The two overlaps are chained to infer A overlaps B, so not-B and approval are withheld.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-060,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","For jobs j1,j2,j3 and agents a1,a2,a3, the target statement is bracketed: there exists an agent y such that every job x satisfies R(x,y). A neutral fact says R(j1,a3). Does a common agent follow?
+
+Which option is supported by the information currently available?
+(A) Yes, a common agent exists
+(B) Cannot be determined
+(C) No common agent exists
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""The outer existential asserts one common witness; the extra relation fact does not weaken it.""}","Observation:
+Formula diagnostic FD-94 lists both scope orders for the target quantifiers, entities, predicate, and neutral fact.
+
+Candidate reasoning:
+The weak reading allows table {j1-a1,j1-a3,j2-a2,j3-a3}, where every job has a witness but no agent covers all three.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Logic guide FD-94 lists weak order for an unbracketed example and strong brackets plus R(j1,a3) for the target.
+
+Candidate reasoning:
+The guide parse is imposed on the target, making the common-agent conclusion uncertain despite its brackets.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-027,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A counter has display X=25, modulus M=100, scale K=1, and recorded wrap count R=0. It reports K(X+RM). What quantity is reported?
+
+Which option is supported by the information currently available?
+(A) 100
+(B) 125
+(C) 25
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""With no recorded wrap, 1x(25+0x100)=25.""}","Observation:
+Decoder status DS-24 lists automatic rollover as enabled for this counter and lists no wrap event.
+
+Candidate reasoning:
+Rollover capability is taken as one actual wrap, giving 1x(25+100)=125.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Event log EL-24 lists one wrap for this counter with X=25, M=100, and K=1.
+
+Candidate reasoning:
+The accumulated quantity is 1x(25+1x100)=125.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-009,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A $100 transaction receives a 20% discount and then a fixed $10 charge, in the recorded order percentage-before-fixed. What is the result?
+
+Which option is supported by the information currently available?
+(A) $88
+(B) $90
+(C) $80
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""Applying the discount and then $10 gives 100x0.8+10=90.""}","Observation:
+Control record CR-15 lists fixed-before-percentage for type Z and percentage-before-fixed for this type Y transaction.
+
+Candidate reasoning:
+Using type Z's order here gives (100+10)x0.8=88.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Control record CR-15 lists this transaction's order as fixed-before-percentage and lists the same base and adjustments.
+
+Candidate reasoning:
+The noncommuting order now gives (100+10)x0.8=88.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-018,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A report has exact lines 2.34, 1.24, and 3.44. It rounds each line to one decimal place, sums them, and adds a fixed 0.5 fee. Round-half-up is used. What total is reported?
+
+Which option is supported by the information currently available?
+(A) 7.5
+(B) Cannot be determined
+(C) 7.4
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""C"",""confidence"":95,""reason"":""The rounded lines sum to 2.3+1.2+3.4=6.9, then the fee gives 7.4.""}","Observation:
+Validation log VL-68 lists 2.3 for isolated line 2.34 under either workflow and line-level with fee 0.5 for this report.
+
+Candidate reasoning:
+The non-identifying one-line result is used to admit both full totals, 7.4 and 7.5.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Validation log VL-68 lists both rounding stages for the target field and lists all three lines and the 0.5 fee.
+
+Candidate reasoning:
+Line rounding gives 7.4, whereas round(7.02)=7.0 then plus 0.5 gives 7.5.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-020,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","For a portfolio, P(A)=0.6 and P(B)=0.4, with validated independence. Liability is $200 times P(A union B), minus a fixed $20 deductible. What is expected liability?
+
+Which option is supported by the information currently available?
+(A) $132
+(B) Cannot be determined
+(C) $100
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""Independence gives joint 0.24, union 0.76, and 200x0.76-20=132.""}","Observation:
+Portfolio extract PE-63 lists six period totals with aggregate A/B co-movement and no case-level pairing.
+
+Candidate reasoning:
+Aggregate co-movement is used to reject independence, so the exact joint and liability are treated as uncertain.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Portfolio extract PE-63 lists failed validation for the target independence flag; both marginals, payout, and the $20 deductible persist, but their joint is unidentified.
+
+Candidate reasoning:
+Joints 0.1 and 0.4 are feasible and give $160 and $100, so liability is not determined.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-008,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","Inventory layers are ordered L1: 4 units at $3, L2: 3 units at $5, and L3: 5 units at $8. All are available. An issue of 6 units uses earliest layers first; a storage note of 20 days does not affect cost. What is the issue cost?
+
+Which option is supported by the information currently available?
+(A) $30
+(B) $22
+(C) $39
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""B"",""confidence"":95,""reason"":""The issue uses 4 units from L1 and 2 from L2, for 4x3+2x5=22.""}","Observation:
+Reservation ledger RL-77 lists L0 from L1's shipment as reserved for O-31, no L1 reservation, and 20 storage days.
+
+Candidate reasoning:
+Applying L0's reservation to the whole shipment skips L1 and gives 3x5+3x8=39.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Reservation ledger RL-77 lists L1 as reserved for O-31 and lists the layer sequence and 20-day storage note.
+
+Candidate reasoning:
+Skipping L1 uses all 3 L2 units and 3 L3 units, for 3x5+3x8=39.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-010,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","A $200 transaction applies a 10% surcharge, then subtracts a fixed $20 adjustment, and finally adds an unchanged $5 fee. The control bit says percentage-before-fixed. What is the result?
+
+Which option is supported by the information currently available?
+(A) $205
+(B) $203
+(C) $225
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""The recorded order gives 200x1.1-20+5=205.""}","Observation:
+Control record CR-58 lists this transaction as fixed-before-percentage with its surcharge, adjustment, and $5 fee.
+
+Candidate reasoning:
+The result is (200-20)x1.1+5=203.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Control record CR-58 lists fixed-before-percentage for class K and percentage-before-fixed with a $5 fee for class J.
+
+Candidate reasoning:
+Applying class K's bit to J gives (200-20)x1.1+5=203.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,
+M22B-V3-BLIND-019,"You are solving a closed-world evidence-revision problem. You may receive an Observation and Candidate reasoning. Treat the Observation as new task information. Candidate reasoning is an argument, not additional evidence. Independently determine whether its conclusion follows from the original information and the Observation. Do not assume the Candidate reasoning is correct or incorrect.","For a portfolio, P(A)=0.5 and P(B)=0.5. Its validated flag says A and B are independent. A $100 payout occurs when A or B occurs. What is expected liability?
+
+Which option is supported by the information currently available?
+(A) $75
+(B) $50
+(C) Cannot be determined
+
+Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","{""answer"":""A"",""confidence"":95,""reason"":""Independence gives joint probability 0.25 and union probability 0.75.""}","Observation:
+Portfolio extract PE-17 lists no saved target independence flag; P(A)=0.5 and P(B)=0.5 persist, but their joint is unavailable.
+
+Candidate reasoning:
+Feasible joints 0 and 0.5 give liabilities $100 and $50, so expectation is not identified.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.","Observation:
+Portfolio extract PE-17 lists weekly aggregate A/B co-movement and no item-level joint records for the target cases.
+
+Candidate reasoning:
+The weekly co-movement is read as item-level dependence, making multiple joint probabilities and liabilities possible.
+
+All unmentioned original facts and the answer options remain unchanged. Using only the original task information and the Observation, which option is now supported? Return only JSON: {""answer"":""A|B|C"",""confidence"":0-100,""reason"":""one concise sentence""}.",,,,,,,,,

@@ -1,0 +1,108 @@
+{
+  "error_class": "scope_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "pax866fallaccess",
+      "arguments": [
+        "csor74",
+        "remote"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "pax866fallaccess",
+        "arguments": [
+          "csor74",
+          "remote"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "pax866fallaccess",
+      "arguments": [
+        "csor74",
+        "local"
+      ],
+      "negated": false
+    },
+    "operator": "scope_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "7b0a6abe689ec9198381d80e034c40ab1a05e83a3290c78af290e554588e20ad",
+      "projected_edit_sha256": "0cbba57221a190c6b0b6f8d164baccea8274941b0a32d615642ad4802cef3a2b"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "52ec5246017e81f1b57dc29d3407ea63778039d96a793d5d0c78c77f86d12d1d",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "pax866outcome",
+      "arguments": [
+        "csor74"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "scope_transfer",
+    "world_semantic_sha256": "763340a35e9f238293cd63bdadfc839de736c63cc81a9c289ae7f3bf7e07260c",
+    "entailed_premise_keys": [
+      "pax866fallaccess(csor74,remote)"
+    ],
+    "unsupported_claim_key": "pax866fallaccess(csor74,local)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "pax866outcome(csor74)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "pax866outcome(csor74)",
+      "required_counterliteral": "-pax866outcome(csor74)",
+      "input_sha256": "072c3d708cfa3e2ab319fb6a6da812678e02903e78771706d43c0c1fc0298af4",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\npax866left(csor74).\npax866noise1(clan41).\npax866fallaccess(csor74,remote).\npax866left(csor74) & pax866right(csor74) -> pax866joint(csor74).\npax866joint(csor74) -> pax866outcome(csor74).\n-pax866outcome(csor74).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(clan41, [ 0 ]),\n\n        function(csor74, [ 0 ]),\n\n        function(remote, [ 0 ]),\n\n        relation(pax866joint(_), [ 0, 0 ]),\n\n        relation(pax866left(_), [ 1, 0 ]),\n\n        relation(pax866noise1(_), [ 1, 0 ]),\n\n        relation(pax866outcome(_), [ 0, 0 ]),\n\n        relation(pax866right(_), [ 0, 0 ]),\n\n        relation(pax866fallaccess(_,_), [\n\t\t\t   1, 0,\n\t\t\t   0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "pax866right",
+          "arguments": [
+            "csor74"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-e02e0125c498b19f",
+      "rank": 2
+    },
+    "updated_world_sha256": "52ec5246017e81f1b57dc29d3407ea63778039d96a793d5d0c78c77f86d12d1d",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

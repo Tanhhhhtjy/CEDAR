@@ -1,0 +1,108 @@
+{
+  "error_class": "cross_entity_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "pax767fallsignal",
+      "arguments": [
+        "cmiv5"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "pax767fallsignal",
+        "arguments": [
+          "cmiv5"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "pax767fallsignal",
+      "arguments": [
+        "clan71"
+      ],
+      "negated": false
+    },
+    "operator": "cross_entity_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "5c9b0676799d0016458d7c1ea6422a734213ff5cf80e1e45cb35da0df1951af9",
+      "projected_edit_sha256": "7071badaeaff645006599a3ef4ffd173ac0fe1c798f2c2169ea1e254311a9343"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "3a78f043aee0113e041f8d0e1491a621ab7a613e62644aa088461c1f1935ff3d",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "pax767outcome",
+      "arguments": [
+        "clan71"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "cross_entity_transfer",
+    "world_semantic_sha256": "10fd82ec59ea3d20dfc7b24acba4c7e1f29fc0ff05cc9794b1a1e093972f6bb7",
+    "entailed_premise_keys": [
+      "pax767fallsignal(cmiv5)"
+    ],
+    "unsupported_claim_key": "pax767fallsignal(clan71)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "pax767outcome(clan71)",
+    "proof": {
+      "record_ids": [
+        "data_pax767_root",
+        "schema_pax767proof_0",
+        "schema_pax767proof_1"
+      ],
+      "depth": 2
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "data_pax767_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "pax767token",
+          "arguments": [
+            "clan71"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-02c550ea4fe3858f",
+      "rank": 15
+    },
+    "updated_world_sha256": "3a78f043aee0113e041f8d0e1491a621ab7a613e62644aa088461c1f1935ff3d",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

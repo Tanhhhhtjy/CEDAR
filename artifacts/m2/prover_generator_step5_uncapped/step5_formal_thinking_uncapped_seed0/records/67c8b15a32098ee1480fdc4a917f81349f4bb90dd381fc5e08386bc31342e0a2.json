@@ -1,0 +1,145 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-010-R",
+    "index": 55,
+    "mode": "thinking",
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 55,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 610,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 610
+        }
+      ],
+      "answer_logit_capture_indices": [
+        610
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999998080998278,
+          "B": 1.8553911466087276e-07,
+          "C": 1.4166084473705472e-09,
+          "D": 4.944449233779289e-09
+        },
+        "full_vocab_entropy": 3.0006196993781487e-06,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 1.8553915026586765e-07,
+          "C": 1.4166087192180044e-09,
+          "D": 4.94445018262013e-09
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 44.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 44.0,
+          "B": 28.5,
+          "C": 23.625,
+          "D": 24.875
+        },
+        "option_argmax": "A",
+        "option_mass": 1.000000191900209,
+        "ranks": {
+          "A": 1,
+          "B": 2,
+          "C": 4,
+          "D": 3
+        },
+        "target_logit": 24.875,
+        "target_minus_initial": -19.125,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-010",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F05",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-010-R",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "prompt_sha256": "e45ec68d813e29c138bed1ec9945365dd12e3e78b88161d647db884b4f55d96f",
+      "prompt_token_ids_sha256": "a12785b82aac5c2f5d33c1578c783ef435fe141a9470540a7416b4f66450f399",
+      "prompt_tokens": 415,
+      "reasoning_token_count": 602,
+      "record_seed": 55,
+      "response": "<think>\nOkay, let's tackle this problem step by step. The question is whether Node D having status Coral 11 is supported, contradicted, undetermined, or both supported and contradicted based on the given records and rules.\n\nFirst, I need to look at all the records related to Node D. From the records provided:\n\nRecord 5: Node D has status Teal 8.\nRecord 8: Node D has status Pearl 12.\nRecord 9: Node D has status Jade 3.\nRecord 10: If Node D has status Amber 1, then it is not the case that Node D has status Coral 11.\nRecords 11-14 form a chain of implications starting from Pearl 12.\n\nStarting with Record 8, Node D has Pearl 12. According to Record 11, if Pearl 12, then Umber 13. So applying that, Node D must have Umber 13. Then Record 12 says if Umber 13, then Azure 14. So now Azure 14. Then Record 13 leads to Saffron 15. Then Record 14 says if Saffron 15, then Amber 1. So following this chain, Node D would end up with Amber 1.\n\nNow, if Node D has Amber 1, then according to Record 10, it cannot have Coral 11. Since the chain of implications leads us to Amber 1, that would mean Coral 11 is not possible. Therefore, the existence of Coral 11 would be contradicted.\n\nBut wait, are there any other possibilities? The records don't mention anything else about Coral 11 except in Record 10. So if the chain leads to Amber 1, then Coral 11 is excluded. Therefore, the answer should be contradicted (A). But let me double-check.\n\nIs there a way for Node D to not have Amber 1? The chain from Pearl 12 seems necessary. Since Record 8 states Pearl 12, which triggers the chain. Unless there's a contradiction in the chain itself. Let me check each step again:\n\n- Pearl 12 (Record 8) → Umber 13 (Record 11)\n- Umber 13 → Azure 14 (Record 12)\n- Azure 14 → Saffron 15 (Record 13)\n- Saffron 15 → Amber 1 (Record 14)\n\nEach step is a direct implication. So unless any of these implications are conditional or have exceptions, which they don't. Therefore, Node D must have Amber 1. Then, by Record 10, if Amber 1, then not Coral 11. Therefore, Coral 11 is contradicted. Hence, the answer is A.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "205fc6b06a2d1e3d53b2fcc298734ca87d4ad17e31db5dd2bd4388104222e7af",
+      "response_tokens": 613,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 610,
+      "structure_class": "PGF-02",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "9b73eeeffc9604d99d6cc182aebe94cca26a91e8109fa684cc30b2500ff1d9f9"
+}

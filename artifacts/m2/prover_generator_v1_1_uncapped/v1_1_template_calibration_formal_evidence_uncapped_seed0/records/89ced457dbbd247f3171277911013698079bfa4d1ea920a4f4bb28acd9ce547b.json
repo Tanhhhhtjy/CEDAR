@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-034-R",
+    "index": 69,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 69,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 526,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 526
+        }
+      ],
+      "answer_logit_capture_indices": [
+        526
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999997612886354,
+          "B": 3.5817470987808005e-10,
+          "C": 2.3823690750843137e-07,
+          "D": 1.1628231016735088e-10
+        },
+        "full_vocab_entropy": 3.644073103714618e-06,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 3.581747953784742e-10,
+          "C": 2.3823696437830222e-07,
+          "D": 1.1628233792526643e-10
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 45.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 45.25,
+          "B": 23.5,
+          "C": 30.0,
+          "D": 22.375
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000002387114215,
+        "ranks": {
+          "A": 1,
+          "B": 3,
+          "C": 2,
+          "D": 4
+        },
+        "target_logit": 30.0,
+        "target_minus_initial": -15.25,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-034",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F17",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-034-R",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "A->C",
+      "prompt_sha256": "4569e77fe856d926304d8892475dde675878a6b30dda48bb44124706ddd252ad",
+      "prompt_token_ids_sha256": "07f14f75b58916ce959a9b614204171419b0ec6fd8612ca7c8279f891aa2f345",
+      "prompt_tokens": 377,
+      "reasoning_token_count": 518,
+      "record_seed": 69,
+      "response": "<think>\nOkay, let's see. The question is whether Node B having status Ochre 9 is supported, contradicted, undetermined, or both. Let me go through the records again carefully.\n\nFirst, the records about Node B. Record 5 says B has Teal 8. Record 6: Indigo 10. Record 7: Jade 3. So those are direct statuses for B. Now, there are some conditional rules involving B.\n\nLooking at Records 8 to 12. Record 8: If B has Amber 1, then not Ochre 9. But does B have Amber 1? Not directly stated. Let's check the other records. Records 9-12 form a chain. If B has Indigo 10 (which it does per Record 6), then according to Record 9, B must have Coral 11. Then Record 10: Coral 11 implies Pearl 12. Then Record 11: Pearl 12 leads to Umber 13. Then Record 12: Umber 13 leads to Amber 1. So starting from Indigo 10, we get a chain leading to Amber 1. \n\nSo since B has Indigo 10 (Record 6), applying the chain, B must have Coral 11, Pearl 12, Umber 13, and then Amber 1. Therefore, B ends up with Amber 1. Now, Record 8 says if B has Amber 1, then it's not the case that B has Ochre 9. Since we just established that B has Amber 1 (through the chain), then according to Record 8, B cannot have Ochre 9. Therefore, the existence of Ochre 9 on B is contradicted. \n\nBut wait, are there any other possibilities? The question is about whether Ochre 9 is supported. Since the conditions lead us to conclude that if Amber 1 is true, Ochre 9 is false. Since Amber 1 is true (due to the chain from Indigo 10), then Ochre 9 must be false. Therefore, the statement that B has Ochre 9 is contradicted. So the answer should be A) contradicted. The other options don't apply because there's no support for Ochre 9 here, and it's directly contradicted by the derived status of Amber 1.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "daea17e9cab6115242924208fc43f023719528cb2539366c80ede02907531a49",
+      "response_tokens": 529,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 526,
+      "social_template": null,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

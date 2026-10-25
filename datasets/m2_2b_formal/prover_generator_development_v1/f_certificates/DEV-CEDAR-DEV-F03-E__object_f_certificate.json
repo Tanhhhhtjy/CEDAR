@@ -1,0 +1,126 @@
+{
+  "error_class": "scope_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "pax96fallaccess",
+      "arguments": [
+        "cmiv23",
+        "remote"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "pax96fallaccess",
+        "arguments": [
+          "cmiv23",
+          "remote"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "pax96fallaccess",
+      "arguments": [
+        "cmiv23",
+        "local"
+      ],
+      "negated": false
+    },
+    "operator": "scope_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "72acb0e8099dbe9df77697699331d3d4c1d6bbf039c97e2c822b146d5c0a5ff7",
+      "projected_edit_sha256": "83ca41281987d53970f6ac1ddba1b7f376141a109267ce2f367d8e758d62ef14"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "f1a39404af09a87525ed0ece903bf34910b1d4d0a4c45f072517e89c9824d579",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "pax96outcome",
+      "arguments": [
+        "cmiv23"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "scope_transfer",
+    "world_semantic_sha256": "ceb65977f9ab0852892384ed384edf36c42e46707b0460f06d21d89f44da694e",
+    "entailed_premise_keys": [
+      "pax96fallaccess(cmiv23,remote)"
+    ],
+    "unsupported_claim_key": "pax96fallaccess(cmiv23,local)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "pax96outcome(cmiv23)",
+    "proof": {
+      "record_ids": [
+        "data_pax96_gate",
+        "data_pax96_support_0",
+        "schema_pax96_gate_0",
+        "schema_pax96path0_0",
+        "schema_pax96path0_1"
+      ],
+      "depth": 3
+    },
+    "refutes_induced_label": "false"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_pax96_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "pax96gate",
+          "arguments": [
+            "cmiv23"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_pax96_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "pax96gate",
+          "arguments": [
+            "cmiv23"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-b0f78951f778ec09",
+      "rank": 44
+    },
+    "updated_world_sha256": "f1a39404af09a87525ed0ece903bf34910b1d4d0a4c45f072517e89c9824d579",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

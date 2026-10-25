@@ -1,0 +1,123 @@
+{
+  "error_class": "cross_entity_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "pax498fallsignal",
+      "arguments": [
+        "csor33"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "pax498fallsignal",
+        "arguments": [
+          "csor33"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "pax498fallsignal",
+      "arguments": [
+        "cvek10"
+      ],
+      "negated": false
+    },
+    "operator": "cross_entity_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "8e8a9402182b64711eaa72d2bddf400ca8dffe384a93b2f0a73c1a8bf50ffc83",
+      "projected_edit_sha256": "bc1884429aebfffdfe678198f68a1d71ab08e859f9af5e6acb03b07646fc9dde"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "5725afc0b3619b4275fc9ac8bacc95707d913106cc89253d2139a258156b9a33",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "pax498outcome",
+      "arguments": [
+        "cvek10"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "cross_entity_transfer",
+    "world_semantic_sha256": "504fe525d748519fed84e6597f778ff2ac0177402510a91a1466b6efd80f83d1",
+    "entailed_premise_keys": [
+      "pax498fallsignal(csor33)"
+    ],
+    "unsupported_claim_key": "pax498fallsignal(cvek10)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "pax498outcome(cvek10)",
+    "proof": {
+      "record_ids": [
+        "data_pax498_gate",
+        "data_pax498_support_0",
+        "schema_pax498_gate_0",
+        "schema_pax498path0_0",
+        "schema_pax498path0_1"
+      ],
+      "depth": 3
+    },
+    "refutes_induced_label": "false"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_pax498_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "pax498gate",
+          "arguments": [
+            "cvek10"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_pax498_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "pax498gate",
+          "arguments": [
+            "cvek10"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-c39065c3dbe6454e",
+      "rank": 18
+    },
+    "updated_world_sha256": "5725afc0b3619b4275fc9ac8bacc95707d913106cc89253d2139a258156b9a33",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

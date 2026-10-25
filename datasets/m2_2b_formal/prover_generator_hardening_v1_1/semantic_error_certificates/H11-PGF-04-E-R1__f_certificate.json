@@ -1,0 +1,105 @@
+{
+  "error_class": "unsupported_bridge",
+  "entailed_premises": [
+    {
+      "predicate": "tor6fallobserved",
+      "arguments": [
+        "clan44"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "tor6fallobserved",
+        "arguments": [
+          "clan44"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "tor6fallbridge",
+      "arguments": [
+        "clan44"
+      ],
+      "negated": false
+    },
+    "operator": "unsupported_bridge"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "ab3e78ea095aad0f5ce7f74afed9187000172f6b93e2a48fa62b32ac6a0f4df8",
+      "projected_edit_sha256": "ed9a85bc98374aef597952222f62ab61a32fab170d6622bc177b8e9177ab7052"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "b238e1334c46ae1b125da3a2537dfa1787dbf82675fd173f6bda0503fe9f7701",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "tor6outcome",
+      "arguments": [
+        "clan44"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "unsupported_bridge",
+    "world_semantic_sha256": "5fc9d51ba6cd022584111a639e68d189eebb2be387396804e65c311e4ae9ba52",
+    "entailed_premise_keys": [
+      "tor6fallobserved(clan44)"
+    ],
+    "unsupported_claim_key": "tor6fallbridge(clan44)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "tor6outcome(clan44)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "tor6outcome(clan44)",
+      "required_counterliteral": "-tor6outcome(clan44)",
+      "input_sha256": "f98e45595360005aba4041e3a7f81aa090e4bccee320f98024fac825a5166bdc",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\ntor6left(clan44).\ntor6noise1(cvek4).\ntor6noise2(ckel39).\ntor6fallobserved(clan44).\ntor6left(clan44) & tor6right(clan44) -> tor6joint(clan44).\ntor6joint(clan44) -> tor6outcome(clan44).\n-tor6outcome(clan44).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel39, [ 0 ]),\n\n        function(clan44, [ 0 ]),\n\n        function(cvek4, [ 0 ]),\n\n        relation(tor6fallobserved(_), [ 1, 0 ]),\n\n        relation(tor6joint(_), [ 0, 0 ]),\n\n        relation(tor6left(_), [ 1, 0 ]),\n\n        relation(tor6noise1(_), [ 1, 0 ]),\n\n        relation(tor6noise2(_), [ 1, 0 ]),\n\n        relation(tor6outcome(_), [ 0, 0 ]),\n\n        relation(tor6right(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "tor6right",
+          "arguments": [
+            "clan44"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-69aa114bc5500bf7",
+      "rank": 5
+    },
+    "updated_world_sha256": "b238e1334c46ae1b125da3a2537dfa1787dbf82675fd173f6bda0503fe9f7701",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

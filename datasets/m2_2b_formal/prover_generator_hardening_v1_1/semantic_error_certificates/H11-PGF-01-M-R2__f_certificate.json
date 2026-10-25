@@ -1,0 +1,126 @@
+{
+  "error_class": "scope_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "vek908fallaccess",
+      "arguments": [
+        "cpax52",
+        "remote"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "vek908fallaccess",
+        "arguments": [
+          "cpax52",
+          "remote"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "vek908fallaccess",
+      "arguments": [
+        "cpax52",
+        "local"
+      ],
+      "negated": false
+    },
+    "operator": "scope_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "5c1cf9919dbe3c2a4080e75033485c8013f0590fada544f3044ddc14cb27df73",
+      "projected_edit_sha256": "b428ac532e136f89cd125afcc19d5284a0e7180ef343806485baedc8f1a72d09"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "3b65aa7866c789f8c46a961fc2813855058579fa74a77426c751642847cbd078",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "vek908outcome",
+      "arguments": [
+        "cpax52"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "scope_transfer",
+    "world_semantic_sha256": "aa348dd13da558493a34fca0131cdf30177ac233df20f208b4384cf521be403e",
+    "entailed_premise_keys": [
+      "vek908fallaccess(cpax52,remote)"
+    ],
+    "unsupported_claim_key": "vek908fallaccess(cpax52,local)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "vek908outcome(cpax52)",
+    "proof": {
+      "record_ids": [
+        "data_vek908_root",
+        "schema_vek908pos_0",
+        "schema_vek908pos_1",
+        "schema_vek908pos_2",
+        "schema_vek908pos_3"
+      ],
+      "depth": 4
+    },
+    "refutes_induced_label": "false"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_vek908_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "vek908seed",
+          "arguments": [
+            "cpax52"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_vek908_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "vek908seed",
+          "arguments": [
+            "cpax52"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-a98fc9a28d9b95a5",
+      "rank": 59
+    },
+    "updated_world_sha256": "3b65aa7866c789f8c46a961fc2813855058579fa74a77426c751642847cbd078",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

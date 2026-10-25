@@ -1,0 +1,145 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-021-N",
+    "index": 120,
+    "mode": "thinking",
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 120,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 390,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 390
+        }
+      ],
+      "answer_logit_capture_indices": [
+        390
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999999765448205,
+          "B": 2.2159489723002052e-08,
+          "C": 1.2501528407910923e-09,
+          "D": 4.553681283488358e-11
+        },
+        "full_vocab_entropy": 4.2337319428042974e-07,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 2.2159490242756874e-08,
+          "C": 1.2501528701136522e-09,
+          "D": 4.553681390295772e-11
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 39.75,
+        "initial_rank": 1,
+        "logits": {
+          "A": 39.75,
+          "B": 22.125,
+          "C": 19.25,
+          "D": 15.9375
+        },
+        "option_argmax": "A",
+        "option_mass": 1.00000002345518,
+        "ranks": {
+          "A": 1,
+          "B": 2,
+          "C": 3,
+          "D": 7
+        },
+        "target_logit": 22.125,
+        "target_minus_initial": -17.625,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-021",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F11",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-021-N",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "prompt_sha256": "a83e969a615f8001fd824ff20655b05d0a8b7897f6e5e0aead5fad0d1e18e10a",
+      "prompt_token_ids_sha256": "61ce21f2c34e3fa873ff545cf3f252565afc23a07b595f39d2373368fa3e6872",
+      "prompt_tokens": 302,
+      "reasoning_token_count": 382,
+      "record_seed": 120,
+      "response": "<think>\nOkay, let's see. The user is asking if Shipment D having status Ivory 4 is supported based on the given records. Let me go through each step carefully.\n\nFirst, the records provided are:\n\n1. Shipment D has status Silver 7.\n2. Shipment D has status Cobalt 2.\n3. If Cobalt 2 and Jade 3, then Amber 1.\n4. If Silver 7, then Lilac 5.\n5. If Lilac 5, then Copper 6.\n6. If Copper 6, then Ivory 4.\n\nSo, starting with Record 1: Silver 7 is present. According to Record 4, Silver 7 implies Lilac 5. So we can deduce Lilac 5. Then, Record 5 says Lilac 5 leads to Copper 6. So now we have Copper 6. Then Record 6 states that Copper 6 leads to Ivory 4. So following that chain, Silver 7 → Lilac 5 → Copper 6 → Ivory 4. Therefore, Ivory 4 should be supported.\n\nBut wait, are there any other factors? Let me check. Record 2 says Cobalt 2 is present. Record 3 requires Cobalt 2 and Jade 3 to imply Amber 1. However, there's no mention of Jade 3 in the records. So that condition isn't met, so Amber 1 isn't triggered. So that rule doesn't affect the current chain. \n\nSince the Silver 7 status is present, and the subsequent implications are all there (Lilac 5, Copper 6, then Ivory 4), there's a clear path. No contradictions here. The other statuses (Cobalt 2) don't interfere with this chain. So the answer should be supported, which is option A.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "fa4d918e0e7f471e70db992da0c0631926c1395d4b62db7902073fa5434f838c",
+      "response_tokens": 393,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 390,
+      "structure_class": "PGF-03",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "9b73eeeffc9604d99d6cc182aebe94cca26a91e8109fa684cc30b2500ff1d9f9"
+}

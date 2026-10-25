@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-001-R",
+    "index": 1,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 1,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 568,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 568
+        }
+      ],
+      "answer_logit_capture_indices": [
+        568
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999998287459997,
+          "B": 1.2751903658563733e-07,
+          "C": 4.1399371058034775e-08,
+          "D": 2.335592652314263e-09
+        },
+        "full_vocab_entropy": 2.7757041607401334e-06,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 1.275190584237862e-07,
+          "C": 4.139937814784389e-08,
+          "D": 2.335593052293916e-09
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 44.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 44.5,
+          "B": 28.625,
+          "C": 27.5,
+          "D": 24.625
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000001712540296,
+        "ranks": {
+          "A": 1,
+          "B": 2,
+          "C": 3,
+          "D": 4
+        },
+        "target_logit": 28.625,
+        "target_minus_initial": -15.875,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-001",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F01",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-001-R",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "A->B",
+      "prompt_sha256": "038530ec9482c0d6b11a4bd4e6146bd79057f2a0cc2004f1cb7683161e4009b2",
+      "prompt_token_ids_sha256": "d746f0e1821df930481e1461fdda2f510536cf99bd2f599fd321b059cc971cbe",
+      "prompt_tokens": 322,
+      "reasoning_token_count": 560,
+      "record_seed": 1,
+      "response": "<think>\nOkay, let's tackle this problem step by step. The question is whether File D having status Copper 6 is supported, contradicted, undetermined, or both supported and contradicted based on the given records. \n\nFirst, I need to look at all the relevant records. Let's start by listing out what's given:\n\n- Record 4 states that File D has status Teal 8.\n- Record 6 says if File D does NOT have Teal 8, then it has Cobalt 2.\n- Record 7: If File D has Cobalt 2, then it does NOT have Copper 6.\n- Record 8: If File D has Teal 8, then it has Silver 7.\n- Record 9: If File D has Silver 7, then it has Copper 6.\n\nThe main point here is to determine if Copper 6 is a necessary conclusion based on these records. \n\nStarting with Record 4, since it directly states that File D has Teal 8, the antecedent of Record 8 is satisfied. So according to Record 8, if Teal 8 is true, then Silver 7 must also be true. Therefore, File D must have Silver 7. \n\nThen, moving to Record 9, if Silver 7 is true (which we just established), then Copper 6 must be true. So that would mean File D has Copper 6. So that seems straightforward. \n\nBut wait, are there any contradictions? Let's check the other records. Record 6 is a conditional that only applies if Teal 8 is NOT true. But since Record 4 says Teal 8 is true, Record 6's antecedent is false, making the entire implication true regardless. So Record 6 doesn't come into play here. \n\nRecord 7 is about if Cobalt 2 is true leading to not Copper 6. But since we have Teal 8, and not Cobalt 2, Record 7's antecedent is false, so it doesn't affect the conclusion. \n\nSo the chain is: Teal 8 (Record 4) → Silver 7 (Record 8) → Copper 6 (Record 9). Therefore, Copper 6 must be true. \n\nIs there any possibility of a contradiction? Let me check again. Since all the steps are conditionals that are triggered by the initial fact (Teal 8), and there's no conflicting information. The other records (like Records 6 and 7) don't apply here because their conditions aren't met. \n\nTherefore, the conclusion that File D has Copper 6 is supported by the records. The answer should be A) supported.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "2ed069fe539532e1853993ee96d56f96eb4c3c74b52e730bb9b2589adbff6154",
+      "response_tokens": 571,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 568,
+      "social_template": null,
+      "structure_class": "PGF-01",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}
