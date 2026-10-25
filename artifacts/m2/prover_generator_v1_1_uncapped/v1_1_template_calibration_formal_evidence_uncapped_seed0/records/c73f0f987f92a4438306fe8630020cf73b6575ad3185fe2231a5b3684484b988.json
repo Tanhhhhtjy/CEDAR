@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-045-R",
+    "index": 89,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 89,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 930,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 930
+        }
+      ],
+      "answer_logit_capture_indices": [
+        930
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 3.978962429843639e-12,
+          "B": 1.493094627306232e-10,
+          "C": 3.2241866797750614e-08,
+          "D": 0.9999999676048447
+        },
+        "full_vocab_entropy": 5.613070470644743e-07,
+        "full_vocab_probabilities": {
+          "A": 3.978962558742749e-12,
+          "B": 1.493094675675266e-10,
+          "C": 3.224186784223093e-08,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 42.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 16.25,
+          "B": 19.875,
+          "C": 25.25,
+          "D": 42.5
+        },
+        "option_argmax": "D",
+        "option_mass": 1.0000000323951563,
+        "ranks": {
+          "A": 7,
+          "B": 3,
+          "C": 2,
+          "D": 1
+        },
+        "target_logit": 25.25,
+        "target_minus_initial": -17.25,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-045",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F23",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "D",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-045-R",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "D->C",
+      "prompt_sha256": "19c89ccd222069587cbdc58551e3631af4092a84463473b3c5a2dd09a6656399",
+      "prompt_token_ids_sha256": "37621be1fc84d0056863537a64be361d348e376bba45d21e287b007daee66053",
+      "prompt_tokens": 325,
+      "reasoning_token_count": 922,
+      "record_seed": 89,
+      "response": "<think>\nOkay, let's see. The question is whether Shipment A has status Copper 6, based on the given records. Let me go through each record step by step.\n\nFirst, the records provided are:\n\n1. Shipment B has status Lilac 5.\n2. Shipment A has status Jade 3.\n3. If Shipment A has status Jade 3 and Shipment A has status Ivory 4, then Shipment A has status Cobalt 2.\n4. If Shipment A has link Silver 7 to Shipment D, then it is not the case that Shipment A has status Copper 6.\n5. If an item has link Amber 1 to another item, then that same item has link Silver 7 to that other item.\n6. If an item has link Silver 7 to another item and that other item has link Amber 1 to a third item, then that same item has link Silver 7 to that third item.\n\nThe question is about whether Shipment A has status Copper 6. The options are whether it's supported, contradicted, both, or undetermined.\n\nStarting with Record 2: Shipment A definitely has status Jade 3. That's a fact. Now, looking at Record 3: It says if Shipment A has both Jade 3 and Ivory 4, then it has Cobalt 2. But we don't know if Shipment A has Ivory 4. Since only Jade 3 is given, this rule doesn't apply unless we have more info. So nothing here directly affects Copper 6.\n\nRecord 4 is crucial here. It states that if Shipment A has a link Silver 7 to Shipment D, then Shipment A does not have status Copper 6. So if we can determine whether Shipment A has that link, we can apply this. But do we have any info about such a link?\n\nLooking at Records 5 and 6, which deal with links. Record 5: If an item has a link Amber 1 to another, then it also has a Silver 7 link to that same other item. Record 6: If an item (say X) has Silver 7 to Y, and Y has Amber 1 to Z, then X has Silver 7 to Z.\n\nBut the problem is, there's no information given about any links involving Shipment A except possibly through these rules. Let's see. Do we know if Shipment A has any Amber 1 links? The records don't mention any. Without knowing that Shipment A has an Amber 1 link to someone, we can't use Record 5 to infer a Silver 7 link. Similarly, for Record 6, we need to know about Silver 7 and Amber 1 links, which we don't have.\n\nSo, there's no direct information about Shipment A having a Silver 7 link to Shipment D. Therefore, the antecedent of Record 4 (the \"if\" part) isn't known to be true. If the antecedent isn't met, then the conclusion (that Shipment A does not have Copper 6) doesn't necessarily follow. However, if the antecedent were true, then Copper 6 would be excluded. But since we don't know if the antecedent is true, we can't apply Record 4 to conclude anything about Copper 6.\n\nAre there any other records that could affect this? Records 1, 2, 3, and the others don't mention Copper 6 except Record 4. So there's no other rule that directly supports or contradicts Shipment A having Copper 6. Therefore, based on the given information, we can't determine if Shipment A has Copper 6. It's possible that it does, unless there's some indirect link we can infer.\n\nWait, let me check again. Suppose there's a chain of links. For example, if Shipment A had a Silver 7 link to someone who has an Amber 1 link to another, then via Record 6, Shipment A would have Silver 7 to that third. But again, without knowing any actual links, we can't make that inference. The problem states to use only the listed records. Since there's no data about links involving Shipment A, we can't assume any.\n\nTherefore, the status of Copper 6 for Shipment A isn't supported or contradicted by the existing records. The answer should be undetermined.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "192ee379e4cf657f44fa7d2c3acd1aca8824255486e377a2e99278d28150364e",
+      "response_tokens": 933,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 930,
+      "social_template": null,
+      "structure_class": "PGF-06",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

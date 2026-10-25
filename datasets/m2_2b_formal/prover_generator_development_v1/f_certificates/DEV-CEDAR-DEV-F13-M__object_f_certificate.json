@@ -1,0 +1,105 @@
+{
+  "error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "vek25fallverified",
+      "arguments": [
+        "clan15"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "vek25fallverified",
+        "arguments": [
+          "clan15"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "vek25fallsource",
+      "arguments": [
+        "clan15"
+      ],
+      "negated": false
+    },
+    "operator": "converse_error"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "a48481757a174c9c7b72c0f1ed7a612b94d09ab5e8e9fe46f3a46697706bb7f4",
+      "projected_edit_sha256": "44ef94c0cff545fe736b26ee39ff664b9eadbab680d335d644810215b107e1c7"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "1af3733aa702b85d7a34ccf618aa76fe7820b206775494b6d1f142776dbac8af",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "vek25outcome",
+      "arguments": [
+        "clan15"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "5145836b16f0826606ffd452fa6795896446ab9fa783550ad58bba22d04f09e4",
+    "entailed_premise_keys": [
+      "vek25fallverified(clan15)"
+    ],
+    "unsupported_claim_key": "vek25fallsource(clan15)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "vek25outcome(clan15)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "vek25outcome(clan15)",
+      "required_counterliteral": "-vek25outcome(clan15)",
+      "input_sha256": "4e31a54fab09d0d40f16e4f017f9e14cfde82676977905dccc40b27e1a913c8f",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nvek25left(clan15).\nvek25noise2(ckel39).\nvek25noise3(cmiv37).\nvek25noise4(ctor65).\nvek25noise5(clan15).\nvek25fallverified(clan15).\nvek25fallsource(clan15) -> vek25fallverified(clan15).\nvek25left(clan15) & vek25right(clan15) -> vek25joint(clan15).\nvek25joint(clan15) -> vek25proofstep0(clan15).\nvek25proofstep0(clan15) -> vek25proofstep1(clan15).\nvek25proofstep1(clan15) -> vek25proofstep2(clan15).\nvek25proofstep2(clan15) -> vek25proofstep3(clan15).\nvek25proofstep3(clan15) -> vek25outcome(clan15).\n-vek25outcome(clan15).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel39, [ 0 ]),\n\n        function(clan15, [ 0 ]),\n\n        function(cmiv37, [ 0 ]),\n\n        function(ctor65, [ 0 ]),\n\n        relation(vek25fallsource(_), [ 0, 0 ]),\n\n        relation(vek25fallverified(_), [ 1, 0 ]),\n\n        relation(vek25joint(_), [ 0, 0 ]),\n\n        relation(vek25left(_), [ 1, 0 ]),\n\n        relation(vek25noise2(_), [ 1, 0 ]),\n\n        relation(vek25noise3(_), [ 1, 0 ]),\n\n        relation(vek25noise4(_), [ 1, 0 ]),\n\n        relation(vek25noise5(_), [ 1, 0 ]),\n\n        relation(vek25outcome(_), [ 0, 0 ]),\n\n        relation(vek25proofstep0(_), [ 0, 0 ]),\n\n        relation(vek25proofstep1(_), [ 0, 0 ]),\n\n        relation(vek25proofstep2(_), [ 0, 0 ]),\n\n        relation(vek25proofstep3(_), [ 0, 0 ]),\n\n        relation(vek25right(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "vek25right",
+          "arguments": [
+            "clan15"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-83a5e6fefe21599f",
+      "rank": 14
+    },
+    "updated_world_sha256": "1af3733aa702b85d7a34ccf618aa76fe7820b206775494b6d1f142776dbac8af",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

@@ -1,0 +1,173 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-028-R",
+    "index": 106,
+    "seed": 0
+  },
+  "payload": {
+    "index": 106,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 459,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 459
+        }
+      ],
+      "answer_logit_capture_indices": [
+        459
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 1.3615260431944347e-13,
+          "B": 3.978962553752064e-12,
+          "C": 1.2501528685456254e-09,
+          "D": 0.999999998745732
+        },
+        "full_vocab_entropy": 2.5780215295867492e-08,
+        "full_vocab_probabilities": {
+          "A": 1.3615260449021532e-13,
+          "B": 3.978962558742749e-12,
+          "C": 1.2501528701136522e-09,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 51.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 21.625,
+          "B": 25.0,
+          "C": 30.75,
+          "D": 51.25
+        },
+        "option_argmax": "D",
+        "option_mass": 1.000000001254268,
+        "ranks": {
+          "A": 5,
+          "B": 3,
+          "C": 2,
+          "D": 1
+        },
+        "target_logit": 30.75,
+        "target_minus_initial": -20.5,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-028",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "development_validation",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F14",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "D",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-DEV-028-R",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 53,
+      "paired_condition_order": [
+        "uncapped",
+        "p25"
+      ],
+      "phase": "prespecified_internal_validation",
+      "position_transition": "D->C",
+      "prompt_sha256": "21d29e5bc8378abd1ded8540e5324e0c9238a1bd7669251f971e5ac0bd4dda3a",
+      "prompt_token_ids_sha256": "a997bf276feaf523ff89a02b0e2dd1242fced66016e23a3d4a0996c1956836e5",
+      "prompt_tokens": 410,
+      "reasoning_token_count": 451,
+      "record_seed": 53,
+      "response": "<think>\nOkay, let's try to figure this out. The question is whether Job D having status Pearl 12 is supported based on the given records and rules. Let me start by going through all the records and rules step by step.\n\nFirst, looking at the records related to Job D. Records 1, 6, 9 show different statuses for Job D. Record 1 says Ivory 4, Record 6 is Ochre 9, and Record 9 is Cobalt 2. So, Job D has multiple statuses according to these records. But the rules might add more statuses based on certain conditions.\n\nNow, looking at the rules from 10 to 14. Rule 10 says if Job D has both Ivory 4 and Mint 16, then it gets Jade 3. But from the records, I see that Job D has Ivory 4 (Record 1) but there's no mention of Mint 16. So the condition for Rule 10 isn't met. Therefore, Jade 3 isn't triggered here.\n\nSince Jade 3 isn't established, the subsequent rules (11-14) that depend on Jade 3 leading to Umber 13, then Azure 14, Saffron 15, and finally Pearl 12 can't be activated. Each of these rules is conditional on the previous status being present. Without the initial condition in Rule 10 being true, the chain can't proceed.\n\nAdditionally, checking the other records for Job D, there's no direct mention of Pearl 12 in any of the records. The existing statuses are Ivory 4, Ochre 9, Cobalt 2. None of the other rules seem to connect these to Pearl 12. \n\nSo, there's no support for Pearl 12 through the rules because the necessary conditions aren't met. However, the problem states that an unlisted statement isn't automatically negated. But since the question is about whether it's supported, and there's no derivation path to Pearl 12, the answer would be that it's undetermined. There's neither support nor contradiction; the information isn't sufficient.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "de9bc6d9750ad4c5dd8bb386da1283e2afdfb772c72635ba69d9944126bb8a9c",
+      "response_tokens": 462,
+      "scope": "evidence-validation",
+      "seed": 0,
+      "selected_answer_logit_index": 459,
+      "structure_class": "PGF-04",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "204d0d8e611dfb9159b48c1df831693ad8186376b5b1329b375c70ce401384a6"
+}

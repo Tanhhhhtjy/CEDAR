@@ -1,0 +1,106 @@
+{
+  "error_class": "cross_entity_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "vek213fallsignal",
+      "arguments": [
+        "csor85"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "vek213fallsignal",
+        "arguments": [
+          "csor85"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "vek213fallsignal",
+      "arguments": [
+        "ckel72"
+      ],
+      "negated": false
+    },
+    "operator": "cross_entity_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "f5e6975f403e3e40ff8e76ea00ab0e983575e2633f0fbbd56d4fce7bfb548bef",
+      "projected_edit_sha256": "787cbde89be16d7c354eb9e6fad91a42a34fba34fdf50255ac202acc1e562f65"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "531e937c73d04bd2861feaa66e72f906be171baeb127dd621fa79fcd84e4d53a",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "vek213outcome",
+      "arguments": [
+        "ckel72"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "cross_entity_transfer",
+    "world_semantic_sha256": "2225a11e83a23ab939770e91f0f17441143f8b70ef13b8f785e5301d62efdb4c",
+    "entailed_premise_keys": [
+      "vek213fallsignal(csor85)"
+    ],
+    "unsupported_claim_key": "vek213fallsignal(ckel72)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "-vek213outcome(ckel72)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "-vek213outcome(ckel72)",
+      "required_counterliteral": "vek213outcome(ckel72)",
+      "input_sha256": "8b3386972b68938b9c82dbe56ae31b8876727be6a4e32defc0bbe7e0b0cacac6",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nvek213edge(csor85,cvek213node0).\nvek213noise1(csor85).\nvek213fallsignal(csor85).\nvek213reach(ckel72,cvek213node0) -> -vek213outcome(ckel72).\n(all x all y (vek213edge(x,y) -> vek213reach(x,y))).\n(all x all y all z (vek213reach(x,y) & vek213edge(y,z) -> vek213reach(x,z))).\nvek213outcome(ckel72).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel72, [ 0 ]),\n\n        function(csor85, [ 1 ]),\n\n        function(cvek213node0, [ 0 ]),\n\n        relation(vek213fallsignal(_), [ 0, 1 ]),\n\n        relation(vek213noise1(_), [ 0, 1 ]),\n\n        relation(vek213outcome(_), [ 1, 0 ]),\n\n        relation(vek213edge(_,_), [\n\t\t\t   0, 0,\n\t\t\t   1, 0 ]),\n\n        relation(vek213reach(_,_), [\n\t\t\t   0, 0,\n\t\t\t   1, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "vek213edge",
+          "arguments": [
+            "ckel72",
+            "csor85"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-71e244b964cd6d86",
+      "rank": 2
+    },
+    "updated_world_sha256": "531e937c73d04bd2861feaa66e72f906be171baeb127dd621fa79fcd84e4d53a",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

@@ -1,0 +1,105 @@
+{
+  "error_class": "cross_entity_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "pax241fallsignal",
+      "arguments": [
+        "cmiv74"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "pax241fallsignal",
+        "arguments": [
+          "cmiv74"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "pax241fallsignal",
+      "arguments": [
+        "ctor77"
+      ],
+      "negated": false
+    },
+    "operator": "cross_entity_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "4e6c3368f6f6189343fc3a9c4756b1424278b79ab27fcd18d150a28cfc4b2d6f",
+      "projected_edit_sha256": "297eec40f9646435d03528380cb0ce2c7573603de03d9addeb588d3e876dd59e"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "43d72320e88765f32dbdb355db31befc9584526b28435d102ea2d68e047953bc",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "pax241outcome",
+      "arguments": [
+        "ctor77"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "cross_entity_transfer",
+    "world_semantic_sha256": "82a37b83d8d48bc9e1f808b0c6a5e41f015f121817397145e63d1d006795ecb6",
+    "entailed_premise_keys": [
+      "pax241fallsignal(cmiv74)"
+    ],
+    "unsupported_claim_key": "pax241fallsignal(ctor77)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "pax241outcome(ctor77)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "pax241outcome(ctor77)",
+      "required_counterliteral": "-pax241outcome(ctor77)",
+      "input_sha256": "bf52fb0648b5175980cb34c0c8b875c40221dcffa9f3b0aa67d3f51f4c4e5ce0",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\npax241left(ctor77).\npax241noise1(cmiv74).\npax241noise2(cnav49).\npax241noise3(cvek37).\npax241fallsignal(cmiv74).\npax241left(ctor77) & pax241right(ctor77) -> pax241joint(ctor77).\npax241joint(ctor77) -> pax241outcome(ctor77).\n-pax241outcome(ctor77).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(cmiv74, [ 0 ]),\n\n        function(cnav49, [ 0 ]),\n\n        function(ctor77, [ 0 ]),\n\n        function(cvek37, [ 0 ]),\n\n        relation(pax241fallsignal(_), [ 1, 0 ]),\n\n        relation(pax241joint(_), [ 0, 0 ]),\n\n        relation(pax241left(_), [ 1, 0 ]),\n\n        relation(pax241noise1(_), [ 1, 0 ]),\n\n        relation(pax241noise2(_), [ 1, 0 ]),\n\n        relation(pax241noise3(_), [ 1, 0 ]),\n\n        relation(pax241outcome(_), [ 0, 0 ]),\n\n        relation(pax241right(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "pax241right",
+          "arguments": [
+            "ctor77"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-e259306da491a2e5",
+      "rank": 24
+    },
+    "updated_world_sha256": "43d72320e88765f32dbdb355db31befc9584526b28435d102ea2d68e047953bc",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

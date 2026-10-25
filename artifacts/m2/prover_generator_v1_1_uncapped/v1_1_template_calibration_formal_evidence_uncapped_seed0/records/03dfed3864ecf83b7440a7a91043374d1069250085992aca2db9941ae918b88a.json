@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-014-R",
+    "index": 29,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 29,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 1036,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 1036
+        }
+      ],
+      "answer_logit_capture_indices": [
+        1036
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 4.5990555638089973e-10,
+          "B": 2.6465738391789757e-09,
+          "C": 0.9999999963029902,
+          "D": 5.905304001724856e-10
+        },
+        "full_vocab_entropy": 9.188740079935087e-08,
+        "full_vocab_probabilities": {
+          "A": 4.5990555808117506e-10,
+          "B": 2.646573848963385e-09,
+          "C": 1.0,
+          "D": 5.905304023556823e-10
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 38.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 17.0,
+          "B": 18.75,
+          "C": 38.5,
+          "D": 17.25
+        },
+        "option_argmax": "C",
+        "option_mass": 1.0000000036970098,
+        "ranks": {
+          "A": 5,
+          "B": 2,
+          "C": 1,
+          "D": 3
+        },
+        "target_logit": 17.25,
+        "target_minus_initial": -21.25,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-014",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F07",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-014-R",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "C->D",
+      "prompt_sha256": "32aab5c57f6b39311d9c2e7065198d77431863af3fc0bd5fe6a568c41af92b01",
+      "prompt_token_ids_sha256": "157f0c500eb8387348ccd9c04668bb391555b3cd9bae6b70c6699fc611a14737",
+      "prompt_tokens": 629,
+      "reasoning_token_count": 1028,
+      "record_seed": 29,
+      "response": "<think>\nOkay, let's try to figure out if Sample B has status Navy 22. Let me start by going through the records and rules step by step.\n\nFirst, looking at the records provided:\n\nRecord 1 says Sample B has a link Umber 13 to Sample E. That's important because some rules are triggered by such links. \n\nRecord 10 states that Sample B has status Silver 7. Also, Records 5 and 10 both mention Sample B's status. Wait, Record 5 says Sample B has status Slate 17. But there's no contradiction here because the problem states that an unlisted statement isn't automatically negated. However, the rules might have implications here. Wait, but the problem says to treat every listed rule as exact and use only the records below. So maybe multiple statuses can coexist unless a rule says otherwise?\n\nNow, looking at the rules. Let's focus on the ones related to Sample B. \n\nRule 12: If Sample B has link Umber 13 to Sample E, then Sample B has status Amber 1. From Record 1, B has that link, so according to Rule 12, B should have Amber 1. But there's no record stating that. However, maybe other rules chain from there. \n\nRule 14 says if B has Amber 1, then it has Cobalt 2. Then Rule 15: Cobalt 2 leads to Jade 3. Then Rule 16: Jade 3 leads to Ivory 4. Then Rule 17: Ivory 4 leads to Lilac 5. Then Rule 18: If Lilac 5, then B does NOT have Navy 22. \n\nSo if we follow this chain from the link in Record 1, we end up with Lilac 5, which would prevent Navy 22. But do we actually have Amber 1? The records don't list it, but Rule 12 says that because of the link, B should have Amber 1. So according to the rules, even if it's not listed, the rule implies that status. Wait, but the problem says to use only the listed records and treat rules as exact. So maybe the rules are to be applied to derive new statuses?\n\nWait, the problem says \"use only the records below\" but the rules are given as conditional statements. So perhaps we need to apply the rules based on existing records. Let me clarify:\n\nRecord 1: B has link Umber 13 to E. So Rule 12 applies: If that link exists, then B has Amber 1. Therefore, by Rule 12, B must have Amber 1. Then Rule 14 triggers, leading to Cobalt 2, then Rule 15 to Jade 3, Rule 16 to Ivory 4, Rule 17 to Lilac 5. Then Rule 18 says if Lilac 5, then not Navy 22. Therefore, Navy 22 is contradicted.\n\nBut there's also Record 10: B has Silver 7. Are there any rules that connect Silver 7 to other statuses? Let me check. Rule 11 says if B has Copper 6, then Silver 7. But there's no mention of Copper 6 here. However, Record 10 directly states Silver 7. But does that interfere with the other chain?\n\nThe other chain leads to Lilac 5, which blocks Navy 22. However, maybe there's another path that could lead to Navy 22. Let's check other rules. \n\nLooking at Rules 13, 19-23. Rule 13 is about a link to C, which B doesn't have (Record 1 links to E, not C). So that path isn't triggered. \n\nThe other path is the one via Amber 1 leading to Lilac 5, which blocks Navy 22. Therefore, if that chain is valid, then Navy 22 is contradicted. \n\nBut wait, are there any other ways Navy 22 could be achieved? Let's see. Rule 23 says if B has Pearl 12, then Navy 22. To get Pearl 12, need Coral 11 (Rule 22), which needs Indigo 10 (Rule 21), which needs Ochre 9 (Rule 20), which needs Teal 8 (Rule 19). But Teal 8 would require B to have a link Umber 13 to C (Rule 13), which it doesn't. So that path isn't applicable. \n\nTherefore, the only active chain is via Amber 1 leading to Lilac 5, which directly contradicts Navy 22. Hence, the conclusion is that Navy 22 is contradicted. Therefore, the answer should be C.\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "446a054dc515ed6afb39ff037a820d27bb0ba60917adc40151a919354fdd85cc",
+      "response_tokens": 1039,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 1036,
+      "social_template": null,
+      "structure_class": "PGF-08",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

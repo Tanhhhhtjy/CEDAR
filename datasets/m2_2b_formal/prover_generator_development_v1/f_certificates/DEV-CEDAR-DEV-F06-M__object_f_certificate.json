@@ -1,0 +1,143 @@
+{
+  "error_class": "support_path_generalization",
+  "entailed_premises": [
+    {
+      "predicate": "miv778fallsupported",
+      "arguments": [
+        "cpax25"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "miv778fallsupported",
+        "arguments": [
+          "cpax25"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "miv778fallsupported",
+      "arguments": [
+        "ctor48"
+      ],
+      "negated": false
+    },
+    "operator": "support_path_generalization"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "94ea456582c7c27e3af935669965a90d1d074b750f13cf39556dd861d1eb7a18",
+      "projected_edit_sha256": "8996c15e54d632882325cff9000f40d64b9028591d027264dac001c494b4c65c"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "56bdfd3ee97e47487b40945fa751e5333182106ec7a6d330ee140f9a0a2658da",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "miv778outcome",
+      "arguments": [
+        "cpax25"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "support_path_generalization",
+    "world_semantic_sha256": "3c66c08811e3a149152481d7477c66435c516224b1e175da3fcee11ff80e906f",
+    "entailed_premise_keys": [
+      "miv778fallsupported(cpax25)"
+    ],
+    "unsupported_claim_key": "miv778fallsupported(ctor48)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-miv778outcome(cpax25)",
+    "proof": {
+      "record_ids": [
+        "data_miv778_source",
+        "policy_miv778_terminal",
+        "schema_miv778up_0",
+        "schema_miv778up_1",
+        "schema_miv778up_2",
+        "schema_miv778up_3",
+        "schema_miv778up_4"
+      ],
+      "depth": 6
+    },
+    "refutes_induced_label": "true"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "policy_miv778_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "miv778bridge",
+            "arguments": [
+              "cpax25"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "miv778outcome",
+          "arguments": [
+            "cpax25"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "policy_miv778_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "miv778bridge",
+            "arguments": [
+              "cpax25"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "miv778outcome",
+          "arguments": [
+            "cpax25"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-843246022f721fa1",
+      "rank": 27
+    },
+    "updated_world_sha256": "56bdfd3ee97e47487b40945fa751e5333182106ec7a6d330ee140f9a0a2658da",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

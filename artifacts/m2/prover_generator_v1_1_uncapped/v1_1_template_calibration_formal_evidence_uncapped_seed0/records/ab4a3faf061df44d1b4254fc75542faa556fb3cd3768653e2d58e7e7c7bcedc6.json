@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-046-N",
+    "index": 92,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 92,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 1275,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 1275
+        }
+      ],
+      "answer_logit_capture_indices": [
+        1275
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 9.544998743306025e-12,
+          "B": 0.9999962733137461,
+          "C": 3.726638957591636e-06,
+          "D": 3.775119907335767e-11
+        },
+        "full_vocab_entropy": 5.0399401516187936e-05,
+        "full_vocab_probabilities": {
+          "A": 9.544998472166277e-12,
+          "B": 0.9999962449073792,
+          "C": 3.726638851730968e-06,
+          "D": 3.775119800097926e-11
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 47.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 21.625,
+          "B": 47.0,
+          "C": 34.5,
+          "D": 23.0
+        },
+        "option_argmax": "B",
+        "option_mass": 0.9999999715935272,
+        "ranks": {
+          "A": 4,
+          "B": 1,
+          "C": 2,
+          "D": 3
+        },
+        "target_logit": 34.5,
+        "target_minus_initial": -12.5,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-046",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F23",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-046-N",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "B->C",
+      "prompt_sha256": "9f50b533686feda491529476bbd57072569cc33f81cab21697005fa829d39ecb",
+      "prompt_token_ids_sha256": "979e60fe5dada73b4a4fb560a135358948fbd2149b79c1e590296b2b491e798a",
+      "prompt_tokens": 423,
+      "reasoning_token_count": 1267,
+      "record_seed": 92,
+      "response": "<think>\nOkay, let's try to figure out if Sample H has status Indigo 10. The question is asking whether this is supported, undetermined, contradicted, or both. Let me go through the records and rules step by step.\n\nFirst, looking at the records. Record 1 says Sample H has a link Amber 1 to Sample E. Then, Record 11 states that Sample H has status Jade 3. So, H's status is Jade 3 according to the records. But the question is about Indigo 10. Now, there's Record 12 which says if Sample H has a link Coral 11 to Sample D, then H does not have Indigo 10. But does H have such a link?\n\nLooking at the rules. Rule 13 says if an item has a link Amber 1 to another, then it also has a link Coral 11 to that same other item. So, since H has Amber 1 link to E (Record 1), by Rule 13, H must have Coral 11 link to E. But does that help us get to a link with D?\n\nThen there's Rule 14: if an item has Coral 11 to another, and that other has Amber 1 to a third, then the original item has Coral 11 to the third. Let's see. H has Coral 11 to E (from Rule 13 applied to H's Amber 1 to E). Now, looking at E. Do we know if E has an Amber 1 link to someone else? Let me check the records. Record 5 says E has status Ivory 4, but no direct link info. Wait, maybe through other samples?\n\nLooking at the other links. Records 2-4 form a chain: A→B→C→D via Amber 1. So, A has Amber 1 to B, B to C, C to D. If we apply Rule 13 to each of these, then each of those links would also have Coral 11. So A has Coral 11 to B, B to C, C to D. Now, Rule 14 says if there's a Coral link to someone who has Amber to another, then the original has Coral to that other. Let's see if H can get a Coral link to D.\n\nH has Coral 11 to E (from Rule 13). Now, does E have an Amber 1 link to someone? Let me check. The records don't mention E having any links. Record 1 says H links to E, but nothing about E linking to others. Unless there's another record. Records 2-4 are A-B-C-D. Record 1 is H to E. Record 5 is E's status. So E doesn't have an Amber link to another sample. Therefore, Rule 14 can't be applied here to get H to link to someone else via Coral. So H's Coral links are only to E. Therefore, H does not have a Coral 11 link to D. \n\nBut Record 12's condition is about H having Coral 11 to D. Since we just determined that H doesn't have that link, the antecedent of Record 12 (the \"if\" part) is false. In logic, if the \"if\" part is false, the entire implication is true regardless of the conclusion. So Record 12 doesn't give us any information about H's status in this case because the condition isn't met. Therefore, we can't use Record 12 to conclude anything about H's status being Indigo 10.\n\nNow, looking at the records, the only status given for H is Jade 3 (Record 11). The question is about Indigo 10. The problem states that an unlisted statement isn't automatically negated. So, just because H's status is listed as Jade 3, does that mean Indigo 10 is contradicted? Wait, the problem says \"treat every listed rule as exact and use only the records below. An unlisted statement is not automatically negated.\" So if a status is not mentioned, we can't assume it's false. However, if a status is directly contradicted by a record, then it's contradicted.\n\nBut in this case, Record 11 says H has status Jade 3. Does that mean that H cannot have any other status? Probably not. The problem says \"closed sample registry uses local status codes.\" Maybe each sample can have multiple status codes? Or maybe each sample has a single status? The problem isn't clear. But the records list Sample H's status as Jade 3. If the status is unique, then having another status would contradict. But the problem says \"unlisted statement is not automatically negated.\" So unless there's a rule that says a sample can only have one status, we can't assume that. Therefore, the existence of Jade 3 doesn't necessarily negate Indigo 10 unless there's a rule that says a sample can't have multiple statuses. Since there's no such rule given, we can't assume that. Therefore, the status Indigo 10 for H is not directly addressed by any record. \n\nBut wait, Record 12's conclusion is that if H had the Coral link to D, then it's not the case that H has Indigo 10. But since H doesn't have that Coral link, we can't apply Record 12. Therefore, there's no rule that would lead us to conclude that H does or does not have Indigo 10. The only thing we know is H's status is Jade 3, but unless there's a rule that conflicts with having both Jade 3 and Indigo 10, we can't say. Since the problem doesn't state that statuses are mutually exclusive, we can't assume that. Therefore, the status Indigo 10 for H is neither supported nor contradicted by the given records. Hence, the answer should be B) undetermined.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "4f34dcd8ca8ccda2dd9347adde512849ee8da31be6b2e2d497c366a5c839f3b7",
+      "response_tokens": 1278,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 1275,
+      "social_template": null,
+      "structure_class": "PGF-06",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

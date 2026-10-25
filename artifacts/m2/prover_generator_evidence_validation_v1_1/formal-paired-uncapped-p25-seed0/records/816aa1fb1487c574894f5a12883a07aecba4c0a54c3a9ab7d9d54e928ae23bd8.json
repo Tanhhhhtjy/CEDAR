@@ -1,0 +1,173 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-032-R",
+    "index": 122,
+    "seed": 0
+  },
+  "payload": {
+    "index": 122,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 879,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 879
+        }
+      ],
+      "answer_logit_capture_indices": [
+        879
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999998302228172,
+          "B": 1.44498006785639e-07,
+          "C": 2.5109986268187807e-08,
+          "D": 1.6918977233349946e-10
+        },
+        "full_vocab_entropy": 2.720356860663742e-06,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 1.4449803131810768e-07,
+          "C": 2.510999053129126e-08,
+          "D": 1.6918980105806725e-10
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 47.75,
+        "initial_rank": 1,
+        "logits": {
+          "A": 47.75,
+          "B": 32.0,
+          "C": 30.25,
+          "D": 25.25
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000001697772116,
+        "ranks": {
+          "A": 1,
+          "B": 2,
+          "C": 3,
+          "D": 4
+        },
+        "target_logit": 32.0,
+        "target_minus_initial": -15.75,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-032",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "development_validation",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F16",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-DEV-032-R",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 61,
+      "paired_condition_order": [
+        "uncapped",
+        "p25"
+      ],
+      "phase": "prespecified_internal_validation",
+      "position_transition": "A->B",
+      "prompt_sha256": "260588a45a1e1c603273742db05402ff2a43b982d657a9e1f384809880eb3cd5",
+      "prompt_token_ids_sha256": "72af149588bf1f6595b0b38ac7e560d0577a3b052f544a64e765996744ee2fe7",
+      "prompt_tokens": 391,
+      "reasoning_token_count": 871,
+      "record_seed": 61,
+      "response": "<think>\nOkay, let's try to figure out if Device C having status Coral 11 is supported based on the given records. \n\nFirst, I need to look at all the records related to Device C. From the records, I see that Device C has multiple statuses listed: Ivory 4 (Record 1), Teal 8 (Record 5), Cobalt 2 (Record 8), and Ochre 9 (Record 6? Wait, Record 6 says Device A has Ochre 9. So maybe I should check again. Records 1, 5, 8 are for Device C. So:\n\n- Record 1: C has Ivory 4\n- Record 5: C has Teal 8\n- Record 8: C has Cobalt 2\n\nThen there are the rules. Let's look at the rules that involve Device C's statuses. \n\nRule 9 says if C has Amber 1, then Cobalt 2. But there's no mention of Amber 1 in the records for C. So that rule might not apply here.\n\nRule 10: If C has Ivory 4 and Azure 14, then Jade 3. But in the records, C has Ivory 4 (from Record 1) but there's no mention of Azure 14. So the condition for Rule 10 isn't met. Therefore, we can't derive Jade 3 from this.\n\nRule 11: If C has Jade 3, then Pearl 12. But since we can't get Jade 3 from the previous step, this rule isn't triggered.\n\nRule 12: If Pearl 12, then Umber 13. Again, no Pearl 12 in the records or derived from previous rules.\n\nRule 13: If Umber 13, then Coral 11. Same issue here.\n\nSo, the chain would need to start with Ivory 4 and Azure 14 leading to Jade 3, but since Azure 14 isn't present for C, that path is blocked. \n\nLooking at the existing statuses for C: Ivory 4, Teal 8, Cobalt 2. None of these trigger the chain that leads to Coral 11. The only way to get Coral 11 is through the chain starting with Jade 3, which requires both Ivory 4 and Azure 14. Since Azure 14 isn't present, we can't get to Jade 3, and thus the subsequent steps don't follow.\n\nTherefore, there's no support in the records for Device C having Coral 11. But wait, are there any other rules that might apply? Let me check again. The other rules are about other devices (like E in Records 2 and 7, B in 3, D in 4, A in 6). Those don't affect Device C's status chain here.\n\nSo, since none of the conditions required to derive Coral 11 are met based on the existing records, the conclusion is that it's not supported. But wait, the options are A) undetermined, B) supported, C) contradicted, D) both. \n\nBut does any record directly state that C does not have Coral 11? The problem says that an unlisted statement isn't automatically negated. So if Coral 11 isn't mentioned and isn't derivable, then it's undetermined. However, maybe there's a contradiction? Let me check again.\n\nThe records for C include Cobalt 2. Rule 9 says if Amber 1, then Cobalt 2. But since C has Cobalt 2, does that mean anything? No, because Rule 9 is a conditional. Having Cobalt 2 doesn't imply anything about the other statuses unless the antecedent is true. Since Amber 1 isn't present, Rule 9's antecedent is false, so the rule doesn't apply. \n\nSo there's no contradiction here. The chain to Coral 11 isn't possible with the given data. Therefore, the answer should be A) undetermined because we can't confirm it's true, but there's no direct contradiction either.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "81340197458036b82ca8436ec0c79abfc29a350b15c8103842f767826952c914",
+      "response_tokens": 882,
+      "scope": "evidence-validation",
+      "seed": 0,
+      "selected_answer_logit_index": 879,
+      "structure_class": "PGF-04",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "204d0d8e611dfb9159b48c1df831693ad8186376b5b1329b375c70ce401384a6"
+}

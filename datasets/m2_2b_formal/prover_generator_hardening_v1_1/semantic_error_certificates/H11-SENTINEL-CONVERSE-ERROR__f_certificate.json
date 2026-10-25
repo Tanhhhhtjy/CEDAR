@@ -1,0 +1,139 @@
+{
+  "error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "pax659fallverified",
+      "arguments": [
+        "csor86"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "pax659fallverified",
+        "arguments": [
+          "csor86"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "pax659fallsource",
+      "arguments": [
+        "csor86"
+      ],
+      "negated": false
+    },
+    "operator": "converse_error"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "db35ae52df04c4b965df111d1411bfff43ba790853179f78393feb3843cccc32",
+      "projected_edit_sha256": "7aa64ecb22e45d8c733cc7e407b64a965bdf4211cce05a1c65415f96c983b819"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "deface6d9ba356cb244cb704e02af26c39f35a5ebf3cb26bbfa433ac56aedfab",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "pax659outcome",
+      "arguments": [
+        "csor86"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "a307ab84d7ce9e08897784af6301f06a77654983efe2fd08ef39472bf84a6f6d",
+    "entailed_premise_keys": [
+      "pax659fallverified(csor86)"
+    ],
+    "unsupported_claim_key": "pax659fallsource(csor86)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-pax659outcome(csor86)",
+    "proof": {
+      "record_ids": [
+        "data_pax659_source",
+        "policy_pax659_terminal",
+        "schema_pax659up_0"
+      ],
+      "depth": 2
+    },
+    "refutes_induced_label": "true"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "policy_pax659_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "pax659bridge",
+            "arguments": [
+              "csor86"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "pax659outcome",
+          "arguments": [
+            "csor86"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "policy_pax659_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "pax659bridge",
+            "arguments": [
+              "csor86"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "pax659outcome",
+          "arguments": [
+            "csor86"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-e4222e8526c36777",
+      "rank": 16
+    },
+    "updated_world_sha256": "deface6d9ba356cb244cb704e02af26c39f35a5ebf3cb26bbfa433ac56aedfab",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

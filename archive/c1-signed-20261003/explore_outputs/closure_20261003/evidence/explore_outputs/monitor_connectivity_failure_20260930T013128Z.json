@@ -1,0 +1,44 @@
+{
+  "time_utc": "2026-09-30T01:31:28.981Z",
+  "heartbeat_trigger_utc": "2026-09-30T01:27:48.984Z",
+  "scope": "monitor_transport",
+  "result": "blocked_before_authentication",
+  "ssh_attempts": 3,
+  "failures": [
+    "Connection closed by UNKNOWN port 65535",
+    "ProxyCommand socket error: read ECONNRESET; Connection closed by UNKNOWN port 65535",
+    "Connection closed by UNKNOWN port 65535"
+  ],
+  "diagnostics": {
+    "proxy_listener": {
+      "address": "::",
+      "port": 10090,
+      "pid": 8228,
+      "process_name": "mihomo-windows-386.exe"
+    },
+    "local_ipv6": "No global unicast IPv6 address reported; only link-local, loopback and Tailscale ULA addresses.",
+    "direct_target_probe": "WinError 10051: network unreachable",
+    "proxy_connect_probe": "HTTP/1.1 200 Connection established; subsequent SSH attempts still closed before authentication.",
+    "inference": "Local direct IPv6 route is unavailable; existing proxy does not currently provide a working SSH path. Exact cause beyond the proxy was not established."
+  },
+  "last_verified": {
+    "time_utc": "2026-09-29T17:22:36.431047+00:00",
+    "formal_completed": 773,
+    "formal_total": 3840,
+    "smoke_completed": 52,
+    "campaign_stage": "formal",
+    "snapshot_stamp": "20260929T172238Z"
+  },
+  "current_remote_state": "unknown",
+  "remote_protocol_read_this_heartbeat": false,
+  "remote_monitor_checks_completed": false,
+  "experiment_restarted": false,
+  "protocol_changed": false,
+  "network_configuration_changed": false,
+  "other_jobs_touched": false,
+  "remote_evidence_sync_pending": true,
+  "remote_destination": "/data4/WuMingrui/TianJinyu/CEDAR/c1_signed_20260928/explore_outputs",
+  "action": "Preserve existing experiment and last verified snapshot. Keep the monitor active. Reconnect on the next heartbeat; upload this failure evidence and perform the full remote verification before any restart.",
+  "user_action": "Restore a network path with working IPv6 access to the server, or restore the existing proxy route to the SSH endpoint.",
+  "evidence_filename": "monitor_connectivity_failure_20260930T013128Z.json"
+}

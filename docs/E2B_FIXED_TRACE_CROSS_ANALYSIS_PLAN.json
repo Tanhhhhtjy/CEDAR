@@ -1,0 +1,49 @@
+{
+  "analysis_unit": {
+    "families": 12,
+    "independent_cluster": "family",
+    "prompts": 96,
+    "repeated_measures": [
+      "prompt",
+      "trace_source",
+      "forward_condition"
+    ]
+  },
+  "anchor_commit": "0c8517bb5fb4640f7d5e4d51356d0cf167046643",
+  "bootstrap": {
+    "draws": 20000,
+    "interval": "two_sided_percentile_95ci",
+    "seed": 20260726
+  },
+  "conditions": [
+    "uncapped",
+    "full_p25"
+  ],
+  "formal_cells": 384,
+  "interpretation": "controlled_fixed_trace_diagnostic_not_natural_mediation",
+  "primary_estimands": [
+    "delta_m_general_full_p25_minus_uncapped_given_uncapped_trace",
+    "delta_m_general_full_p25_minus_uncapped_given_full_p25_trace"
+  ],
+  "protocol": "docs/E2B_FIXED_TRACE_CROSS_PROTOCOL.md",
+  "schema": "cedar.e2b_fixed_trace_cross.analysis_plan.v1",
+  "secondary_estimands": [
+    "mean_primary_contrast",
+    "trace_source_by_cap_interaction",
+    "m_target",
+    "m_background",
+    "m_specific",
+    "arm_breakdowns",
+    "vf_target_minus_initial_margin",
+    "vf_selectivity_margin",
+    "option_mass",
+    "full_vocab_entropy",
+    "top_token_integrity",
+    "leave_one_family_out"
+  ],
+  "status": "frozen_before_implementation_and_model_output",
+  "trace_sources": [
+    "e2a_uncapped",
+    "e2a_full_p25"
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "error_class": "cross_entity_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "nav221fallsignal",
+      "arguments": [
+        "cmiv16"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "nav221fallsignal",
+        "arguments": [
+          "cmiv16"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "nav221fallsignal",
+      "arguments": [
+        "csor7"
+      ],
+      "negated": false
+    },
+    "operator": "cross_entity_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "72e6577fca96c9da5a36af31e0133f2fda00f91fcd46edcf129263a0f71fbdde",
+      "projected_edit_sha256": "789af05200df303c9960e6b4c03660e2d79647959fc844e01c52271fdfc13511"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "b6f7bf1662f7dcaae345eec485ba4436ac15e5d090204d28a3eef239fe3e11d8",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "nav221outcome",
+      "arguments": [
+        "csor7"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "cross_entity_transfer",
+    "world_semantic_sha256": "4922fc9433a4b91b7475e2ef980d5467c325b6faa19eadfdf2a21b37674e906c",
+    "entailed_premise_keys": [
+      "nav221fallsignal(cmiv16)"
+    ],
+    "unsupported_claim_key": "nav221fallsignal(csor7)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "nav221outcome(csor7)",
+    "proof": {
+      "record_ids": [
+        "data_nav221_root",
+        "schema_nav221pos_0",
+        "schema_nav221pos_1"
+      ],
+      "depth": 2
+    },
+    "refutes_induced_label": "false"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_nav221_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "nav221seed",
+          "arguments": [
+            "csor7"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_nav221_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "nav221seed",
+          "arguments": [
+            "csor7"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-c2cebb9cc44f3a65",
+      "rank": 27
+    },
+    "updated_world_sha256": "b6f7bf1662f7dcaae345eec485ba4436ac15e5d090204d28a3eef239fe3e11d8",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

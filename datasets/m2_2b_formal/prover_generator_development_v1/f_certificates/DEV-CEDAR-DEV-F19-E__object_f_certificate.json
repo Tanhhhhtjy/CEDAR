@@ -1,0 +1,118 @@
+{
+  "error_class": "cross_entity_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "kel243fallsignal",
+      "arguments": [
+        "clan31"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "kel243fallsignal",
+        "arguments": [
+          "clan31"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "kel243fallsignal",
+      "arguments": [
+        "cpax37"
+      ],
+      "negated": false
+    },
+    "operator": "cross_entity_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "0297cfaa3cd463a8a752300c44090e1c196532bcecbdd855b441fd4d6c839c8a",
+      "projected_edit_sha256": "7d94b36d79f766e53582412d9c6462ee7f2f4df0a9dfb53b46b1ee18bbe39b45"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "a62de8bfca5463685dc2aac68618ee2cf98377fa9bac82a27199ea0089678e20",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "kel243outcome",
+      "arguments": [
+        "cpax37"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "cross_entity_transfer",
+    "world_semantic_sha256": "d67423eff94a2344054402f1511855f325b2fceb02bb0b1644f4d8cc7f41d106",
+    "entailed_premise_keys": [
+      "kel243fallsignal(clan31)"
+    ],
+    "unsupported_claim_key": "kel243fallsignal(cpax37)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-kel243outcome(cpax37)",
+    "proof": {
+      "record_ids": [
+        "data_kel243_source",
+        "policy_kel243_terminal",
+        "schema_kel243up_0",
+        "schema_kel243up_1"
+      ],
+      "depth": 3
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "policy_kel243_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "kel243bridge",
+            "arguments": [
+              "cpax37"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "kel243outcome",
+          "arguments": [
+            "cpax37"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-c2ade8b70ce5df97",
+      "rank": 4
+    },
+    "updated_world_sha256": "a62de8bfca5463685dc2aac68618ee2cf98377fa9bac82a27199ea0089678e20",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

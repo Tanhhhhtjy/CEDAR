@@ -1,0 +1,121 @@
+{
+  "error_class": "support_path_generalization",
+  "entailed_premises": [
+    {
+      "predicate": "pax423fallsupported",
+      "arguments": [
+        "cvek73"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "pax423fallsupported",
+        "arguments": [
+          "cvek73"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "pax423fallsupported",
+      "arguments": [
+        "cmiv71"
+      ],
+      "negated": false
+    },
+    "operator": "support_path_generalization"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "d85d8f5749e451c45528b72c1bb10dd206cd82f9d468312633dc0a1472e13cb1",
+      "projected_edit_sha256": "a7e445a31e1ea3c59f9efd8b6ec6c97327b7880e412db41cc5d70202fcb3466c"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "68e5191a543cc85a1acf6f3ca7e8147a266361f81a73b9e1cb37644973a0ebb2",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "pax423outcome",
+      "arguments": [
+        "cvek73"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "support_path_generalization",
+    "world_semantic_sha256": "e9ee40e92b1b78c8b933dbdc8f77600a3a56e847448ab5a35cc1470accff01e0",
+    "entailed_premise_keys": [
+      "pax423fallsupported(cvek73)"
+    ],
+    "unsupported_claim_key": "pax423fallsupported(cmiv71)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-pax423outcome(cvek73)",
+    "proof": {
+      "record_ids": [
+        "data_pax423_source",
+        "policy_pax423_terminal",
+        "schema_pax423up_0",
+        "schema_pax423up_1",
+        "schema_pax423up_2",
+        "schema_pax423up_3",
+        "schema_pax423up_4"
+      ],
+      "depth": 6
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "policy_pax423_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "pax423bridge",
+            "arguments": [
+              "cvek73"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "pax423outcome",
+          "arguments": [
+            "cvek73"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-0b6ead5ab9b6a96d",
+      "rank": 16
+    },
+    "updated_world_sha256": "68e5191a543cc85a1acf6f3ca7e8147a266361f81a73b9e1cb37644973a0ebb2",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

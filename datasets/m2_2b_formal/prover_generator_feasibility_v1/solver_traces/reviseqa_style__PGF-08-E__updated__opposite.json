@@ -1,0 +1,7 @@
+{
+  "goal": "-f08_global_ok(sys)",
+  "input_sha256": "aab0a20384d112e36d3bf19e65ef82fa1155abfee31343fc9d5a1c8df04ba397",
+  "proved": false,
+  "search_failed": true,
+  "trace": "Prover9 (32) version Dec-2007, Dec 2007.\n\nINPUT\nset(auto).\n    % set(auto) -> set(auto_inference).\n    % set(auto) -> set(auto_setup).\n    % set(auto_setup) -> set(predicate_elim).\n    % set(auto_setup) -> assign(eq_defs, unfold).\n    % set(auto) -> set(auto_limits).\n    % set(auto_limits) -> assign(max_weight, 100).\n    % set(auto_limits) -> assign(sos_limit, 20000).\n    % set(auto) -> set(auto_denials).\n    % set(auto) -> set(auto_process).\nassign(max_seconds,5).\n\nformulas(assumptions).\nf08_link(local,good).\nf08_noise_3(d3).\nf08_link(other,good) -> f08_good_local(other).\nf08_link(other,good).\nf08_link(local,bad) -> f08_bad_local(local).\nf08_bad_local(local) -> f08_bad_global_s1(local).\nf08_bad_global_s1(local) -> -f08_global_ok(sys).\nf08_link(local,good) -> f08_good_local(local).\nf08_good_local(local) -> f08_good_global_s1(local).\nf08_good_global_s1(local) -> f08_global_ok(sys).\nend_of_list.\n\nformulas(goals).\n-f08_global_ok(sys).\nend_of_list.\n\nSEARCH FAILED\n"
+}

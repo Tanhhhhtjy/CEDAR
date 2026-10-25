@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-026-N",
+    "index": 52,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 52,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 610,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 610
+        }
+      ],
+      "answer_logit_capture_indices": [
+        610
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 6.224143857986346e-11,
+          "B": 1.1628233309049098e-10,
+          "C": 4.1399376426544676e-08,
+          "D": 0.9999999584220998
+        },
+        "full_vocab_entropy": 7.08261609361216e-07,
+        "full_vocab_probabilities": {
+          "A": 6.224144116773189e-11,
+          "B": 1.1628233792526643e-10,
+          "C": 4.139937814784389e-08,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 46.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 22.75,
+          "B": 23.375,
+          "C": 29.25,
+          "D": 46.25
+        },
+        "option_argmax": "D",
+        "option_mass": 1.000000041577902,
+        "ranks": {
+          "A": 4,
+          "B": 3,
+          "C": 2,
+          "D": 1
+        },
+        "target_logit": 29.25,
+        "target_minus_initial": -17.0,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-026",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F13",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "D",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-026-N",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "D->C",
+      "prompt_sha256": "c69fe802d66a9035c36037ad7d5acd1952f7e26c5ba919ad7d64dfdec31f13e8",
+      "prompt_token_ids_sha256": "f71d197b983736b49ed5053a6ba7495a55c6aead4b42ced11f70b51fa6dfbb9a",
+      "prompt_tokens": 417,
+      "reasoning_token_count": 602,
+      "record_seed": 52,
+      "response": "<think>\nOkay, let's try to figure out if Node B having status Ochre 9 is supported based on the given records. \n\nFirst, I need to look at all the records and see what's stated directly and what can be inferred through the conditional rules. \n\nStarting with the records about Node B. Records 1, 5, and 6 say that Node B has statuses Ivory 4, Teal 8, and Cobalt 2. So those are directly given. \n\nNow, looking at the rules. Rule 7 says if Node B has Amber 1, then Cobalt 2. But since there's no mention of Amber 1 in the records, this rule might not apply unless we can derive it somehow. \n\nRule 8: If Node B has Ivory 4 and Azure 14, then Jade 3. We know Node B has Ivory 4 (from Record 1), but there's no mention of Azure 14. So unless Azure 14 is somehow established, this rule can't trigger. \n\nRule 9: If Jade 3, then Indigo 10. But again, unless Jade 3 is established, this doesn't help. \n\nSimilarly, Rules 10 through 13 form a chain from Indigo 10 down to Ochre 9. But to get there, we need to start with Indigo 10, which requires Jade 3. \n\nSo the key here is whether we can get to Jade 3. For that, Rule 8 needs both Ivory 4 and Azure 14. Since we have Ivory 4, but not Azure 14, Rule 8 can't be applied. Therefore, Jade 3 isn't established. Without Jade 3, the subsequent rules (9-13) don't get triggered. \n\nIs there any other way to get to Ochre 9? Let's check if any other rules might lead there. The only other rule involving Node B is Rule 7, which leads to Cobalt 2, which is already given in Record 6. But that doesn't connect to the other chain. \n\nSo, the existing records don't provide Azure 14 for Node B. Therefore, the conditions for Rule 8 aren't met, so we can't derive Jade 3. Without Jade 3, the rest of the chain can't be activated. \n\nTherefore, there's no way to support that Node B has Ochre 9 based on the current records. But also, there's nothing that directly contradicts Ochre 9. The records don't mention Ochre 9 at all, so it's not supported, but also not contradicted. \n\nThe options are A) contradicted, B) both, C) supported, D) undetermined. Since it's neither supported nor contradicted, the answer should be D) undetermined.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "f9914cd995037e64489c56e7bc8cb092b0a8b4fcdab9c975fac9891c3a1f5c00",
+      "response_tokens": 613,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 610,
+      "social_template": null,
+      "structure_class": "PGF-04",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

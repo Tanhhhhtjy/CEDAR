@@ -1,0 +1,17 @@
+{
+  "label": "true",
+  "query_result": {
+    "goal": "revision_warranted(edit11)",
+    "input_sha256": "9778f62cd88096815f54c51db92424aec989692b034e479904715d260df01c70",
+    "proved": true,
+    "search_failed": false,
+    "trace": "Prover9 (32) version Dec-2007, Dec 2007.\n\nINPUT\nset(auto).\n    % set(auto) -> set(auto_inference).\n    % set(auto) -> set(auto_setup).\n    % set(auto_setup) -> set(predicate_elim).\n    % set(auto_setup) -> assign(eq_defs, unfold).\n    % set(auto) -> set(auto_limits).\n    % set(auto_limits) -> assign(max_weight, 100).\n    % set(auto_limits) -> assign(sos_limit, 20000).\n    % set(auto) -> set(auto_denials).\n    % set(auto) -> set(auto_process).\nassign(max_seconds,5).\n\nformulas(assumptions).\nreview_context_open(edit11).\naccess_gate_passed(crecordr).\n(all item (access_gate_passed(item) -> usable_support_path(item))).\nusable_support_path(crecordr) -> v_supp_ereviewstage1(edit11).\nv_supp_ereviewstage1(edit11) -> revision_warranted(edit11).\nend_of_list.\n\nformulas(goals).\nrevision_warranted(edit11).\nend_of_list.\n\nPROOF\n% Proof timing omitted.\n% Length of proof is 13.\n% Level of proof is 5.\n% Maximum clause weight is 0.\n% Given clauses 0.\n\n1 (all item (access_gate_passed(item) -> usable_support_path(item))) # label(non_clause).  [assumption].\n2 usable_support_path(crecordr) -> v_supp_ereviewstage1(edit11) # label(non_clause).  [assumption].\n3 v_supp_ereviewstage1(edit11) -> revision_warranted(edit11) # label(non_clause).  [assumption].\n4 revision_warranted(edit11) # label(non_clause) # label(goal).  [goal].\n5 -access_gate_passed(x) | usable_support_path(x).  [clausify(1)].\n6 access_gate_passed(crecordr).  [assumption].\n7 usable_support_path(crecordr).  [resolve(5,a,6,a)].\n8 -usable_support_path(crecordr) | v_supp_ereviewstage1(edit11).  [clausify(2)].\n9 v_supp_ereviewstage1(edit11).  [resolve(7,a,8,a)].\n10 -v_supp_ereviewstage1(edit11) | revision_warranted(edit11).  [clausify(3)].\n11 revision_warranted(edit11).  [resolve(9,a,10,a)].\n12 -revision_warranted(edit11).  [deny(4)].\n13 $F.  [resolve(11,a,12,a)].\n\nTHEOREM PROVED\n"
+  },
+  "opposite_result": {
+    "goal": "-revision_warranted(edit11)",
+    "input_sha256": "36e1622daafde8f746ab990b857bf36d2eca3886d35e37419ec03a1dffde8012",
+    "proved": false,
+    "search_failed": true,
+    "trace": "Prover9 (32) version Dec-2007, Dec 2007.\n\nINPUT\nset(auto).\n    % set(auto) -> set(auto_inference).\n    % set(auto) -> set(auto_setup).\n    % set(auto_setup) -> set(predicate_elim).\n    % set(auto_setup) -> assign(eq_defs, unfold).\n    % set(auto) -> set(auto_limits).\n    % set(auto_limits) -> assign(max_weight, 100).\n    % set(auto_limits) -> assign(sos_limit, 20000).\n    % set(auto) -> set(auto_denials).\n    % set(auto) -> set(auto_process).\nassign(max_seconds,5).\n\nformulas(assumptions).\nreview_context_open(edit11).\naccess_gate_passed(crecordr).\n(all item (access_gate_passed(item) -> usable_support_path(item))).\nusable_support_path(crecordr) -> v_supp_ereviewstage1(edit11).\nv_supp_ereviewstage1(edit11) -> revision_warranted(edit11).\nend_of_list.\n\nformulas(goals).\n-revision_warranted(edit11).\nend_of_list.\n\nSEARCH FAILED\n"
+  }
+}

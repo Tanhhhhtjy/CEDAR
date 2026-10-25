@@ -1,0 +1,120 @@
+{
+  "error_class": "unsupported_bridge",
+  "entailed_premises": [
+    {
+      "predicate": "nav355fallobserved",
+      "arguments": [
+        "clan18"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "nav355fallobserved",
+        "arguments": [
+          "clan18"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "nav355fallbridge",
+      "arguments": [
+        "clan18"
+      ],
+      "negated": false
+    },
+    "operator": "unsupported_bridge"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "5ca863894306976a7aae2c5b571d1d104c3f369d1d3402019c247ba93b10cd58",
+      "projected_edit_sha256": "7cf04732b4aa1bd28b72d32e645faf97868695b48125af9533a1196116b119f3"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "79b80ca5fd73509d2b8b7c1b954caa70f94587a7b591ce5095795f8a3f28118c",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "nav355outcome",
+      "arguments": [
+        "clan18"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "unsupported_bridge",
+    "world_semantic_sha256": "b12c67930d80c14f4dd2e9bababb5b3a25d1d68e4734ffc7b1b16273e71f8fb3",
+    "entailed_premise_keys": [
+      "nav355fallobserved(clan18)"
+    ],
+    "unsupported_claim_key": "nav355fallbridge(clan18)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-nav355outcome(clan18)",
+    "proof": {
+      "record_ids": [
+        "data_nav355_source",
+        "policy_nav355_terminal",
+        "schema_nav355up_0",
+        "schema_nav355up_1",
+        "schema_nav355up_2",
+        "schema_nav355up_3"
+      ],
+      "depth": 5
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "policy_nav355_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "nav355bridge",
+            "arguments": [
+              "clan18"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "nav355outcome",
+          "arguments": [
+            "clan18"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-282f1f5d85a5d260",
+      "rank": 5
+    },
+    "updated_world_sha256": "79b80ca5fd73509d2b8b7c1b954caa70f94587a7b591ce5095795f8a3f28118c",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

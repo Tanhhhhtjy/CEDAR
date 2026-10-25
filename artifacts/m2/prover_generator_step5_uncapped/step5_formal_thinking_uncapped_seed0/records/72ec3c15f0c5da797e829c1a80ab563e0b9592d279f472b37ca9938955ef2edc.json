@@ -1,0 +1,145 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-013-R",
+    "index": 73,
+    "mode": "thinking",
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 73,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 324,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 324
+        }
+      ],
+      "answer_logit_capture_indices": [
+        324
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999996271698373,
+          "B": 2.6995773676925363e-07,
+          "C": 1.5229975153835967e-08,
+          "D": 8.764245081703885e-08
+        },
+        "full_vocab_entropy": 5.782222615380306e-06,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 2.699578374176781e-07,
+          "C": 1.5229980832032197e-08,
+          "D": 8.764248349280024e-08
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 46.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 46.5,
+          "B": 31.375,
+          "C": 28.5,
+          "D": 30.25
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000003728303017,
+        "ranks": {
+          "A": 1,
+          "B": 2,
+          "C": 4,
+          "D": 3
+        },
+        "target_logit": 30.25,
+        "target_minus_initial": -16.25,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-013",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F07",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-013-R",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "prompt_sha256": "44ea5389d74006a92860058a66119506d7a4c175ce64d130b0d5d4e09d6da6ca",
+      "prompt_token_ids_sha256": "78df436387c07c97e7bceaf7d24aadfa305265787f7da0912166897dbb0d1929",
+      "prompt_tokens": 333,
+      "reasoning_token_count": 316,
+      "record_seed": 73,
+      "response": "<think>\nOkay, let's go through this step by step. The question is whether Shipment B has status Silver 7, based on the given records and rules.\n\nFirst, looking at the records. Record 1 says Shipment B has a link Ivory 4 to Shipment E. Then, Record 5 is a conditional: if B has that link to E, then B has status Amber 1. Since the link exists (from Record 1), by modus ponens, we can conclude that Shipment B has Amber 1 status. \n\nNow, Record 7 states that if B has Amber 1, then it does not have Silver 7. Since we just established Amber 1 is true, applying modus ponens here means Silver 7 is false. So that would contradict the possibility of Silver 7. \n\nBut wait, let me check if there are other possibilities. For example, could there be another rule that would lead to Silver 7? Let's see. Record 6 talks about a link to D, leading to Jade 3, which via Record 8 would imply Silver 7. However, Record 1 mentions a link to E, not D. There's no mention of a link from B to D in the records, so Record 6 doesn't apply here. \n\nSo the only applicable rule here is Record 5 leading to Amber 1, which then triggers Record 7 to negate Silver 7. Therefore, the status Silver 7 is contradicted. The answer should be A) contradicted.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "ec24e6b1c3ddf600ac78f96c8d73d8b2cb23adb6571bd6378a34fd11febde49c",
+      "response_tokens": 327,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 324,
+      "structure_class": "PGF-08",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "9b73eeeffc9604d99d6cc182aebe94cca26a91e8109fa684cc30b2500ff1d9f9"
+}

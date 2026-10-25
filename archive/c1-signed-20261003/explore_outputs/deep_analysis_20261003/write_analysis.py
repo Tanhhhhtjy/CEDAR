@@ -1,0 +1,192 @@
+from pathlib import Path
+import json,datetime,hashlib
+O=Path('D:/CEDAR/arr_c1_signed_20260928/explore_outputs/deep_analysis_20261003')
+X=json.loads((O/'diagnostics.json').read_text())
+names={'same_broad_common':'broad 共同响应变化','same_broad_interaction':'broad V/F 交互','same_specific_common':'specific 共同响应变化','same_specific_interaction':'specific V/F 交互'}
+rows=[]
+for k,v in X['primary'].items():
+ rows.append(f"| {names[k]} | {v['equal_family_mean']:+.6f} | {v['family_sd']:.6f} | [{v['descriptive_ci95'][0]:+.6f}, {v['descriptive_ci95'][1]:+.6f}] | {v['exact_signflip_p']:.6f} | {v['holm_four_primary']:.6f} | {v['positive']}/{v['negative']} |")
+table='\n'.join(rows)
+text=f"""# C1 深度分析：测量到什么，假说走到哪里
+
+日期：2026-10-03。对象：c1_signed_20260928。冻结四主端点保持不变；本报告新增的对照拆解、幅度、题族、位置响应和精度诊断均为完成后分析，不冒充事前预测。分析仅使用已校验的本地结果，不新跑模型、不改冻结协议。
+
+## 主问题与结论
+
+C1 检验：在最后一个 prompt token、L53 之后的一处状态中，沿事先训练的 V/F 探针方向正负干预，并扣除八个实际范数匹配的随机方向后，capping 是否改变这一方向对答案 margin 的共同响应，以及其 V/F 差异响应。
+
+四个冻结主端点均未通过 Holm 校正。没有取得所测位点、方向、剂量下的机制阳性证据。已有的固定轨迹 capping 现象仍在；P1 跨条件可解码结果仍在；这两者不能补成“理由信息保持而使用路径已被因果改变”的证明。
+
+更具体地说，程序成功施加了约一个训练投影标准差的定向修改，但终端分数响应与匹配随机方向接近。大得多的局部完整向量替换也未重现或逆转完整 capping 的 broad 差异。该位置没有表现为一个已验证、足以控制最终理由响应的局部开关。因为连位置诊断也很弱，不能把定向阴性直接归因于“模型不使用这条信息”。
+
+## 设计与有效样本
+
+正式 3840 条 = 192 noop + 192 局部完整向量替换 + 384 真方向正负修改 + 3072 随机方向正负修改。另有 52 条工程 smoke，不加入正式推断。3840 次计算服务于同一批 96 prompts、24 bases、12 families；不是 3840 独立题目。family 是冻结分析单位；交叉训练折重叠且旧生成结构可能相关，不能把 12 个 family 自动称为 12 个已认证独立新结构。
+
+在每个 held-out family 之外训练探针；+1 沿更易被探针判为 V 的线性方向移动，−1 反向。它是“标签可预测方向”，不是先验已知的“有效性概念”。单位 RMS 表示、身份 nuisance 和标准化均来自既有 P1 流程。每一方向/位置/剂量在看 C1 输出前冻结。
+
+每条轨迹固定后续可见 token，仅改变一处内部状态；随后照原 token 重放到终端答案读出。这比自由生成更有控制性，但也切断了“局部干预改变后续文字，文字再影响答案”的行为途径。不能推广到自然推理全部路径。
+
+## 四主端点
+
+先对每个条件/arm/方向求 [margin(+1)−margin(−1)]/2，再减去 8 个随机方向均值，记为 G。共同响应为 V/F 平均的 G(P)−G(U)；交互为 [G(P,V)−G(P,F)]−[G(U,V)−G(U,F)]。它们检验的是 capping 对定向敏感度的改变，不是重新检验完整 capping 的全部主效应。
+
+broad = 其他三选项均值−初始答案分数；specific = 目标答案−另外两个非初始/非目标选项均值。均为 logit margin，不能读作正确率或百分点。
+
+| 主端点 | 均值 | family SD | 描述性 95% CI | 原始 p | Holm p | 正/负题族 |
+|---|---:|---:|---|---:|---:|---:|
+{table}
+
+三个端点为 6 正/6 负，去掉一个 family 后均可改变总体符号。specific 共同响应为 9 负/3 正，leave-one-family-out 均值为 −0.02780 至 −0.01626；它不是完全由一个 family 造成，但校正 p=0.33984，没有确认性支持。其值是目标偏好响应的 P−U 改变，不是“准确率下降 2.18%”，也不能称为有效性选择性损失。
+
+raw 与 family-out 敏感性分析未给出相反的机制结论。family-out specific 共同响应的描述性 bootstrap 区间略低于 0，但符号翻转 p≈0.083；不同方法/估计量不能混选，更不能用这个事后窗口替代冻结主结果。
+
+## 干预是否真的施加了
+
+384/384 真方向修改的正负号正确，实际单位 RMS 投影移动约为请求的 0.9936 倍，范围 0.9867–1.0031。没有被 BF16 整体舍入消失。状态欧氏位移约为原状态范数的 0.6876%，它是“在特定训练坐标上约一个标准差”，不能仅因占整个高维向量比例小就断定剂量无意义。
+
+3072 个随机修改的实际范数匹配最大相对误差 0.0631%，小于冻结 0.5% 门槛。noop 输出精确一致；hook 单次施加、次数、位置、清理和 token 哈希都通过。工程门禁通过证明实现符合计划，不证明所选位置是生物学意义或模型机制意义上的有效控制点。
+
+## 分数变化、随机对照与零翻转
+
+| 类型 | 前向数 | 至少一个选项分数改变 | broad 平均绝对变化 | specific 平均绝对变化 | 全排序改变 | 第一名改变 |
+|---|---:|---:|---:|---:|---:|---:|
+| 真方向 | 384 | 294 | 0.087294 | 0.061605 | 4 | 0 |
+| 等范数随机 | 3072 | 2403 | 0.090488 | 0.062185 | 26 | 0 |
+| 局部完整向量替换 | 192 | 150 | 0.090820 | 0.057780 | 1 | 0 |
+
+这里的幅度是事后描述性汇总，不是方向特异性的唯一检验；正负平均可能抵消，因此还分别检查了 signed odd response（正负有限差分）和 even response（正负平均相对 noop）。以相同 prompt 配对、先平均随机方向、再按 family 汇总，真方向减随机方向的绝对 odd 响应为 broad +0.002592，描述性 CI [−0.004969,+0.010199]；specific −0.001343，CI [−0.005495,+0.002591]。未显示清楚的幅度优势，也不能据此宣布严格等效。
+
+原始第一名与第二名差距：最小 5.375，中位数 14.9375，最大 23.125。任一修改的“两倍最大单选项移动/原始领先差距”最大为 0.186；这个保守界限都不足以跨过原始领先差距。因此 0 翻转是当前终端读出远离决策边界下的结果，不是内部完全不动。
+
+本批非零单选项分数差最小 0.0625，中位数 0.125，呈 BF16 量化网格。这限制细微效应分辨；零重复误差是确定性重放的工程结果，不消除量化误差，也不说明每个非零差都具有语义含义。原协议 BF16 不能事后更改制造阳性。
+
+## 局部完整向量替换揭示的限制
+
+此处“完整”只指最后一个 prompt token 的一个层输入向量，不是整段 prompt 状态、整个 KV cache、整条轨迹或整个模型状态。替换位移平均为原状态范数的 18.57%，约是真方向的 27 倍；两者剂量不同，不能直接作方向公平比较。
+
+同一批 noop 仍复现原固定轨迹 full P−U broad 差异 +2.078125，12/12 family 为正。这是旧条件差异的身份/工程复现，不是新独立样本证据。
+
+将 P 的该局部向量换入 U，raw broad 平均只动 +0.017361，描述性 CI [−0.021701,+0.055122]；将 U 的向量换入 P，raw broad 平均 +0.000651，CI [−0.021484,+0.025608]，并未接近 −2.078125 的整体逆转。不能把二者比值当作中介比例：干预对象不同、上下游状态不一致、非线性和交互均存在。
+
+替换不是绝对无效：U 侧 specific 的事后平均为 −0.024089，描述性 CI [−0.041016,−0.003906]，但属于多个事后对照之一，无对应双向整体恢复，也没有预设主要检验支持。不能藏掉该值，也不能将其升级为双向因果救援成功。
+
+本次因而缺少一个能强力影响终端目标读出的已验证位置阳性对照。可能是位置/时间不足、信息分散于其他 token 和缓存、后续过程重新形成状态、方向主要读到相关特征，或实际输出敏感度小。现有结果不能在这些解释之间定案。
+
+## 尺度及其他探索性输出
+
+新干预前后非选项拟合 slope 的中位数：真方向 0.999916，随机 0.999950，局部完整替换 0.999954；单个记录仍有上下浮动。此局部修改没有重现完整 capping 的平均尺度收缩。该拟合是记录内的二级诊断，没有替换主分析已锁定的 S1 尺度。
+
+原分析保存 488 个二级对比，36 个原始 p<0.05；它们重叠、相关，不能把低 p 项当作独立发现。作为事后多重比较审查，对全部 488 项 Holm 后无项通过。在更聚焦的 16 个 same-scale 条件/arm/metric 真减随机对比中，P/F broad 原始 p=0.03760、U/R broad p=0.04932，事后 Holm 分别为 0.60156、0.73975。这些可保留作下一轮冻结预测的来源，不能救活本次主假说。
+
+## 与 S1/P1 及本地论文的连接
+
+S1 在主源上用非选项词表拟合、再预测选项 logits，same-prompt affine 使 RMSE 由 3.4204 降至 0.9328，但校正后的 V−F 差异仍为 broad −1.0043、specific −0.5209，四项 Holm 后仍通过。说明一般尺度是重要描述成分，却未由此证明“全部只是尺度”；也未证明余项必然是理由有效性专用机制。
+
+P1 的跨条件 family AUC 约 0.81–0.85，固定阈值 balanced accuracy 仅约 0.58–0.60。有限可解码性存在，但不能将 AUC 当分类准确率，不能将读得出当作模型用得上。C1 没有提供把后者推进到因果使用的证据。
+
+本地 main.tex 的无条件表述“no continuous V−F contrast resolved a change”“source is exposure rather than assessment”“not a capability loss”及“by an amount set by text produced”强于整个最新证据链。新旧读出、尺度、轨迹来源不同，应明确分开，不能机械替换数字或将某个端点推广成所有实验。应保留评价/现象主线，将表征—策略解耦作为待验证解释，将通路增益重分配作为更远一层猜想。本文只核对 D 盘本地稿件，未核验在线 Overleaf，未直接修改论文。
+
+## Claim Candidates
+
+- Claim: C1 定向修改符合冻结实现且数据完整。
+  - Source evidence: FINAL_VERIFICATION.json、record_hashes.json、diagnostics.json telemetry。
+  - Allowed wording: 所测方向、位置、剂量的工程执行通过。
+  - Forbidden stronger wording: 工程通过就是机制成立。
+  - Uncertainty: 终端 BF16 分辨率、局部操作覆盖范围。
+  - Next check: 后续科学问题先验证读出敏感性。
+  - Decision: keep
+- Claim: 四主端点未支持 capping 改变所测方向的共同或 V/F 特异响应。
+  - Source evidence: SUMMARY.json primary、primary_endpoints.csv。
+  - Allowed wording: 在这组开发轨迹和固定设置中未得到预测的机制证据。
+  - Forbidden stronger wording: 模型不使用理由、所有位置无因果作用、严格等效。
+  - Uncertainty: 12 families、重叠 cross-fit、无最小有意义效应门槛。
+  - Next check: 独立结构/精度规划，或有预期阳性对照的位置诊断。
+  - Decision: keep
+- Claim: 探针可读性尚未转化为可控性。
+  - Source evidence: P1 核验报告与 C1 主检验/随机对照。
+  - Allowed wording: 可跨条件解码未在本次干预中体现为清楚的方向特异控制。
+  - Forbidden stronger wording: 已证明表征与决策结构性解耦；语义代码完整保存。
+  - Uncertainty: 探针可能读到相关特征、因果位点未验证。
+  - Next check: 若追求机制，先作能区分备选解释的局部灵敏度规划。
+  - Decision: weaken
+- Claim: 局部向量 swap 未重现或逆转 broad 整体差异。
+  - Source evidence: diagnostics.json donor_motion；图 4。
+  - Allowed wording: 一个位置的完整向量替换不足以构成成功的双向 broad 救援。
+  - Forbidden stronger wording: 已算出因果中介比例；所有表征操作失效。
+  - Uncertainty: 其他 token/cache/层与后续过程未同时替换。
+  - Next check: 对齐需要改变的因果路径范围，避免盲目增大剂量。
+  - Decision: keep
+- Claim: 论文的评价问题和已限定的现象贡献仍保留。
+  - Source evidence: S1/P1 核验、本地 claim register 与 main.tex、C1 noop 与主分析。
+  - Allowed wording: 理由敏感评估、分数与选项结果的区分仍必要；此轮约束机制解释。
+  - Forbidden stronger wording: C1 证明认识论损害、证明一般增益重分配、论文已过投稿门槛。
+  - Uncertainty: H1 独立新结构未完成，早期其他数据集本轮未重新全量审计。
+  - Next check: 修订 claim–evidence 表，优先独立证据而非事后寻显著。
+  - Decision: revise
+
+## 下一步决策
+
+先消化现有资料，不重复这 3840 次、不换主端点、不筛题族求显著。保留四主端点、全部二级结果、事后分析标签与负结果。
+
+优先为 H1 冻结独立结构和精度目标，把目前最扎实的现象/尺度残差/有限迁移作为待确认对象。若论文必须以强因果机制为中心，需重新设计一个先能证明“这个位置和时间足以影响预期读出”的小规模协议，再检验方向特异性。扩大剂量、换层、换位置、改自然生成均是新科学实验，不能当作本批修复。本次未启动 H1、Jev 或任何新 GPU 任务。
+"""
+(O/'analysis-report.md').write_text(text,encoding='utf-8')
+stats=f"""# C1 statistical appendix
+
+Original estimand: G is the true signed finite-difference response minus mean of eight signed random controls. Four outcomes are condition change in the V/F common mean and V/F interaction for broad/specific margins, with frozen same-prompt S1 scaling.
+
+Unit: 12 equally weighted family means, two bases each, 96 prompts total; 3840 dependent conditions and 52 engineering smoke, one frozen model/configuration. Cross-fit training overlaps; structural independence and symmetric family effects are not established. No parametric Gaussian test is introduced. Exact 4096 sign flips assume independent symmetric family effects. 20,000 percentile family-bootstrap replicates, seed 20260928, give descriptive rather than confirmatory sampling intervals. Holm correction applies to the four frozen tests.
+
+{table}
+
+Complete numeric family effects and standardized descriptive family effects are in diagnostics.json, family_endpoints.csv, primary_endpoints.csv. Standardized effect is mean/family SD, not a behavioral accuracy change. Family LOFO sensitivity uses existing means; no new training.
+
+Post hoc: absolute logit shifts; absolute and signed odd/even responses; local replacement; donor-directed movement; token rank; patch scale; dose telemetry; BF16 spacing. Family aggregation first averages bases, arms, and matched controls according to each displayed scope. Bootstrap intervals for new diagnostics are unadjusted descriptive summaries. No new p-values have been constructed to upgrade a claim. Exploratory Holm16/Holm488 use saved secondary p-values only; these multiplicity families were chosen after completion and are not the frozen primary plan.
+
+Raw/same/family correction variants are correlated sensitivity estimands; do not select a favorable variant or CI method. Family-out specific-common CI slightly below zero does not contradict its sign-flip p=0.083: these are different methods with coarse, non-Gaussian small-family distributions, and no matched decision rule was prespecified for that secondary contrast.
+
+Every nonzero observed option delta is on the BF16 grid; smallest 0.0625. This is quantization, not a stochastic noise SD. Deterministic exact noop/repeat agreement does not establish arbitrarily fine resolution or general model reliability. No equivalence or power guarantee: no preregistered smallest relevant effect, only 12 reused families, limited confidence interval scope. A ratio of local swap to full-cap mean is not an identified mediation proportion.
+
+Primary computation and source files were already fully audited at closure; this analysis rechecks all consumed input SHA256 against the transferred bundle manifest. Existing raw NPZ integrity evidence remains in the completion audit; this local diagnosis does not claim a second direct NPZ read.
+"""
+(O/'stats-appendix.md').write_text(stats,encoding='utf-8')
+catalog="""# Figure catalog
+
+All figures generated using standard Matplotlib from saved numerical artifacts. PDF and PNG pairs. Local PNGs visually inspected; plots have zero references, labelled units, and family-level uncertainty. They are internal diagnostic figures, not a camera-ready packaging claim.
+
+## 01_primary_endpoints
+Purpose: display the four frozen tests without hiding nonsignificant outcomes.
+Source: SUMMARY.json primary, independently verified at closure.
+Caption: 12 family means; 20,000 bootstrap replicates; descriptive 95% intervals; frozen same-prompt scaling; exact sign flips/Holm4. Fixed trajectory.
+Notice: all CIs cross zero; specific-common is a weak negative pattern, not significant support.
+Decision: do not upgrade C1 to a mechanism result.
+Check: common response is not full capping main effect; interaction is not raw V/F difference.
+
+## 02_output_response_controls
+Purpose: inspect whether the learned direction produces special output magnitude.
+Source: details.json metrics; family means of absolute raw changes.
+Caption: gray points are families, diamonds equal-family means, bars descriptive CIs; random vectors average within matched prompts; post hoc.
+Notice: true and random response magnitudes overlap; full local swap is also small.
+Decision: absolute output motion alone cannot validate a semantic direction.
+Caveat: interval overlap is not an equivalence test; signed response and paired absolute diagnostics are reported separately. Replacement has much greater dose and is not a fair direction comparator.
+
+## 03_family_heterogeneity
+Purpose: distinguish mean cancellation from uniform effects.
+Source: frozen primary family_means.
+Caption: cells are family means, fixed symmetric color range; 24 bases in 12 families.
+Notice: signs 6/6,6/6,3/9,6/6; specific-common LOFO stays negative.
+Decision: retain the weaker hypothesis as uncertain; do not select families after seeing signs.
+Caveat: families not independently certified novel structures; this map is not a new subgroup significance search.
+
+## 04_local_swap_context
+Purpose: relate position sensitivity to the existing full-capping difference.
+Source: noop/raw record logits and local replacement.
+Caption: only last prompt token at block54 input replaced; other tokens/cache and future condition persist; descriptive family CI.
+Notice: whole-condition broad gap +2.0781 vs local P-in-U +0.0174 and U-in-P +0.0007.
+Decision: this location/operation does not yield a strong bidirectional broad rescue.
+Caveat: not a mediation fraction; differences in intervention scope preclude causal proportion claims; replacement has small secondary specific response described in report.
+"""
+(O/'figure-catalog.md').write_text(catalog,encoding='utf-8')
+print('Analysis bundle written')
+

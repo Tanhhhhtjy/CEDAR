@@ -1,0 +1,1 @@
+"""Pinned upstream asset loaders."""

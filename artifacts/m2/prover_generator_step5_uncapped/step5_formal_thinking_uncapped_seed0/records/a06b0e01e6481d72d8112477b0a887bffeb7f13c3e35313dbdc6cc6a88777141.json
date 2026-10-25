@@ -1,0 +1,145 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-019-N",
+    "index": 108,
+    "mode": "thinking",
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 108,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 306,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 306
+        }
+      ],
+      "answer_logit_capture_indices": [
+        306
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999999727187919,
+          "B": 4.3634623611874805e-09,
+          "C": 2.215948963821921e-08,
+          "D": 7.582559928471582e-10
+        },
+        "full_vocab_entropy": 4.940260396324447e-07,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 4.363462480228009e-09,
+          "C": 2.2159490242756874e-08,
+          "D": 7.582560135332983e-10
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 42.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 42.0,
+          "B": 22.75,
+          "C": 24.375,
+          "D": 21.0
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000000272812088,
+        "ranks": {
+          "A": 1,
+          "B": 3,
+          "C": 2,
+          "D": 4
+        },
+        "target_logit": 24.375,
+        "target_minus_initial": -17.625,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-019",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F10",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-019-N",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "prompt_sha256": "5e19133e43bd1b81a155320354dae33c75cac560bca63012f2aa59512fc33abb",
+      "prompt_token_ids_sha256": "fdd6fe31a80498dcccb90a45737dce446a1b99445c6ce1490a98ab2c9a0ed3f6",
+      "prompt_tokens": 297,
+      "reasoning_token_count": 298,
+      "record_seed": 108,
+      "response": "<think>\nOkay, let's see. The user is asking whether Case B having status Lilac 5 is supported based on the given records. Let me go through the records step by step.\n\nFirst, looking at the records, Case B has status Teal 8 according to Record 4. Then there are a series of conditional statements starting from Record 6. \n\nRecord 6 says if Case B has Teal 8, then it has Copper 6. Since Record 4 confirms Teal 8, that triggers Record 6, so Case B must have Copper 6. \n\nThen Record 7 states if Case B has Copper 6, then Silver 7. Since we just established Copper 6 from the previous step, now we apply Record 7, leading to Silver 7. \n\nNext, Record 8 says if Case B has Silver 7, then Lilac 5. Applying that, since we have Silver 7 from the prior step, this would mean Case B must have Lilac 5. \n\nSo following the chain: Teal 8 → Copper 6 → Silver 7 → Lilac 5. Each condition is met based on the previous step. Therefore, the conclusion that Case B has Lilac 5 is supported. \n\nI need to check if there's any contradiction. The records don't mention any conflicting statuses for Case B. All the conditions are met in sequence. So the answer should be A) supported.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "14f857e1ee3047e65b67969e2c61bda8f3b250f66c6c96bef7ace6f88efb0d89",
+      "response_tokens": 309,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 306,
+      "structure_class": "PGF-03",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "9b73eeeffc9604d99d6cc182aebe94cca26a91e8109fa684cc30b2500ff1d9f9"
+}

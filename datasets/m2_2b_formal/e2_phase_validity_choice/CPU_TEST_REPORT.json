@@ -1,0 +1,36 @@
+{
+  "environment": {
+    "gpu_used": false,
+    "python": "3.12.12",
+    "torch": "2.6.0+cpu",
+    "transformers": "4.56.1"
+  },
+  "full_repository_suite": {
+    "command": "PYTHONPATH=src python -m pytest -q",
+    "failed": 24,
+    "note": "The failures are pre-existing branch-wide cache, Windows raw-line-ending hash, historical Gate-state, and absent-artifact tests outside E2. They are preserved and were not modified or relabeled as E2 passes.",
+    "passed": 297,
+    "warnings": 2
+  },
+  "new_source_lint": {
+    "command": "python -m ruff check <E2 source/data/scripts/tests>",
+    "status": "passed"
+  },
+  "relevant_suite": {
+    "command": "PYTHONPATH=src python -m pytest -q tests/test_capping.py tests/test_checkpoint.py tests/test_prover_generator_evidence_validation_v1_1.py tests/test_e2_phase_validity_choice.py",
+    "failed": 0,
+    "passed": 28,
+    "warnings": 3,
+    "warnings_note": "Numerical overflow/line-search warnings arise only in the deliberately separated synthetic Bayesian mixed-logistic fixture; all assertions and convergence-routing checks pass."
+  },
+  "runner_prepare": {
+    "assays": 144,
+    "cells": 576,
+    "command": "python scripts/run_e2_phase_validity_choice.py --scope formal --assay all --stage prepare",
+    "existing_gpu_records": 0,
+    "gpu_used": false,
+    "status": "passed"
+  },
+  "schema": "cedar.e2_phase_validity_choice.cpu_test_report.v1",
+  "status": "passed_with_disclosed_unrelated_full_suite_failures"
+}

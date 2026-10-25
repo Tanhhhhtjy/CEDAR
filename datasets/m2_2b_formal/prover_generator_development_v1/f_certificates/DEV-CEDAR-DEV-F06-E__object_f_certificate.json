@@ -1,0 +1,143 @@
+{
+  "error_class": "scope_transfer",
+  "entailed_premises": [
+    {
+      "predicate": "miv90fallaccess",
+      "arguments": [
+        "clan15",
+        "remote"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "miv90fallaccess",
+        "arguments": [
+          "clan15",
+          "remote"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "miv90fallaccess",
+      "arguments": [
+        "clan15",
+        "local"
+      ],
+      "negated": false
+    },
+    "operator": "scope_transfer"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "117471a37cf21f6f17845bb2a92cadfc1358e92433d8640b5a7e6d3780c1acbd",
+      "projected_edit_sha256": "6fd84bb830756d3f49d878f077f1341b7644106fd16f6118d65317e0ff5aa60d"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "8856ad844d1337a49c56cb703f042ae821bc41476c733857238182954c07160e",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "miv90outcome",
+      "arguments": [
+        "clan15"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "scope_transfer",
+    "world_semantic_sha256": "127e84420b027c829208230b9f5a8be56b76effe9cad32e0463fa33d92854153",
+    "entailed_premise_keys": [
+      "miv90fallaccess(clan15,remote)"
+    ],
+    "unsupported_claim_key": "miv90fallaccess(clan15,local)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-miv90outcome(clan15)",
+    "proof": {
+      "record_ids": [
+        "data_miv90_source",
+        "policy_miv90_terminal",
+        "schema_miv90up_0",
+        "schema_miv90up_1"
+      ],
+      "depth": 3
+    },
+    "refutes_induced_label": "true"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "policy_miv90_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "miv90bridge",
+            "arguments": [
+              "clan15"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "miv90outcome",
+          "arguments": [
+            "clan15"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "policy_miv90_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "miv90bridge",
+            "arguments": [
+              "clan15"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "miv90outcome",
+          "arguments": [
+            "clan15"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-3ee3069887f3d9de",
+      "rank": 12
+    },
+    "updated_world_sha256": "8856ad844d1337a49c56cb703f042ae821bc41476c733857238182954c07160e",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

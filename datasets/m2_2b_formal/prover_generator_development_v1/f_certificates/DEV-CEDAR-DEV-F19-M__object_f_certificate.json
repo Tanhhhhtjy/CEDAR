@@ -1,0 +1,120 @@
+{
+  "error_class": "converse_error",
+  "entailed_premises": [
+    {
+      "predicate": "vek707fallverified",
+      "arguments": [
+        "clan5"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "vek707fallverified",
+        "arguments": [
+          "clan5"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "vek707fallsource",
+      "arguments": [
+        "clan5"
+      ],
+      "negated": false
+    },
+    "operator": "converse_error"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "23a730650dc8661945551c02495a734e73f7ad0e6eea73250e980c0cc952f04c",
+      "projected_edit_sha256": "cd9d3e75c5360e07c5a9431a2b7b43301130657f83935368bae017279512664c"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "01280b2dc12d83f1f37c9f57c33006a3a9854a5c918962c6ebdd5bd310a28c0f",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "vek707outcome",
+      "arguments": [
+        "clan5"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "converse_error",
+    "world_semantic_sha256": "489a2f215589864340945542706aa80741804602130e63d5c346bf503343f78a",
+    "entailed_premise_keys": [
+      "vek707fallverified(clan5)"
+    ],
+    "unsupported_claim_key": "vek707fallsource(clan5)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-vek707outcome(clan5)",
+    "proof": {
+      "record_ids": [
+        "data_vek707_source",
+        "policy_vek707_terminal",
+        "schema_vek707up_0",
+        "schema_vek707up_1",
+        "schema_vek707up_2",
+        "schema_vek707up_3"
+      ],
+      "depth": 5
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "policy_vek707_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "vek707bridge",
+            "arguments": [
+              "clan5"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "vek707outcome",
+          "arguments": [
+            "clan5"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-59824c6d68cb2ba5",
+      "rank": 4
+    },
+    "updated_world_sha256": "01280b2dc12d83f1f37c9f57c33006a3a9854a5c918962c6ebdd5bd310a28c0f",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

@@ -1,0 +1,173 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-048-R",
+    "index": 186,
+    "seed": 0
+  },
+  "payload": {
+    "index": 186,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 784,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 784
+        }
+      ],
+      "answer_logit_capture_indices": [
+        784
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 2.129784931682895e-12,
+          "B": 0.9999998362536271,
+          "C": 1.6373768280163158e-07,
+          "D": 6.560199659126332e-12
+        },
+        "full_vocab_entropy": 2.5590115910745226e-06,
+        "full_vocab_probabilities": {
+          "A": 2.1297852804275097e-12,
+          "B": 1.0,
+          "C": 1.6373770961308765e-07,
+          "D": 6.5602007333354084e-12
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 45.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 18.625,
+          "B": 45.5,
+          "C": 29.875,
+          "D": 19.75
+        },
+        "option_argmax": "B",
+        "option_mass": 1.0000001637463998,
+        "ranks": {
+          "A": 6,
+          "B": 1,
+          "C": 2,
+          "D": 3
+        },
+        "target_logit": 29.875,
+        "target_minus_initial": -15.625,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-048",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "development_validation",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F24",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-DEV-048-R",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 93,
+      "paired_condition_order": [
+        "uncapped",
+        "p25"
+      ],
+      "phase": "prespecified_internal_validation",
+      "position_transition": "B->C",
+      "prompt_sha256": "8d752a1d37d93890e77d1d9a0237b6120cee9eff6358e1d2e064a8432a7a4e6f",
+      "prompt_token_ids_sha256": "bccbe90dfb38790aba37b8532c82878a934462441e77062f741ab492c965bf54",
+      "prompt_tokens": 462,
+      "reasoning_token_count": 776,
+      "record_seed": 93,
+      "response": "<think>\nOkay, let's try to figure out if Device E has status Pearl 12. The options are whether it's supported, undetermined, contradicted, or both. \n\nFirst, I need to look at the records provided. Let me go through them one by one.\n\nRecord 12 says Device E has status Cobalt 2. Then there's Record 13: If an item has status Cobalt 2, then it has status Jade 3. So Device E must also have Jade 3. But that's about statuses, not directly about Pearl 12.\n\nNow, looking for anything related to Pearl 12. Record 14 mentions it: If Device E has link Umber 13 to Device C, then Device E does not have status Pearl 12. So the presence of that link would mean Pearl 12 is false. But does Device E actually have that link?\n\nLooking at links. Records 1-3 show a chain of Amber 1 links from G to A to B to C. Record 15 says if an item has link Amber 1 to another, then it also has link Umber 13 to that other item. So, for example, Device A has Amber 1 to B, so by Record 15, A also has Umber 13 to B. But how does this affect Device E?\n\nWait, Device E isn't directly mentioned in the link records. But maybe through some other connections? Let's see. The only mention of E is in Record 10 (status Indigo 10), Record 12 (Cobalt 2), and Record 14. \n\nRecord 14's condition is whether E has Umber 13 to C. To check that, maybe there's a way E could have that link. Let's think about how links propagate. \n\nRecord 16 says if an item has Umber 13 to another, and that other has Amber 1 to a third, then the first item has Umber 13 to the third. For example, if E has Umber 13 to B, and B has Amber 1 to C (which it does, per Record 2 and 3?), then E would have Umber 13 to C. But does E have Umber 13 to B?\n\nI don't see any direct link from E to B. Unless there's some other rule that creates the link. Let's check the rules again. \n\nRecord 15 only creates Umber 13 links when there's an Amber 1 link. Since E isn't part of the Amber 1 chain (the chain is G-A-B-C), unless E has an Amber link to someone. But there's no record indicating that. \n\nSo, unless there's a way for E to have a Umber link to C through some other means, the condition in Record 14's antecedent (if part) isn't met. If we can't confirm that E has Umber 13 to C, then the implication in Record 14 doesn't apply. Therefore, Record 14's conclusion (that E does not have Pearl 12) is only triggered if the antecedent is true. Since we don't have evidence that E has the Umber link to C, the implication doesn't fire. \n\nTherefore, there's no rule that directly states whether E has Pearl 12 or not. The only possible connection is through Record 14, but since we can't confirm the antecedent, we can't conclude anything about Pearl 12. \n\nSo the answer should be B) undetermined because there's not enough information to support or contradict it.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "8cdc5830af333b7113036694519d96d7f2e21d95827fdb43b20e4e59e8af401b",
+      "response_tokens": 787,
+      "scope": "evidence-validation",
+      "seed": 0,
+      "selected_answer_logit_index": 784,
+      "structure_class": "PGF-06",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "204d0d8e611dfb9159b48c1df831693ad8186376b5b1329b375c70ce401384a6"
+}

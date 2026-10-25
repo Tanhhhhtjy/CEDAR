@@ -1,0 +1,173 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-036-N",
+    "index": 136,
+    "seed": 0
+  },
+  "payload": {
+    "index": 136,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 375,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 375
+        }
+      ],
+      "answer_logit_capture_indices": [
+        375
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999999768119624,
+          "B": 9.736200508759138e-10,
+          "C": 2.215948972892178e-08,
+          "D": 5.4927883883260276e-11
+        },
+        "full_vocab_entropy": 4.140064220337081e-07,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 9.736200734522527e-10,
+          "C": 2.2159490242756874e-08,
+          "D": 5.4927885156930145e-11
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 45.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 45.5,
+          "B": 24.75,
+          "C": 27.875,
+          "D": 21.875
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000000231880382,
+        "ranks": {
+          "A": 1,
+          "B": 3,
+          "C": 2,
+          "D": 4
+        },
+        "target_logit": 27.875,
+        "target_minus_initial": -17.625,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-036",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "development_validation",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F18",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-DEV-036-N",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 68,
+      "paired_condition_order": [
+        "uncapped",
+        "p25"
+      ],
+      "phase": "prespecified_internal_validation",
+      "position_transition": "A->C",
+      "prompt_sha256": "1844be6a249bc73ea13a5db118ee9948e8164f03136a6b8d9729b73e3e29b185",
+      "prompt_token_ids_sha256": "f488140e46a96345a9fbb21d52f0e04d1d08506512f7c90580995f93d4b67bb2",
+      "prompt_tokens": 424,
+      "reasoning_token_count": 367,
+      "record_seed": 68,
+      "response": "<think>\nOkay, let's try to figure out if Job E having status Pearl 12 is supported, contradicted, undetermined, or both. Let me start by going through the records and rules step by step.\n\nFirst, looking at the records provided:\n\nRecord 10 says Job E has status Cobalt 2. Then there's Record 11 which states that if an item has Cobalt 2, it also has Jade 3. So, from that, Job E must have Jade 3. But I don't see any immediate connection to Pearl 12 here.\n\nNext, Records 9 and 10 both mention Job E. Record 9 says Job E has Umber 13. Then there's Record 13: If Job E has Umber 13, then it has Azure 14. So, applying that, Job E gets Azure 14. Then Record 14 says if Azure 14, then Saffron 15. So now Job E has Saffron 15. Then Record 15 says if Saffron 15, then Amber 1. So Job E must have Amber 1 now.\n\nNow, looking at Record 12: If Job E has Amber 1, then it is NOT the case that Job E has Pearl 12. Since we just deduced that Job E has Amber 1 (through Umber 13 → Azure 14 → Saffron 15 → Amber 1), then according to Record 12, Job E cannot have Pearl 12. \n\nSo the conclusion is that the statement \"Job E has status Pearl 12\" is contradicted by the rules. Therefore, the answer should be A) contradicted.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "986a75be1ab2662e0f8776f94c37db5094e396ab3341be1da0815223a5a475a2",
+      "response_tokens": 378,
+      "scope": "evidence-validation",
+      "seed": 0,
+      "selected_answer_logit_index": 375,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "204d0d8e611dfb9159b48c1df831693ad8186376b5b1329b375c70ce401384a6"
+}

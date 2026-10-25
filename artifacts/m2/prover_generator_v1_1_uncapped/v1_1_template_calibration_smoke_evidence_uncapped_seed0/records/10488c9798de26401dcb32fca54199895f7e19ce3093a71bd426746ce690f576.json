@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-009-N",
+    "index": 4,
+    "phase": "template-calibration",
+    "scope": "smoke",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 4,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 503,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 503
+        }
+      ],
+      "answer_logit_capture_indices": [
+        503
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999999940893989,
+          "B": 5.602796415895399e-09,
+          "C": 9.056077362220904e-11,
+          "D": 2.1724398540472178e-10
+        },
+        "full_vocab_entropy": 1.1380097220126117e-07,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 5.602796449011294e-09,
+          "C": 9.056077415747765e-11,
+          "D": 2.1724398668876432e-10
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 45.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 45.25,
+          "B": 26.25,
+          "C": 22.125,
+          "D": 23.0
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000000059106011,
+        "ranks": {
+          "A": 1,
+          "B": 2,
+          "C": 4,
+          "D": 3
+        },
+        "target_logit": 23.0,
+        "target_minus_initial": -22.25,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-009",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F05",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-009-N",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "A->D",
+      "prompt_sha256": "0e8c642b2df80847be36470503508e898c27d47095842ff365dbdca17f6171e2",
+      "prompt_token_ids_sha256": "2c45e45b3423ef8dd45b4e1f168c1af46dec846027d355d316a486b66860527d",
+      "prompt_tokens": 300,
+      "reasoning_token_count": 495,
+      "record_seed": 4,
+      "response": "<think>\nOkay, let's try to figure this out step by step. The question is whether File B has status Copper 6, and the options are whether it's supported, contradicted, etc. Let me start by looking at the records provided.\n\nFirst, the records about File B. Record 2 says File B has Silver 7. Record 3 says File B has Jade 3. Then there are several conditional statements. Let's list them out:\n\nRecord 4: If B has Jade 3 AND Ivory 4, then B has Cobalt 2. But right now, we only know that B has Jade 3 (from Record 3), but there's no mention of Ivory 4. So Record 4's condition isn't met yet. So maybe that's not directly applicable yet.\n\nRecord 5: If B has Amber 1, then it's not the case that B has Copper 6. So if Amber 1 is true, then Copper 6 is false. But does B have Amber 1? Let's check other records.\n\nRecord 6: If B has Silver 7, then B has Teal 8. Well, Record 2 says B has Silver 7, so according to Record 6, B must have Teal 8. So we can infer Teal 8 is true for B.\n\nThen Record 7: If B has Teal 8, then B has Amber 1. Since we just established Teal 8 is true (from Record 6 and 2), then by Record 7, B must have Amber 1. So now we know B has Amber 1.\n\nNow, going back to Record 5. Since B has Amber 1 (from Record 7 and 6 and 2), then according to Record 5, it is not the case that B has Copper 6. Therefore, Copper 6 is contradicted. \n\nSo the answer should be A) contradicted. Let me check again to make sure I didn't miss anything. \n\nStarting from Record 2 (Silver 7) leads to Teal 8 (Record 6), which leads to Amber 1 (Record 7). Then Record 5 says if Amber 1, then not Copper 6. Therefore, Copper 6 cannot be true. So the statement that B has Copper 6 is contradicted. Therefore, the answer is A.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "1c81e38e9f7b4ecd42bf07eeaa5bd0242d2fc46dfcf735abd6764b9f132987fd",
+      "response_tokens": 506,
+      "scope": "template-calibration-smoke",
+      "seed": 0,
+      "selected_answer_logit_index": 503,
+      "social_template": null,
+      "structure_class": "PGF-02",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "984f8bdca8a3f4d82e56bf285c9c23af2c116aa50510936c9301c2a4afd7c070"
+}

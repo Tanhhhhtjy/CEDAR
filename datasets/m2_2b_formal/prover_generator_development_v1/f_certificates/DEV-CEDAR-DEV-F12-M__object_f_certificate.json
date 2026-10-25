@@ -1,0 +1,112 @@
+{
+  "error_class": "support_path_generalization",
+  "entailed_premises": [
+    {
+      "predicate": "nav504fallsupported",
+      "arguments": [
+        "cvek62"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "nav504fallsupported",
+        "arguments": [
+          "cvek62"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "nav504fallsupported",
+      "arguments": [
+        "cpax24"
+      ],
+      "negated": false
+    },
+    "operator": "support_path_generalization"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "4e68dde0c8870314951684f1807d9936e9a163a2a252514c9ff3d363b15b4724",
+      "projected_edit_sha256": "4794f170969072f04cf7d3f84e30dcfcea098c94b4aa834d8dafb1b44b1f4290"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "bc1a47e5d0471e71e389c7274905562eb2b623092826c6dbea488211111206ea",
+      "updated_label": "unknown"
+    }
+  ],
+  "induced_target": {
+    "label": "unknown",
+    "query": {
+      "predicate": "nav504outcome",
+      "arguments": [
+        "cvek62"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "support_path_generalization",
+    "world_semantic_sha256": "b8b356fd69323784e669ed2aa264fd9b11cb9515dbbc358717409ffe72ab7d80",
+    "entailed_premise_keys": [
+      "nav504fallsupported(cvek62)"
+    ],
+    "unsupported_claim_key": "nav504fallsupported(cpax24)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "nav504outcome(cvek62)",
+    "proof": {
+      "record_ids": [
+        "data_nav504_root",
+        "schema_nav504proof_0",
+        "schema_nav504proof_1",
+        "schema_nav504proof_2",
+        "schema_nav504proof_3",
+        "schema_nav504proof_4",
+        "schema_nav504proof_5"
+      ],
+      "depth": 6
+    },
+    "refutes_induced_label": "unknown"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "delete",
+      "before": {
+        "record_id": "data_nav504_root",
+        "kind": "fact",
+        "literal": {
+          "predicate": "nav504token",
+          "arguments": [
+            "cvek62"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": null,
+      "edit_count": 1,
+      "candidate_id": "cand-1b090761dd15bb92",
+      "rank": 27
+    },
+    "updated_world_sha256": "bc1a47e5d0471e71e389c7274905562eb2b623092826c6dbea488211111206ea",
+    "repaired_label": "unknown"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-037-R",
+    "index": 73,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 73,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 379,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 379
+        }
+      ],
+      "answer_logit_capture_indices": [
+        379
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 9.05607740632461e-11,
+          "B": 1.917171558400066e-10,
+          "C": 7.582560127443073e-10,
+          "D": 0.9999999989594661
+        },
+        "full_vocab_entropy": 2.6882473136424778e-08,
+        "full_vocab_probabilities": {
+          "A": 9.056077415747765e-11,
+          "B": 1.917171560394948e-10,
+          "C": 7.582560135332983e-10,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 41.25,
+        "initial_rank": 1,
+        "logits": {
+          "A": 18.125,
+          "B": 18.875,
+          "C": 20.25,
+          "D": 41.25
+        },
+        "option_argmax": "D",
+        "option_mass": 1.0000000010405339,
+        "ranks": {
+          "A": 4,
+          "B": 3,
+          "C": 2,
+          "D": 1
+        },
+        "target_logit": 18.125,
+        "target_minus_initial": -23.125,
+        "target_rank": 4,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-037",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F19",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "D",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-037-R",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "D->A",
+      "prompt_sha256": "74d1004dfea12ed167f7a9a8cd5e58be73667ba2f96a8f2676030b1177fbb3a7",
+      "prompt_token_ids_sha256": "ab4d37c6b87ed42d4985efa3579edb3c8324daa86cb0ad626c92532ffde93731",
+      "prompt_tokens": 290,
+      "reasoning_token_count": 371,
+      "record_seed": 73,
+      "response": "<think>\nOkay, let's tackle this problem step by step. The question is whether Shipment B having status Lilac 5 is supported, contradicted, or undetermined based on the given records and rules. Let me start by reviewing all the provided information carefully.\n\nFirst, the records:\n\n- Record 3 states that Shipment B has status Copper 6.\n- Record 6 says if Shipment B has Copper 6, then it must have Silver 7.\n- Record 7 then says if Shipment B has Silver 7, it must have Amber 1.\n- Record 5 is a conditional: if Shipment B has Amber 1, then it does not have Lilac 5.\n\nSo starting with Record 3: Shipment B is Copper 6. According to Record 6, this implies Shipment B must also have Silver 7. Then, Record 7 takes that Silver 7 and implies Shipment B has Amber 1. Now, with Amber 1 in place, Record 5 kicks in, stating that if Amber 1 is present, Lilac 5 cannot be. Therefore, Shipment B having Lilac 5 would be contradicted by these implications.\n\nWait, but do we know for sure that all these conditionals are triggered? Let me check again. Shipment B is definitely Copper 6 (Record 3). So Record 6 applies, leading to Silver 7. Then Record 7 applies to Silver 7, leading to Amber 1. Now, with Amber 1, Record 5 says that Lilac 5 cannot be present. Since the chain leads us to Amber 1 being true, then Lilac 5 must be false. Therefore, the statement that Shipment B has Lilac 5 is contradicted. The answer should be D.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "ceb05881be4808e7b540b84ffa745927b499622216ede6583e6ce60056abe5be",
+      "response_tokens": 382,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 379,
+      "social_template": null,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

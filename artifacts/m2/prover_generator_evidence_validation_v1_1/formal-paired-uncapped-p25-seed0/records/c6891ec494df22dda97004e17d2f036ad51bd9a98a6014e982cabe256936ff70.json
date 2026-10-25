@@ -1,0 +1,173 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-028-N",
+    "index": 104,
+    "seed": 0
+  },
+  "payload": {
+    "index": 104,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "D",
+        "answer_choice_index": 694,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "D",
+          "response_index": 694
+        }
+      ],
+      "answer_logit_capture_indices": [
+        694
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 1.1628232889568573e-10,
+          "B": 1.9171714115223366e-10,
+          "C": 7.734421213525693e-08,
+          "D": 0.9999999223477885
+        },
+        "full_vocab_entropy": 1.2738603345496813e-06,
+        "full_vocab_probabilities": {
+          "A": 1.1628233792526643e-10,
+          "B": 1.917171560394948e-10,
+          "C": 7.734421814120651e-08,
+          "D": 1.0
+        },
+        "full_vocab_top_token_id": 35,
+        "full_vocab_top_token_text": "D",
+        "initial_logit": 46.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 23.125,
+          "B": 23.625,
+          "C": 29.625,
+          "D": 46.0
+        },
+        "option_argmax": "D",
+        "option_mass": 1.0000000776522175,
+        "ranks": {
+          "A": 4,
+          "B": 3,
+          "C": 2,
+          "D": 1
+        },
+        "target_logit": 29.625,
+        "target_minus_initial": -16.375,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-028",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "D",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "development_validation",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F14",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "D",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-DEV-028-N",
+      "initial_answer": "D",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 52,
+      "paired_condition_order": [
+        "uncapped",
+        "p25"
+      ],
+      "phase": "prespecified_internal_validation",
+      "position_transition": "D->C",
+      "prompt_sha256": "6485930a6c7c24ce9bcccfcb043251cc37d200dd9c088c3a1020febcbbe555e3",
+      "prompt_token_ids_sha256": "6d1c5940b5e6e117f2b79afdfbb2a41ed5405f0b84aff4c9419fe946e4bdc5ac",
+      "prompt_tokens": 412,
+      "reasoning_token_count": 686,
+      "record_seed": 52,
+      "response": "<think>\nOkay, let's try to figure this out. The question is whether Job D having status Pearl 12 is supported based on the given records and rules. Let me start by going through all the records and rules step by step.\n\nFirst, looking at the records related to Job D. Records 1, 6, 9 show different statuses for Job D. Record 1 says Ivory 4, Record 6 is Ochre 9, and Record 9 is Cobalt 2. So Job D has multiple statuses: Ivory 4, Ochre 9, Cobalt 2. Wait, but in a closed scheduling registry, does having multiple statuses mean they all are active at the same time? The problem statement says to treat every listed rule as exact and use only the records below. So I guess we have to consider all the statuses listed for Job D as true.\n\nNow, looking at the rules. Rule 10 says if Job D has status Ivory 4 AND Mint 16, then it has Jade 3. But from the records, Job D has Ivory 4 (Record 1), but there's no mention of Mint 16. So the antecedent of Rule 10 isn't satisfied. Therefore, we can't derive Jade 3 from that rule. \n\nSince Jade 3 isn't established, the subsequent rules (11-14) that depend on Jade 3 leading to Umber 13, then Azure 14, Saffron 15, and finally Pearl 12 can't be triggered. Because each of those rules depends on the previous status being true. Without Jade 3, the chain stops right at the beginning.\n\nAdditionally, checking if there are any other rules that could lead to Pearl 12. The given rules only have Rule 14 leading to Pearl 12, which requires Saffron 15. But Saffron 15 comes from Azure 14, which comes from Umber 13, which comes from Jade 3. Since none of these intermediate steps are satisfied based on the existing records and the failure to trigger Rule 10, there's no way to get to Pearl 12.\n\nBut wait, are there any other statuses for Job D that might interact with other rules? The records show Ochre 9 and Cobalt 2, but none of the rules mention those. The rules only apply to specific status combinations. So those other statuses don't affect the chain leading to Pearl 12.\n\nTherefore, since the necessary conditions for the rules leading to Pearl 12 aren't met, we can't conclude that Job D has Pearl 12. However, the question is whether it's supported. Since the rules don't allow us to derive Pearl 12, but there's also no direct contradiction. The answer might be undetermined because we can't confirm it's true, but there's no explicit contradiction either. The options are D) undetermined. \n\nBut wait, is there any contradiction? Let me check again. The existing records don't say Job D doesn't have Pearl 12. The rules just don't allow us to derive it. So it's not contradicted, but it's also not supported. Therefore, the correct answer is D) undetermined.\n</think>\n\n{\"answer\": \"D\"}",
+      "response_token_ids_sha256": "497599eabe4154ff9bce46c00cbd6d985e417f0253dc8df775a757b074403c05",
+      "response_tokens": 697,
+      "scope": "evidence-validation",
+      "seed": 0,
+      "selected_answer_logit_index": 694,
+      "structure_class": "PGF-04",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "204d0d8e611dfb9159b48c1df831693ad8186376b5b1329b375c70ce401384a6"
+}

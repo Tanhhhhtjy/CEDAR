@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-046-R",
+    "index": 93,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 93,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "B",
+        "answer_choice_index": 785,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "B",
+          "response_index": 785
+        }
+      ],
+      "answer_logit_capture_indices": [
+        785
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 8.878265051260404e-13,
+          "B": 0.9999999585966369,
+          "C": 4.139937643377041e-08,
+          "D": 3.098819033041379e-12
+        },
+        "full_vocab_entropy": 7.040206355668488e-07,
+        "full_vocab_probabilities": {
+          "A": 8.878265418850451e-13,
+          "B": 1.0,
+          "C": 4.139937814784389e-08,
+          "D": 3.098819161342914e-12
+        },
+        "full_vocab_top_token_id": 33,
+        "full_vocab_top_token_text": "B",
+        "initial_logit": 48.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 20.25,
+          "B": 48.0,
+          "C": 31.0,
+          "D": 21.5
+        },
+        "option_argmax": "B",
+        "option_mass": 1.0000000414033647,
+        "ranks": {
+          "A": 5,
+          "B": 1,
+          "C": 2,
+          "D": 3
+        },
+        "target_logit": 31.0,
+        "target_minus_initial": -17.0,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-046",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "B",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F23",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "B",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-046-R",
+      "initial_answer": "B",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "B->C",
+      "prompt_sha256": "2bb46cf9649b45088732eebd278471f3ff5b0b8df04a27cae5c770287d434547",
+      "prompt_token_ids_sha256": "a20b2220bbcb45594369e01cf4bc185650185d3e3bed05dfb5f1763ceea5fa5a",
+      "prompt_tokens": 421,
+      "reasoning_token_count": 777,
+      "record_seed": 93,
+      "response": "<think>\nOkay, let's try to figure this out step by step. The question is whether Sample H has status Indigo 10, and the options are whether it's supported, undetermined, contradicted, or both. \n\nFirst, I need to look at the records provided. Let's start by listing out the relevant information.\n\nFrom the records:\n- Record 1: Sample H has a link Amber 1 to Sample E.\n- Record 11: Sample H has status Jade 3.\n- Record 12: If Sample H has link Coral 11 to Sample D, then it is not the case that Sample H has status Indigo 10.\n- Record 13: If an item has link Amber 1 to another item, then that same item has link Coral 11 to that other item.\n- Record 14: If an item has link Coral 11 to another item and that other item has link Amber 1 to a third item, then that same item has link Coral 11 to that third item.\n\nSo, the main question is about Sample H's status being Indigo 10. Let's see what we can derive.\n\nFirst, Sample H has a link Amber 1 to Sample E (Record 1). According to Record 13, if there's an Amber 1 link from H to E, then H must also have a Coral 11 link to E. So, H has Coral 11 to E. \n\nNow, looking at Record 14: If an item (let's say H) has Coral 11 to another item (E), and that other item (E) has Amber 1 to a third item, then H has Coral 11 to that third item. But do we know if E has an Amber 1 link to someone? Let's check the records. \n\nLooking at the records, Sample E is mentioned in Record 1 (linked from H) and Record 5 (status Ivory 4). Are there any links from E? Let me check all records again. Records 1-4 and others: \n\nRecord 1: H → E (Amber 1)\nRecord 2: A → B (Amber 1)\nRecord 3: B → C (Amber 1)\nRecord 4: C → D (Amber 1)\nNo other links from E. So E doesn't have an Amber 1 link to another sample. Therefore, Record 14's condition isn't met because E doesn't have an Amber 1 link to a third item. So, we can't use Record 14 here to derive any further Coral links from H.\n\nNow, Record 12 says that if H has a Coral 11 link to D, then H does not have status Indigo 10. But from our earlier reasoning, H has a Coral 11 link to E, not to D. So, the antecedent of Record 12 (H has Coral 11 to D) isn't satisfied. Therefore, Record 12 doesn't apply here. \n\nSo, the only status we know for H is Jade 3 (Record 11). The question is about Indigo 10. Since there's no record stating that H has Indigo 10, and no rule that directly leads us to conclude that H has or doesn't have that status except Record 12, which doesn't apply here (because H doesn't have Coral 11 to D), there's no information to support or contradict the status Indigo 10 for H. \n\nTherefore, the answer should be undetermined (B) because there's no evidence either way based on the given records and rules.\n</think>\n\n{\"answer\": \"B\"}",
+      "response_token_ids_sha256": "c9814bb18f2749b40c2eb6671f21da1d1498b5455a510190df7a8ecd992c2984",
+      "response_tokens": 788,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 785,
+      "social_template": null,
+      "structure_class": "PGF-06",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

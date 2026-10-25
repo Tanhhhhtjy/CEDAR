@@ -1,0 +1,124 @@
+{
+  "error_class": "unsupported_bridge",
+  "entailed_premises": [
+    {
+      "predicate": "tor96fallobserved",
+      "arguments": [
+        "cnav2"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "tor96fallobserved",
+        "arguments": [
+          "cnav2"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "tor96fallbridge",
+      "arguments": [
+        "cnav2"
+      ],
+      "negated": false
+    },
+    "operator": "unsupported_bridge"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "a6e0c11f95cc08a8654a38b3a33bbc988b71cd7420546e1c58986f30bcf57d5c",
+      "projected_edit_sha256": "f116474d3f3fe95eedcb94e4a312060f660d00300daf49f5b386e3e0a964e855"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "cc04bcf7d02c8db4b495bb77c8e3082de0173fe47aaecc6cc673da34ba18deda",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "tor96outcome",
+      "arguments": [
+        "cnav2"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "unsupported_bridge",
+    "world_semantic_sha256": "c74914d79e035bd2b3843b8feb3fef1e65ce60f2e89456a111f277452d6ff925",
+    "entailed_premise_keys": [
+      "tor96fallobserved(cnav2)"
+    ],
+    "unsupported_claim_key": "tor96fallbridge(cnav2)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "tor96outcome(cnav2)",
+    "proof": {
+      "record_ids": [
+        "data_tor96_gate",
+        "data_tor96_support_0",
+        "schema_tor96_gate_0",
+        "schema_tor96path0_0",
+        "schema_tor96path0_1",
+        "schema_tor96path0_2"
+      ],
+      "depth": 4
+    },
+    "refutes_induced_label": "false"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_tor96_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "tor96gate",
+          "arguments": [
+            "cnav2"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_tor96_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "tor96gate",
+          "arguments": [
+            "cnav2"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-a80ccb53d427bbc1",
+      "rank": 34
+    },
+    "updated_world_sha256": "cc04bcf7d02c8db4b495bb77c8e3082de0173fe47aaecc6cc673da34ba18deda",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

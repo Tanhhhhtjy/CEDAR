@@ -1,0 +1,7 @@
+{
+  "goal": "f03_status(a)",
+  "input_sha256": "b5b059f7cfa2436c3e5eb6e00f1b8e863f60b647ac322cb2b8c8cc38aed71bf6",
+  "proved": true,
+  "search_failed": false,
+  "trace": "Prover9 (32) version Dec-2007, Dec 2007.\n\nINPUT\nset(auto).\n    % set(auto) -> set(auto_inference).\n    % set(auto) -> set(auto_setup).\n    % set(auto_setup) -> set(predicate_elim).\n    % set(auto_setup) -> assign(eq_defs, unfold).\n    % set(auto) -> set(auto_limits).\n    % set(auto_limits) -> assign(max_weight, 100).\n    % set(auto_limits) -> assign(sos_limit, 20000).\n    % set(auto) -> set(auto_denials).\n    % set(auto) -> set(auto_process).\nassign(max_seconds,5).\n\nformulas(assumptions).\nf03_token(a).\n(all x (f03_missing_2(x) -> f03_noise_2(x))).\nf03_noise_3(d3).\nf03_reviewed(a).\nf03_token(a) -> f03_proof_s1(a).\nf03_proof_s1(a) -> f03_status(a).\nend_of_list.\n\nformulas(goals).\nf03_status(a).\nend_of_list.\n\nPROOF\n% Proof timing omitted.\n% Length of proof is 10.\n% Level of proof is 4.\n% Maximum clause weight is 0.\n% Given clauses 0.\n\n2 f03_token(a) -> f03_proof_s1(a) # label(non_clause).  [assumption].\n3 f03_proof_s1(a) -> f03_status(a) # label(non_clause).  [assumption].\n4 f03_status(a) # label(non_clause) # label(goal).  [goal].\n5 -f03_token(a) | f03_proof_s1(a).  [clausify(2)].\n6 f03_token(a).  [assumption].\n7 f03_proof_s1(a).  [resolve(5,a,6,a)].\n8 -f03_proof_s1(a) | f03_status(a).  [clausify(3)].\n9 f03_status(a).  [resolve(7,a,8,a)].\n10 -f03_status(a).  [deny(4)].\n11 $F.  [resolve(9,a,10,a)].\n\nTHEOREM PROVED\n"
+}

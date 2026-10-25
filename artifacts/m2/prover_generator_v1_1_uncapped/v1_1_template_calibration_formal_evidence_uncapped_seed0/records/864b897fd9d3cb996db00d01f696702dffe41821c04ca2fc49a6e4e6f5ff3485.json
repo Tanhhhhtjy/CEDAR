@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-038-R",
+    "index": 77,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 77,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 427,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 427
+        }
+      ],
+      "answer_logit_capture_indices": [
+        427
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999998359967255,
+          "B": 1.1628231885458224e-10,
+          "C": 1.49309443080285e-10,
+          "D": 1.637376827595671e-07
+        },
+        "full_vocab_entropy": 2.5647482289059553e-06,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 1.1628233792526643e-10,
+          "C": 1.493094675675266e-10,
+          "D": 1.6373770961308765e-07
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 46.5,
+        "initial_rank": 1,
+        "logits": {
+          "A": 46.5,
+          "B": 23.625,
+          "C": 23.875,
+          "D": 30.875
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000001640033014,
+        "ranks": {
+          "A": 1,
+          "B": 4,
+          "C": 3,
+          "D": 2
+        },
+        "target_logit": 30.875,
+        "target_minus_initial": -15.625,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-038",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F19",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-038-R",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "A->D",
+      "prompt_sha256": "2b89bf42d0e4cf5acdbf7bab822023baa54f4edf6bb56b01e7b9a6a8029b2519",
+      "prompt_token_ids_sha256": "2a74e79dcb527f21e6d2485e564e575970f1868725ff9d9ae34e777e73f88fd4",
+      "prompt_tokens": 401,
+      "reasoning_token_count": 419,
+      "record_seed": 77,
+      "response": "<think>\nOkay, let's tackle this problem again. The question is whether Sample B having status Ochre 9 is supported, contradicted, etc. based on the given records and rules.\n\nFirst, I need to look at all the records related to Sample B. From the records:\n\nRecord 4: Sample B has status Silver 7.\nRecord 6: Sample B has status Indigo 10.\nRecord 7: Sample B has status Jade 3.\n\nSo, according to these, B has Silver 7, Indigo 10, and Jade 3. Now, the rules. Let's check the ones involving B.\n\nRecord 10: If B has Indigo 10, then B has Coral 11. Since B does have Indigo 10 (Record 6), this triggers the implication. So B must have Coral 11. Then Record 11 says if Coral 11, then Pearl 12. So B gets Pearl 12. Then Record 12: Pearl 12 implies Umber 13. So B has Umber 13. Then Record 13: Umber 13 implies Amber 1. So B must have Amber 1.\n\nNow, looking at Record 9: If B has Amber 1, then it is not the case that B has Ochre 9. Since we just deduced B has Amber 1 (through the chain from Indigo 10), the antecedent of Record 9 is true. Therefore, the consequent must hold: B does not have Ochre 9. Therefore, the statement that B has Ochre 9 is contradicted.\n\nAdditionally, is there any direct mention of Ochre 9 in the records? Record 9 is the only one, and it's in the consequent of a negation. No other records mention Ochre 9. So there's no support for it. Therefore, the answer should be A) contradicted.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "5c6989d1459a81c6d0ae6a23e5ea7559a1f00ed0b527f99706d89223aeed7042",
+      "response_tokens": 430,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 427,
+      "social_template": null,
+      "structure_class": "PGF-05",
+      "synchronized_other_error": false,
+      "target_answer": "D",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

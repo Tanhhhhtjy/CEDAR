@@ -1,0 +1,145 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-028-N",
+    "index": 162,
+    "mode": "thinking",
+    "scope": "formal",
+    "seed": 0
+  },
+  "payload": {
+    "index": 162,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 523,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 523
+        }
+      ],
+      "answer_logit_capture_indices": [
+        523
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999990688020219,
+          "B": 8.315279488929292e-07,
+          "C": 9.931185463135211e-08,
+          "D": 3.5817446184682897e-10
+        },
+        "full_vocab_entropy": 1.3254790246719494e-05,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 8.315287232107949e-07,
+          "C": 9.931194711043645e-08,
+          "D": 3.581747953784742e-10
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 46.75,
+        "initial_rank": 1,
+        "logits": {
+          "A": 46.75,
+          "B": 32.75,
+          "C": 30.625,
+          "D": 25.0
+        },
+        "option_argmax": "A",
+        "option_mass": 1.0000009311988451,
+        "ranks": {
+          "A": 1,
+          "B": 2,
+          "C": 3,
+          "D": 4
+        },
+        "target_logit": 32.75,
+        "target_minus_initial": -14.0,
+        "target_rank": 2,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "N",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-028",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F14",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-028-N",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "prompt_sha256": "9437ac9822f95447fe4065f5c6874c61f26a50ee32f6c80e664a8539cb6267e4",
+      "prompt_token_ids_sha256": "f1fd49642559c0a662a7408c61565903957d030a3025cbd389f0a7d6ac26d390",
+      "prompt_tokens": 420,
+      "reasoning_token_count": 515,
+      "record_seed": 162,
+      "response": "<think>\nOkay, let's try to figure out if Job D having status Pearl 12 is supported based on the given records and rules. \n\nFirst, I need to look at all the records provided. Let me list out the relevant ones. \n\nRecord 1 says Job D has status Ivory 4. Record 6 states Job D has Ochre 9. Record 9 mentions Cobalt 2. Then there are the conditional rules from 10 to 14. \n\nThe question is about whether Pearl 12 is supported for Job D. The rules start with if Job D has Ivory 4 and Mint 16, then Jade 3. But according to Record 1, Job D does have Ivory 4, but there's no mention of Mint 16. So the first condition (Record 10) requires both Ivory 4 and Mint 16. Since Mint 16 isn't listed for Job D in any record, that condition isn't met. Therefore, the conclusion Jade 3 doesn't get triggered.\n\nIf Jade 3 wasn't activated, then the subsequent rules (11 to 14) that depend on Jade 3 leading to Umber 13, then Azure 14, Saffron 15, and finally Pearl 12 can't be triggered either. So even though there are rules that could lead to Pearl 12, the initial condition isn't satisfied because Mint 16 is missing. \n\nAdditionally, looking at the existing records for Job D, there's no mention of any status that would lead into the chain starting with Jade 3. The existing statuses are Ivory 4, Ochre 9, Cobalt 2. None of these seem to relate to the conditions in the rules provided. \n\nTherefore, since the necessary conditions for the rules aren't met, we can't confirm that Pearl 12 is supported. However, there's also no direct contradiction here. The problem states that an unlisted statement isn't automatically negated. So if there's no support, but also no contradiction, the answer would be undetermined. Wait, but the options are A) undetermined, B) supported, C) contradicted, D) both. \n\nSince there's no direct contradiction (no record says Job D doesn't have Pearl 12), but also no valid path to reach Pearl 12 because the initial condition isn't met, the correct answer would be undetermined. So the answer is A.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "aa44e32cbae619f01cf2ed2b7059411de713a9b9c63c3944281e1b135e6341dc",
+      "response_tokens": 526,
+      "scope": "formal",
+      "seed": 0,
+      "selected_answer_logit_index": 523,
+      "structure_class": "PGF-04",
+      "synchronized_other_error": false,
+      "target_answer": "B",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "medium"
+    }
+  },
+  "run_fingerprint": "9b73eeeffc9604d99d6cc182aebe94cca26a91e8109fa684cc30b2500ff1d9f9"
+}

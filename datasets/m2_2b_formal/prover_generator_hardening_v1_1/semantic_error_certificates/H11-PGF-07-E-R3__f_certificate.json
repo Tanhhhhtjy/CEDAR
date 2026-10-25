@@ -1,0 +1,122 @@
+{
+  "error_class": "conjunction_weakening",
+  "entailed_premises": [
+    {
+      "predicate": "vek549fallleft",
+      "arguments": [
+        "cnav66"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "vek549fallleft",
+        "arguments": [
+          "cnav66"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "vek549falljoined",
+      "arguments": [
+        "cnav66"
+      ],
+      "negated": false
+    },
+    "operator": "conjunction_weakening"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "7cd48cb737c3f47b092baf0ae5cd7462aa97f90848bf75700418bd38ccce07ee",
+      "projected_edit_sha256": "a2a9cabb53fb0698dd2f9639fc6cfef5b0408a6681a83b10a486397092f9e685"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "49fa1528902bca2c538acf461933ab929407d3ca32ead49c1d701040fd40dbd5",
+      "updated_label": "false"
+    }
+  ],
+  "induced_target": {
+    "label": "false",
+    "query": {
+      "predicate": "vek549outcome",
+      "arguments": [
+        "cnav66"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "conjunction_weakening",
+    "world_semantic_sha256": "41790e8bc7794c7a65a4119da95dbd746254b1af00abe8c7e303a964631a22cf",
+    "entailed_premise_keys": [
+      "vek549fallleft(cnav66)"
+    ],
+    "unsupported_claim_key": "vek549falljoined(cnav66)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "vek549outcome(cnav66)",
+    "proof": {
+      "record_ids": [
+        "data_vek549_gate",
+        "data_vek549_support_0",
+        "schema_vek549_gate_0",
+        "schema_vek549path0_0"
+      ],
+      "depth": 2
+    },
+    "refutes_induced_label": "false"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "data_vek549_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "vek549gate",
+          "arguments": [
+            "cnav66"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "data_vek549_gate",
+        "kind": "fact",
+        "literal": {
+          "predicate": "vek549gate",
+          "arguments": [
+            "cnav66"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-03270038b660679c",
+      "rank": 6
+    },
+    "updated_world_sha256": "49fa1528902bca2c538acf461933ab929407d3ca32ead49c1d701040fd40dbd5",
+    "repaired_label": "false"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

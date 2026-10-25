@@ -1,0 +1,152 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-005-F",
+    "index": 11,
+    "phase": "template-calibration",
+    "scope": "formal",
+    "seed": 0,
+    "track": "evidence"
+  },
+  "payload": {
+    "index": 11,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "A",
+        "answer_choice_index": 494,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "A",
+          "response_index": 494
+        }
+      ],
+      "answer_logit_capture_indices": [
+        494
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 0.9999985013225982,
+          "B": 1.9555652210910266e-08,
+          "C": 6.475942726719866e-07,
+          "D": 8.315274770174883e-07
+        },
+        "full_vocab_entropy": 2.1229310732451268e-05,
+        "full_vocab_probabilities": {
+          "A": 1.0,
+          "B": 1.9555681518568235e-08,
+          "C": 6.475952432083432e-07,
+          "D": 8.315287232107949e-07
+        },
+        "full_vocab_top_token_id": 32,
+        "full_vocab_top_token_text": "A",
+        "initial_logit": 48.0,
+        "initial_rank": 1,
+        "logits": {
+          "A": 48.0,
+          "B": 30.25,
+          "C": 33.75,
+          "D": 34.0
+        },
+        "option_argmax": "A",
+        "option_mass": 1.000001498679648,
+        "ranks": {
+          "A": 1,
+          "B": 4,
+          "C": 3,
+          "D": 2
+        },
+        "target_logit": 33.75,
+        "target_minus_initial": -14.25,
+        "target_rank": 3,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "F",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-005",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "chosen_option": "A",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "template_calibration",
+      "error_class": "scope_transfer",
+      "error_position": "middle",
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F03",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "A",
+      "gold_correct": true,
+      "id": "CEDAR-DEV-005-F",
+      "initial_answer": "A",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "phase": "template-calibration",
+      "position_transition": "A->C",
+      "prompt_sha256": "7250baca193e22fa67109fe30fe3965b409f070070d290977dc082c2c881cd03",
+      "prompt_token_ids_sha256": "ddfddc91dace22460b78c71705d849aa9829c676bf892cf1061e29ebfa93ea57",
+      "prompt_tokens": 702,
+      "reasoning_token_count": 486,
+      "record_seed": 11,
+      "response": "<think>\nOkay, let's tackle this problem step by step. First, I need to understand the original question and the update proposal. The original question was whether Shipment C has status Indigo 10, with the answer being \"A) supported\". Now, there's an update proposal that might change a record, and I need to determine if that affects the answer.\n\nThe update proposal says to replace the record \"Shipment C has status Ivory 4\" with \"it is not the case that Shipment C has status Ivory 4\". This is part of EDIT105. The candidate justification claims that because the route from Source K to Target S was verified, and the proposed change is about Source K to Target R, the verified route covers the change. But I need to check if this justification is valid.\n\nLooking at the observed records, the verified route is from K to S, but the change is about K to R. The candidate justification says the verified route covers K to R, but unless there's a stated rule connecting these routes, this seems like an assumption. The problem states to use only the listed records and rules. Since there's no explicit rule linking the routes from K to S and K to R, the justification isn't valid. Therefore, the proposed change shouldn't be applied.\n\nIf the change isn't applied, the original records remain. Originally, Shipment C had status Ivory 4 (Record 1) and later Umber 13 (Record 5) and Azure 14 (Record 6). Rule 8 says if C has Ivory 4 and Umber 13, then Amber 1. Rule 9 says if Ivory 4 and Azure 14, then Cobalt 2. Then, Amber 1 leads to Coral 11 (Rule 13), which leads to Indigo 10 (Rule 14). Cobalt 2 leads to Pearl 12 (Rule 15), which also leads to Indigo 10 (Rule 16). So both paths (Amber and Cobalt) result in Indigo 10. Therefore, the original answer A (supported) still holds because the necessary conditions are met. The proposed change would have removed Ivory 4, but since the justification is invalid, the original records are unchanged, so Indigo 10 is still supported.\n</think>\n\n{\"answer\": \"A\"}",
+      "response_token_ids_sha256": "785280a57f884eb620473a16cd872aabb47a32090dd82d4336a3f8cb198aa223",
+      "response_tokens": 497,
+      "scope": "template-calibration-formal",
+      "seed": 0,
+      "selected_answer_logit_index": 494,
+      "social_template": null,
+      "structure_class": "PGF-07",
+      "synchronized_other_error": false,
+      "target_answer": "C",
+      "thinking_enabled": true,
+      "track": "evidence",
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "afce8db223fb8559a75522c4ef557db6211117abbca035911a53492230ad77e9"
+}

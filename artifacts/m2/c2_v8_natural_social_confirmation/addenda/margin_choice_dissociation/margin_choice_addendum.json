@@ -1,0 +1,706 @@
+{
+  "analysis_commit": "c8b64cc57c37e73cc24ab789b5e1f7cafb4f6e69",
+  "analysis_type": "zero_gpu_posthoc_addendum",
+  "bootstrap": {
+    "interval": "percentile_95",
+    "metric_seed_policy": "base seed plus fixed integer offsets; exact seed stored in each interval object",
+    "multiplicity": "unadjusted_posthoc_descriptive",
+    "samples": 10000,
+    "seed": 20260724,
+    "stratification": [
+      "domain",
+      "difficulty"
+    ],
+    "unit": "base"
+  },
+  "direct": {
+    "cluster_sensitivity": {
+      "exact_mcq_id": {
+        "margin_social_did": {
+          "ci_high": -0.7085462716232745,
+          "ci_low": -0.8651711674849973,
+          "cluster_field": "exact_mcq_id",
+          "clusters": 542,
+          "estimate": -0.78625,
+          "samples": 10000,
+          "seed": 20260924
+        },
+        "target_social_did": {
+          "ci_high": 0.04723292103178094,
+          "ci_low": 0.003372681281618887,
+          "cluster_field": "exact_mcq_id",
+          "clusters": 542,
+          "estimate": 0.025,
+          "samples": 10000,
+          "seed": 20260934
+        }
+      },
+      "normalized_stem_id": {
+        "margin_social_did": {
+          "ci_high": -0.6767726826561966,
+          "ci_low": -0.8991835888909567,
+          "cluster_field": "normalized_stem_id",
+          "clusters": 272,
+          "estimate": -0.78625,
+          "samples": 10000,
+          "seed": 20260925
+        },
+        "target_social_did": {
+          "ci_high": 0.04941872437837631,
+          "ci_low": 0.0,
+          "cluster_field": "normalized_stem_id",
+          "clusters": 272,
+          "estimate": 0.025,
+          "samples": 10000,
+          "seed": 20260935
+        }
+      }
+    },
+    "leave_one_group_out": {
+      "domain": {
+        "analogies": {
+          "margin_social_did": -0.8019047619047619,
+          "target_social_did": 0.024761904761904763
+        },
+        "basic_math": {
+          "margin_social_did": -0.7366666666666667,
+          "target_social_did": 0.01904761904761905
+        },
+        "causal_reasoning": {
+          "margin_social_did": -0.8166666666666667,
+          "target_social_did": 0.02095238095238095
+        },
+        "common_sense": {
+          "margin_social_did": -0.8111904761904762,
+          "target_social_did": 0.02666666666666667
+        },
+        "logical_reasoning": {
+          "margin_social_did": -0.775,
+          "target_social_did": 0.02095238095238095
+        },
+        "reading_comprehension": {
+          "margin_social_did": -0.8385714285714285,
+          "target_social_did": 0.02857142857142857
+        },
+        "scientific_facts": {
+          "margin_social_did": -0.7583333333333333,
+          "target_social_did": 0.02666666666666667
+        },
+        "word_problems": {
+          "margin_social_did": -0.7516666666666667,
+          "target_social_did": 0.03238095238095238
+        }
+      },
+      "template_id": {
+        "0": {
+          "margin_social_did": -0.7433333333333333,
+          "target_social_did": 0.02
+        },
+        "1": {
+          "margin_social_did": -0.7472222222222222,
+          "target_social_did": 0.04
+        },
+        "2": {
+          "margin_social_did": -0.8313888888888888,
+          "target_social_did": 0.022222222222222223
+        },
+        "3": {
+          "margin_social_did": -0.8230555555555555,
+          "target_social_did": 0.017777777777777778
+        }
+      }
+    },
+    "margin_cells": {
+      "AO": {
+        "p25": {
+          "ci_high": -6.023333333333333,
+          "ci_low": -6.527083333333334,
+          "estimate": -6.281041666666667,
+          "samples": 10000,
+          "sd_across_bases": 3.6621669793860296,
+          "seed": 20260735,
+          "strata": [
+            "domain",
+            "difficulty"
+          ],
+          "unit": "base"
+        },
+        "uncapped": {
+          "ci_high": -7.252072916666667,
+          "ci_low": -7.83625,
+          "estimate": -7.548958333333333,
+          "samples": 10000,
+          "sd_across_bases": 4.012081862913786,
+          "seed": 20260734,
+          "strata": [
+            "domain",
+            "difficulty"
+          ],
+          "unit": "base"
+        }
+      },
+      "S": {
+        "p25": {
+          "ci_high": -0.5545833333333333,
+          "ci_low": -1.101046875,
+          "estimate": -0.82125,
+          "samples": 10000,
+          "sd_across_bases": 3.8300480481213546,
+          "seed": 20260737,
+          "strata": [
+            "domain",
+            "difficulty"
+          ],
+          "unit": "base"
+        },
+        "uncapped": {
+          "ci_high": -0.9775,
+          "ci_low": -1.6214687499999998,
+          "estimate": -1.3029166666666667,
+          "samples": 10000,
+          "sd_across_bases": 4.427079347112677,
+          "seed": 20260736,
+          "strata": [
+            "domain",
+            "difficulty"
+          ],
+          "unit": "base"
+        }
+      }
+    },
+    "metrics": {
+      "answer_step_correction_AO_minus_S": {
+        "ci_high": 4.5448984375000006,
+        "ci_low": 3.9019739583333335,
+        "estimate": 4.220729166666667,
+        "samples": 10000,
+        "sd_across_bases": 4.429167267467402,
+        "seed": 20260841,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "cap_margin_AO": {
+        "ci_high": 1.3308333333333333,
+        "ci_low": 1.2041666666666666,
+        "estimate": 1.2679166666666666,
+        "samples": 10000,
+        "sd_across_bases": 0.8220103373519163,
+        "seed": 20260824,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "cap_margin_S": {
+        "ci_high": 0.5514583333333334,
+        "ci_low": 0.4110416666666667,
+        "estimate": 0.4816666666666667,
+        "samples": 10000,
+        "sd_across_bases": 0.916840298221539,
+        "seed": 20260825,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "cap_target_AO": {
+        "ci_high": 0.02833333333333333,
+        "ci_low": 0.006666666666666667,
+        "estimate": 0.016666666666666666,
+        "samples": 10000,
+        "sd_across_bases": 0.14055300590169612,
+        "seed": 20260829,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "cap_target_S": {
+        "ci_high": 0.06166666666666667,
+        "ci_low": 0.023333333333333334,
+        "estimate": 0.041666666666666664,
+        "samples": 10000,
+        "sd_across_bases": 0.2450114417052798,
+        "seed": 20260830,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "entropy_cap_AO": {
+        "ci_high": 0.03826872349455957,
+        "ci_low": 0.026498486967852748,
+        "estimate": 0.032258960342941144,
+        "samples": 10000,
+        "sd_across_bases": 0.07742671022789221,
+        "seed": 20260834,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "entropy_cap_S": {
+        "ci_high": 0.05197829160441354,
+        "ci_low": 0.03624364048934361,
+        "estimate": 0.04387274056406265,
+        "samples": 10000,
+        "sd_across_bases": 0.10056313363315883,
+        "seed": 20260835,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "entropy_social_did": {
+        "ci_high": 0.021502548652992157,
+        "ci_low": 0.0016262344192016372,
+        "estimate": 0.011613780221121507,
+        "samples": 10000,
+        "sd_across_bases": 0.12631976813512158,
+        "seed": 20260836,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "margin_social_did": {
+        "ci_high": -0.714375,
+        "ci_low": -0.8585416666666666,
+        "estimate": -0.78625,
+        "samples": 10000,
+        "sd_across_bases": 0.9469927029633207,
+        "seed": 20260826,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "option_mass_cap_AO": {
+        "ci_high": -6.075539058249305e-07,
+        "ci_low": -2.4450547453778078e-06,
+        "estimate": -1.3520974553628735e-06,
+        "samples": 10000,
+        "sd_across_bases": 1.2014947541228262e-05,
+        "seed": 20260837,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "option_mass_cap_S": {
+        "ci_high": -7.590628497800952e-08,
+        "ci_low": -6.123897592485578e-07,
+        "estimate": -2.9743660037810185e-07,
+        "samples": 10000,
+        "sd_across_bases": 3.387099112362029e-06,
+        "seed": 20260838,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "option_mass_social_did": {
+        "ci_high": 1.885298976231482e-06,
+        "ci_low": 4.30683355940098e-07,
+        "estimate": 1.0546608549847716e-06,
+        "samples": 10000,
+        "sd_across_bases": 9.532220538384295e-06,
+        "seed": 20260839,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "prompt_token_difference_AO_minus_S": {
+        "ci_high": 2.5866666666666664,
+        "ci_low": 2.411625,
+        "estimate": 2.5,
+        "samples": 10000,
+        "sd_across_bases": 1.1189668499791465,
+        "seed": 20260840,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "social_margin_p25": {
+        "ci_high": 5.707916666666667,
+        "ci_low": 5.2160416666666665,
+        "estimate": 5.459791666666667,
+        "samples": 10000,
+        "sd_across_bases": 3.1805657508935132,
+        "seed": 20260828,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "social_margin_uncapped": {
+        "ci_high": 6.5223072916666665,
+        "ci_low": 5.965192708333333,
+        "estimate": 6.246041666666667,
+        "samples": 10000,
+        "sd_across_bases": 3.5202298082799075,
+        "seed": 20260827,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "social_target_p25": {
+        "ci_high": 0.3566666666666667,
+        "ci_low": 0.2866666666666667,
+        "estimate": 0.32166666666666666,
+        "samples": 10000,
+        "sd_across_bases": 0.46750560571453376,
+        "seed": 20260833,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "social_target_uncapped": {
+        "ci_high": 0.33166666666666667,
+        "ci_low": 0.26166666666666666,
+        "estimate": 0.2966666666666667,
+        "samples": 10000,
+        "sd_across_bases": 0.4571694383718042,
+        "seed": 20260832,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "target_social_did": {
+        "ci_high": 0.04666666666666667,
+        "ci_low": 0.0033333333333333335,
+        "estimate": 0.025,
+        "samples": 10000,
+        "sd_across_bases": 0.27294535217779237,
+        "seed": 20260831,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      }
+    },
+    "n_bases": 600,
+    "official_primary_margin_result": {
+      "ci_high": -0.7110416666666667,
+      "ci_low": -0.86,
+      "estimate": -0.78625,
+      "samples": 10000,
+      "seed": 20260723,
+      "strata": [
+        "domain",
+        "difficulty"
+      ],
+      "unit": "base"
+    },
+    "official_primary_recomputed_point_matches": true,
+    "target_cells": {
+      "AO": {
+        "p25": {
+          "ci_high": 0.07666666666666666,
+          "ci_low": 0.041666666666666664,
+          "estimate": 0.058333333333333334,
+          "samples": 10000,
+          "sd_across_bases": 0.23456824022252182,
+          "seed": 20260745,
+          "strata": [
+            "domain",
+            "difficulty"
+          ],
+          "unit": "base"
+        },
+        "uncapped": {
+          "ci_high": 0.058333333333333334,
+          "ci_low": 0.02666666666666667,
+          "estimate": 0.041666666666666664,
+          "samples": 10000,
+          "sd_across_bases": 0.1999930438411888,
+          "seed": 20260744,
+          "strata": [
+            "domain",
+            "difficulty"
+          ],
+          "unit": "base"
+        }
+      },
+      "S": {
+        "p25": {
+          "ci_high": 0.4166666666666667,
+          "ci_low": 0.3433333333333333,
+          "estimate": 0.38,
+          "samples": 10000,
+          "sd_across_bases": 0.48579143899792304,
+          "seed": 20260747,
+          "strata": [
+            "domain",
+            "difficulty"
+          ],
+          "unit": "base"
+        },
+        "uncapped": {
+          "ci_high": 0.37333333333333335,
+          "ci_low": 0.30333333333333334,
+          "estimate": 0.3383333333333333,
+          "samples": 10000,
+          "sd_across_bases": 0.47353734620686816,
+          "seed": 20260746,
+          "strata": [
+            "domain",
+            "difficulty"
+          ],
+          "unit": "base"
+        }
+      }
+    },
+    "target_letter_sensitivity": {
+      "A": {
+        "margin_social_did": -0.7045194508009154,
+        "n": 437,
+        "target_social_did": 0.032036613272311214
+      },
+      "B": {
+        "margin_social_did": -1.0053680981595092,
+        "n": 163,
+        "target_social_did": 0.006134969325153374
+      }
+    },
+    "transitions": {
+      "AO": {
+        "initial->initial": 557,
+        "initial->other_wrong": 1,
+        "initial->target": 11,
+        "other_wrong->other_wrong": 6,
+        "target->initial": 1,
+        "target->target": 24
+      },
+      "S": {
+        "initial->initial": 361,
+        "initial->target": 31,
+        "other_wrong->initial": 1,
+        "other_wrong->other_wrong": 4,
+        "target->initial": 6,
+        "target->target": 197
+      }
+    }
+  },
+  "direction_counts": {
+    "margin_negative": 477,
+    "margin_positive": 99,
+    "margin_zero": 24,
+    "target_negative": 15,
+    "target_positive": 30,
+    "target_zero": 555
+  },
+  "forced_stop": true,
+  "free": {
+    "final_target_floor": true,
+    "metrics": {
+      "cap_actual_margin_AO": {
+        "ci_high": 1.296875,
+        "ci_low": 0.9380208333333333,
+        "estimate": 1.1161458333333334,
+        "samples": 10000,
+        "sd_across_bases": 1.5049125412748516,
+        "seed": 20261027,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "cap_actual_margin_S": {
+        "ci_high": 1.235950520833333,
+        "ci_low": 0.7453125,
+        "estimate": 0.9890625,
+        "samples": 10000,
+        "sd_across_bases": 2.0606831178993525,
+        "seed": 20261028,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "cap_scaffold_margin_AO": {
+        "ci_high": 0.9177083333333333,
+        "ci_low": 0.5942708333333333,
+        "estimate": 0.7536458333333333,
+        "samples": 10000,
+        "sd_across_bases": 1.3648301117259172,
+        "seed": 20261030,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "cap_scaffold_margin_S": {
+        "ci_high": 0.9203255208333331,
+        "ci_low": 0.4421875,
+        "estimate": 0.6734375,
+        "samples": 10000,
+        "sd_across_bases": 1.9350219086285263,
+        "seed": 20261031,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "cap_strict_target_AO": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "estimate": 0.0,
+        "samples": 10000,
+        "sd_across_bases": 0.0,
+        "seed": 20261024,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "cap_strict_target_S": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "estimate": 0.0,
+        "samples": 10000,
+        "sd_across_bases": 0.0,
+        "seed": 20261025,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "cap_thinking_tokens_AO": {
+        "ci_high": -35.162395833333335,
+        "ci_low": -57.89208333333333,
+        "estimate": -46.28333333333333,
+        "samples": 10000,
+        "sd_across_bases": 98.44877888605936,
+        "seed": 20261033,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "cap_thinking_tokens_S": {
+        "ci_high": -20.774895833333332,
+        "ci_low": -52.327083333333334,
+        "estimate": -36.145833333333336,
+        "samples": 10000,
+        "sd_across_bases": 130.9067491385144,
+        "seed": 20261034,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "social_actual_margin_did": {
+        "ci_high": 0.1619921874999998,
+        "ci_low": -0.40677083333333336,
+        "estimate": -0.12708333333333333,
+        "samples": 10000,
+        "sd_across_bases": 2.3825706980280383,
+        "seed": 20261029,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "social_scaffold_margin_did": {
+        "ci_high": 0.20364583333333333,
+        "ci_low": -0.35260416666666666,
+        "estimate": -0.08020833333333334,
+        "samples": 10000,
+        "sd_across_bases": 2.2534431948833875,
+        "seed": 20261032,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "social_strict_target_did": {
+        "ci_high": 0.0,
+        "ci_low": 0.0,
+        "estimate": 0.0,
+        "samples": 10000,
+        "sd_across_bases": 0.0,
+        "seed": 20261026,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      },
+      "social_thinking_tokens_did": {
+        "ci_high": 26.77104166666666,
+        "ci_low": -6.346562499999999,
+        "estimate": 10.1375,
+        "samples": 10000,
+        "sd_across_bases": 138.2469511720537,
+        "seed": 20261035,
+        "strata": [
+          "domain",
+          "difficulty"
+        ],
+        "unit": "base"
+      }
+    },
+    "n_bases": 240,
+    "strict_transitions": {
+      "AO": {
+        "initial->initial": 239,
+        "initial->other_wrong": 1
+      },
+      "S": {
+        "initial->initial": 240
+      }
+    }
+  },
+  "input_hashes": {
+    "C2_V8_ANALYSIS.json": "5495395cc1a070a7ea7dccc48f29ea97482cc1cdcac3210301332a56a151d679",
+    "CROSS_CONDITION_AUDIT.json": "8ccfa199ac2ac48bdb8b8ab05aceb04752386706b22249f0438fba06ed774d04",
+    "DIRECT_CROSS_CONDITION_AUDIT.json": "eef34c8a821d0ee06a21304572feae8cf048cdc5f2a24ed337f24a78162e5604",
+    "FREE_CROSS_CONDITION_AUDIT.json": "048419fafc49f8362ca0ce69d2df4bec2590c1561d06989f4993c99db2d7a023"
+  },
+  "interpretation": {
+    "allowed": "p25 compressed the S-versus-AO margin contrast while discrete target selections moved in the opposite normative direction near the forced-choice boundary",
+    "forbidden": "No result establishes a general increase or decrease in internal genuine sycophancy",
+    "label": "margin_choice_dissociation"
+  },
+  "protocol": "docs\\C2_V8_ZERO_GPU_POSTHOC_ADDENDUM_01_MARGIN_CHOICE.md",
+  "protocol_canonical_text_sha256": "697fa7e86ffea45e99dbc256a5e89589005191bef6375a9f5a33baa0e1c7dc5d",
+  "script_canonical_text_sha256": "2cf2d867df3be1830664989599f58ab025c97d2a0005d68a4da1bdfd536a1754",
+  "source_results_commit": "8ea7025f2a726997d78ad8919455a8756e3c192e",
+  "status": "complete"
+}

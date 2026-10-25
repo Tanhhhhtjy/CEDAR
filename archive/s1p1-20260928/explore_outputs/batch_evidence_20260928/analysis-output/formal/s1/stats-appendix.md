@@ -1,0 +1,1 @@
+Primary unit: structural family. V/F remain paired within base. Four selectivity contrasts use exact family sign flips with Holm correction in the formal set; symmetry is an assumption, not inferred from a normality pretest. Other intervals are descriptive. Seed 20260927; 20,000 bootstrap draws. Smoke has one family and cannot support inference.

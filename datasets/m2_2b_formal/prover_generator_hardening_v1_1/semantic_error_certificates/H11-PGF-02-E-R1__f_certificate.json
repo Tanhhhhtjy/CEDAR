@@ -1,0 +1,139 @@
+{
+  "error_class": "unsupported_bridge",
+  "entailed_premises": [
+    {
+      "predicate": "kel864fallobserved",
+      "arguments": [
+        "clan11"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "kel864fallobserved",
+        "arguments": [
+          "clan11"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "kel864fallbridge",
+      "arguments": [
+        "clan11"
+      ],
+      "negated": false
+    },
+    "operator": "unsupported_bridge"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "146075896d589fc70b46303b60a1465687ba44bc9efc607d8410c8bb43b62862",
+      "projected_edit_sha256": "21c73b38092ecb6c94bf0e8d2c5f7c5511f9e2615ae5e9e36067cc0c4f321053"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "7c294e727ea4e311eba17b7cd3857ae3c968b2c63f0d1cd91280e2735c3d8e72",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "kel864outcome",
+      "arguments": [
+        "clan11"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "unsupported_bridge",
+    "world_semantic_sha256": "9d860fd2a94514c33b7b9c92a95797547bb5542e5adfa85da2f6c4fd469f339c",
+    "entailed_premise_keys": [
+      "kel864fallobserved(clan11)"
+    ],
+    "unsupported_claim_key": "kel864fallbridge(clan11)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "opposite_proof",
+    "proved_literal": "-kel864outcome(clan11)",
+    "proof": {
+      "record_ids": [
+        "data_kel864_source",
+        "policy_kel864_terminal",
+        "schema_kel864up_0"
+      ],
+      "depth": 2
+    },
+    "refutes_induced_label": "true"
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "replace",
+      "before": {
+        "record_id": "policy_kel864_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "kel864bridge",
+            "arguments": [
+              "clan11"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "kel864outcome",
+          "arguments": [
+            "clan11"
+          ],
+          "negated": true
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "after": {
+        "record_id": "policy_kel864_terminal",
+        "kind": "rule",
+        "body": [
+          {
+            "predicate": "kel864bridge",
+            "arguments": [
+              "clan11"
+            ],
+            "negated": false
+          }
+        ],
+        "head": {
+          "predicate": "kel864outcome",
+          "arguments": [
+            "clan11"
+          ],
+          "negated": false
+        },
+        "role": "structural",
+        "mutable": true,
+        "is_distractor": false
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-d72d49d07b3f6b77",
+      "rank": 12
+    },
+    "updated_world_sha256": "7c294e727ea4e311eba17b7cd3857ae3c968b2c63f0d1cd91280e2735c3d8e72",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}

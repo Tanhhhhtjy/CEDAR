@@ -1,0 +1,173 @@
+{
+  "key": {
+    "condition": "uncapped",
+    "id": "CEDAR-DEV-027-R",
+    "index": 98,
+    "seed": 0
+  },
+  "payload": {
+    "index": 98,
+    "result": {
+      "analysis_schema": {
+        "continuous": {
+          "normalized_option_mass": null,
+          "option_logits": null,
+          "output_entropy": null,
+          "target_minus_initial_margin": null
+        },
+        "discrete": {
+          "chosen_option": null,
+          "outcome_class": [
+            "initial",
+            "induced_target",
+            "other_wrong",
+            "invalid_or_abstain"
+          ],
+          "synchronized_other_error": null
+        },
+        "generation": {
+          "final_answer_parse_status": null,
+          "reasoning_token_count": null,
+          "thinking_mode": null,
+          "truncated": null
+        }
+      },
+      "answer_boundary": {
+        "alignment_method": "tokenizer_offset_roundtrip",
+        "answer_choice": "C",
+        "answer_choice_index": 812,
+        "errors": [],
+        "tokenization_roundtrip": true
+      },
+      "answer_logit_candidates": [
+        {
+          "generated_label": "C",
+          "response_index": 812
+        }
+      ],
+      "answer_logit_capture_indices": [
+        812
+      ],
+      "answer_logits": {
+        "conditional_probabilities": {
+          "A": 5.789356406305873e-12,
+          "B": 1.9171715600110514e-10,
+          "C": 0.9999999997997588,
+          "D": 2.734698101102569e-12
+        },
+        "full_vocab_entropy": 4.908003781167736e-09,
+        "full_vocab_probabilities": {
+          "A": 5.7893564074651405e-12,
+          "B": 1.917171560394948e-10,
+          "C": 1.0,
+          "D": 2.734698101650168e-12
+        },
+        "full_vocab_top_token_id": 34,
+        "full_vocab_top_token_text": "C",
+        "initial_logit": 46.75,
+        "initial_rank": 1,
+        "logits": {
+          "A": 20.875,
+          "B": 24.375,
+          "C": 46.75,
+          "D": 20.125
+        },
+        "option_argmax": "C",
+        "option_mass": 1.0000000002002412,
+        "ranks": {
+          "A": 4,
+          "B": 2,
+          "C": 1,
+          "D": 5
+        },
+        "target_logit": 20.875,
+        "target_minus_initial": -25.875,
+        "target_rank": 4,
+        "top_token_is_option": true
+      },
+      "answer_repair_performed": false,
+      "arm": "R",
+      "assistant_prefix": "{\"answer\":\"",
+      "base_id": "CEDAR-DEV-027",
+      "candidate_token_ids": {
+        "A": 32,
+        "B": 33,
+        "C": 34,
+        "D": 35
+      },
+      "cap_stats": null,
+      "chosen_option": "C",
+      "condition": "uncapped",
+      "content_retry_count": 0,
+      "development_split": "development_validation",
+      "error_class": null,
+      "error_position": null,
+      "expected_outcome": "initial",
+      "family_id": "CEDAR-DEV-F14",
+      "final_answer_parse_status": "passed",
+      "finish_reason": "eos_token",
+      "gold_answer": "C",
+      "gold_correct": true,
+      "hook_counts_after": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "hook_counts_before": {
+        "46": 0,
+        "47": 0,
+        "48": 0,
+        "49": 0,
+        "50": 0,
+        "51": 0,
+        "52": 0,
+        "53": 0
+      },
+      "id": "CEDAR-DEV-027-R",
+      "initial_answer": "C",
+      "invalid_or_abstain_indicator": false,
+      "mode": "thinking",
+      "mode_integrity": {
+        "close_tag_count": 1,
+        "enabled": true,
+        "final_nonempty": true,
+        "open_tag_count": 1,
+        "ordered_single_pair": true,
+        "passed": true,
+        "reasoning_nonempty": true
+      },
+      "other_wrong_indicator": false,
+      "outcome_class": "initial",
+      "pair_index": 49,
+      "paired_condition_order": [
+        "uncapped",
+        "p25"
+      ],
+      "phase": "prespecified_internal_validation",
+      "position_transition": "C->A",
+      "prompt_sha256": "30316363963d75572256cc9ad96c5a812c8c7cbcfb0ac242d33b5a63ab729c46",
+      "prompt_token_ids_sha256": "a6a9ba9b22abbb20801f062966cd72a300f2633a3a965983d035677254326690",
+      "prompt_tokens": 294,
+      "reasoning_token_count": 804,
+      "record_seed": 49,
+      "response": "<think>\nOkay, let's see. The question is whether Case A having status Teal 8 is supported based on the given records. Let me go through each step carefully.\n\nFirst, looking at the records. Record 1 says Case A has status Lilac 5. Record 4 says Case A has status Cobalt 2. So, Case A has both Lilac 5 and Cobalt 2. \n\nNow, checking the rules. Record 5 states that if Case A has Cobalt 2 and Jade 3, then it gets Amber 1. But do we have Jade 3? No, there's no mention of Jade 3 in the records for Case A. So Rule 5's condition isn't met. \n\nRecord 6 says if Case A has Lilac 5 and Ochre 9, then Ivory 4. But again, there's no Ochre 9 listed for Case A. So Rule 6's condition isn't satisfied either. \n\nRecord 7 says if Case A has Ivory 4, then Teal 8. But since we don't have Ivory 4 established (because Rule 6's conditions aren't met), Rule 7 doesn't apply. \n\nSo none of the rules that could lead to Teal 8 are triggered. However, the problem is whether Teal 8 is supported. Since there's no rule leading to it based on existing statuses, it's not supported. But wait, are there any other possibilities? The existing statuses for Case A are Lilac 5 and Cobalt 2. Are there any other rules that might interact? Let me check again.\n\nNo, the other rules (5, 6, 7) require additional statuses that aren't present. So there's no way to derive Ivory 4 or Amber 1, and thus no path to Teal 8. Therefore, the status Teal 8 isn't supported. But wait, the options are supported, contradicted, undetermined, or both. Since there's no direct statement that Case A has or doesn't have Teal 8, and no rules leading to it, the answer would be undetermined? Or is it contradicted? Wait, contradicted would mean that the records explicitly say it doesn't have Teal 8. But there's no such statement. The records only list some statuses. Since the system uses local status codes, maybe having Teal 8 isn't possible unless derived. But since it's not derived, maybe it's not supported. But the options are A) supported, B) contradicted, C) undetermined, D) both. \n\nWait, the question is whether it's supported. Supported would mean that the records and rules lead to Teal 8. Since they don't, then it's not supported. But the answer options are whether the statement \"Case A has status Teal 8\" is supported, contradicted, etc. Since there's no information that directly says it's true or false, except that the rules don't allow us to derive it. So the correct answer would be C) undetermined because we can't determine it from the given information. But wait, maybe there's a contradiction? Let me check again. \n\nIf there's a rule that would require Teal 8, but it's not present. No, the only way to get Teal 8 is via Ivory 4, which requires Lilac 5 and Ochre 9. Since Ochre 9 isn't present, Ivory 4 isn't there, so Teal 8 isn't triggered. Therefore, there's no support for Teal 8. But does that mean it's contradicted? No, because the absence of a rule leading to it doesn't mean it's false. The problem states that an unlisted statement isn't automatically negated. So the correct answer is C) undetermined.\n</think>\n\n{\"answer\": \"C\"}",
+      "response_token_ids_sha256": "37e2be377a5f1b0ec47efb3dfc50594a43e3fbc8c73fc5a535e3e55b3746bbf3",
+      "response_tokens": 815,
+      "scope": "evidence-validation",
+      "seed": 0,
+      "selected_answer_logit_index": 812,
+      "structure_class": "PGF-04",
+      "synchronized_other_error": false,
+      "target_answer": "A",
+      "thinking_enabled": true,
+      "truncated": false,
+      "variant": "easy"
+    }
+  },
+  "run_fingerprint": "204d0d8e611dfb9159b48c1df831693ad8186376b5b1329b375c70ce401384a6"
+}

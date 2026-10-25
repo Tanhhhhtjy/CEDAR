@@ -1,0 +1,105 @@
+{
+  "error_class": "unsupported_bridge",
+  "entailed_premises": [
+    {
+      "predicate": "nav361fallobserved",
+      "arguments": [
+        "cpax43"
+      ],
+      "negated": false
+    }
+  ],
+  "invalid_inference": {
+    "premises": [
+      {
+        "predicate": "nav361fallobserved",
+        "arguments": [
+          "cpax43"
+        ],
+        "negated": false
+      }
+    ],
+    "claimed_conclusion": {
+      "predicate": "nav361fallbridge",
+      "arguments": [
+        "cpax43"
+      ],
+      "negated": false
+    },
+    "operator": "unsupported_bridge"
+  },
+  "valid_downstream_steps": [
+    {
+      "kind": "atomic_revision_projection",
+      "claim_sha256": "896614c4ba651bbba6e2cfdbfa6de0090e43b320fc115a99a884f83952785dd5",
+      "projected_edit_sha256": "6e5c6ecd19abe058a5cdcb25c59e1b3af8e863a12fb3d98828f184b062c03e04"
+    },
+    {
+      "kind": "recompute_gold_after_authenticated_edit",
+      "updated_world_sha256": "de7790f34e631ee9d4d4f9c3ceb3c6e425a8192aa0f92b91010297f31a106d26",
+      "updated_label": "true"
+    }
+  ],
+  "induced_target": {
+    "label": "true",
+    "query": {
+      "predicate": "nav361outcome",
+      "arguments": [
+        "cpax43"
+      ],
+      "negated": false
+    }
+  },
+  "fatal_error_count": 1,
+  "semantic_error_certificate": {
+    "derived_error_class": "unsupported_bridge",
+    "world_semantic_sha256": "3bfb1cf885d211ee006458e2b3bd88d42fb816d43866e64d97d69d50a1715a35",
+    "entailed_premise_keys": [
+      "nav361fallobserved(cpax43)"
+    ],
+    "unsupported_claim_key": "nav361fallbridge(cpax43)",
+    "operator_checks": {
+      "premises_entailed": true,
+      "claim_not_entailed": true,
+      "structure_classified_without_declared_label": true
+    }
+  },
+  "countermodel_or_opposite_proof": {
+    "type": "mace4_countermodel",
+    "target_literal": "nav361outcome(cpax43)",
+    "model_found": true,
+    "model": {
+      "target_refuted": "nav361outcome(cpax43)",
+      "required_counterliteral": "-nav361outcome(cpax43)",
+      "input_sha256": "c9dafa94298e2b2967bed6046447db3b2e4d66d98623e12d80b25d2265be70ab",
+      "model_found": true,
+      "trace": "Mace4 (32) version Dec-2007, Dec 2007.\n\nINPUT\nassign(max_seconds,5).\n\nformulas(assumptions).\nnav361left(cpax43).\nnav361noise1(ckel18).\nnav361noise2(clan33).\nnav361noise3(cmiv37).\nnav361fallobserved(cpax43).\nnav361left(cpax43) & nav361right(cpax43) -> nav361joint(cpax43).\nnav361joint(cpax43) -> nav361outcome(cpax43).\n-nav361outcome(cpax43).\nend_of_list.\n    % assign(domain_size, 2) -> assign(start_size, 2).\n    % assign(domain_size, 2) -> assign(end_size, 2).\n\n% From the command line: assign(domain_size, 2).\n\n% From the command line: assign(end_size, 4).\n\n% From the command line: assign(max_models, 1).\n\n% From the command line: assign(max_seconds, 5).\n\nMODEL\ninterpretation( 2, [number=<N>, seconds=<TIME>], [\n\n        function(ckel18, [ 0 ]),\n\n        function(clan33, [ 0 ]),\n\n        function(cmiv37, [ 0 ]),\n\n        function(cpax43, [ 0 ]),\n\n        relation(nav361fallobserved(_), [ 1, 0 ]),\n\n        relation(nav361joint(_), [ 0, 0 ]),\n\n        relation(nav361left(_), [ 1, 0 ]),\n\n        relation(nav361noise1(_), [ 1, 0 ]),\n\n        relation(nav361noise2(_), [ 1, 0 ]),\n\n        relation(nav361noise3(_), [ 1, 0 ]),\n\n        relation(nav361outcome(_), [ 0, 0 ]),\n\n        relation(nav361right(_), [ 0, 0 ])\n]).\n\nMODEL FOUND\n"
+    }
+  },
+  "repair_witness": {
+    "repair": "authenticate the projected one-record revision",
+    "edit": {
+      "operation": "add",
+      "before": null,
+      "after": {
+        "record_id": "candidate_fact_021",
+        "kind": "fact",
+        "literal": {
+          "predicate": "nav361right",
+          "arguments": [
+            "cpax43"
+          ],
+          "negated": false
+        },
+        "role": "candidate"
+      },
+      "edit_count": 1,
+      "candidate_id": "cand-f120f4707edf6383",
+      "rank": 20
+    },
+    "updated_world_sha256": "de7790f34e631ee9d4d4f9c3ceb3c6e425a8192aa0f92b91010297f31a106d26",
+    "repaired_label": "true"
+  },
+  "second_failure_point_absent": true,
+  "contains_social_cue": false
+}
