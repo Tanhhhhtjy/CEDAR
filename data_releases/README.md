@@ -1,6 +1,6 @@
 # 数据归档与下载
 
-[2026-10-25 研究归档 Release](https://github.com/Tanhhhhtjy/CEDAR/releases/tag/archive-20261025) 保存 12 个分包，共约 1.17 GB 压缩数据，涵盖 25,670 个来源文件。仓库保持私有，需要有仓库权限才能下载。
+[2026-10-25 研究归档 Release](https://github.com/Tanhhhhtjy/CEDAR/releases/tag/archive-20261025) 保存 9 个数据分包，共约 1.17 GB 压缩数据，涵盖 25,511 个来源文件。仓库保持私有，需要有仓库权限才能下载。
 
 每个分包保存原始文件字节和路径，附 `ARCHIVE_FILE_MANIFEST.csv`。本次已核对打包前的源文件哈希，并解开压缩流逐一复核所有成员；预览版代码和报告同时存入 Git。原始数据和历史协议的内容没有被重写。
 
@@ -10,10 +10,7 @@
 | [c1-failed-v2-20260928](https://github.com/Tanhhhhtjy/CEDAR/releases/tag/archive-20261025) | 86 | 0.36 MiB | 旧 C1 v2 工程失败及诊断，单独保留。 |
 | [c1-signed-20261003](https://github.com/Tanhhhhtjy/CEDAR/releases/tag/archive-20261025) | 4,425 | 41.30 MiB | signed-dose C1 的 3892 条 JSON、哈希、协议、分析和收尾证据；3892 份运行 NPZ 仍仅有远程引用。 |
 | [cross-model-additional](https://github.com/Tanhhhhtjy/CEDAR/releases/tag/archive-20261025) | 18 | 3.72 MiB | 跨模型原始记录和 Llama 补充数据。 |
-| [historical-manuscript](https://github.com/Tanhhhhtjy/CEDAR/releases/tag/archive-20261025) | 90 | 5.51 MiB | 历史 LaTeX、图表和稿件版本。 |
 | [historical-server-20260922](https://github.com/Tanhhhhtjy/CEDAR/releases/tag/archive-20261025) | 15,431 | 134.10 MiB | 9 月恢复的早期服务器快照，包括原始 artifacts、数据、代码、文档和测试。 |
-| [research-history](https://github.com/Tanhhhhtjy/CEDAR/releases/tag/archive-20261025) | 48 | 0.48 MiB | 早期思想、路线、评议、累积实验记录、论文草稿和参考文献。 |
-| [research-notes](https://github.com/Tanhhhhtjy/CEDAR/releases/tag/archive-20261025) | 21 | 0.11 MiB | 研究重审、路线复盘、微调专题、未来方向文献调研及引用核验。 |
 | [rg1p-full-20260728](https://github.com/Tanhhhhtjy/CEDAR/releases/tag/archive-20261025) | 2,217 | 743.35 MiB | RG1-P 完整交付，包括原始内部状态 safetensors、数值记录、审计和图表；与转移 tar 的 2217 个文件完全一致。 |
 | [s1p1-20260928](https://github.com/Tanhhhhtjy/CEDAR/releases/tag/archive-20261025) | 117 | 1.32 MiB | S1/P1 本地输入、冻结代码、396 条汇总记录、分析和审计；运行 NPZ 不在此目录中。 |
 | [supplementary-local-files](https://github.com/Tanhhhhtjy/CEDAR/releases/tag/archive-20261025) | 599 | 29.57 MiB | 从其余实验副本与监控快照中检出的 599 份独有文件；逐源别名见比较清单。 |
@@ -42,3 +39,5 @@ python tools/verify_archive.py D:/CEDAR/downloads/b1b2-20261006.tar.gz
 [ASSETS.json](ASSETS.json) 给出分包大小与哈希；[SHA256SUMS](SHA256SUMS) 可供其他工具校验；[manifests/](manifests/) 给出原始来源和每个文件的哈希；[audits/](audits/) 保存本次比较与验证记录。
 
 解包后按各批协议复现。归档保留原来的绝对路径和运行状态字段，用于历史追溯；旧监控入口与旧预算政策不代表当前运行授权。第三方数据和代码仍遵循原来源许可。
+
+按用户最新要求，优先发布实验数据和数据集；调研、历史稿件的重复压缩包暂缓上传。对应文字和源稿已经保存在仓库 research/ 中。
