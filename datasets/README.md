@@ -14,6 +14,12 @@ measuring warranted belief revision.
 - Metric: BU-Acc (warranted-update accuracy) / BM-Acc (belief-maintain accuracy)
 - `build_formal_dataset.py` reproduces from source (seed=42). `eval_formal_protocol.md` = eval protocol.
 
+These Belief-R derivatives are now archived as **M2.2a invalid-baseline evidence** under Amendment A2; they are not used for confirmatory capping comparisons.
+
+### `m2_2b_formal/` — objective five-arm evidence-revision task
+
+Self-built replacement for M2.2a. Each of 60 Pilot base units expands to N/R/V/F/S, with a correct frozen initial answer, valid evidence that changes the gold answer, and a matched invalid argument aimed at the same target. Includes deterministic generation, static validation, blinded dual-review sheets, and an item-clustered scorer. The uncapped double gate must pass before expansion to the ≥200-unit confirmatory set or any capping comparison.
+
 ### `force_stimuli/` — minimal-pair stimuli for three forces
 Self-built minimal pairs for extracting activation directions of three stance-change forces.
 - `force_social.jsonl` / `force_evidence.jsonl` / `force_identity.jsonl` (300 pairs each)
