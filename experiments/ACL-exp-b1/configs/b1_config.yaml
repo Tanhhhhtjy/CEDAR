@@ -11,14 +11,19 @@ device_map: "auto"
 # Contrasts run by default. C_content_CF / C_ctx_shell are DEFERRED: run only with --include-deferred after the
 # A1 v2.2 2x2 gate (results/v2_2/summary_tables/v22_2x2_placebo_hard.json ->
 # decision_c_content_localisable_on_context_flip == true for this model).
-contrasts: ["C_soc", "C_form", "C_Fshell", "C_content_AF", "C_content_N"]
+# C_pinpoint (S vs N) is the Pinpoint-style social-suggestion contrast (100% positive on both 8B and 14B in v2.1);
+# C_soc (S vs AO) isolates pure assertive-tone increment over bare option mention;
+# C_content_N_CF (standalone V vs F on context_flip) gives a byte-identical-argument logical verification anchor.
+contrasts: ["C_pinpoint", "C_soc", "C_form", "C_Fshell", "C_content_AF", "C_content_N", "C_content_N_CF"]
+dla_contrasts: ["C_pinpoint", "C_soc"]
 
-min_effect_logits: 0.5          # pairs with |m(clean) - m(corrupt)| below this are excluded from ratio metrics
+min_effect_logits: 0.5          # directional: pairs with m(clean) - m(corrupt) < this are excluded from ratio/AtP metrics
 atp_kinds: ["head", "mlp"]      # add "neuron" for MLP-neuron AtP (memory ~ n_suffix x 12288 x n_layers floats)
 report_top: 30
 
 resid_per_position_pairs: 8
 resid_per_position_layer_stride: 4
+resid_per_position_max_suffix: 48
 
 verify_on_half: "A"             # top-k selected on half B, recovery measured on half A (no double dipping)
 verify_k_heads: [5, 10, 20, 50]
@@ -27,7 +32,7 @@ n_random_seeds: 5
 
 reliability_k: [10, 20, 50]
 
-dissociation_contrasts: ["C_soc", "C_form", "C_content_AF", "C_content_N"]
+dissociation_contrasts: ["C_pinpoint", "C_soc", "C_form", "C_content_AF", "C_content_N", "C_content_N_CF"]
 dissociation_k: 20
 dissociation_max_pairs: 60
 
@@ -37,5 +42,6 @@ preregistered:
   localisation_valid: "stage_verify: top-k recovery CI lower bound > max(random layer-matched) for k in {10,20}"
   reliable: "stage_reliability: within-contrast split-half Jaccard@20 > across-contrast Jaccard@20"
   double_dissociation: >-
-    stage_dissociation: recovery[X][X] > recovery[X][Y] + 0.2 AND recovery[Y][Y] > recovery[Y][X] + 0.2
-    for (X, Y) = (C_soc, C_form); same test for (C_form, C_content_AF) and (C_soc, C_content_N).
+    stage_dissociation (out-of-sample: selected on half B, evaluated on half A):
+    recovery[X][X] > recovery[X][Y] + 0.2 AND recovery[Y][Y] > recovery[Y][X] + 0.2
+    for (X, Y) = (C_pinpoint, C_form) and (C_soc, C_form); same test for (C_form, C_content_N_CF) and (C_pinpoint, C_content_N_CF).

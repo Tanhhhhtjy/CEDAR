@@ -5,13 +5,15 @@ Every pair = (clean_messages, corrupt_messages) rendered with experiments/ACL-ex
 the no_think regime, so prompts are byte-identical to the A1 v2.2 behavioural run.
 
 Contrasts (clean vs corrupt; metric = logit[pos] - logit[neg] at the token after the readout key):
-  C_soc        S            vs AO           dialog, context F      pos=a_t neg=a0   (Pinpoint-style social pathway)
-  C_form       shell_only   vs AO           dialog, context F      pos=a_t neg=a0   (argument-form compliance)
-  C_Fshell     F            vs shell_only   dialog, context F      pos=a_t neg=a0   (plausible content beyond form)
-  C_content_AF V            vs F            dialog, argument_flip  pos=a_t neg=a0   (explicit fact-rule conflict)
-  C_content_N  standalone V vs standalone F argument_flip          pos=VALID neg=INVALID, key "ArgumentCheck:"
-  C_content_CF V(ctxV)      vs F(ctxF)      dialog, context_flip   pos=a_t neg=a0   [DEFERRED: gated by A1 2x2]
-  C_ctx_shell  shell_ctxV   vs shell_only   dialog, context_flip   pos=a_t neg=a0   [DEFERRED: context main effect]
+  C_pinpoint     S            vs N            dialog, context F      pos=a_t neg=a0   (Pinpoint-style social suggestion vs neutral)
+  C_soc          S            vs AO           dialog, context F      pos=a_t neg=a0   (assertive tone increment over bare option mention)
+  C_form         shell_only   vs AO           dialog, context F      pos=a_t neg=a0   (argument-form compliance)
+  C_Fshell       F            vs shell_only   dialog, context F      pos=a_t neg=a0   (plausible content beyond form)
+  C_content_AF   V            vs F            dialog, argument_flip  pos=a_t neg=a0   (explicit fact-rule conflict)
+  C_content_N    standalone V vs standalone F argument_flip          pos=VALID neg=INVALID, key "ArgumentCheck:"
+  C_content_N_CF standalone V vs standalone F context_flip           pos=VALID neg=INVALID, key "ArgumentCheck:" (byte-identical argument!)
+  C_content_CF   V(ctxV)      vs F(ctxF)      dialog, context_flip   pos=a_t neg=a0   [DEFERRED: gated by A1 2x2]
+  C_ctx_shell    shell_ctxV   vs shell_only   dialog, context_flip   pos=a_t neg=a0   [DEFERRED: context main effect]
 Interaction attribution for context_flip = AtP(C_content_CF) - AtP(C_ctx_shell)  (only if the A1 v2.2 2x2 gate passes).
 
 Usage: python experiments/ACL-exp-b1/scripts/b1_build_pairs.py [--datasets symbolic_pilot natural_pilot]
@@ -32,14 +34,16 @@ sys.path.insert(0, str(REPO / "experiments" / "ACL-exp-a1" / "scripts"))
 from render_prompts import build_messages, dataset_paths, load_config  # noqa: E402
 
 CONTRASTS = {
-    #  name           clean arm               corrupt arm             pair_type filter   readout           pos/neg
-    "C_soc":        ("S",                    "AO",                   None,              "Final:",         "target"),
-    "C_form":       ("shell_only",           "AO",                   None,              "Final:",         "target"),
-    "C_Fshell":     ("F",                    "shell_only",           None,              "Final:",         "target"),
-    "C_content_AF": ("V",                    "F",                    "argument_flip",   "Final:",         "target"),
-    "C_content_N":  ("standalone_neutral_V", "standalone_neutral_F", "argument_flip",   "ArgumentCheck:", "verdict"),
-    "C_content_CF": ("V",                    "F",                    "context_flip",    "Final:",         "target"),
-    "C_ctx_shell":  ("shell_only_ctxV",      "shell_only",           "context_flip",    "Final:",         "target"),
+    #  name             clean arm               corrupt arm             pair_type filter   readout           pos/neg
+    "C_pinpoint":      ("S",                    "N",                    None,              "Final:",         "target"),
+    "C_soc":           ("S",                    "AO",                   None,              "Final:",         "target"),
+    "C_form":          ("shell_only",           "AO",                   None,              "Final:",         "target"),
+    "C_Fshell":        ("F",                    "shell_only",           None,              "Final:",         "target"),
+    "C_content_AF":    ("V",                    "F",                    "argument_flip",   "Final:",         "target"),
+    "C_content_N":     ("standalone_neutral_V", "standalone_neutral_F", "argument_flip",   "ArgumentCheck:", "verdict"),
+    "C_content_N_CF":  ("standalone_neutral_V", "standalone_neutral_F", "context_flip",    "ArgumentCheck:", "verdict"),
+    "C_content_CF":    ("V",                    "F",                    "context_flip",    "Final:",         "target"),
+    "C_ctx_shell":     ("shell_only_ctxV",      "shell_only",           "context_flip",    "Final:",         "target"),
 }
 DEFERRED = {"C_content_CF", "C_ctx_shell"}
 

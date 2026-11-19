@@ -95,6 +95,20 @@ def main():
     assert sorted(li for li, _ in rnd) == sorted(li for li, _ in top)
     dla = L.head_direct_logit_attribution(m, clean, 7, 11)
     assert dla.shape == (3, H)
+    # Cross-check optimised DLA against explicit per-head W_o_h @ a_h . direction
+    with L.Recorder(m, ["head", "resid"]) as rec:
+        m(input_ids=clean[None])
+    fr = rec.acts[("resid", 2)][0, -1].float()
+    eps = getattr(m.model.norm, "variance_epsilon", getattr(m.model.norm, "eps", 1e-6))
+    rms = torch.sqrt(fr.pow(2).mean() + eps)
+    d = (m.lm_head.weight[7].float() - m.lm_head.weight[11].float()) * m.model.norm.weight.float() / rms
+    hd = L.head_dim_of(m)
+    ref = torch.stack([
+        torch.stack([layer.self_attn.o_proj.weight.float()[:, h * hd:(h + 1) * hd] @
+                     rec.acts[("head", li)][0, -1].float()[h * hd:(h + 1) * hd] for h in range(H)]) @ d
+        for li, layer in enumerate(L.layers_of(m))
+    ])
+    assert torch.allclose(dla, ref, atol=1e-4), (dla - ref).abs().max()
     print("[OK] b1_lib self-test passed")
 
 

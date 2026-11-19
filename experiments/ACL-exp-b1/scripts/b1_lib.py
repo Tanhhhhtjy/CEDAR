@@ -44,6 +44,14 @@ def head_dim_of(model) -> int:
     return hd if hd else model.config.hidden_size // model.config.num_attention_heads
 
 
+def input_device_of(model) -> torch.device:
+    """Device of the input embedding layer (safe under HF device_map='auto' multi-GPU splits)."""
+    try:
+        return model.get_input_embeddings().weight.device
+    except Exception:
+        return model.device
+
+
 def _out_tensor(output):
     return output[0] if isinstance(output, tuple) else output
 
@@ -230,7 +238,7 @@ def metric_from_logits(logits: torch.Tensor, pos_token: int, neg_token: int) -> 
 
 @torch.no_grad()
 def run_metric(model, ids: torch.Tensor, pos_token: int, neg_token: int) -> float:
-    out = model(input_ids=ids[None].to(model.device))
+    out = model(input_ids=ids[None].to(input_device_of(model)))
     return float(metric_from_logits(out.logits, pos_token, neg_token))
 
 
@@ -238,7 +246,7 @@ def run_metric(model, ids: torch.Tensor, pos_token: int, neg_token: int) -> floa
 def cache_run(model, ids: torch.Tensor, want: Iterable[str], positions: list[int]) -> tuple[float | None, dict]:
     """Forward once, return activations restricted to `positions` (cpu, float32)."""
     with Recorder(model, want) as rec:
-        out = model(input_ids=ids[None].to(model.device))
+        out = model(input_ids=ids[None].to(input_device_of(model)))
     pos = torch.tensor(positions)
     acts = {k: v[0, pos.to(v.device)].float().cpu() for k, v in rec.acts.items()}
     return out.logits, acts
@@ -250,7 +258,7 @@ def atp(model, pair: EncodedPair, kinds=("head", "mlp"), pos_mode: str = "suffix
     clean_logits, clean_acts = cache_run(model, pair.clean_ids, kinds, pc)
     m_clean = float(metric_from_logits(clean_logits, pair.pos_token, pair.neg_token))
 
-    emb = model.get_input_embeddings()(pair.corrupt_ids[None].to(model.device)).detach().requires_grad_(True)
+    emb = model.get_input_embeddings()(pair.corrupt_ids[None].to(input_device_of(model))).detach().requires_grad_(True)
     with torch.enable_grad(), Recorder(model, kinds, retain_grad=True) as rec:
         out = model(inputs_embeds=emb)
         m = metric_from_logits(out.logits, pair.pos_token, pair.neg_token)
@@ -375,21 +383,23 @@ def eval_mode(model):
 @torch.no_grad()
 def head_direct_logit_attribution(model, ids: torch.Tensor, pos_token: int, neg_token: int) -> torch.Tensor:
     """[n_layers, n_heads] direct contribution of each head (via o_proj, final RMSNorm scale frozen) to the metric
-    at the last position. A cheap 'direct path' ranking in the spirit of Pinpoint Tuning's path patching."""
+    at the last position. Multi-GPU safe under device_map='auto'."""
     with Recorder(model, ["head", "resid"]) as rec:
-        model(input_ids=ids[None].to(model.device))
+        model(input_ids=ids[None].to(input_device_of(model)))
     n_layers = len(layers_of(model))
-    final_resid = rec.acts[("resid", n_layers - 1)][0, -1].float()  # pre-final-norm residual at last position
+    final_resid = rec.acts[("resid", n_layers - 1)][0, -1].float().cpu()  # pre-final-norm residual at last position
     norm = model.model.norm
     eps = getattr(norm, "variance_epsilon", getattr(norm, "eps", 1e-6))
     rms = torch.sqrt(final_resid.pow(2).mean() + eps)
     w_u = model.lm_head.weight
-    direction = (w_u[pos_token].float() - w_u[neg_token].float()) * norm.weight.float() / rms
+    direction_cpu = (w_u[pos_token].float().cpu() - w_u[neg_token].float().cpu()) * norm.weight.float().cpu() / rms
     H, hd = n_heads_of(model), head_dim_of(model)
     rows = []
     for li, layer in enumerate(layers_of(model)):
-        a = rec.acts[("head", li)][0, -1].float()  # [H*hd]
-        W_o = layer.self_attn.o_proj.weight.float()  # [d_model, H*hd]
-        contrib = torch.stack([W_o[:, h * hd:(h + 1) * hd] @ a[h * hd:(h + 1) * hd] for h in range(H)])  # [H, d]
-        rows.append(contrib @ direction)
-    return torch.stack(rows).cpu()
+        a = rec.acts[("head", li)][0, -1].float()  # [H*hd] on layer's device
+        W_o = layer.self_attn.o_proj.weight.float()  # [d_model, H*hd] on layer's device
+        # (W_o_h @ a_h) . d == (W_o_h^T @ d) . a_h; stays on layer's device, then moves scalar vector to CPU
+        d_dev = direction_cpu.to(W_o.device)
+        proj = (W_o.t() @ d_dev) * a.to(W_o.device)  # [H*hd]
+        rows.append(proj.view(H, hd).sum(dim=1).cpu())
+    return torch.stack(rows)

@@ -94,6 +94,7 @@ def by_contrast(pairs):
 def stage_sanity(model, pairs, out_dir, cfg):
     res = {}
     per_pair = []
+    min_e = cfg["min_effect_logits"]
     for c, ps in by_contrast(pairs).items():
         effects = []
         for p in ps:
@@ -103,6 +104,8 @@ def stage_sanity(model, pairs, out_dir, cfg):
             per_pair.append({"pair_id": p.pair_id, "m_clean": mc, "m_corrupt": mk, **p.meta})
         res[c] = {"n": len(effects), "median_effect": statistics.median(effects),
                   "sign_consistency": sum(e > 0 for e in effects) / len(effects), "mean": L.mean_ci(effects),
+                  "n_pos_ge_min": sum(e >= min_e for e in effects),
+                  "n_neg_le_neg_min": sum(e <= -min_e for e in effects) if min_e > 0 else 0,
                   "median_common_suffix": statistics.median(p.meta["common_suffix"] for p in ps)}
     save({"summary": res, "pairs": per_pair}, out_dir / "stage_sanity.json")
     return res
@@ -110,19 +113,24 @@ def stage_sanity(model, pairs, out_dir, cfg):
 
 def stage_resid_sweep(model, pairs, out_dir, cfg):
     n_layers = len(L.layers_of(model))
+    min_e = cfg["min_effect_logits"]
+    max_pos_suffix = cfg.get("resid_per_position_max_suffix", 48)
     res = {}
     for c, ps in by_contrast(pairs).items():
         curves = []
+        valid_ps = []
         for p in ps:
             cache = L.build_cache(model, p, ["resid"], "suffix")
             E = cache["m_clean"] - cache["m_corrupt"]
-            if abs(E) < cfg["min_effect_logits"]:
+            if E < min_e or abs(E) < 1e-6:
                 continue
+            valid_ps.append(p)
             curves.append([L.patch_recovery(model, p, "resid", [(li, 0)], "suffix", cache=cache)["recovery"]
                            for li in range(n_layers)])
         per_pos = []
-        for p in ps[: cfg["resid_per_position_pairs"]]:
-            pc, pk = p.aligned_positions("suffix")
+        pos_ps = (valid_ps or ps)[: cfg["resid_per_position_pairs"]]
+        for p in pos_ps:
+            pc, pk = p.aligned_positions("suffix", max_suffix=max_pos_suffix)
             layers = list(range(0, n_layers, cfg["resid_per_position_layer_stride"]))
             _, acts_all = L.cache_run(model, p.clean_ids, ["resid"], pc)
             grid = []
@@ -133,10 +141,11 @@ def stage_resid_sweep(model, pairs, out_dir, cfg):
                     with L.Patcher(model, spec, [pk[j]]):
                         row.append(L.run_metric(model, p.corrupt_ids, p.pos_token, p.neg_token))
                 grid.append(row)
-            per_pos.append({"pair_id": p.pair_id, "layers": layers, "m_patched": grid,
+            per_pos.append({"pair_id": p.pair_id, "layers": layers, "n_suffix_positions": len(pc),
+                            "m_patched": grid,
                             "m_corrupt": L.run_metric(model, p.corrupt_ids, p.pos_token, p.neg_token),
                             "m_clean": L.run_metric(model, p.clean_ids, p.pos_token, p.neg_token)})
-        res[c] = {"n_pairs": len(curves),
+        res[c] = {"n_pairs": len(curves), "n_excluded_low_or_neg": len(ps) - len(curves),
                   "mean_recovery_by_layer": [statistics.mean(x) for x in zip(*curves)] if curves else [],
                   "per_position_examples": per_pos}
     save(res, out_dir / "stage_resid_sweep.json")
@@ -146,6 +155,7 @@ def stage_resid_sweep(model, pairs, out_dir, cfg):
 def stage_atp(model, pairs, out_dir, cfg):
     kinds = tuple(cfg["atp_kinds"])
     n_layers = len(L.layers_of(model))
+    min_e = cfg["min_effect_logits"]
     summary = {}
     for c, ps in by_contrast(pairs).items():
         maps = {"A": [], "B": [], "all": []}
@@ -153,9 +163,9 @@ def stage_atp(model, pairs, out_dir, cfg):
         for p in ps:
             s = L.atp(model, p, kinds=kinds, pos_mode="suffix")
             effects.append(s["effect"])
-            if abs(s["effect"]) < cfg["min_effect_logits"]:
+            if s["effect"] < min_e or abs(s["effect"]) < 1e-6:
                 continue
-            # normalise per pair so that every pair contributes its fraction of its own effect
+            # normalise per pair so that every positively oriented pair contributes its fraction of its own effect
             norm = {k: (v / s["effect"]) for k, v in s.items() if isinstance(k, tuple)}
             maps["all"].append(norm)
             maps[p.meta["split_half"]].append(norm)
@@ -166,23 +176,32 @@ def stage_atp(model, pairs, out_dir, cfg):
             for kind in kinds:
                 blob[f"{kind}_{half}"] = L.components_from_scores(ms, kind, n_layers)
         save(blob, out_dir / f"atp_{c}.pt")
-        summary[c] = {"n_used": len(maps["all"]), "n_A": len(maps["A"]), "n_B": len(maps["B"]),
+        summary[c] = {"n_total": len(ps), "n_used": len(maps["all"]), "n_A": len(maps["A"]), "n_B": len(maps["B"]),
+                      "n_neg": sum(e < 0 for e in effects), "n_excluded": len(ps) - len(maps["all"]),
                       "top_heads": L.top_k(blob["head_all"], cfg["report_top"]) if "head_all" in blob else []}
     save(summary, out_dir / "stage_atp.json")
     return summary
 
 
 def stage_dla(model, pairs, out_dir, cfg):
-    ps = by_contrast(pairs).get("C_soc", [])
-    mats = []
-    for p in ps:
-        dc = L.head_direct_logit_attribution(model, p.clean_ids, p.pos_token, p.neg_token)
-        dk = L.head_direct_logit_attribution(model, p.corrupt_ids, p.pos_token, p.neg_token)
-        mats.append(dc - dk)
-    if mats:
-        M = torch.stack(mats).mean(0)
-        save({"dla_C_soc": M}, out_dir / "dla_C_soc.pt")
-        save({"n": len(mats), "top_heads_direct": L.top_k(M, cfg["report_top"])}, out_dir / "stage_dla.json")
+    groups = by_contrast(pairs)
+    dla_cs = [c for c in cfg.get("dla_contrasts", ["C_pinpoint", "C_soc"]) if c in groups]
+    summary = {}
+    for c in dla_cs:
+        by_half = {"A": [], "B": [], "all": []}
+        for p in groups[c]:
+            dc = L.head_direct_logit_attribution(model, p.clean_ids, p.pos_token, p.neg_token)
+            dk = L.head_direct_logit_attribution(model, p.corrupt_ids, p.pos_token, p.neg_token)
+            diff = dc - dk
+            by_half["all"].append(diff)
+            by_half[p.meta["split_half"]].append(diff)
+        if by_half["all"]:
+            blob = {f"dla_{h}": torch.stack(ms).mean(0) for h, ms in by_half.items() if ms}
+            save(blob, out_dir / f"dla_{c}.pt")
+            summary[c] = {"n": len(by_half["all"]), "n_A": len(by_half["A"]), "n_B": len(by_half["B"]),
+                          "top_heads_direct": L.top_k(blob["dla_all"], cfg["report_top"])}
+    save(summary, out_dir / "stage_dla.json")
+    return summary
 
 
 def _load_atp(out_dir, c, kind, half="all"):
@@ -190,23 +209,39 @@ def _load_atp(out_dir, c, kind, half="all"):
     return blob.get(f"{kind}_{half}")
 
 
+def _load_dla(out_dir, c, half="all"):
+    p = out_dir / f"dla_{c}.pt"
+    if not p.exists():
+        return None
+    blob = torch.load(p)
+    return blob.get(f"dla_{half}", blob.get("dla_all", blob.get(f"dla_{c}")))
+
+
 def stage_verify(model, pairs, out_dir, cfg):
     H = L.n_heads_of(model)
     n_layers = len(L.layers_of(model))
+    min_e = cfg["min_effect_logits"]
     res = {}
     for c, ps in by_contrast(pairs).items():
         S_head = _load_atp(out_dir, c, "head")
         S_mlp = _load_atp(out_dir, c, "mlp")
         if S_head is None:
+            res[c] = {"n_pairs": 0, "heads": {}, "mlp_layers": {}}
             continue
         ps_eval = [p for p in ps if p.meta["split_half"] == cfg["verify_on_half"]] or ps
         caches = {p.pair_id: L.build_cache(model, p, ["head", "mlp"], "suffix") for p in ps_eval}
-        ps_eval = [p for p in ps_eval if abs(caches[p.pair_id]["m_clean"] - caches[p.pair_id]["m_corrupt"]) >= cfg["min_effect_logits"]]
+        ps_eval = [p for p in ps_eval
+                   if (caches[p.pair_id]["m_clean"] - caches[p.pair_id]["m_corrupt"]) >= min_e
+                   and abs(caches[p.pair_id]["m_clean"] - caches[p.pair_id]["m_corrupt"]) >= 1e-6]
+        if not ps_eval:
+            res[c] = {"n_pairs": 0, "heads": {}, "mlp_layers": {}}
+            continue
         # selection on the OTHER half to avoid double dipping (falls back to 'all' if a half is empty)
         sel_half = "B" if cfg["verify_on_half"] == "A" else "A"
         S_sel = _load_atp(out_dir, c, "head", sel_half)
         S_sel = S_sel if S_sel is not None else S_head
-        out = {"n_pairs": len(ps_eval), "heads": {}, "mlp_layers": {}}
+        out = {"n_pairs": len(ps_eval), "selection_half": sel_half, "eval_half": cfg["verify_on_half"],
+               "heads": {}, "mlp_layers": {}}
         for k in cfg["verify_k_heads"]:
             top = L.top_k(S_sel, k)
             rec = [L.patch_recovery(model, p, "head", top, "suffix", cache=caches[p.pair_id])["recovery"] for p in ps_eval]
@@ -222,18 +257,22 @@ def stage_verify(model, pairs, out_dir, cfg):
             for k in cfg["verify_k_mlp_layers"]:
                 top = L.top_k(S_mlp_sel.view(n_layers, 1), k)
                 rec = [L.patch_recovery(model, p, "mlp", top, "suffix", cache=caches[p.pair_id])["recovery"] for p in ps_eval]
-                rng = random.Random(0)
-                rnd_layers = [(li, 0) for li in rng.sample([l for l in range(n_layers) if (l, 0) not in top], k)]
-                rnd = statistics.mean(L.patch_recovery(model, p, "mlp", rnd_layers, "suffix", cache=caches[p.pair_id])["recovery"]
-                                      for p in ps_eval)
-                out["mlp_layers"][k] = {"top": top, "recovery": L.mean_ci(rec), "random_layers": rnd}
+                pool = [l for l in range(n_layers) if (l, 0) not in top]
+                rnd_list = []
+                for seed in range(cfg["n_random_seeds"]):
+                    rng = random.Random(seed)
+                    rnd_layers = [(li, 0) for li in rng.sample(pool, min(k, len(pool)))]
+                    rnd_list.append(statistics.mean(
+                        L.patch_recovery(model, p, "mlp", rnd_layers, "suffix", cache=caches[p.pair_id])["recovery"]
+                        for p in ps_eval))
+                out["mlp_layers"][k] = {"top": top, "recovery": L.mean_ci(rec), "random_layers": rnd_list}
         res[c] = out
     save(res, out_dir / "stage_verify.json")
     return res
 
 
 def stage_reliability(model, pairs, out_dir, cfg):
-    cs = [c for c in by_contrast(pairs) if (out_dir / f"atp_{c}.pt").exists()]
+    cs = [c for c in by_contrast(pairs) if (out_dir / f"atp_{c}.pt").exists() and _load_atp(out_dir, c, "head") is not None]
     res = {"within_split_half": {}, "across_contrasts": {}}
     tops = {}
     for c in cs:
@@ -246,35 +285,59 @@ def stage_reliability(model, pairs, out_dir, cfg):
         for i, a in enumerate(cs):
             for b in cs[i + 1:]:
                 res["across_contrasts"].setdefault(f"{a}~{b}", {})[k] = L.jaccard(tops[(a, k)], tops[(b, k)])
-    dla = out_dir / "dla_C_soc.pt"
-    if dla.exists():
-        M = torch.load(dla)["dla_C_soc"]
+    for dc in cfg.get("dla_contrasts", ["C_pinpoint", "C_soc"]):
+        M = _load_dla(out_dir, dc, "all")
+        if M is None:
+            continue
         for c in cs:
             for k in cfg["reliability_k"]:
-                res["across_contrasts"].setdefault(f"DLA(C_soc)~{c}", {})[k] = L.jaccard(L.top_k(M, k), tops[(c, k)])
+                res["across_contrasts"].setdefault(f"DLA({dc})~{c}", {})[k] = L.jaccard(L.top_k(M, k), tops[(c, k)])
     save(res, out_dir / "stage_reliability.json")
     return res
 
 
 def stage_dissociation(model, pairs, out_dir, cfg):
     H = L.n_heads_of(model)
+    min_e = cfg["min_effect_logits"]
+    eval_half = cfg["verify_on_half"]
+    sel_half = "B" if eval_half == "A" else "A"
     groups = by_contrast(pairs)
-    cs = [c for c in cfg["dissociation_contrasts"] if c in groups and (out_dir / f"atp_{c}.pt").exists()]
+    cs = [c for c in cfg["dissociation_contrasts"]
+          if c in groups and (out_dir / f"atp_{c}.pt").exists() and _load_atp(out_dir, c, "head") is not None]
     k = cfg["dissociation_k"]
-    tops = {c: L.top_k(_load_atp(out_dir, c, "head"), k) for c in cs}
-    dla = out_dir / "dla_C_soc.pt"
-    if dla.exists():
-        tops["DLA(C_soc)"] = L.top_k(torch.load(dla)["dla_C_soc"], k)
-    res = {"k": k, "matrix": {}, "random": {}}
+    tops = {}
+    for c in cs:
+        S_sel = _load_atp(out_dir, c, "head", sel_half)
+        if S_sel is None:
+            S_sel = _load_atp(out_dir, c, "head", "all")
+        tops[c] = L.top_k(S_sel, k)
+    for dc in cfg.get("dla_contrasts", ["C_pinpoint", "C_soc"]):
+        M_sel = _load_dla(out_dir, dc, sel_half)
+        if M_sel is not None:
+            tops[f"DLA({dc})"] = L.top_k(M_sel, k)
+    res = {"k": k, "selection_half": sel_half, "eval_half": eval_half,
+           "n_pairs_by_target": {}, "matrix": {}, "random": {}, "random_layer_matched_seeds": {}}
     for y in cs:
-        ps = groups[y][: cfg["dissociation_max_pairs"]]
+        ps_half = [p for p in groups[y] if p.meta["split_half"] == eval_half] or groups[y]
+        ps = ps_half[: cfg["dissociation_max_pairs"]]
         caches = {p.pair_id: L.build_cache(model, p, ["head"], "suffix") for p in ps}
-        ps = [p for p in ps if abs(caches[p.pair_id]["m_clean"] - caches[p.pair_id]["m_corrupt"]) >= cfg["min_effect_logits"]]
+        ps = [p for p in ps
+              if (caches[p.pair_id]["m_clean"] - caches[p.pair_id]["m_corrupt"]) >= min_e
+              and abs(caches[p.pair_id]["m_clean"] - caches[p.pair_id]["m_corrupt"]) >= 1e-6]
+        res["n_pairs_by_target"][y] = len(ps)
+        if not ps:
+            continue
         for x, top in tops.items():
             rec = [L.patch_recovery(model, p, "head", top, "suffix", cache=caches[p.pair_id])["recovery"] for p in ps]
             res["matrix"].setdefault(x, {})[y] = L.mean_ci(rec)
-        rs = L.layer_matched_random(tops[cs[0]], H, seed=0)
-        res["random"][y] = L.mean_ci([L.patch_recovery(model, p, "head", rs, "suffix", cache=caches[p.pair_id])["recovery"] for p in ps])
+        # Layer-matched random control matched to target contrast y's own top-k layer distribution (all random seeds)
+        rnd_seeds = []
+        for seed in range(cfg["n_random_seeds"]):
+            rs = L.layer_matched_random(tops[y], H, seed=seed)
+            rnd_seeds.append(statistics.mean(
+                L.patch_recovery(model, p, "head", rs, "suffix", cache=caches[p.pair_id])["recovery"] for p in ps))
+        res["random_layer_matched_seeds"][y] = rnd_seeds
+        res["random"][y] = {"n_seeds": len(rnd_seeds), "mean": statistics.mean(rnd_seeds), "max": max(rnd_seeds)}
     save(res, out_dir / "stage_dissociation.json")
     return res
 
@@ -328,8 +391,8 @@ def main():
         model, tok, alias = tiny_model(), FakeTok(), "selftest_tiny"
         cfg = {**cfg, "verify_k_heads": [2], "verify_k_mlp_layers": [1], "n_random_seeds": 2, "reliability_k": [2],
                "dissociation_k": 2, "report_top": 3, "resid_per_position_pairs": 1, "resid_per_position_layer_stride": 2,
-               "dissociation_max_pairs": 4, "min_effect_logits": 0.0}
-        args.limit = args.limit or 4
+               "resid_per_position_max_suffix": 8, "dissociation_max_pairs": 6, "min_effect_logits": -1e9}
+        args.limit = args.limit or 6
     else:
         from transformers import AutoModelForCausalLM, AutoTokenizer
         tok = AutoTokenizer.from_pretrained(args.model)
