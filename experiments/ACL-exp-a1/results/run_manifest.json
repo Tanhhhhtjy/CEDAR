@@ -3,12 +3,44 @@
   "branch": "ACL-exp-a1",
   "protocol_commit": "b1f18d5b69a806ff2ce04c777654cc8478b00471",
   "split": "dev_only_pilot",
-  "report_utc": "2026-11-19T06:49:33.947220+00:00",
+  "report_utc": "2026-11-19T07:02:11.743289+00:00",
   "models": {
     "qwen3_8b": {
       "repo_id": "Qwen/Qwen3-8B",
       "revision": "b968826d9c46dd6066d109eabc6255188de91218",
-      "source": "existing local BF16 checkpoint"
+      "source": "existing local BF16 checkpoint",
+      "weight_integrity": {
+        "repo_id": "Qwen/Qwen3-8B",
+        "local_metadata_revision": "b968826d9c46dd6066d109eabc6255188de91218",
+        "digest_reference": "https://www.modelscope.cn/models/Qwen/Qwen3-8B/files",
+        "verified_shards": {
+          "model-00005-of-00005.safetensors": "20c2d6366ab85c90786ccdd829cd2b9e7d30ef3b2ebbb998280e7e4014b542ff",
+          "model-00004-of-00005.safetensors": "b5ee7de71fbf17db3d5704e0c8f2bc7d005ca9e1d7ca2aeb19827b0cfcaa917a",
+          "model-00003-of-00005.safetensors": "c5185c4794be2d8a9784d5753c9922db38df478ce11f9ed0b415b7304d896836",
+          "model-00002-of-00005.safetensors": "5991236cea6fe21f3d43cab0f0e84448734fbbe0789816202989f2ddc9d18282",
+          "model-00001-of-00005.safetensors": "31d6a825ae35f11fb85b195b4c42c146c051e446433125a215336abdf95cbf5f"
+        }
+      }
+    },
+    "qwen3_14b": {
+      "repo_id": "Qwen/Qwen3-14B",
+      "revision": "40c069824f4251a91eefaf281ebe4c544efd3e18",
+      "source": "existing local BF16 checkpoint",
+      "weight_integrity": {
+        "repo_id": "Qwen/Qwen3-14B",
+        "local_metadata_revision": "40c069824f4251a91eefaf281ebe4c544efd3e18",
+        "digest_reference": "https://www.modelscope.cn/models/Qwen/Qwen3-14B/files",
+        "verified_shards": {
+          "model-00008-of-00008.safetensors": "0d6b92296e326d39bbbaeb32c3ec454ac606da843d4c8ffa8edf010b62b8c9e0",
+          "model-00007-of-00008.safetensors": "0aee70ee6e91dc00d818804fb47f124d13ee4ad5b4a64553e09dbf9391cd5750",
+          "model-00006-of-00008.safetensors": "9e8e76a013cd5e253865b792991e0b410f869b136b3c500079b531b09198e99e",
+          "model-00005-of-00008.safetensors": "97f0dc2992e59da95c466eff6f4fd0c8335843bbc36ed5c913a6f5150748c0e6",
+          "model-00004-of-00008.safetensors": "eab286fec759e3e59ab228621aefa0fef14ed56039e06f959e67257d5af7604d",
+          "model-00003-of-00008.safetensors": "dfb8c5df9404b41ad6ae74e8b6b367135f017b4467b884cf71b17c71954f18a9",
+          "model-00002-of-00008.safetensors": "f7c9c6eee628f5ad831d2d1d292e120505e5fcadeb38f88b4d3c4cb86306ccf9",
+          "model-00001-of-00008.safetensors": "e942bdbdf08857d16a8fef7d1dae9fceabeb4e84def6043485fe2f6f085dab0e"
+        }
+      }
     }
   },
   "cells": {
@@ -31,6 +63,16 @@
       "last_checkpoint_utc": "2026-11-19T06:49:21.148370+00:00",
       "start_utc": "2026-11-19T06:15:31+00:00",
       "wall_seconds_including_load": 2030.14837
+    },
+    "qwen3_14b/no_think": {
+      "file": "raw_records/qwen3_14b__no_think.jsonl.gz",
+      "sha256": "1bebe61739bc78e0e4c44f457207bbe53bf987579e19cbf79f74386180519315",
+      "n_records": 28380,
+      "bytes": 678520,
+      "first_checkpoint_utc": "2026-11-19T06:59:41.482403+00:00",
+      "last_checkpoint_utc": "2026-11-19T07:01:42.162354+00:00",
+      "start_utc": "2026-11-19T06:49:49+00:00",
+      "wall_seconds_including_load": 713.162354
     }
   },
   "datasets": {
@@ -42,6 +84,10 @@
     }
   },
   "frozen_symbolic_crlf_sha256": "7606444a9a8c03205fabda453732d5c1ced7067069fa815a8bf2732b702fd7f1",
+  "symbolic_generator_check": {
+    "regenerated": 120,
+    "exact_structured_matches": 120
+  },
   "execution": {
     "hardware": "4 x NVIDIA A800-SXM4-40GB",
     "dtype": "bfloat16",
@@ -83,13 +129,12 @@
   },
   "scripts_sha256": {
     "run_a1.py": "13d19224f4a7e8d1097497939ae835807690fdc49701cdabb7d4a28ede80adcd",
-    "summarize.py": "9a88466c5fcab283c659a182b1b31444284fdb6dca1673913c64392c70f2f5f6",
+    "summarize.py": "a57bee174445eaebab9207b9b781a49264e3dc544fec2a1d85f3871181d6ba37",
     "preflight.py": "4dba75d44ffb508d00aef3de9f8ad993489fb3cc03a73c545fc6ea1edefc6da8"
   },
   "pending_cells": [
     "gemma3_12b/no_think",
     "gemma3_12b/think",
-    "qwen3_14b/no_think",
     "qwen3_14b/think"
   ],
   "status": "interim"
