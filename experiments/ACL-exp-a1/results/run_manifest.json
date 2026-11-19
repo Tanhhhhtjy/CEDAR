@@ -1,0 +1,84 @@
+{
+  "experiment_id": "ACL-exp-a1",
+  "branch": "ACL-exp-a1",
+  "protocol_commit": "b1f18d5b69a806ff2ce04c777654cc8478b00471",
+  "split": "dev_only_pilot",
+  "report_utc": "2026-11-19T06:20:14.051485+00:00",
+  "models": {
+    "qwen3_8b": {
+      "repo_id": "Qwen/Qwen3-8B",
+      "revision": "b968826d9c46dd6066d109eabc6255188de91218",
+      "source": "existing local BF16 checkpoint"
+    }
+  },
+  "cells": {
+    "qwen3_8b/no_think": {
+      "file": "raw_records/qwen3_8b__no_think.jsonl.gz",
+      "sha256": "2afeae1453f8725ea1c093283c702c65009d5f45f00a0a0143b2402823dcdc0f",
+      "n_records": 28380,
+      "bytes": 673512,
+      "first_checkpoint_utc": "2026-11-19T06:13:37.852887+00:00",
+      "last_checkpoint_utc": "2026-11-19T06:15:03.507639+00:00"
+    }
+  },
+  "datasets": {
+    "symbolic_pilot_120_dev_only.jsonl": {
+      "sha256": "6056f69b2b04e54506dbbb0c008f84dce48253c1e2e17c5c1abad64503bd2901"
+    },
+    "natural_pilot_seed_12.jsonl": {
+      "sha256": "91a4e1851674c4223c0c175d1477895fe5148fb998fa7e4ba93048c6d8456dc0"
+    }
+  },
+  "frozen_symbolic_crlf_sha256": "7606444a9a8c03205fabda453732d5c1ced7067069fa815a8bf2732b702fd7f1",
+  "execution": {
+    "hardware": "4 x NVIDIA A800-SXM4-40GB",
+    "dtype": "bfloat16",
+    "vllm": "0.11.0",
+    "torch": "2.8.0+cu128",
+    "transformers": "4.57.0",
+    "tensor_parallel_size": 1,
+    "workers": 4,
+    "max_model_len": 4096,
+    "regimes": {
+      "no_think": {
+        "seed_range": [
+          1001,
+          1008
+        ],
+        "max_tokens": 96,
+        "greedy_sample_idx": -1
+      },
+      "think": {
+        "seed_range": [
+          2001,
+          2008
+        ],
+        "max_tokens_qwen": 1536,
+        "max_tokens_gemma": 1024
+      }
+    },
+    "turn1_k": 4,
+    "k": 8,
+    "temperature": 0.6,
+    "top_p": 0.95,
+    "generation_processor": "vLLM model generation config defaults + explicit protocol sampling overrides",
+    "raw_logit_method": "Replay actual token prefix up to each generated field colon. At temperature 0 with no penalties, retain allowed candidate logits using processed_logits. Missing or non-token-aligned fields carry explicit status.",
+    "natural_turn1_correct": "at least three of four samples on the corresponding context; per-sample outcome for bare turn 1",
+    "prompt_failure_transfer": "Unparsed call-1 fields transmit the literal UNPARSED. Raw outputs and parse status are retained.",
+    "natural_seed_arms": "Six supplied core arms; apply frozen symbolic rhetoric/source/P0 wrappers verbatim and neutral no-new-facts confirmation for I0. NAT-001 false-update gold is D; ITT initial/target labels remain B/A; report natural results descriptively.",
+    "analysis": "Set thresholds use samples 0-3. G1 combines held-out dialog rates with the fraction meeting the defined standalone paired-ok criterion. Evaluation tables use samples 4-7. Logit associations target induced_target among parseable final choices with available scores. Intervals resample families 4000 times, seed 12827; natural items use base ID."
+  },
+  "scripts_sha256": {
+    "run_a1.py": "a858dfc34d35094cbebcf0345d97d934e1f819be4e14541519e82de924dde7a0",
+    "summarize.py": "730c8212ef5d6e4f4cb0f03503312781f85914e9dafd540431ccfc5490756433",
+    "preflight.py": "4dba75d44ffb508d00aef3de9f8ad993489fb3cc03a73c545fc6ea1edefc6da8"
+  },
+  "pending_cells": [
+    "gemma3_12b/no_think",
+    "gemma3_12b/think",
+    "qwen3_14b/no_think",
+    "qwen3_14b/think",
+    "qwen3_8b/think"
+  ],
+  "status": "interim"
+}
