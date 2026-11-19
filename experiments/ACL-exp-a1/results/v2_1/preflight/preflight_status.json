@@ -1,0 +1,79 @@
+{
+  "protocol_version": "2.1",
+  "protocol_commit": "f2a0739e3485798873a5096e7061bfc189909ba9",
+  "phase": "cpu_preflight",
+  "status": "halted_before_gpu_smoke_for_manual_confirmation",
+  "n_gpu_model_generations_v2_1": 0,
+  "datasets": {
+    "symbolic_pilot": {
+      "file": "symbolic_pilot_120_v2_1_dev_only.jsonl",
+      "n_rows": 120,
+      "sha256_lf": "e111c54bc629a1e6887dbfac682b652d75ce6196bc6697c05340e6a57e966c7a",
+      "positions": {
+        "before_rules": 60,
+        "after_rules": 60
+      }
+    },
+    "natural_pilot": {
+      "file": "natural_pilot_seed_12_v2_1.jsonl",
+      "n_rows": 12,
+      "sha256_lf": "2cd26e8765a3e0c2c8c13145b8b94c9c96c4448f0478f635770585a87e4599bc",
+      "positions": {
+        "missing": 12
+      }
+    }
+  },
+  "reference_self_test": "passed",
+  "reference_prompt_count": 7128,
+  "argument_only_audit_word_plus_char_auc": {
+    "symbolic": {
+      "context_flip": 0.5,
+      "argument_flip": 0.47
+    },
+    "natural": {
+      "context_flip": 0.5,
+      "argument_flip": 0.5139
+    }
+  },
+  "reproductions": [
+    {
+      "scope": "CPU parser fixture; not a model generation",
+      "arm": "F",
+      "raw": "NotFinal: B",
+      "observed": {
+        "parsed_final_option": "B",
+        "parsed_verdict": null,
+        "parsed_broken_step": null,
+        "parse_status": "ok"
+      }
+    },
+    {
+      "scope": "CPU parser fixture; not a model generation",
+      "arm": "F",
+      "raw": "Final: A\nFinal: Z",
+      "observed": {
+        "parsed_final_option": "A",
+        "parsed_verdict": null,
+        "parsed_broken_step": null,
+        "parse_status": "ok"
+      }
+    },
+    {
+      "scope": "CPU parser fixture; not a model generation",
+      "arm": "standalone_neutral_F",
+      "raw": "ArgumentCheck: NA | BrokenStep: NA | Final: B",
+      "observed": {
+        "parsed_final_option": "B",
+        "parsed_verdict": "NA",
+        "parsed_broken_step": "NONE",
+        "parse_status": "ok"
+      },
+      "observed_call2_audit_line": "ArgumentCheck: NA | BrokenStep: NONE"
+    }
+  ],
+  "unresolved": [
+    "Non-field text can be counted as a valid Final, and a later invalid field can be silently superseded by an earlier valid field.",
+    "A non-binary ArgumentCheck is counted as ok on a verdict-required arm and transferred to Call-2 without UNPARSED.",
+    "Natural pilot has no before_rules or after_rules items. No fallback for the G1 order-gap predicate is defined."
+  ]
+}
