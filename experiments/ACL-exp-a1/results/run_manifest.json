@@ -3,7 +3,7 @@
   "branch": "ACL-exp-a1",
   "protocol_commit": "b1f18d5b69a806ff2ce04c777654cc8478b00471",
   "split": "dev_only_pilot",
-  "report_utc": "2026-11-19T06:20:14.051485+00:00",
+  "report_utc": "2026-11-19T06:49:33.947220+00:00",
   "models": {
     "qwen3_8b": {
       "repo_id": "Qwen/Qwen3-8B",
@@ -18,7 +18,19 @@
       "n_records": 28380,
       "bytes": 673512,
       "first_checkpoint_utc": "2026-11-19T06:13:37.852887+00:00",
-      "last_checkpoint_utc": "2026-11-19T06:15:03.507639+00:00"
+      "last_checkpoint_utc": "2026-11-19T06:15:03.507639+00:00",
+      "start_utc": "2026-11-19T06:05:33+00:00",
+      "wall_seconds_including_load": 570.507639
+    },
+    "qwen3_8b/think": {
+      "file": "raw_records/qwen3_8b__think.jsonl.gz",
+      "sha256": "1a28a5d00bea19c31339b8dabfe691af22d0b28d8c5400e596ebade0bd350c1c",
+      "n_records": 25344,
+      "bytes": 12266449,
+      "first_checkpoint_utc": "2026-11-19T06:17:47.740465+00:00",
+      "last_checkpoint_utc": "2026-11-19T06:49:21.148370+00:00",
+      "start_utc": "2026-11-19T06:15:31+00:00",
+      "wall_seconds_including_load": 2030.14837
     }
   },
   "datasets": {
@@ -57,6 +69,7 @@
         "max_tokens_gemma": 1024
       }
     },
+    "prompt_precedence": "Three-line verify-then-revise uses its own output format in lieu of the one-line no-think contract. The think standalone task still requests explicit Verdict and BrokenStep before the final option.",
     "turn1_k": 4,
     "k": 8,
     "temperature": 0.6,
@@ -69,16 +82,15 @@
     "analysis": "Set thresholds use samples 0-3. G1 combines held-out dialog rates with the fraction meeting the defined standalone paired-ok criterion. Evaluation tables use samples 4-7. Logit associations target induced_target among parseable final choices with available scores. Intervals resample families 4000 times, seed 12827; natural items use base ID."
   },
   "scripts_sha256": {
-    "run_a1.py": "a858dfc34d35094cbebcf0345d97d934e1f819be4e14541519e82de924dde7a0",
-    "summarize.py": "730c8212ef5d6e4f4cb0f03503312781f85914e9dafd540431ccfc5490756433",
+    "run_a1.py": "13d19224f4a7e8d1097497939ae835807690fdc49701cdabb7d4a28ede80adcd",
+    "summarize.py": "9a88466c5fcab283c659a182b1b31444284fdb6dca1673913c64392c70f2f5f6",
     "preflight.py": "4dba75d44ffb508d00aef3de9f8ad993489fb3cc03a73c545fc6ea1edefc6da8"
   },
   "pending_cells": [
     "gemma3_12b/no_think",
     "gemma3_12b/think",
     "qwen3_14b/no_think",
-    "qwen3_14b/think",
-    "qwen3_8b/think"
+    "qwen3_14b/think"
   ],
   "status": "interim"
 }
