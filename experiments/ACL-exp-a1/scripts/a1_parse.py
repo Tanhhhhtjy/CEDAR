@@ -25,29 +25,32 @@ from __future__ import annotations
 import re
 from typing import Any
 
-_OPT = r"(?:option\s*)?[\(\[]?\s*\**\s*([ABCD])\s*\**\s*[\)\]]?(?![A-Za-z])"
-_SEP = r"\s*\**\s*[:：]\s*\**\s*"
-
-FINAL_RE = re.compile(r"\**\s*final(?:\s+(?:answer|classification|choice))?" + _SEP + _OPT, re.IGNORECASE)
-VERDICT_RE = re.compile(
-    r"\**\s*(?:argument\s*check|argumentcheck|verdict)" + _SEP + r"(VALID|INVALID|NA|NONE|N/A)\b",
-    re.IGNORECASE,
-)
-STEP_RE = re.compile(r"\**\s*broken\s*step" + _SEP + r"(1|2|3|NONE|N/A|NA)\b", re.IGNORECASE)
+# Match the key independently of the value: a later malformed field supersedes
+# an earlier valid field. Key regexes end at the colon for runner logit probes.
+_SEPARATOR = r"[ \t]*\**[ \t]*[:：]"
+FINAL_KEY = re.compile(r"\bfinal(?:[ \t]+(?:answer|classification|choice))?" + _SEPARATOR, re.I)
+VERDICT_KEY = re.compile(r"\b(?:argument[ \t]*check|verdict)" + _SEPARATOR, re.I)
+STEP_KEY = re.compile(r"\bbroken[ \t]*step" + _SEPARATOR, re.I)
+_VALUE_PREFIX = r"\s*\**\s*"
+OPTION_VALUE = re.compile(_VALUE_PREFIX + r"(?:option\s*)?[\(\[]?\s*\**\s*([ABCD])\b", re.I)
+VERDICT_VALUE = re.compile(_VALUE_PREFIX + r"(VALID|INVALID)\b", re.I)
+STEP_VALUE = re.compile(_VALUE_PREFIX + r"(1|2|3|NONE)\b", re.I)
 
 
 def _strip_think(text: str) -> tuple[str, bool]:
     """Return (answer_text, think_unclosed)."""
-    if "</think>" in text:
-        return text.rsplit("</think>", 1)[1], False
-    if "<think>" in text:
+    answer = text.rsplit("</think>", 1)[-1]
+    if "<think>" in answer:
         return "", True
-    return text, False
+    return answer, False
 
 
-def _last(regex: re.Pattern[str], text: str) -> str | None:
-    hits = regex.findall(text)
-    return hits[-1] if hits else None
+def _last(key: re.Pattern[str], value: re.Pattern[str], text: str) -> str | None:
+    matches = list(key.finditer(text))
+    if not matches:
+        return None
+    match = value.match(text, matches[-1].end())
+    return match.group(1).upper() if match else None
 
 
 def parse_output(
@@ -63,18 +66,11 @@ def parse_output(
     """
     answer_text, think_unclosed = _strip_think(raw_output or "")
 
-    final = _last(FINAL_RE, answer_text)
-    verdict = _last(VERDICT_RE, answer_text)
-    step = _last(STEP_RE, answer_text)
-
-    final = final.upper() if final else None
-    if verdict:
-        verdict = verdict.upper()
-        if verdict in ("NONE", "N/A"):
-            verdict = "NA"
-    if step:
-        step = step.upper()
-        step = int(step) if step.isdigit() else "NONE"
+    final = _last(FINAL_KEY, OPTION_VALUE, answer_text)
+    verdict = _last(VERDICT_KEY, VERDICT_VALUE, answer_text)
+    step = _last(STEP_KEY, STEP_VALUE, answer_text)
+    if step and step.isdigit():
+        step = int(step)
 
     missing_required = final is None or (requires_verdict and (verdict is None or step is None))
     if final is None and (think_unclosed or hit_token_limit):
@@ -114,6 +110,16 @@ def _self_test() -> None:
         ("Final answer: Option A", False, ("A", None, None, "ok")),
         ("Verdict: VALID | BrokenStep: NONE", True, (None, "VALID", "NONE", "format_error")),
         ("Final: B\nWait, actually Final: C", False, ("C", None, None, "ok")),
+        ("NotFinal: B", False, (None, None, None, "format_error")),
+        ("Final: A\nFinal: Z", False, (None, None, None, "format_error")),
+        ("ArgumentCheck: NA | BrokenStep: NA | Final: B", True, ("B", None, None, "format_error")),
+        ("Verdict: VALID | BrokenStep: NONE | Final: B\nArgumentCheck: UNKNOWN",
+         True, ("B", None, "NONE", "format_error")),
+        ("**ArgumentCheck:** INVALID | **BrokenStep:** 2 | **Final:** (C)",
+         True, ("C", "INVALID", 2, "ok")),
+        ("BrokenStep: 10 | ArgumentCheck: INVALID | Final: B", True, ("B", "INVALID", None, "format_error")),
+        ("Final：BETA", False, (None, None, None, "format_error")),
+        ("<think>a</think><think>Final: B", False, (None, None, None, "truncated")),
     ]
     for raw, req, (f, v, s, st) in cases:
         out = parse_output(raw, requires_verdict=req)
