@@ -1,7 +1,7 @@
 # Experiment A1 Protocol (`ACL-exp-a1`): Data Certification, Artifact Audit & `0A'` Behavioral Calibration + Killer Baselines
 
 - **Branch**: `ACL-exp-a1`
-- **Status**: Frozen Execution Spec — **PATCH v2.1 (2026-11-19)**. Supersedes v1 (`b1f18d5`) wherever they differ.
+- **Status**: Frozen Execution Spec — **PROTOCOL v2.2 (2026-11-19, final A1 run)**. v2.2 supersedes v2.1 and v1 wherever they differ; see `CHANGELOG_v2.2.md`. The v2.1 text below remains valid except for: `system_base` ("You are a helpful assistant."), the closed-world note wording, wrapper position (after the observation sentence), the new module 6 (2×2 + placebo) and module 7 (global-verify system prompt) arms, the new `symbolic_hard` dataset, Gemma no_think budgets, renderer `scripts/render_prompts.py`, and outputs under `results/v2_2/`.
 - **Date**: 2026-11-19
 - **Split Hygiene**: **STRICT `dev_only_pilot`**. Every item in this branch is strictly for calibration, gate decisions (`G0–G4`), and model/difficulty selection. **No base ID from `ACL-exp-a1` may ever enter the formal held-out test set.**
 

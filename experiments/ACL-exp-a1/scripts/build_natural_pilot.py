@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""Build natural_pilot_seed_12_v2_1.jsonl from the v1 seed file (ACL-exp-a1 patch v2.1).
+"""Build natural_pilot_seed_12_v2_2.jsonl from the v1 seed file (ACL-exp-a1, protocol v2.2).
 
+v2.2: wrappers placed after the observation sentence (a1_arm_wrappers.py), 2x2 / placebo arms, and a
+placebo context (`context_prompt_f_placebo` = Context F + one irrelevant administrative sentence).
+v2.1 logic kept:
 * Fixes ACL-A1-NAT-001: v1 used a direct-recalculation design in which rejecting F does NOT
   restore a0 (true post-F answer was D=$72, not a0=B). Rewritten in the override style of
   NAT-002..012 so that post_f_still_entails_a0 holds (checked arithmetically below).
@@ -23,8 +26,10 @@ from a1_arm_wrappers import ARM_ORDER, build_arms  # noqa: E402
 
 DATA = HERE.parents[0] / "data"
 SRC = DATA / "natural_pilot_seed_12.jsonl"
-DST = DATA / "natural_pilot_seed_12_v2_1.jsonl"
-SCHEMA = "cedar.acl_exp_a1.natural_pilot.v2_1"
+DST = DATA / "natural_pilot_seed_12_v2_2.jsonl"
+SCHEMA = "cedar.acl_exp_a1.natural_pilot.v2_2"
+# v2.2 placebo twin: Context F plus one irrelevant administrative sentence before the question.
+PLACEBO_SENTENCE = " Administrative note: all records in this file are archived at the end of each month."
 
 
 def _nat001() -> dict:
@@ -97,6 +102,9 @@ def main() -> None:
             assert r["f_certificate"].get("post_f_still_entails_a0") is True, r["base_id"]
         a0, at = r["initial_answer"], r["target_answer"]
         r["schema"] = SCHEMA
+        head, sep, tail = r["context_prompt_f"].partition("\n\n")
+        assert sep, r["base_id"]
+        r["context_prompt_f_placebo"] = head + PLACEBO_SENTENCE + sep + tail
         r["arms"] = build_arms(
             core_v=core_v,
             core_f=core_f,

@@ -1,6 +1,14 @@
 # `ACL-exp-a1` — Week 1 Experiment A1 Handoff Guide (Data Certification, Artifact Audit & `0A'` Behavioral Calibration)
 
 > [!IMPORTANT]
+> **Protocol v2.2（A1 最终轮，2026-11-19）**：以 [`CHANGELOG_v2.2.md`](CHANGELOG_v2.2.md) 和 `configs/exp_a1_config.yaml` 为准。
+> - 数据：`symbolic_pilot_120_v2_2`、`symbolic_hard_120_v2_2`（新增，预注册难题档）、`natural_pilot_seed_12_v2_2`。
+> - 渲染：`scripts/render_prompts.py`；解析：`scripts/a1_parse.py`；2×2 / 安慰剂 / 难题档分析：`scripts/analyze_v22_2x2.py`。
+> - 输出写入 `results/v2_2/`。v1 和 v2.1 的结果只作存档。
+>
+> 以下是 v2.1 时期的说明（保留作历史记录）：
+>
+> [!IMPORTANT]
 > **补丁 v2.1（2026-11-19）已生效，Qwen3-8B 需要按 v2.1 重跑。** 先读 [`CHANGELOG_v2.1.md`](CHANGELOG_v2.1.md)：§1 是 v1 审计结论，§3 是 runner 改动清单。
 > - 数据：`data/symbolic_pilot_120_v2_1_dev_only.jsonl`、`data/natural_pilot_seed_12_v2_1.jsonl`（v1 文件只留作溯源）。
 > - Prompt、token 上限、门禁以 `configs/exp_a1_config.yaml` 为准。参考实现：`scripts/render_prompts_v2_1.py`（拼装对话消息）、`scripts/a1_parse.py`（唯一解析器）。

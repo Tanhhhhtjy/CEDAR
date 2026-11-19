@@ -34,6 +34,14 @@ Patch v2.1 (2026-11-19, after the Qwen3-8B v1 pilot; see CHANGELOG_v2.1.md):
    confounds removed; 2x2 source x instruction arms added.
 Certification logic (evaluate_world + 7 invariants) is unchanged; numbered-rule references inside
 Turn-2 arguments are unchanged because the default rule was never referenced by number.
+
+Patch v2.2 (2026-11-19, after the v2.1 rerun; see CHANGELOG_v2.2.md):
+8. Closed-world note scoped to the ORIGINAL record; later verified observations count as facts.
+9. Rhetoric/source wrappers placed AFTER the observation sentence (frame the reasoning only).
+10. Placebo twin context `context_prompt_f_placebo` (one irrelevant edit, re-certified) and 2x2
+    control arms (AO_ctxV, shell_only_ctxV, F_ctxPlacebo, shell_only_ctxPlacebo).
+11. Pre-registered HARD tier (separate file): converse_error / scope_swap / cross_entity_transfer,
+    depth 3, + 3 inert lure rules; NEW items (ids ACL-A1-HARD-*), never seen in any earlier run.
 """
 
 from __future__ import annotations
@@ -50,11 +58,15 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from a1_arm_wrappers import ARM_ORDER, build_arms  # noqa: E402
 
-SCHEMA_VERSION = "cedar.acl_exp_a1.symbolic_pilot.v2_1"
-OUTPUT_STEM = "symbolic_pilot_120_v2_1"
+SCHEMA_VERSION = "cedar.acl_exp_a1.symbolic_pilot.v2_2"
+OUTPUT_STEM = "symbolic_pilot_120_v2_2"
+HARD_OUTPUT_STEM = "symbolic_hard_120_v2_2"
+HARD_FALLACY_CLASSES = ("converse_error", "scope_swap", "cross_entity_transfer")
+HARD_IDX_OFFSET = 1000  # disjoint RNG streams / ids from the standard tier
 CLOSED_WORLD_NOTE = (
-    "Closed-world note: an event or status holds only if it is stated in the Facts or follows from "
-    "them by the Rules; anything not stated has not occurred."
+    "Closed-world note: in the original record, an event or status holds only if it is stated in the Facts "
+    "or follows from them by the Rules. Verified observations reported later in the conversation count as "
+    "additional facts."
 )
 SPLIT_TAG = "dev_only_pilot"
 MASTER_SEED = 20261119
@@ -279,6 +291,8 @@ def build_single_base(
     fallacy_class: str,
     transition: tuple[str, str],
     default_policy_position: str,
+    id_prefix: str = "ACL-A1-SYM",
+    add_lures: bool = False,
 ) -> dict[str, Any]:
     rng = random.Random(MASTER_SEED + idx * 7919)
     domain = DOMAINS[idx % len(DOMAINS)]
@@ -312,6 +326,10 @@ def build_single_base(
     obs_val_low = base_threshold - rng.randint(2, 5)
     flip_guard_polarity = ((idx // len(FALLACY_CLASSES)) % 2 == 1)
     flip_aux_role = ((idx // len(FALLACY_CLASSES)) % 2 == 1)
+    if idx >= HARD_IDX_OFFSET:
+        # v2.2 hard tier is all depth 3, where broken_step_idx uses the SAME bit as flip_aux_role; that made the
+        # aux/decoy predicate identity predict V vs F in argument_flip converse_error (G0 AUC 0.70). Decouple.
+        flip_aux_role = ((idx // (2 * len(FALLACY_CLASSES))) % 2 == 1)
 
     # Canonical atoms
     atom_base = f"base_active({e1})"
@@ -838,8 +856,10 @@ def build_single_base(
                     "text": f"If {e1} {p['p_obs']}, then {e1} {p['p_mid1']}.",
                 }
                 extra_context_rules.append(r1_aux)
-                step1_v = f"Step 1: Since {e2} {p['p_obs']}, Rule 1 implies that {e2} {p['p_mid1']}."
-                step1_f = f"Step 1: Since {e1} {p['p_obs']}, the entity rule implies that {e1} {p['p_mid1']}."
+                # v2.2: symmetric wording. v2.1 wrote "Rule 1" in V but "the entity rule" in F, a lexical tell
+                # (hard-tier G0: cross_entity_transfer argument_flip AUC 0.66).
+                step1_v = f"Step 1: Since {e2} {p['p_obs']}, the matching rule implies that {e2} {p['p_mid1']}."
+                step1_f = f"Step 1: Since {e1} {p['p_obs']}, the matching rule implies that {e1} {p['p_mid1']}."
             else:
                 r1 = {
                     "id": "Rule 1",
@@ -876,6 +896,23 @@ def build_single_base(
         for er in extra_context_rules:
             rules_v.append(er)
             rules_f.append(er)
+
+        # v2.2 hard tier: inert "lure" rules appended AFTER every numbered rule that Turn-2 cites (no
+        # renumbering). They reuse the item's entities/predicates but conclude NEW atoms that no rule
+        # consumes, so they cannot change any entailment (re-certified below like everything else).
+        if add_lures:
+            lures = [
+                {"id": "Lure 1", "conditions": [atom_obs_e2], "min_threshold": None,
+                 "conclusion": f"watch({e2})", "text": f"If {e2} {p['p_obs']}, then {e2} is placed on a watch list."},
+                {"id": "Lure 2", "conditions": [atom_mid1], "min_threshold": None,
+                 "conclusion": f"logrev({e1})", "text": f"If {e1} {p['p_mid1']}, then {e1} receives a periodic log review."},
+                {"id": "Lure 3", "conditions": [atom_zone_b, atom_obs_e1], "min_threshold": None,
+                 "conclusion": f"archq({e1})",
+                 "text": f"For entries in {zone_b}, if {e1} {p['p_obs']}, then {e1} is queued for archival."},
+            ]
+            for lr in lures:
+                rules_v.append(lr)
+                rules_f.append(lr)
 
         # For argument_flip negation_drop, remove initial guard_inactive fact from base_facts so Turn-2 sets guard
         init_facts = set(base_facts)
@@ -927,6 +964,26 @@ def build_single_base(
         if pair_type == "argument_flip":
             assert prompt_v == prompt_f, f"argument_flip prompts differ for {fallacy_class}"
 
+        # v2.2 placebo context: Context F with ONE irrelevant edit (the distractor rule's audit note is
+        # recorded for a different background entity). Same rule count, same position, no effect on any
+        # entailment -> the "context main effect" a twin-context edit produces when validity is unchanged.
+        placebo_text = f"If {e_noise} {p['p_noise1']} and {e2} {p['p_noise2']}, record a routine audit note for {e2}."
+        assert distractor_rule["text"] in rule_lines_f and placebo_text != distractor_rule["text"]
+        rule_lines_f_placebo = [placebo_text if t == distractor_rule["text"] else t for t in rule_lines_f]
+        rules_f_placebo = [
+            {**r, "conclusion": f"log_ok({e2})", "text": placebo_text} if r is distractor_rule else r for r in rules_f
+        ]
+        _, plc_init = evaluate_world(init_facts, base_numeric, rules_f_placebo, a0, atom_override, at)
+        _, plc_post = evaluate_world(
+            init_facts | obs_facts_f, {**base_numeric, **obs_num_f}, rules_f_placebo, a0, atom_override, at
+        )
+        assert plc_init == a0 and plc_post == a0, "placebo context changed an entailment"
+        prompt_f_placebo = render_context_prompt(
+            domain, init_fact_lines, rule_lines_f_placebo, e1, letter_to_outcome, default_rule["text"],
+            default_policy_position,
+        )
+        assert prompt_f_placebo != prompt_f
+
         core_arg_v = " ".join([obs_line_v, *steps_v])
         core_arg_f = " ".join([obs_line_f, *steps_f])
         if pair_type == "context_flip":
@@ -959,7 +1016,7 @@ def build_single_base(
         )
         # Every argument-bearing arm mentions the target option exactly once (wrappers add no mentions)
         for arm_name, text in arms.items():
-            if arm_name.startswith(("F", "V")) or arm_name == "shell_only":
+            if arm_name.startswith(("F", "V", "shell_only")):
                 assert len(re.findall(rf"\bOption {at}\b", text)) == 1, f"target mention drift in {arm_name}"
         if pair_type == "context_flip":
             for suffix in ("", "_auth", "_hes"):
@@ -968,8 +1025,9 @@ def build_single_base(
         return {
             "schema": SCHEMA_VERSION,
             "split": SPLIT_TAG,
-            "base_id": f"ACL-A1-SYM-{idx + 1:03d}",
-            "family_id": f"FAM-{pair_type[:3].upper()}-D{depth}-{fallacy_class[:4].upper()}-{(idx // 12) + 1:02d}",
+            "tier": "hard" if add_lures else "standard",
+            "base_id": f"{id_prefix}-{idx + 1:03d}",
+            "family_id": f"{'H' if add_lures else ''}FAM-{pair_type[:3].upper()}-D{depth}-{fallacy_class[:4].upper()}-{(idx // 12) + 1:02d}",
             "pair_type": pair_type,
             "difficulty_depth": depth,
             "fallacy_class": fallacy_class,
@@ -981,6 +1039,7 @@ def build_single_base(
             "default_policy_position": default_policy_position,
             "context_prompt_v": prompt_v,
             "context_prompt_f": prompt_f,
+            "context_prompt_f_placebo": prompt_f_placebo,
             "context_prompt_shared_for_non_v": prompt_f,  # N/AO/S/shell/F all evaluated under Context F
             "broken_step_index": broken_step_idx,
             "broken_rule_id": f"Rule {crit_rule_num}",
@@ -1005,47 +1064,26 @@ def build_single_base(
     return make_pair_components()
 
 
-def main() -> None:
-    out_dir = Path(__file__).resolve().parents[1] / "data"
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    # 120 bases: 60 context_flip + 60 argument_flip
-    # Within each 60: 30 depth=2 + 30 depth=3; 10 per each of the 6 fallacy classes;
-    # balanced across all 12 ordered option transitions.
-    bases: list[dict[str, Any]] = []
-    idx = 0
-    for pair_type in ("context_flip", "argument_flip"):
-        for depth in (2, 3):
-            for rep in range(5):
-                # v2.1 counterbalance: within every (pair_type, depth, fallacy) cell 3/2 or 2/3 split,
-                # alternating across blocks so each fallacy class is exactly 10 before / 10 after.
-                block_flip = (depth == 3) ^ (pair_type == "argument_flip")
-                before = (rep % 2 == 0) ^ block_flip
-                position = "before_rules" if before else "after_rules"
-                for fc in FALLACY_CLASSES:
-                    trans = ORDERED_TRANSITIONS[idx % len(ORDERED_TRANSITIONS)]
-                    bases.append(build_single_base(idx, pair_type, depth, fc, trans, position))
-                    idx += 1
-
-    assert len(bases) == 120
-    pos_by_fc = Counter((b["fallacy_class"], b["default_policy_position"]) for b in bases)
-    assert all(n == 10 for n in pos_by_fc.values()) and len(pos_by_fc) == 12, pos_by_fc
+def write_dataset(bases: list[dict[str, Any]], out_dir: Path, stem: str, n_expected: int) -> None:
+    assert len(bases) == n_expected
     for b in bases:
         assert tuple(b["arms"]) == ARM_ORDER
-    out_jsonl = out_dir / f"{OUTPUT_STEM}_dev_only.jsonl"
+    assert len({b["base_id"] for b in bases}) == len(bases)
+    out_jsonl = out_dir / f"{stem}_dev_only.jsonl"
     # newline="\n": identical bytes (and SHA-256) on Windows and Linux
     with out_jsonl.open("w", encoding="utf-8", newline="\n") as f:
         for row in bases:
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
-    # Summary manifest & integrity checks
     manifest = {
         "schema": SCHEMA_VERSION,
         "split": SPLIT_TAG,
+        "tier": sorted({b["tier"] for b in bases}),
         "total_bases": len(bases),
         "by_pair_type": dict(Counter(b["pair_type"] for b in bases)),
         "by_depth": dict(Counter(b["difficulty_depth"] for b in bases)),
         "by_fallacy_class": dict(Counter(b["fallacy_class"] for b in bases)),
+        "by_broken_step": dict(Counter(str(b["broken_step_index"]) for b in bases)),
         "by_transition": dict(sorted(Counter(b["transition"] for b in bases).items())),
         "by_default_policy_position": dict(Counter(b["default_policy_position"] for b in bases)),
         "arms": list(ARM_ORDER),
@@ -1056,25 +1094,62 @@ def main() -> None:
             "all_post_f_still_a0": all(b["f_certificate"]["post_f_still_entails_a0"] for b in bases),
             "all_single_fatal_error": all(b["f_certificate"]["single_fatal_error_isolated"] for b in bases),
             "all_context_flip_turn2_byte_identical": all(
-                b["f_certificate"]["turn2_byte_identical_vf"]
-                for b in bases
-                if b["pair_type"] == "context_flip"
+                b["f_certificate"]["turn2_byte_identical_vf"] for b in bases if b["pair_type"] == "context_flip"
             ),
             "all_argument_flip_turn1_byte_identical": all(
-                b["context_prompt_v"] == b["context_prompt_f"]
-                for b in bases
-                if b["pair_type"] == "argument_flip"
+                b["context_prompt_v"] == b["context_prompt_f"] for b in bases if b["pair_type"] == "argument_flip"
             ),
+            "all_placebo_context_differs_from_f": all(b["context_prompt_f_placebo"] != b["context_prompt_f"] for b in bases),
         },
         "file_sha256": hashlib.sha256(out_jsonl.read_bytes()).hexdigest(),
     }
     assert all(manifest["checks"].values()), f"Manifest check failed: {manifest['checks']}"
-
-    manifest_path = out_dir / f"{OUTPUT_STEM}_manifest.json"
+    manifest_path = out_dir / f"{stem}_manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
-    print(f"[OK] Built {len(bases)} certified dev-only symbolic bases -> {out_jsonl}")
-    print(f"[OK] Manifest checks: {manifest['checks']}")
-    print(f"[OK] SHA-256: {manifest['file_sha256']}")
+    print(f"[OK] Built {len(bases)} certified dev-only bases -> {out_jsonl.name}  sha256={manifest['file_sha256']}")
+    print(f"     by_fallacy={manifest['by_fallacy_class']} by_step={manifest['by_broken_step']} by_pos={manifest['by_default_policy_position']}")
+
+
+def main() -> None:
+    out_dir = Path(__file__).resolve().parents[1] / "data"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    # ---- Standard tier: 120 bases (60 context_flip + 60 argument_flip; depth 2/3; 6 fallacy classes)
+    bases: list[dict[str, Any]] = []
+    idx = 0
+    for pair_type in ("context_flip", "argument_flip"):
+        for depth in (2, 3):
+            for rep in range(5):
+                # counterbalance: each fallacy class exactly 10 before / 10 after
+                block_flip = (depth == 3) ^ (pair_type == "argument_flip")
+                before = (rep % 2 == 0) ^ block_flip
+                position = "before_rules" if before else "after_rules"
+                for fc in FALLACY_CLASSES:
+                    trans = ORDERED_TRANSITIONS[idx % len(ORDERED_TRANSITIONS)]
+                    bases.append(build_single_base(idx, pair_type, depth, fc, trans, position))
+                    idx += 1
+    pos_by_fc = Counter((b["fallacy_class"], b["default_policy_position"]) for b in bases)
+    assert all(n == 10 for n in pos_by_fc.values()) and len(pos_by_fc) == 12, pos_by_fc
+    write_dataset(bases, out_dir, OUTPUT_STEM, 120)
+
+    # ---- Hard tier (pre-registered, NEW items): 3 structural fallacy classes x 2 pair types x 20, depth 3,
+    #      broken step balanced 1/2, inert lure rules, default-policy position counterbalanced.
+    hard: list[dict[str, Any]] = []
+    k = 0
+    for pair_type in ("context_flip", "argument_flip"):
+        for rep in range(20):
+            before = (rep % 2 == 0) ^ (pair_type == "argument_flip")
+            position = "before_rules" if before else "after_rules"
+            for fc in HARD_FALLACY_CLASSES:
+                hidx = HARD_IDX_OFFSET + k
+                trans = ORDERED_TRANSITIONS[hidx % len(ORDERED_TRANSITIONS)]
+                row = build_single_base(hidx, pair_type, 3, fc, trans, position, id_prefix="ACL-A1-HARD", add_lures=True)
+                row["base_id"] = f"ACL-A1-HARD-{k + 1:03d}"
+                hard.append(row)
+                k += 1
+    cell = Counter((b["pair_type"], b["fallacy_class"], b["broken_step_index"]) for b in hard)
+    assert all(n == 10 for n in cell.values()) and len(cell) == 12, cell
+    write_dataset(hard, out_dir, HARD_OUTPUT_STEM, 120)
 
 
 if __name__ == "__main__":
