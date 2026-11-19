@@ -1,5 +1,14 @@
 # `ACL-exp-a1` — Week 1 Experiment A1 Handoff Guide (Data Certification, Artifact Audit & `0A'` Behavioral Calibration)
 
+> [!IMPORTANT]
+> **补丁 v2.1（2026-11-19）已生效，Qwen3-8B 需要按 v2.1 重跑。** 先读 [`CHANGELOG_v2.1.md`](CHANGELOG_v2.1.md)：§1 是 v1 审计结论，§3 是 runner 改动清单。
+> - 数据：`data/symbolic_pilot_120_v2_1_dev_only.jsonl`、`data/natural_pilot_seed_12_v2_1.jsonl`（v1 文件只留作溯源）。
+> - Prompt、token 上限、门禁以 `configs/exp_a1_config.yaml` 为准。参考实现：`scripts/render_prompts_v2_1.py`（拼装对话消息）、`scripts/a1_parse.py`（唯一解析器）。
+> - v1 的离线审计可复现：`python experiments/ACL-exp-a1/scripts/audit_v1_records.py`。
+> - v2.1 输出一律写入 `results/v2_1/`。
+>
+> 下文中与 v2.1 冲突的旧描述（文件名、Verdict 字段、1536 token 等），一律以 v2.1 为准。
+
 本分支对应 **ACL 2027 转型后的第一个正式前置实验（Experiment A1 / `0A'`）**，采用 **“一分支一实验”** 协作模式：本分支已冻结实验设计、认证数据、伪迹审计报告与回传格式规范；实验同学完成 GPU 运行后，请直接将结果提交并推送回 **`ACL-exp-a1`** 分支。
 
 ---

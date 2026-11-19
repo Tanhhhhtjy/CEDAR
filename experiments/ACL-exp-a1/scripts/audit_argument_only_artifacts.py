@@ -99,8 +99,14 @@ def run_cv_audit(rows: list[dict[str, Any]], label_tag: str) -> dict[str, Any]:
 
 
 def main() -> None:
+    import argparse
+
     data_dir = Path(__file__).resolve().parents[1] / "data"
-    in_path = data_dir / "symbolic_pilot_120_dev_only.jsonl"
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--input", default=str(data_dir / "symbolic_pilot_120_v2_1_dev_only.jsonl"))
+    ap.add_argument("--output", default=None, help="default: data/artifact_audit_report_<input-stem>.json")
+    args = ap.parse_args()
+    in_path = Path(args.input)
     rows = load_jsonl(in_path)
 
     cf_rows = [r for r in rows if r["pair_type"] == "context_flip"]
@@ -108,18 +114,20 @@ def main() -> None:
 
     report: dict[str, Any] = {
         "input_file": str(in_path.name),
-        "overall": run_cv_audit(rows, "all_120"),
-        "context_flip": run_cv_audit(cf_rows, "context_flip_60"),
-        "argument_flip": run_cv_audit(af_rows, "argument_flip_60"),
+        "input_sha256": __import__("hashlib").sha256(in_path.read_bytes()).hexdigest(),
+        "overall": run_cv_audit(rows, f"all_{len(rows)}"),
+        "context_flip": run_cv_audit(cf_rows, f"context_flip_{len(cf_rows)}"),
+        "argument_flip": run_cv_audit(af_rows, f"argument_flip_{len(af_rows)}"),
         "argument_flip_by_fallacy_class": {},
     }
 
     for fc in sorted({r["fallacy_class"] for r in af_rows}):
         sub = [r for r in af_rows if r["fallacy_class"] == fc]
-        report["argument_flip_by_fallacy_class"][fc] = run_cv_audit(sub, f"argument_flip_{fc}")
+        if len(sub) >= 2:
+            report["argument_flip_by_fallacy_class"][fc] = run_cv_audit(sub, f"argument_flip_{fc}")
 
-    out_path = data_dir / "artifact_audit_report.json"
-    out_path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    out_path = Path(args.output) if args.output else data_dir / f"artifact_audit_report_{in_path.stem}.json"
+    out_path.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
 
     print("=== Argument-Only Artifact Audit Summary ===")
     for key in ("context_flip", "argument_flip", "overall"):
