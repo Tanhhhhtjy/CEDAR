@@ -1,0 +1,159 @@
+{
+  "protocol_version": "2.1",
+  "protocol_commit": "299ca2f579aacdb060272cf4cab298b889b0510f",
+  "original_protocol_commit": "f2a0739e3485798873a5096e7061bfc189909ba9",
+  "branch": "ACL-exp-a1",
+  "split": "dev_only_pilot",
+  "runner_sha256": {
+    "run_a1.py": "eadd68b0d3f892a9fa8d2d99f1eb1eea937435e890195659394358e5fdb4b5b1",
+    "summarize.py": "0538b40039b39468112d7596a687a08728394148136dfd173c42d828291c8023",
+    "launch.sh": "ad3743db7ce1b61bbb51c4640f1615bb4e8cdb41e098bf2569c3a992e2e408ff",
+    "check_smoke.py": "c99815ba3eebed08c3ca56fee720d18cbc9d664120962ffa17d8b6b508c002ce"
+  },
+  "protocol_file_sha256": {
+    "experiments/ACL-exp-a1/configs/exp_a1_config.yaml": "7ec6b88c47b36b5777247b1387af7959831c2b097a1e192b957d777f93352075",
+    "experiments/ACL-exp-a1/scripts/render_prompts_v2_1.py": "4dd95af274876d3172684c6f3a725eb3ceb705a8ce83d5a652e7193bcb7570ae",
+    "experiments/ACL-exp-a1/scripts/a1_parse.py": "08fd4c30ef3afcdbc4ae35fbfe4fb7e71250a65d88d8e15898842f1776ac66d0"
+  },
+  "datasets": {
+    "symbolic_pilot": {
+      "path": "experiments/ACL-exp-a1/data/symbolic_pilot_120_v2_1_dev_only.jsonl",
+      "n_bases": 120,
+      "sha256_lf": "e111c54bc629a1e6887dbfac682b652d75ce6196bc6697c05340e6a57e966c7a"
+    },
+    "natural_pilot": {
+      "path": "experiments/ACL-exp-a1/data/natural_pilot_seed_12_v2_1.jsonl",
+      "n_bases": 12,
+      "sha256_lf": "2cd26e8765a3e0c2c8c13145b8b94c9c96c4448f0478f635770585a87e4599bc"
+    }
+  },
+  "models": {
+    "qwen3_8b": {
+      "repo": "Qwen/Qwen3-8B",
+      "revision": "b968826d9c46dd6066d109eabc6255188de91218",
+      "worker_model_path": "/mnt/kcl/devuser/ckpts/Qwen3-8B"
+    },
+    "qwen3_14b": {
+      "repo": "Qwen/Qwen3-14B",
+      "revision": "40c069824f4251a91eefaf281ebe4c544efd3e18",
+      "worker_model_path": "/mnt/kcl/devuser/ckpts/Qwen3-14B"
+    },
+    "gemma3_12b": {
+      "repo": "google/gemma-3-12b-it",
+      "revision": "96b6f1eccf38110c56df3a15bffe176da04bfd80",
+      "worker_model_path": "/mnt/kcl/tjy/models/google/gemma-3-12b-it"
+    }
+  },
+  "execution": {
+    "gpus": "4 x NVIDIA A800-SXM4-40GB, devices 0-3",
+    "tensor_parallel_size": 1,
+    "vllm": "0.11.0",
+    "dtype": "bfloat16",
+    "max_model_len": 5120,
+    "temperature": 0.6,
+    "top_p": 0.95,
+    "regimes": {
+      "no_think": {
+        "qwen3_enable_thinking": false,
+        "max_new_tokens": {
+          "default": 96,
+          "verify_then_revise": 384
+        },
+        "sampling": {
+          "k_samples": 8,
+          "define": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "eval": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "seeds": [
+            1001,
+            1002,
+            1003,
+            1004,
+            1005,
+            1006,
+            1007,
+            1008
+          ]
+        },
+        "greedy_reference": true,
+        "record_logits": "final_only arms: option-letter logits at the first token after 'Final:' (this IS u_theta). argument_check / verify_then_revise arms: VALID/INVALID logits after 'ArgumentCheck:' AND option logits after 'Final:'."
+      },
+      "think": {
+        "qwen3_enable_thinking": true,
+        "max_new_tokens": {
+          "qwen": 3072,
+          "gemma_cot": 1536
+        },
+        "vllm_max_model_len": 5120,
+        "sampling": {
+          "k_samples": 8,
+          "define": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "eval": [
+            4,
+            5,
+            6,
+            7
+          ],
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "seeds": [
+            2001,
+            2002,
+            2003,
+            2004,
+            2005,
+            2006,
+            2007,
+            2008
+          ]
+        },
+        "qwen3_multiturn_history_rule": "Strip <think>...</think> from the Turn-1 assistant message (frozen Turn-1 has none)."
+      }
+    },
+    "turn1_k": 4,
+    "turn1_sample_indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "greedy_sample_idx": -1,
+    "logit_method": "Replay actual prefix ending at the field colon. Use vLLM processed_logits with greedy temperature and candidate token allowlist. Missing or unaligned anchors have explicit status.",
+    "prompt_hash": "SHA-256 of compact UTF-8 JSON array of the exact integer prompt_token_ids supplied to vLLM."
+  },
+  "analysis": {
+    "define": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "eval": [
+      4,
+      5,
+      6,
+      7
+    ],
+    "bootstrap_replicates": 4000,
+    "bootstrap_seed": 12827,
+    "natural_position_status": "not_evaluable",
+    "execution_gate": "Per-arm format errors <= 5%, think truncation including length stops <= 10%, UNPARSED Call-1 <= 5%."
+  },
+  "completed_cells": {}
+}
