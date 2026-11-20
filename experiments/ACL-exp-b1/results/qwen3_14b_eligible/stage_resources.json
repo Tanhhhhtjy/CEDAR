@@ -1,0 +1,126 @@
+{
+  "model": "Qwen3-14B",
+  "physical_gpu_ids": [
+    1,
+    2
+  ],
+  "timing_source": "Frozen b1_run.py run_meta.json, seconds per stage. Model loading and CPU comparison are outside these intervals.",
+  "allocator": "PyTorch per-device high-water marks reset at stage entry, including resident model weights.",
+  "board_memory": "nvidia-smi memory.used sampled every 250 ms. Null denotes no sample inside the stage.",
+  "stages": {
+    "sanity": {
+      "seconds": 49.3673198223114,
+      "gpu": {
+        "1": {
+          "peak_allocated_bytes": 13727975424,
+          "peak_reserved_bytes": 15793651712,
+          "sampled_board_peak_MiB": 15579,
+          "board_sample_count": 197
+        },
+        "2": {
+          "peak_allocated_bytes": 16389210624,
+          "peak_reserved_bytes": 18444451840,
+          "sampled_board_peak_MiB": 18107,
+          "board_sample_count": 197
+        }
+      },
+      "start_unix": 1795164277.5108433,
+      "end_unix": 1795164326.8598275
+    },
+    "atp": {
+      "seconds": 119.1258282661438,
+      "gpu": {
+        "1": {
+          "peak_allocated_bytes": 16973642752,
+          "peak_reserved_bytes": 18251513856,
+          "sampled_board_peak_MiB": 17933,
+          "board_sample_count": 472
+        },
+        "2": {
+          "peak_allocated_bytes": 19559857664,
+          "peak_reserved_bytes": 19700645888,
+          "sampled_board_peak_MiB": 19315,
+          "board_sample_count": 472
+        }
+      },
+      "start_unix": 1795164326.878106,
+      "end_unix": 1795164445.9000838
+    },
+    "dla": {
+      "seconds": 27.848926782608032,
+      "gpu": {
+        "1": {
+          "peak_allocated_bytes": 13860489216,
+          "peak_reserved_bytes": 18251513856,
+          "sampled_board_peak_MiB": 17933,
+          "board_sample_count": 111
+        },
+        "2": {
+          "peak_allocated_bytes": 16544756224,
+          "peak_reserved_bytes": 19700645888,
+          "sampled_board_peak_MiB": 19315,
+          "board_sample_count": 111
+        }
+      },
+      "start_unix": 1795164446.0041206,
+      "end_unix": 1795164473.8314626
+    },
+    "verify": {
+      "seconds": 581.3185186386108,
+      "gpu": {
+        "1": {
+          "peak_allocated_bytes": 14011422720,
+          "peak_reserved_bytes": 18251513856,
+          "sampled_board_peak_MiB": 17933,
+          "board_sample_count": 2308
+        },
+        "2": {
+          "peak_allocated_bytes": 16720585216,
+          "peak_reserved_bytes": 19700645888,
+          "sampled_board_peak_MiB": 19315,
+          "board_sample_count": 2308
+        }
+      },
+      "start_unix": 1795164473.852958,
+      "end_unix": 1795165055.149919
+    },
+    "reliability": {
+      "seconds": 0.05922698974609375,
+      "gpu": {
+        "1": {
+          "peak_allocated_bytes": 13464549376,
+          "peak_reserved_bytes": 18251513856,
+          "sampled_board_peak_MiB": null,
+          "board_sample_count": 0
+        },
+        "2": {
+          "peak_allocated_bytes": 16106873344,
+          "peak_reserved_bytes": 19700645888,
+          "sampled_board_peak_MiB": null,
+          "board_sample_count": 0
+        }
+      },
+      "start_unix": 1795165055.1715064,
+      "end_unix": 1795165055.2094169
+    },
+    "dissociation": {
+      "seconds": 590.3748438358307,
+      "gpu": {
+        "1": {
+          "peak_allocated_bytes": 13952501760,
+          "peak_reserved_bytes": 18251513856,
+          "sampled_board_peak_MiB": 17933,
+          "board_sample_count": 2350
+        },
+        "2": {
+          "peak_allocated_bytes": 16560861696,
+          "peak_reserved_bytes": 19700645888,
+          "sampled_board_peak_MiB": 19315,
+          "board_sample_count": 2350
+        }
+      },
+      "start_unix": 1795165055.2307646,
+      "end_unix": 1795165645.5840013
+    }
+  }
+}

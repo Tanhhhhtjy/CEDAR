@@ -1,0 +1,89 @@
+{
+  "model": "Qwen3-8B",
+  "physical_gpu_ids": [
+    0
+  ],
+  "timing_source": "Frozen b1_run.py run_meta.json, seconds per stage. Model loading and CPU comparison are outside these intervals.",
+  "allocator": "PyTorch per-device high-water marks reset at stage entry, including resident model weights.",
+  "board_memory": "nvidia-smi memory.used sampled every 250 ms. Null denotes no sample inside the stage.",
+  "stages": {
+    "sanity": {
+      "seconds": 42.575196504592896,
+      "gpu": {
+        "0": {
+          "peak_allocated_bytes": 16718791168,
+          "peak_reserved_bytes": 19323158528,
+          "sampled_board_peak_MiB": 18947,
+          "board_sample_count": 170
+        }
+      },
+      "start_unix": 1795164277.742803,
+      "end_unix": 1795164320.2999592
+    },
+    "atp": {
+      "seconds": 114.16817259788513,
+      "gpu": {
+        "0": {
+          "peak_allocated_bytes": 21272722944,
+          "peak_reserved_bytes": 22831693824,
+          "sampled_board_peak_MiB": 22301,
+          "board_sample_count": 453
+        }
+      },
+      "start_unix": 1795164320.3178453,
+      "end_unix": 1795164434.4578066
+    },
+    "dla": {
+      "seconds": 23.5987765789032,
+      "gpu": {
+        "0": {
+          "peak_allocated_bytes": 16928383488,
+          "peak_reserved_bytes": 22831693824,
+          "sampled_board_peak_MiB": 22301,
+          "board_sample_count": 94
+        }
+      },
+      "start_unix": 1795164434.486087,
+      "end_unix": 1795164458.0637934
+    },
+    "verify": {
+      "seconds": 490.24499678611755,
+      "gpu": {
+        "0": {
+          "peak_allocated_bytes": 17139941376,
+          "peak_reserved_bytes": 22831693824,
+          "sampled_board_peak_MiB": 22301,
+          "board_sample_count": 1949
+        }
+      },
+      "start_unix": 1795164458.0848927,
+      "end_unix": 1795164948.3097234
+    },
+    "reliability": {
+      "seconds": 0.05852866172790527,
+      "gpu": {
+        "0": {
+          "peak_allocated_bytes": 16399577600,
+          "peak_reserved_bytes": 22831693824,
+          "sampled_board_peak_MiB": null,
+          "board_sample_count": 0
+        }
+      },
+      "start_unix": 1795164948.329911,
+      "end_unix": 1795164948.369056
+    },
+    "dissociation": {
+      "seconds": 496.7976145744324,
+      "gpu": {
+        "0": {
+          "peak_allocated_bytes": 16935912960,
+          "peak_reserved_bytes": 22831693824,
+          "sampled_board_peak_MiB": 22301,
+          "board_sample_count": 1977
+        }
+      },
+      "start_unix": 1795164948.3884697,
+      "end_unix": 1795165445.1639955
+    }
+  }
+}
