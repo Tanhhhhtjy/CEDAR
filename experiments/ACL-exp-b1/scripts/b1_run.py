@@ -43,9 +43,34 @@ def load_cfg() -> dict:
     return yaml.safe_load((B1 / "configs" / "b1_config.yaml").read_text(encoding="utf-8"))
 
 
-def load_pairs(path: Path, contrasts: list[str], include_deferred: bool, limit: int | None) -> list[dict]:
+def load_eligible_ids(path: Path, model_key: str) -> tuple[set[str], dict]:
+    blob = json.loads(path.read_text(encoding="utf-8"))
+    if model_key not in blob.get("models", {}):
+        raise KeyError(f"model_key {model_key!r} not in {path}; available={sorted(blob.get('models', {}))}")
+    info = blob["models"][model_key]
+    ids = set(info["eligible_base_ids"])
+    meta = {
+        "eligible_file": str(path),
+        "eligible_model": model_key,
+        "source_commit": blob.get("source_commit"),
+        "source_sha256": info.get("source_sha256"),
+        "counts": info.get("counts"),
+        "total_eligible_bases": len(ids),
+    }
+    return ids, meta
+
+
+def load_pairs(
+    path: Path,
+    contrasts: list[str],
+    include_deferred: bool,
+    limit: int | None,
+    eligible_ids: set[str] | None = None,
+) -> list[dict]:
     rows = [json.loads(l) for l in path.read_text(encoding="utf-8").splitlines() if l.strip()]
     rows = [r for r in rows if r["contrast"] in contrasts and (include_deferred or not r["deferred"])]
+    if eligible_ids is not None:
+        rows = [r for r in rows if r["base_id"] in eligible_ids]
     if limit:
         by = {}
         for r in rows:
@@ -271,12 +296,24 @@ def stage_verify(model, pairs, out_dir, cfg):
     return res
 
 
+def _weighted_overlap(top_x: list[tuple[int, int]], S_y: torch.Tensor, top_y: list[tuple[int, int]]) -> float:
+    """Fraction of Y's top-k positive AtP mass carried by heads shared with X's top-k."""
+    shared = set(top_x) & set(top_y)
+    denom = sum(max(0.0, float(S_y[li, h])) for li, h in top_y)
+    if denom <= 1e-12:
+        return 0.0
+    num = sum(max(0.0, float(S_y[li, h])) for li, h in shared)
+    return num / denom
+
+
 def stage_reliability(model, pairs, out_dir, cfg):
     cs = [c for c in by_contrast(pairs) if (out_dir / f"atp_{c}.pt").exists() and _load_atp(out_dir, c, "head") is not None]
-    res = {"within_split_half": {}, "across_contrasts": {}}
+    res = {"within_split_half": {}, "across_contrasts": {}, "weighted_overlap_top_k": {}}
     tops = {}
+    scores = {}
     for c in cs:
         A, B, ALL = (_load_atp(out_dir, c, "head", h) for h in ("A", "B", "all"))
+        scores[c] = ALL
         for k in cfg["reliability_k"]:
             if A is not None and B is not None:
                 res["within_split_half"].setdefault(c, {})[k] = L.jaccard(L.top_k(A, k), L.top_k(B, k))
@@ -285,13 +322,23 @@ def stage_reliability(model, pairs, out_dir, cfg):
         for i, a in enumerate(cs):
             for b in cs[i + 1:]:
                 res["across_contrasts"].setdefault(f"{a}~{b}", {})[k] = L.jaccard(tops[(a, k)], tops[(b, k)])
+        for a in cs:
+            for b in cs:
+                if a != b:
+                    res["weighted_overlap_top_k"].setdefault(f"{a}->{b}", {})[k] = _weighted_overlap(
+                        tops[(a, k)], scores[b], tops[(b, k)]
+                    )
     for dc in cfg.get("dla_contrasts", ["C_pinpoint", "C_soc"]):
         M = _load_dla(out_dir, dc, "all")
         if M is None:
             continue
         for c in cs:
             for k in cfg["reliability_k"]:
-                res["across_contrasts"].setdefault(f"DLA({dc})~{c}", {})[k] = L.jaccard(L.top_k(M, k), tops[(c, k)])
+                td = L.top_k(M, k)
+                res["across_contrasts"].setdefault(f"DLA({dc})~{c}", {})[k] = L.jaccard(td, tops[(c, k)])
+                res["weighted_overlap_top_k"].setdefault(f"DLA({dc})->{c}", {})[k] = _weighted_overlap(
+                    td, scores[c], tops[(c, k)]
+                )
     save(res, out_dir / "stage_reliability.json")
     return res
 
@@ -316,7 +363,9 @@ def stage_dissociation(model, pairs, out_dir, cfg):
         if M_sel is not None:
             tops[f"DLA({dc})"] = L.top_k(M_sel, k)
     res = {"k": k, "selection_half": sel_half, "eval_half": eval_half,
-           "n_pairs_by_target": {}, "matrix": {}, "random": {}, "random_layer_matched_seeds": {}}
+           "n_pairs_by_target": {}, "matrix": {}, "normalized_matrix": {},
+           "random": {}, "random_layer_matched_seeds": {},
+           "random_by_source": {}, "random_by_source_seeds": {}}
     for y in cs:
         ps_half = [p for p in groups[y] if p.meta["split_half"] == eval_half] or groups[y]
         ps = ps_half[: cfg["dissociation_max_pairs"]]
@@ -328,9 +377,17 @@ def stage_dissociation(model, pairs, out_dir, cfg):
         if not ps:
             continue
         for x, top in tops.items():
-            rec = [L.patch_recovery(model, p, "head", top, "suffix", cache=caches[p.pair_id])["recovery"] for p in ps]
-            res["matrix"].setdefault(x, {})[y] = L.mean_ci(rec)
-        # Layer-matched random control matched to target contrast y's own top-k layer distribution (all random seeds)
+            outs = [L.patch_recovery(model, p, "head", top, "suffix", cache=caches[p.pair_id]) for p in ps]
+            rec = [o["recovery"] for o in outs]
+            clamped = [max(-1.0, min(2.0, r)) for r in rec]
+            dm = [o["m_patched"] - o["m_corrupt"] for o in outs]
+            cell = L.mean_ci(rec)
+            cell["median"] = statistics.median(rec)
+            cell["clamped_mean"] = statistics.mean(clamped)
+            cell["delta_m_mean"] = statistics.mean(dm)
+            cell["delta_m_median"] = statistics.median(dm)
+            res["matrix"].setdefault(x, {})[y] = cell
+        # Target-Y-matched random control (5 seeds)
         rnd_seeds = []
         for seed in range(cfg["n_random_seeds"]):
             rs = L.layer_matched_random(tops[y], H, seed=seed)
@@ -338,6 +395,27 @@ def stage_dissociation(model, pairs, out_dir, cfg):
                 L.patch_recovery(model, p, "head", rs, "suffix", cache=caches[p.pair_id])["recovery"] for p in ps))
         res["random_layer_matched_seeds"][y] = rnd_seeds
         res["random"][y] = {"n_seeds": len(rnd_seeds), "mean": statistics.mean(rnd_seeds), "max": max(rnd_seeds)}
+        # Source-X-matched random control (5 seeds) — checks off-diagonal & late-layer DLA rows against X's layer distribution
+        for x, top_x in tops.items():
+            if x == y:
+                res["random_by_source_seeds"].setdefault(x, {})[y] = rnd_seeds
+                res["random_by_source"].setdefault(x, {})[y] = res["random"][y]
+                continue
+            sx_seeds = []
+            for seed in range(cfg["n_random_seeds"]):
+                rs = L.layer_matched_random(top_x, H, seed=seed)
+                sx_seeds.append(statistics.mean(
+                    L.patch_recovery(model, p, "head", rs, "suffix", cache=caches[p.pair_id])["recovery"] for p in ps))
+            res["random_by_source_seeds"].setdefault(x, {})[y] = sx_seeds
+            res["random_by_source"].setdefault(x, {})[y] = {
+                "n_seeds": len(sx_seeds), "mean": statistics.mean(sx_seeds), "max": max(sx_seeds)
+            }
+    # Normalised dissociation index D[x->y] = R[x][y] / R[y][y] (immune to over-recovery scaling)
+    for x, row in res["matrix"].items():
+        for y, cell in row.items():
+            diag = res["matrix"].get(y, {}).get(y, {}).get("mean")
+            if diag and abs(diag) > 1e-6 and "mean" in cell:
+                res["normalized_matrix"].setdefault(x, {})[y] = cell["mean"] / diag
     save(res, out_dir / "stage_dissociation.json")
     return res
 
@@ -378,6 +456,9 @@ def main():
     ap.add_argument("--alias")
     ap.add_argument("--stages", default="all")
     ap.add_argument("--contrasts", nargs="*")
+    ap.add_argument("--dissociation-contrasts", nargs="*", help="override cfg['dissociation_contrasts']")
+    ap.add_argument("--eligible-file", type=Path, help="JSON from b1_export_eligible.py to restrict base_ids")
+    ap.add_argument("--eligible-model", help="model key inside --eligible-file (e.g. qwen3_14b or qwen3_8b)")
     ap.add_argument("--include-deferred", action="store_true", help="also run C_content_CF / C_ctx_shell (only after the A1 2x2 gate)")
     ap.add_argument("--limit", type=int, help="max pairs per contrast (debug)")
     ap.add_argument("--selftest-tiny", action="store_true")
@@ -385,10 +466,18 @@ def main():
     cfg = load_cfg()
     stages = ALL_STAGES if args.stages == "all" else args.stages.split(",")
     contrasts = args.contrasts or cfg["contrasts"]
+    if args.dissociation_contrasts:
+        cfg = {**cfg, "dissociation_contrasts": args.dissociation_contrasts}
+    eligible_ids, eligible_meta = None, None
+    if args.eligible_file:
+        if not args.eligible_model:
+            ap.error("--eligible-model is required when --eligible-file is set")
+        elig_path = args.eligible_file if args.eligible_file.exists() else (B1 / args.eligible_file)
+        eligible_ids, eligible_meta = load_eligible_ids(elig_path, args.eligible_model)
     pairs_path = B1 / cfg["pairs_file"]
 
     if args.selftest_tiny:
-        model, tok, alias = tiny_model(), FakeTok(), "selftest_tiny"
+        model, tok, alias = tiny_model(), FakeTok(), args.alias or "selftest_tiny"
         cfg = {**cfg, "verify_k_heads": [2], "verify_k_mlp_layers": [1], "n_random_seeds": 2, "reliability_k": [2],
                "dissociation_k": 2, "report_top": 3, "resid_per_position_pairs": 1, "resid_per_position_layer_stride": 2,
                "resid_per_position_max_suffix": 8, "dissociation_max_pairs": 6, "min_effect_logits": -1e9}
@@ -403,11 +492,11 @@ def main():
             prm.requires_grad_(False)
         alias = args.alias
     out_dir = B1 / "results" / alias
-    rows = load_pairs(pairs_path, contrasts, args.include_deferred, args.limit)
+    rows = load_pairs(pairs_path, contrasts, args.include_deferred, args.limit, eligible_ids=eligible_ids)
     pairs = encode_all(tok, rows)
     print(f"[b1] {len(pairs)} pairs, contrasts={sorted(by_contrast(pairs))}, stages={stages}")
     meta = {"model": args.model, "alias": alias, "stages": stages, "n_pairs": len(pairs), "started": time.time(),
-            "config": cfg, "torch": torch.__version__}
+            "eligible_filter": eligible_meta, "config": cfg, "torch": torch.__version__}
     for st in stages:
         t0 = time.time()
         STAGE_FN[st](model, pairs, out_dir, cfg)

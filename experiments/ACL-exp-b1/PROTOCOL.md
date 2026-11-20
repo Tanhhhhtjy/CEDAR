@@ -88,3 +88,14 @@ CUDA_VISIBLE_DEVICES=1,2 python experiments/ACL-exp-b1/scripts/b1_run.py --model
 - 结果写入 `experiments/ACL-exp-b1/results/<alias>/`，只包含 JSON 和小体积的 .pt 文件。提交到 `ACL-exp-b1` 分支，commit 信息为 `results(ACL-exp-b1): <alias> stage <...>`。
 - 不要修改 `scripts/`、`configs/`、`data/`。确有问题就停下来汇报。
 - 每完成一个模型的 sanity 阶段先推送一次，便于尽早确认信号在 v2.2 prompt 下仍然存在。
+
+## 8. 补跑：Turn-1 合格题子集复核（约 40 分钟并行完成，跑完封箱 B1）
+
+A1 v2.2 交叉审计发现，Turn-1 不合格题显著拉低了 8B `C_soc` 与 14B 2×2 的信号纯度。为验证 B1 的头/MLP 排名与解离矩阵在严格 Turn-1 合格题上稳健不变，并补充按来源 X 匹配的随机对照及 `C_content_CF` 的解离行，在原有结果目录（`results/<alias>/`）保持不动的前提下，将合格题复核写入 `results/<alias>_eligible/`：
+
+- 冻结的合格题清单：`data/eligible_ids_v2_2_no_think.json`（由 `scripts/b1_export_eligible.py` 从 `origin/ACL-exp-a1@069f830` 导出：Qwen3-14B 74 题 = 62 符号 + 12 自然；Qwen3-8B 99 题 = 89 符号 + 10 自然）。
+- 14B（GPU 1,2）与 8B（GPU 0）可完全并行，总耗时约 40 分钟：
+  - 14B 跑 `sanity,atp,dla,verify,reliability,dissociation`，对比：`C_pinpoint C_soc C_form C_content_N_CF C_content_CF`（加 `--include-deferred`），并将 `C_content_CF` 纳入 `--dissociation-contrasts`。
+  - 8B 跑 `sanity,atp,dla,verify,reliability,dissociation`，对比：`C_pinpoint C_soc C_form C_content_N_CF C_content_AF`。
+- 跑完运行 `scripts/b1_compare_eligible.py --alias qwen3_14b` 与 `--alias qwen3_8b`，输出全集 vs 合格题子集的 Top-10/20/50 Jaccard、加权 AtP 质量重叠及 Top-5 MLP 重合度（目标核心通路 J@20 ≥ 0.70）。
+- `stage_dissociation.json` 同步记录归一化解离指数 `normalized_matrix`（`R[X][Y] / R[Y][Y]`）、中位数与截断均值 `[-1, 2]`、原始 logit 增量 `delta_m` 以及按来源 X 匹配的 5-seed 随机对照 `random_by_source`。
