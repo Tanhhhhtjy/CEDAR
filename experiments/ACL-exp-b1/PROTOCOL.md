@@ -97,5 +97,5 @@ A1 v2.2 交叉审计发现，Turn-1 不合格题显著拉低了 8B `C_soc` 与 1
 - 14B（GPU 1,2）与 8B（GPU 0）可完全并行，总耗时约 40 分钟：
   - 14B 跑 `sanity,atp,dla,verify,reliability,dissociation`，对比：`C_pinpoint C_soc C_form C_content_N_CF C_content_CF`（加 `--include-deferred`），并将 `C_content_CF` 纳入 `--dissociation-contrasts`。
   - 8B 跑 `sanity,atp,dla,verify,reliability,dissociation`，对比：`C_pinpoint C_soc C_form C_content_N_CF C_content_AF`。
-- 跑完运行 `scripts/b1_compare_eligible.py --alias qwen3_14b` 与 `--alias qwen3_8b`，输出全集 vs 合格题子集的 Top-10/20/50 Jaccard、加权 AtP 质量重叠及 Top-5 MLP 重合度（目标核心通路 J@20 ≥ 0.70）。
+- 跑完运行 `scripts/b1_compare_eligible.py --alias qwen3_14b` 与 `--alias qwen3_8b`，输出全集 vs 合格题子集的 Top-10/20/50 Jaccard、加权 AtP 质量重叠及 Top-5 MLP 重合度。**稳健判据（2026-11-20 修订）**：某对比在合格子集上算作"定位稳健"，需同时满足 (a) 主指标 `weighted_mass_of_full@20 ≥ 0.70`（全集 top-20 的 AtP 质量被合格子集 top-20 保留七成以上）；(b) `J@20` 不低于该对比**全集自身 split-half 的 J@20**（噪声上限；固定 0.70 对小样本对比过严，例如 14B `C_content_CF` 自身仅 0.538，14B 合格子集里 `C_content_N_CF` 的选择半区只有 11 对）。合格题是全集的子集，重叠度天然偏高，结果中同时报告 `shared_pair_fraction` 与各半区样本量。
 - `stage_dissociation.json` 同步记录归一化解离指数 `normalized_matrix`（`R[X][Y] / R[Y][Y]`）、中位数与截断均值 `[-1, 2]`、原始 logit 增量 `delta_m` 以及按来源 X 匹配的 5-seed 随机对照 `random_by_source`。

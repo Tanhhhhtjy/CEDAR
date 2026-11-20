@@ -29,8 +29,22 @@ def weighted_mass_retained(top_elig: list[tuple[int, int]], S_full: torch.Tensor
     return sum(max(0.0, float(S_full[li, h])) for li, h in shared) / denom
 
 
+def _load_json(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+
+
 def compare_pair(full_dir: Path, elig_dir: Path, ks=(10, 20, 50)) -> dict:
-    out: dict = {"full_dir": str(full_dir), "eligible_dir": str(elig_dir), "atp_heads": {}, "atp_mlp": {}, "dla_heads": {}}
+    """Decision rule (agreed 2026-11-20): a contrast's localisation is 'stable on the eligible subset' if
+      (a) weighted_mass_of_full@20 >= 0.70 (primary: the heavy heads survive), AND
+      (b) jaccard@20 >= the full run's OWN split-half Jaccard@20 (noise ceiling; a fixed 0.70 bar is stricter
+          than noise for small contrasts, e.g. 14B C_content_CF split-half J@20 = 0.538).
+    Note: eligible pairs are a subset of the full-run pairs, so eligible-vs-full overlap is biased upward;
+    `shared_pair_fraction` is reported so readers can discount it."""
+    out: dict = {"full_dir": str(full_dir), "eligible_dir": str(elig_dir), "decision_rule": compare_pair.__doc__,
+                 "atp_heads": {}, "atp_mlp": {}, "dla_heads": {}}
+    full_rel = _load_json(full_dir / "stage_reliability.json").get("within_split_half", {})
+    full_atp = _load_json(full_dir / "stage_atp.json")
+    elig_atp = _load_json(elig_dir / "stage_atp.json")
     for pt in sorted(elig_dir.glob("atp_*.pt")):
         c = pt.stem.removeprefix("atp_")
         full_pt = full_dir / pt.name
@@ -51,7 +65,18 @@ def compare_pair(full_dir: Path, elig_dir: Path, ks=(10, 20, 50)) -> dict:
             row["top20_full"] = L.top_k(Sf, 20)
             row["top20_elig"] = L.top_k(Se, 20)
             row["shared_top20"] = sorted(set(row["top20_full"]) & set(row["top20_elig"]))
-            row["passes_0.70_at_20"] = bool(row["jaccard@20"] >= 0.70)
+            ceil = full_rel.get(c, {})
+            ceil = ceil.get("20", ceil.get(20))
+            row["noise_ceiling_full_split_half_J@20"] = ceil
+            row["passes_weighted_mass_0.70"] = bool(row["weighted_mass_of_full@20"] >= 0.70)
+            row["passes_noise_ceiling"] = None if ceil is None else bool(row["jaccard@20"] >= ceil)
+            row["stable_on_eligible"] = None if ceil is None else bool(row["passes_weighted_mass_0.70"] and row["passes_noise_ceiling"])
+            row["passes_0.70_at_20"] = bool(row["jaccard@20"] >= 0.70)  # legacy fixed bar, reported only
+            ea, fa = elig_atp.get(c, {}), full_atp.get(c, {})
+            row["n_used_eligible"] = {"all": ea.get("n_used"), "A": ea.get("n_A"), "B": ea.get("n_B")}
+            row["n_used_full"] = {"all": fa.get("n_used"), "A": fa.get("n_A"), "B": fa.get("n_B")}
+            if ea.get("n_used") and fa.get("n_used"):
+                row["shared_pair_fraction"] = round(ea["n_used"] / fa["n_used"], 3)
             out["atp_heads"][c] = row
         if "mlp_all" in bf and "mlp_all" in be:
             mf = bf["mlp_all"].view(-1, 1)
@@ -91,7 +116,9 @@ def main() -> None:
     out.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
     print(f"[OK] wrote {out}")
     for c, v in report["atp_heads"].items():
-        print(f"  AtP {c:16s}: J@10={v['jaccard@10']:.3f} J@20={v['jaccard@20']:.3f} (B={v.get('half_B_jaccard@20')}) mass_full@20={v['weighted_mass_of_full@20']:.3f} pass0.70={v['passes_0.70_at_20']}")
+        print(f"  AtP {c:16s}: J@20={v['jaccard@20']:.3f} (ceiling {v['noise_ceiling_full_split_half_J@20']}) "
+              f"mass_full@20={v['weighted_mass_of_full@20']:.3f} n_elig(A/B)={v['n_used_eligible']['A']}/{v['n_used_eligible']['B']} "
+              f"stable={v['stable_on_eligible']}")
     for c, v in report["atp_mlp"].items():
         print(f"  MLP {c:16s}: J@5={v['jaccard@5']:.3f} full={v['top5_full']} elig={v['top5_elig']}")
     for c, v in report["dla_heads"].items():
