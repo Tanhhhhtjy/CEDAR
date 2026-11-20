@@ -5,12 +5,13 @@
   "branch": "ACL-exp-a1",
   "split": "dev_only_pilot",
   "runner_sha256": {
-    "run_a1.py": "868270b146519b39d3cd0ace6ff31a6cca02f252002c6c2163ab27ae49565ae7",
-    "summarize.py": "e08395304231183f69f4ff4752adc4f4d141aea85b2449d6a7e59b4166fb5fc3",
-    "launch.sh": "9d6d639bb8d0bbe4a49dfaa93558f6cc46e8fa6f91847b7d44c92de9e9b4e8b7",
+    "run_a1.py": "40fea5ce82da9e7212b64de1c0d0dcb0a6b64f3a51ccb414f966dde1dd4d7e7f",
+    "summarize.py": "efba3e6e7bd31f224a0fcf89508c461a5daae9bc9d064c0fefc9a093ad310d23",
+    "launch.sh": "ca51e437f70f5326b9c0398ab9918501cbb369514beb47637a708b3d15dbb4b4",
     "check_smoke.py": "e5882efa112087d3a88a00089e586fe305d1d0505c3d56ec68bac3fc75afa628",
     "preflight.py": "ab3a1b74c74c68b8fa9a98fd5b84a7dfebba1d642436a35ccd64842214fe9a79",
-    "extra_analysis.py": "3825fa86c40d277fea27a4b1ee7fcc4c20e845ac5406e42314e85593703f1635"
+    "extra_analysis.py": "3825fa86c40d277fea27a4b1ee7fcc4c20e845ac5406e42314e85593703f1635",
+    "dispatch.py": "a6bdcca294e16400507cd913207d315cb6fb5a9d80176edc701bb71fecb904d1"
   },
   "protocol_file_sha256": {
     "experiments/ACL-exp-a1/configs/exp_a1_config.yaml": "834e701d9d45fd377acb7cb631e6ce9219c3d13adc6c8eaeeed075fa892ae08e",
@@ -54,7 +55,7 @@
     }
   },
   "execution": {
-    "gpus": "4 x NVIDIA A800-SXM4-40GB, devices 0-3",
+    "gpus": "4 original prompt shards on A800 devices 0-3; completed B1 devices may assist with disjoint whole arm batches. See per-cell dispatch.",
     "tensor_parallel_size": 1,
     "vllm": "0.11.0",
     "dtype": "bfloat16",
@@ -180,6 +181,28 @@
       "generation_wall_seconds": 261.3,
       "first_checkpoint_unix": 1795142570.266886,
       "last_checkpoint_unix": 1795142724.317753
+    },
+    "qwen3_14b/no_think": {
+      "file": "raw_records/qwen3_14b__no_think.jsonl.gz",
+      "sha256": "38e7fdb549d9052e0de767b4130205429693badc20bc9b247c3e83d1ddacca81",
+      "n": 76860,
+      "worker_start_unix": 1795142758,
+      "generation_wall_seconds": 347.2,
+      "first_checkpoint_unix": 1795142868.5964384,
+      "last_checkpoint_unix": 1795143105.176847,
+      "dispatch": {
+        "all": {
+          "source": "original four-shard launch",
+          "devices_to_shards": {
+            "0": 0,
+            "1": 1,
+            "2": 2,
+            "3": 3
+          },
+          "runner_sha256": "868270b146519b39d3cd0ace6ff31a6cca02f252002c6c2163ab27ae49565ae7",
+          "launcher_sha256": "9d6d639bb8d0bbe4a49dfaa93558f6cc46e8fa6f91847b7d44c92de9e9b4e8b7"
+        }
+      }
     }
   }
 }
