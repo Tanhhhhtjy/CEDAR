@@ -1,0 +1,281 @@
+{
+  "model": "qwen3_14b",
+  "contrasts": [
+    "C_pinpoint",
+    "C_soc",
+    "C_form",
+    "C_Fshell",
+    "C_content_AF",
+    "C_content_N",
+    "C_content_N_CF"
+  ],
+  "scope": "default",
+  "stage": "atp",
+  "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+  "completed": "2026-11-20T10:49:57+08:00",
+  "device_indices": [
+    5,
+    6
+  ],
+  "run": {
+    "n_pairs": 726,
+    "stages": [
+      "atp"
+    ],
+    "config": {
+      "experiment_id": "ACL-exp-b1",
+      "depends_on": "ACL-exp-a1 protocol v2.2 (prompts rendered by experiments/ACL-exp-a1/scripts/render_prompts.py)",
+      "pairs_file": "data/b1_pairs_v2_2.jsonl",
+      "models": [
+        {
+          "alias": "qwen3_8b",
+          "repo": "Qwen/Qwen3-8B",
+          "gpus": 1,
+          "order": 1
+        },
+        {
+          "alias": "qwen3_14b",
+          "repo": "Qwen/Qwen3-14B",
+          "gpus": 2,
+          "order": 2,
+          "notes": "device_map=auto over 2 x A800 40G"
+        }
+      ],
+      "device_map": "auto",
+      "contrasts": [
+        "C_pinpoint",
+        "C_soc",
+        "C_form",
+        "C_Fshell",
+        "C_content_AF",
+        "C_content_N",
+        "C_content_N_CF"
+      ],
+      "dla_contrasts": [
+        "C_pinpoint",
+        "C_soc"
+      ],
+      "min_effect_logits": 0.5,
+      "atp_kinds": [
+        "head",
+        "mlp"
+      ],
+      "report_top": 30,
+      "resid_per_position_pairs": 8,
+      "resid_per_position_layer_stride": 4,
+      "resid_per_position_max_suffix": 48,
+      "verify_on_half": "A",
+      "verify_k_heads": [
+        5,
+        10,
+        20,
+        50
+      ],
+      "verify_k_mlp_layers": [
+        1,
+        3,
+        5
+      ],
+      "n_random_seeds": 5,
+      "reliability_k": [
+        10,
+        20,
+        50
+      ],
+      "dissociation_contrasts": [
+        "C_pinpoint",
+        "C_soc",
+        "C_form",
+        "C_content_AF",
+        "C_content_N",
+        "C_content_N_CF"
+      ],
+      "dissociation_k": 20,
+      "dissociation_max_pairs": 60,
+      "preregistered": {
+        "signal_present": "stage_sanity: median effect > 0 and sign consistency >= 0.70 (per contrast)",
+        "localisation_valid": "stage_verify: top-k recovery CI lower bound > max(random layer-matched) for k in {10,20}",
+        "reliable": "stage_reliability: within-contrast split-half Jaccard@20 > across-contrast Jaccard@20",
+        "double_dissociation": "stage_dissociation (out-of-sample: selected on half B, evaluated on half A): recovery[X][X] > recovery[X][Y] + 0.2 AND recovery[Y][Y] > recovery[Y][X] + 0.2 for (X, Y) = (C_pinpoint, C_form) and (C_soc, C_form); same test for (C_form, C_content_N_CF) and (C_pinpoint, C_content_N_CF)."
+      }
+    }
+  },
+  "components": [
+    {
+      "model": "qwen3_14b",
+      "stage": "atp",
+      "group": "C_pinpoint",
+      "contrasts": [
+        "C_pinpoint"
+      ],
+      "pairs": 132,
+      "pair_ids_sha256": "a65171cc1845980c1f92b6c292cc3dc6b3958464efccb6ea41e88b5f05a570ea",
+      "device_indices": [
+        5,
+        6
+      ],
+      "started": "2026-11-20T10:44:50+08:00",
+      "completed": "2026-11-20T10:45:30+08:00",
+      "files": {
+        "atp_C_pinpoint.pt": "4584b3d1daca38c1c1746fcb143b4f982ddbbf625458ba281cdbbf20fd513557",
+        "stage_atp.json": "d029bff434f6afa76418374d5bf587a40b14b4808a588abb14a60058823bdc00"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": null
+    },
+    {
+      "model": "qwen3_14b",
+      "stage": "atp",
+      "group": "C_soc",
+      "contrasts": [
+        "C_soc"
+      ],
+      "pairs": 132,
+      "pair_ids_sha256": "c023535a066e7df47026be4188d87f69f13f55c6bb304166951cbed8dfcae0da",
+      "device_indices": [
+        5,
+        6
+      ],
+      "started": "2026-11-20T10:45:30+08:00",
+      "completed": "2026-11-20T10:46:12+08:00",
+      "files": {
+        "atp_C_soc.pt": "2e59c514c4db043c2edf0a740b71b2dbeb8c9521bc04a37159cb1fef152543c6",
+        "stage_atp.json": "6c74853631367d332991f58c4d855020ff18e4367a0903c70c58d5c244505738"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": null
+    },
+    {
+      "model": "qwen3_14b",
+      "stage": "atp",
+      "group": "C_form",
+      "contrasts": [
+        "C_form"
+      ],
+      "pairs": 132,
+      "pair_ids_sha256": "3bb15c57a1449f012a733aed1b28feda9a0f56a62fb5682d7dd2341a2997613c",
+      "device_indices": [
+        5,
+        6
+      ],
+      "started": "2026-11-20T10:46:12+08:00",
+      "completed": "2026-11-20T10:46:54+08:00",
+      "files": {
+        "atp_C_form.pt": "13337e337f6faf7d3acba486d3c885867a247ca41ec7785c65efd0b121693314",
+        "stage_atp.json": "d87768d2c32b0b8957fd1e501a7d836791eebcc4b5c3abb1da941020c04362c4"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": null
+    },
+    {
+      "model": "qwen3_14b",
+      "stage": "atp",
+      "group": "C_Fshell",
+      "contrasts": [
+        "C_Fshell"
+      ],
+      "pairs": 132,
+      "pair_ids_sha256": "e16dcbb73d3afb4de871244c300aedc8c3faa2b3a6dd9d753f68b2054a7487db",
+      "device_indices": [
+        5,
+        6
+      ],
+      "started": "2026-11-20T10:46:54+08:00",
+      "completed": "2026-11-20T10:47:38+08:00",
+      "files": {
+        "atp_C_Fshell.pt": "4a040f73de7c7e80c04fc730b6462ed2ca8507cd10f794a414c4b8b2191a2eab",
+        "stage_atp.json": "7095a355eaab90f191676ceade0e831219de84c6c7ecd0e634050aa991b75645"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": null
+    },
+    {
+      "model": "qwen3_14b",
+      "stage": "atp",
+      "group": "C_content_AF",
+      "contrasts": [
+        "C_content_AF"
+      ],
+      "pairs": 66,
+      "pair_ids_sha256": "1d7c54496ce90512ce964778e429d719a23c60d4ba20960770f400131ed26b0e",
+      "device_indices": [
+        5,
+        6
+      ],
+      "started": "2026-11-20T10:47:39+08:00",
+      "completed": "2026-11-20T10:48:05+08:00",
+      "files": {
+        "atp_C_content_AF.pt": "15433e857144cf645ad19882f9e63e3bfef67048597ccb3fd7078a528cb66510",
+        "stage_atp.json": "413e3c6c31e7e725f05ffbbe6d95b6e71d2200cb13d141d681f8f5fb2fea9919"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": null
+    },
+    {
+      "model": "qwen3_14b",
+      "stage": "atp",
+      "group": "C_content_N",
+      "contrasts": [
+        "C_content_N"
+      ],
+      "pairs": 66,
+      "pair_ids_sha256": "02ad21269112bcf4ac03af003ecc7ccf564727da58b42d0420eed3cd445357b6",
+      "device_indices": [
+        5,
+        6
+      ],
+      "started": "2026-11-20T10:48:05+08:00",
+      "completed": "2026-11-20T10:48:40+08:00",
+      "files": {
+        "atp_C_content_N.pt": "98d53f19fdd89c8a4fa79aee77d1cf0163da0574d14263500e55dd5970b90b2a",
+        "stage_atp.json": "ba18c0ebc2b459a9bb794d87c52310bc23d3cd42ede825acf33e8335971b83e2"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": null
+    },
+    {
+      "model": "qwen3_14b",
+      "stage": "atp",
+      "group": "C_content_N_CF",
+      "contrasts": [
+        "C_content_N_CF"
+      ],
+      "pairs": 66,
+      "pair_ids_sha256": "4afcdf8158726a6a4f7b0e7bd10fa79ff0ccc69db5fad701bcb71e3bcdef00b1",
+      "device_indices": [
+        5,
+        6
+      ],
+      "started": "2026-11-20T10:48:40+08:00",
+      "completed": "2026-11-20T10:49:30+08:00",
+      "files": {
+        "atp_C_content_N_CF.pt": "7323e09373481b94418602f7ff2b4c9140b955db8b73532c09cb98971d75e87d",
+        "stage_atp.json": "c0e6c8a44507613bd3ecfd3f616bdb4c8f47f5257129417f1f1ae699269e045c"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": null
+    }
+  ],
+  "context_flip_dialog_gate": null
+}
