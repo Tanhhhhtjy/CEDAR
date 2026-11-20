@@ -1,4 +1,5 @@
 {
+  "model": "qwen3_14b",
   "contrasts": [
     "C_pinpoint",
     "C_soc",
@@ -6,23 +7,23 @@
     "C_Fshell",
     "C_content_AF",
     "C_content_N",
-    "C_content_N_CF"
+    "C_content_N_CF",
+    "C_content_CF",
+    "C_ctx_shell"
   ],
-  "context_flip_dialog_gate": null,
-  "model": "qwen3_14b",
+  "scope": "expanded",
+  "stage": "sanity",
+  "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+  "completed": "2026-11-20T10:55:02+08:00",
   "device_indices": [
     5,
     6
   ],
-  "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
   "run": {
-    "model": "/mnt/kcl/devuser/ckpts/Qwen3-14B",
-    "alias": "qwen3_14b",
+    "n_pairs": 858,
     "stages": [
       "sanity"
     ],
-    "n_pairs": 726,
-    "started": 1795142364.3655713,
     "config": {
       "experiment_id": "ACL-exp-b1",
       "depends_on": "ACL-exp-a1 protocol v2.2 (prompts rendered by experiments/ACL-exp-a1/scripts/render_prompts.py)",
@@ -99,12 +100,167 @@
         "reliable": "stage_reliability: within-contrast split-half Jaccard@20 > across-contrast Jaccard@20",
         "double_dissociation": "stage_dissociation (out-of-sample: selected on half B, evaluated on half A): recovery[X][X] > recovery[X][Y] + 0.2 AND recovery[Y][Y] > recovery[Y][X] + 0.2 for (X, Y) = (C_pinpoint, C_form) and (C_soc, C_form); same test for (C_form, C_content_N_CF) and (C_pinpoint, C_content_N_CF)."
       }
+    }
+  },
+  "components": [
+    {
+      "model": "qwen3_14b",
+      "stage": "sanity",
+      "group": "C_content_CF",
+      "contrasts": [
+        "C_content_CF"
+      ],
+      "pairs": 66,
+      "pair_ids_sha256": "bffcaca259a63bb8495196cd4a395a7c6890fafa70dedaa3eedfa6009eb34b31",
+      "device_indices": [
+        5,
+        6
+      ],
+      "started": "2026-11-20T10:54:18+08:00",
+      "completed": "2026-11-20T10:54:30+08:00",
+      "files": {
+        "stage_sanity.json": "13bc7fbc1b1d5364af57b462fbc59644f0752e347c0dae90c4e8884bc41a28a5"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": "85aa81fbad67741fe477c546afeebd2781679990"
     },
-    "torch": "2.8.0+cu128",
-    "seconds_sanity": 132.07010698318481
+    {
+      "model": "qwen3_14b",
+      "stage": "sanity",
+      "group": "C_ctx_shell",
+      "contrasts": [
+        "C_ctx_shell"
+      ],
+      "pairs": 66,
+      "pair_ids_sha256": "984d4b8b991a5ea514f298cdc0bb89fe8cdbbe03723072f2337812035b602b41",
+      "device_indices": [
+        5,
+        6
+      ],
+      "started": "2026-11-20T10:54:30+08:00",
+      "completed": "2026-11-20T10:54:42+08:00",
+      "files": {
+        "stage_sanity.json": "a338777786001c8d42a99089d3a10220f0d1897eda07d5f7bd80ca3d01eb96ec"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": "85aa81fbad67741fe477c546afeebd2781679990"
+    }
+  ],
+  "default_manifest": {
+    "contrasts": [
+      "C_pinpoint",
+      "C_soc",
+      "C_form",
+      "C_Fshell",
+      "C_content_AF",
+      "C_content_N",
+      "C_content_N_CF"
+    ],
+    "context_flip_dialog_gate": null,
+    "model": "qwen3_14b",
+    "device_indices": [
+      5,
+      6
+    ],
+    "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+    "run": {
+      "model": "/mnt/kcl/devuser/ckpts/Qwen3-14B",
+      "alias": "qwen3_14b",
+      "stages": [
+        "sanity"
+      ],
+      "n_pairs": 726,
+      "started": 1795142364.3655713,
+      "config": {
+        "experiment_id": "ACL-exp-b1",
+        "depends_on": "ACL-exp-a1 protocol v2.2 (prompts rendered by experiments/ACL-exp-a1/scripts/render_prompts.py)",
+        "pairs_file": "data/b1_pairs_v2_2.jsonl",
+        "models": [
+          {
+            "alias": "qwen3_8b",
+            "repo": "Qwen/Qwen3-8B",
+            "gpus": 1,
+            "order": 1
+          },
+          {
+            "alias": "qwen3_14b",
+            "repo": "Qwen/Qwen3-14B",
+            "gpus": 2,
+            "order": 2,
+            "notes": "device_map=auto over 2 x A800 40G"
+          }
+        ],
+        "device_map": "auto",
+        "contrasts": [
+          "C_pinpoint",
+          "C_soc",
+          "C_form",
+          "C_Fshell",
+          "C_content_AF",
+          "C_content_N",
+          "C_content_N_CF"
+        ],
+        "dla_contrasts": [
+          "C_pinpoint",
+          "C_soc"
+        ],
+        "min_effect_logits": 0.5,
+        "atp_kinds": [
+          "head",
+          "mlp"
+        ],
+        "report_top": 30,
+        "resid_per_position_pairs": 8,
+        "resid_per_position_layer_stride": 4,
+        "resid_per_position_max_suffix": 48,
+        "verify_on_half": "A",
+        "verify_k_heads": [
+          5,
+          10,
+          20,
+          50
+        ],
+        "verify_k_mlp_layers": [
+          1,
+          3,
+          5
+        ],
+        "n_random_seeds": 5,
+        "reliability_k": [
+          10,
+          20,
+          50
+        ],
+        "dissociation_contrasts": [
+          "C_pinpoint",
+          "C_soc",
+          "C_form",
+          "C_content_AF",
+          "C_content_N",
+          "C_content_N_CF"
+        ],
+        "dissociation_k": 20,
+        "dissociation_max_pairs": 60,
+        "preregistered": {
+          "signal_present": "stage_sanity: median effect > 0 and sign consistency >= 0.70 (per contrast)",
+          "localisation_valid": "stage_verify: top-k recovery CI lower bound > max(random layer-matched) for k in {10,20}",
+          "reliable": "stage_reliability: within-contrast split-half Jaccard@20 > across-contrast Jaccard@20",
+          "double_dissociation": "stage_dissociation (out-of-sample: selected on half B, evaluated on half A): recovery[X][X] > recovery[X][Y] + 0.2 AND recovery[Y][Y] > recovery[Y][X] + 0.2 for (X, Y) = (C_pinpoint, C_form) and (C_soc, C_form); same test for (C_form, C_content_N_CF) and (C_pinpoint, C_content_N_CF)."
+        }
+      },
+      "torch": "2.8.0+cu128",
+      "seconds_sanity": 132.07010698318481
+    },
+    "runtime_packages": {
+      "accelerate": "1.1.1"
+    },
+    "completed": "2026-11-20T10:41:37+08:00"
   },
-  "runtime_packages": {
-    "accelerate": "1.1.1"
-  },
-  "completed": "2026-11-20T10:41:37+08:00"
+  "context_flip_dialog_gate": true
 }
