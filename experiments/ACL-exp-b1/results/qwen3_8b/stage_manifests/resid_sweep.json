@@ -1,0 +1,267 @@
+{
+  "model": "qwen3_8b",
+  "contrasts": [
+    "C_pinpoint",
+    "C_soc",
+    "C_form",
+    "C_Fshell",
+    "C_content_AF",
+    "C_content_N",
+    "C_content_N_CF"
+  ],
+  "scope": "default",
+  "stage": "resid_sweep",
+  "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+  "completed": "2026-11-20T11:15:44+08:00",
+  "device_indices": [
+    4,
+    7
+  ],
+  "run": {
+    "n_pairs": 726,
+    "stages": [
+      "resid_sweep"
+    ],
+    "config": {
+      "experiment_id": "ACL-exp-b1",
+      "depends_on": "ACL-exp-a1 protocol v2.2 (prompts rendered by experiments/ACL-exp-a1/scripts/render_prompts.py)",
+      "pairs_file": "data/b1_pairs_v2_2.jsonl",
+      "models": [
+        {
+          "alias": "qwen3_8b",
+          "repo": "Qwen/Qwen3-8B",
+          "gpus": 1,
+          "order": 1
+        },
+        {
+          "alias": "qwen3_14b",
+          "repo": "Qwen/Qwen3-14B",
+          "gpus": 2,
+          "order": 2,
+          "notes": "device_map=auto over 2 x A800 40G"
+        }
+      ],
+      "device_map": "auto",
+      "contrasts": [
+        "C_pinpoint",
+        "C_soc",
+        "C_form",
+        "C_Fshell",
+        "C_content_AF",
+        "C_content_N",
+        "C_content_N_CF"
+      ],
+      "dla_contrasts": [
+        "C_pinpoint",
+        "C_soc"
+      ],
+      "min_effect_logits": 0.5,
+      "atp_kinds": [
+        "head",
+        "mlp"
+      ],
+      "report_top": 30,
+      "resid_per_position_pairs": 8,
+      "resid_per_position_layer_stride": 4,
+      "resid_per_position_max_suffix": 48,
+      "verify_on_half": "A",
+      "verify_k_heads": [
+        5,
+        10,
+        20,
+        50
+      ],
+      "verify_k_mlp_layers": [
+        1,
+        3,
+        5
+      ],
+      "n_random_seeds": 5,
+      "reliability_k": [
+        10,
+        20,
+        50
+      ],
+      "dissociation_contrasts": [
+        "C_pinpoint",
+        "C_soc",
+        "C_form",
+        "C_content_AF",
+        "C_content_N",
+        "C_content_N_CF"
+      ],
+      "dissociation_k": 20,
+      "dissociation_max_pairs": 60,
+      "preregistered": {
+        "signal_present": "stage_sanity: median effect > 0 and sign consistency >= 0.70 (per contrast)",
+        "localisation_valid": "stage_verify: top-k recovery CI lower bound > max(random layer-matched) for k in {10,20}",
+        "reliable": "stage_reliability: within-contrast split-half Jaccard@20 > across-contrast Jaccard@20",
+        "double_dissociation": "stage_dissociation (out-of-sample: selected on half B, evaluated on half A): recovery[X][X] > recovery[X][Y] + 0.2 AND recovery[Y][Y] > recovery[Y][X] + 0.2 for (X, Y) = (C_pinpoint, C_form) and (C_soc, C_form); same test for (C_form, C_content_N_CF) and (C_pinpoint, C_content_N_CF)."
+      }
+    }
+  },
+  "components": [
+    {
+      "model": "qwen3_8b",
+      "stage": "resid_sweep",
+      "group": "C_pinpoint",
+      "contrasts": [
+        "C_pinpoint"
+      ],
+      "pairs": 132,
+      "pair_ids_sha256": "a65171cc1845980c1f92b6c292cc3dc6b3958464efccb6ea41e88b5f05a570ea",
+      "device_indices": [
+        4
+      ],
+      "started": "2026-11-20T10:44:45+08:00",
+      "completed": "2026-11-20T10:49:42+08:00",
+      "files": {
+        "stage_resid_sweep.json": "f829e381da6a8369adfc89bed377c5d425de60b8c58aa6cbf9188263c4b66261"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": null
+    },
+    {
+      "model": "qwen3_8b",
+      "stage": "resid_sweep",
+      "group": "C_soc",
+      "contrasts": [
+        "C_soc"
+      ],
+      "pairs": 132,
+      "pair_ids_sha256": "c023535a066e7df47026be4188d87f69f13f55c6bb304166951cbed8dfcae0da",
+      "device_indices": [
+        4
+      ],
+      "started": "2026-11-20T10:49:42+08:00",
+      "completed": "2026-11-20T10:53:11+08:00",
+      "files": {
+        "stage_resid_sweep.json": "fc2c7ab2a25531f99e8e02f7276274b161a1d3e36af05e0a057aaa4e99c570fe"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": null
+    },
+    {
+      "model": "qwen3_8b",
+      "stage": "resid_sweep",
+      "group": "C_form",
+      "contrasts": [
+        "C_form"
+      ],
+      "pairs": 132,
+      "pair_ids_sha256": "3bb15c57a1449f012a733aed1b28feda9a0f56a62fb5682d7dd2341a2997613c",
+      "device_indices": [
+        4
+      ],
+      "started": "2026-11-20T10:53:11+08:00",
+      "completed": "2026-11-20T10:57:37+08:00",
+      "files": {
+        "stage_resid_sweep.json": "de5f0e65b484aadf1bf98f759f588108e927e9b3f29082b6048d9556aeead26c"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": null
+    },
+    {
+      "model": "qwen3_8b",
+      "stage": "resid_sweep",
+      "group": "C_Fshell",
+      "contrasts": [
+        "C_Fshell"
+      ],
+      "pairs": 132,
+      "pair_ids_sha256": "e16dcbb73d3afb4de871244c300aedc8c3faa2b3a6dd9d753f68b2054a7487db",
+      "device_indices": [
+        4
+      ],
+      "started": "2026-11-20T10:57:37+08:00",
+      "completed": "2026-11-20T11:03:28+08:00",
+      "files": {
+        "stage_resid_sweep.json": "eeb9271df195a5fbaf9284fdbd28addc9a50e21f290f4011489b1b7379a0b343"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": null
+    },
+    {
+      "model": "qwen3_8b",
+      "stage": "resid_sweep",
+      "group": "C_content_AF",
+      "contrasts": [
+        "C_content_AF"
+      ],
+      "pairs": 66,
+      "pair_ids_sha256": "1d7c54496ce90512ce964778e429d719a23c60d4ba20960770f400131ed26b0e",
+      "device_indices": [
+        7
+      ],
+      "started": "2026-11-20T11:03:05+08:00",
+      "completed": "2026-11-20T11:08:52+08:00",
+      "files": {
+        "stage_resid_sweep.json": "a114f9374a1a072a56bf590f5fefa0e80237e63aff34dad77c3d7ebc1c1bcabf"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": null
+    },
+    {
+      "model": "qwen3_8b",
+      "stage": "resid_sweep",
+      "group": "C_content_N",
+      "contrasts": [
+        "C_content_N"
+      ],
+      "pairs": 66,
+      "pair_ids_sha256": "02ad21269112bcf4ac03af003ecc7ccf564727da58b42d0420eed3cd445357b6",
+      "device_indices": [
+        4
+      ],
+      "started": "2026-11-20T11:03:28+08:00",
+      "completed": "2026-11-20T11:10:06+08:00",
+      "files": {
+        "stage_resid_sweep.json": "9d1f3c0ed70a534914f19500f069fa352db9068598e3c4ea1a113322547dcbe2"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": null
+    },
+    {
+      "model": "qwen3_8b",
+      "stage": "resid_sweep",
+      "group": "C_content_N_CF",
+      "contrasts": [
+        "C_content_N_CF"
+      ],
+      "pairs": 66,
+      "pair_ids_sha256": "4afcdf8158726a6a4f7b0e7bd10fa79ff0ccc69db5fad701bcb71e3bcdef00b1",
+      "device_indices": [
+        7
+      ],
+      "started": "2026-11-20T11:08:52+08:00",
+      "completed": "2026-11-20T11:15:37+08:00",
+      "files": {
+        "stage_resid_sweep.json": "d24771a555df6beb7a853bfeaf8f8c32a8c466db0144af776fea470c74bb8f63"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": null
+    }
+  ],
+  "context_flip_dialog_gate": null
+}
