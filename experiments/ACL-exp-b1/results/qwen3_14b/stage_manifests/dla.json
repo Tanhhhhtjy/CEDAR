@@ -1,0 +1,128 @@
+{
+  "model": "qwen3_14b",
+  "contrasts": [
+    "C_pinpoint",
+    "C_soc"
+  ],
+  "scope": "default",
+  "stage": "dla",
+  "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+  "completed": "2026-11-20T10:51:22+08:00",
+  "device_indices": [
+    5,
+    6
+  ],
+  "run": {
+    "n_pairs": 264,
+    "stages": [
+      "dla"
+    ],
+    "config": {
+      "experiment_id": "ACL-exp-b1",
+      "depends_on": "ACL-exp-a1 protocol v2.2 (prompts rendered by experiments/ACL-exp-a1/scripts/render_prompts.py)",
+      "pairs_file": "data/b1_pairs_v2_2.jsonl",
+      "models": [
+        {
+          "alias": "qwen3_8b",
+          "repo": "Qwen/Qwen3-8B",
+          "gpus": 1,
+          "order": 1
+        },
+        {
+          "alias": "qwen3_14b",
+          "repo": "Qwen/Qwen3-14B",
+          "gpus": 2,
+          "order": 2,
+          "notes": "device_map=auto over 2 x A800 40G"
+        }
+      ],
+      "device_map": "auto",
+      "contrasts": [
+        "C_pinpoint",
+        "C_soc",
+        "C_form",
+        "C_Fshell",
+        "C_content_AF",
+        "C_content_N",
+        "C_content_N_CF"
+      ],
+      "dla_contrasts": [
+        "C_pinpoint",
+        "C_soc"
+      ],
+      "min_effect_logits": 0.5,
+      "atp_kinds": [
+        "head",
+        "mlp"
+      ],
+      "report_top": 30,
+      "resid_per_position_pairs": 8,
+      "resid_per_position_layer_stride": 4,
+      "resid_per_position_max_suffix": 48,
+      "verify_on_half": "A",
+      "verify_k_heads": [
+        5,
+        10,
+        20,
+        50
+      ],
+      "verify_k_mlp_layers": [
+        1,
+        3,
+        5
+      ],
+      "n_random_seeds": 5,
+      "reliability_k": [
+        10,
+        20,
+        50
+      ],
+      "dissociation_contrasts": [
+        "C_pinpoint",
+        "C_soc",
+        "C_form",
+        "C_content_AF",
+        "C_content_N",
+        "C_content_N_CF"
+      ],
+      "dissociation_k": 20,
+      "dissociation_max_pairs": 60,
+      "preregistered": {
+        "signal_present": "stage_sanity: median effect > 0 and sign consistency >= 0.70 (per contrast)",
+        "localisation_valid": "stage_verify: top-k recovery CI lower bound > max(random layer-matched) for k in {10,20}",
+        "reliable": "stage_reliability: within-contrast split-half Jaccard@20 > across-contrast Jaccard@20",
+        "double_dissociation": "stage_dissociation (out-of-sample: selected on half B, evaluated on half A): recovery[X][X] > recovery[X][Y] + 0.2 AND recovery[Y][Y] > recovery[Y][X] + 0.2 for (X, Y) = (C_pinpoint, C_form) and (C_soc, C_form); same test for (C_form, C_content_N_CF) and (C_pinpoint, C_content_N_CF)."
+      }
+    }
+  },
+  "components": [
+    {
+      "model": "qwen3_14b",
+      "stage": "dla",
+      "group": "default",
+      "contrasts": [
+        "C_pinpoint",
+        "C_soc"
+      ],
+      "pairs": 264,
+      "pair_ids_sha256": "c3bdbd8eb600a2149a2cfea89ff12fa1f7ff3a1c67818b46af0cfb2fe4ba51c6",
+      "device_indices": [
+        5,
+        6
+      ],
+      "started": "2026-11-20T10:49:30+08:00",
+      "completed": "2026-11-20T10:50:21+08:00",
+      "files": {
+        "dla_C_pinpoint.pt": "d6f6a6684b32ea1120fe5629cdf515ef55f810e71fc1439948c4e79bae49a4d1",
+        "dla_C_soc.pt": "bb3d1bce4c1e160aa8c525da509899e5db31441828da30ccafdfdb0c7d55716a",
+        "stage_dla.json": "447aef49c366b648f8402bb9c29b44aa65a375496d0fa55d663ff3c47b4b8ead"
+      },
+      "protocol_commit": "a203203a37c9d34743ccf8efef93fae2a931669c",
+      "torch": "2.8.0",
+      "transformers": "4.57.0",
+      "accelerate": "1.1.1",
+      "a1_gate_commit": null
+    }
+  ],
+  "context_flip_dialog_gate": null
+}
