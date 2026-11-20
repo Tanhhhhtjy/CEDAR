@@ -19,6 +19,19 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
+def compute_lora_scale(rank: int, scaling_mode: str = "rslora", base_scale: float = 2.0, anchor_rank: int = 8) -> float:
+    """Rank-fair LoRA scaling:
+    - 'rslora' (default, Kalajdzievski 2023): s(r) = base_scale * sqrt(anchor_rank / r)
+      Anchored at r=8 => s(8)=2.0, s(4)=2.83, s(18)=1.33, s(50)=0.80, equalizing initial r*s^2 variance across ranks.
+    - 'constant': fixed s(r) = base_scale (classic alpha = base_scale * r).
+    """
+    if scaling_mode == "rslora":
+        return float(base_scale * math.sqrt(anchor_rank / max(1, rank)))
+    if scaling_mode == "constant":
+        return float(base_scale)
+    raise ValueError(f"Unknown scaling_mode: {scaling_mode!r}")
+
+
 class HeadSliceLoRALinear(nn.Module):
     """Low-rank adapter restricted strictly to selected attention head slices of q_proj (axis='out') or o_proj (axis='in').
 
@@ -37,7 +50,7 @@ class HeadSliceLoRALinear(nn.Module):
         head_dim: int,
         rank: int,
         axis: str,
-        alpha: float | None = None,
+        scale: float = 2.0,
         dropout: float = 0.0,
     ):
         super().__init__()
@@ -48,9 +61,9 @@ class HeadSliceLoRALinear(nn.Module):
         self.head_dim = int(head_dim)
         self.rank = int(rank)
         self.axis = axis
-        self.alpha = float(alpha if alpha is not None else 2 * rank)
-        self.scale = self.alpha / self.rank
+        self.scale = float(scale)
         self.drop = nn.Dropout(dropout) if dropout > 0 else nn.Identity()
+        self.disabled_heads: set[int] = set()  # for zero-training post-hoc pathway ablations
 
         # Freeze base weights
         self.base.weight.requires_grad_(False)
@@ -64,11 +77,9 @@ class HeadSliceLoRALinear(nn.Module):
 
         # Batched parameters [n_sel, ...] for fast vectorized forward + merge
         if axis == "out":
-            # q_proj: A [n_sel, r, d_in], B [n_sel, hd, r]
             self.lora_A = nn.Parameter(torch.empty(n_sel, rank, d_in, device=dev, dtype=dtype))
             self.lora_B = nn.Parameter(torch.zeros(n_sel, head_dim, rank, device=dev, dtype=dtype))
         else:
-            # o_proj: A [n_sel, r, hd], B [n_sel, d_out, r]
             self.lora_A = nn.Parameter(torch.empty(n_sel, rank, head_dim, device=dev, dtype=dtype))
             self.lora_B = nn.Parameter(torch.zeros(n_sel, d_out, rank, device=dev, dtype=dtype))
 
@@ -77,31 +88,33 @@ class HeadSliceLoRALinear(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         y = self.base(x)
+        active = [(i, h) for i, h in enumerate(self.head_indices) if h not in self.disabled_heads]
+        if not active:
+            return y
         xd = self.drop(x)
         if self.axis == "out":
-            # xd: [..., d_in], lora_A: [S, r, d_in], lora_B: [S, hd, r]
-            # h_mid: [..., S, r] -> delta: [..., S, hd]
             h_mid = torch.einsum("...d,srd->...sr", xd, self.lora_A)
             delta = torch.einsum("...sr,skr->...sk", h_mid, self.lora_B) * self.scale
             y = y.clone()
-            for i, h in enumerate(self.head_indices):
+            for i, h in active:
                 sl = slice(h * self.head_dim, (h + 1) * self.head_dim)
                 y[..., sl] = y[..., sl] + delta[..., i, :]
             return y
         else:
-            # xd: [..., H*hd] -> gather selected head slices [..., S, hd]
+            idxs = [i for i, _ in active]
             x_heads = torch.stack(
-                [xd[..., h * self.head_dim : (h + 1) * self.head_dim] for h in self.head_indices], dim=-2
+                [xd[..., h * self.head_dim : (h + 1) * self.head_dim] for _, h in active], dim=-2
             )
-            h_mid = torch.einsum("...sk,srk->...sr", x_heads, self.lora_A)
-            delta = torch.einsum("...sr,sor->...o", h_mid, self.lora_B) * self.scale
+            h_mid = torch.einsum("...sk,srk->...sr", x_heads, self.lora_A[idxs])
+            delta = torch.einsum("...sr,sor->...o", h_mid, self.lora_B[idxs]) * self.scale
             return y + delta
 
     @torch.no_grad()
     def delta_frobenius_norm(self) -> float:
-        # ||scale * B @ A||_F summed across selected heads (computed in float32)
         tot = 0.0
-        for i in range(len(self.head_indices)):
+        for i, h in enumerate(self.head_indices):
+            if h in self.disabled_heads:
+                continue
             dw = (self.lora_B[i].float() @ self.lora_A[i].float()) * self.scale
             tot += float(dw.pow(2).sum())
         return math.sqrt(tot)
@@ -110,6 +123,8 @@ class HeadSliceLoRALinear(nn.Module):
     def merge_into_base(self) -> nn.Linear:
         W = self.base.weight.data
         for i, h in enumerate(self.head_indices):
+            if h in self.disabled_heads:
+                continue
             dw = ((self.lora_B[i].float() @ self.lora_A[i].float()) * self.scale).to(W.device, W.dtype)
             sl = slice(h * self.head_dim, (h + 1) * self.head_dim)
             if self.axis == "out":
@@ -126,16 +141,16 @@ class StandardLoRALinear(nn.Module):
         self,
         base: nn.Linear,
         rank: int,
-        alpha: float | None = None,
+        scale: float = 2.0,
         dropout: float = 0.0,
     ):
         super().__init__()
         assert rank > 0
         self.base = base
         self.rank = int(rank)
-        self.alpha = float(alpha if alpha is not None else 2 * rank)
-        self.scale = self.alpha / self.rank
+        self.scale = float(scale)
         self.drop = nn.Dropout(dropout) if dropout > 0 else nn.Identity()
+        self.disabled: bool = False  # for zero-training post-hoc pathway ablations
 
         self.base.weight.requires_grad_(False)
         if self.base.bias is not None:
@@ -148,20 +163,25 @@ class StandardLoRALinear(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         y = self.base(x)
+        if self.disabled:
+            return y
         h = F.linear(self.drop(x), self.lora_A)
         delta = F.linear(h, self.lora_B) * self.scale
         return y + delta
 
     @torch.no_grad()
     def delta_frobenius_norm(self) -> float:
+        if self.disabled:
+            return 0.0
         dw = (self.lora_B.float() @ self.lora_A.float()) * self.scale
         return float(dw.norm())
 
     @torch.no_grad()
     def merge_into_base(self) -> nn.Linear:
-        W = self.base.weight.data
-        dw = ((self.lora_B.float() @ self.lora_A.float()) * self.scale).to(W.device, W.dtype)
-        W += dw
+        if not self.disabled:
+            W = self.base.weight.data
+            dw = ((self.lora_B.float() @ self.lora_A.float()) * self.scale).to(W.device, W.dtype)
+            W += dw
         return self.base
 
 
@@ -173,7 +193,9 @@ def _head_dim_of(model) -> int:
 def apply_c1_adapters(
     model: nn.Module,
     arm_spec: dict[str, Any],
-    alpha_ratio: float = 2.0,
+    scaling_mode: str = "rslora",
+    base_scale: float = 2.0,
+    anchor_rank: int = 8,
     dropout: float = 0.0,
 ) -> dict[str, Any]:
     """Freeze all base parameters and attach exact C1 adapters specified by `arm_spec`."""
@@ -182,7 +204,13 @@ def apply_c1_adapters(
 
     layers = model.model.layers
     hd = _head_dim_of(model)
-    attached = {"head_modules": 0, "mlp_modules": 0, "uniform_modules": 0}
+    attached: dict[str, Any] = {
+        "head_modules": 0,
+        "mlp_modules": 0,
+        "uniform_modules": 0,
+        "scaling_mode": scaling_mode,
+        "scales": {},
+    }
 
     if arm_spec["kind"] == "circuit":
         by_layer: dict[int, list[int]] = {}
@@ -190,41 +218,75 @@ def apply_c1_adapters(
             by_layer.setdefault(int(li), []).append(int(h))
         r_h = int(arm_spec.get("head_rank", 0))
         if r_h > 0:
+            s_h = compute_lora_scale(r_h, scaling_mode, base_scale, anchor_rank)
+            attached["scales"]["head"] = s_h
             for li, hs in sorted(by_layer.items()):
                 attn = layers[li].self_attn
-                attn.q_proj = HeadSliceLoRALinear(
-                    attn.q_proj, hs, hd, r_h, axis="out", alpha=alpha_ratio * r_h, dropout=dropout
-                )
-                attn.o_proj = HeadSliceLoRALinear(
-                    attn.o_proj, hs, hd, r_h, axis="in", alpha=alpha_ratio * r_h, dropout=dropout
-                )
+                attn.q_proj = HeadSliceLoRALinear(attn.q_proj, hs, hd, r_h, axis="out", scale=s_h, dropout=dropout)
+                attn.o_proj = HeadSliceLoRALinear(attn.o_proj, hs, hd, r_h, axis="in", scale=s_h, dropout=dropout)
                 attached["head_modules"] += 2
         r_m = int(arm_spec.get("mlp_rank", 0))
         if r_m > 0:
+            s_m = compute_lora_scale(r_m, scaling_mode, base_scale, anchor_rank)
+            attached["scales"]["mlp"] = s_m
             for li in arm_spec.get("mlp_layers", []):
                 mlp = layers[int(li)].mlp
-                mlp.gate_proj = StandardLoRALinear(mlp.gate_proj, r_m, alpha=alpha_ratio * r_m, dropout=dropout)
-                mlp.down_proj = StandardLoRALinear(mlp.down_proj, r_m, alpha=alpha_ratio * r_m, dropout=dropout)
+                mlp.gate_proj = StandardLoRALinear(mlp.gate_proj, r_m, scale=s_m, dropout=dropout)
+                mlp.down_proj = StandardLoRALinear(mlp.down_proj, r_m, scale=s_m, dropout=dropout)
                 attached["mlp_modules"] += 2
     elif arm_spec["kind"] == "uniform":
         r_u = int(arm_spec["uniform_rank"])
+        s_u = compute_lora_scale(r_u, scaling_mode, base_scale, anchor_rank)
+        attached["scales"]["uniform"] = s_u
         targets = set(arm_spec.get("target_modules", ["q_proj", "o_proj", "gate_proj", "down_proj"]))
         for layer in layers:
             for name in ("q_proj", "k_proj", "v_proj", "o_proj"):
                 if name in targets:
                     mod = getattr(layer.self_attn, name)
-                    setattr(layer.self_attn, name, StandardLoRALinear(mod, r_u, alpha=alpha_ratio * r_u, dropout=dropout))
+                    setattr(layer.self_attn, name, StandardLoRALinear(mod, r_u, scale=s_u, dropout=dropout))
                     attached["uniform_modules"] += 1
             for name in ("gate_proj", "up_proj", "down_proj"):
                 if name in targets:
                     mod = getattr(layer.mlp, name)
-                    setattr(layer.mlp, name, StandardLoRALinear(mod, r_u, alpha=alpha_ratio * r_u, dropout=dropout))
+                    setattr(layer.mlp, name, StandardLoRALinear(mod, r_u, scale=s_u, dropout=dropout))
                     attached["uniform_modules"] += 1
     else:
         raise ValueError(f"Unknown arm kind: {arm_spec['kind']!r}")
 
     attached["trainable_params"] = count_trainable_params(model)
     return attached
+
+
+def save_c1_adapter_state(model: nn.Module, path) -> None:
+    """Save ONLY the tiny unmerged LoRA parameters (enables zero-training post-hoc pathway ablations)."""
+    state = {k: v.detach().cpu() for k, v in model.state_dict().items() if ".lora_A" in k or ".lora_B" in k}
+    torch.save(state, path)
+
+
+def load_c1_adapter_state(model: nn.Module, path) -> None:
+    state = torch.load(path, map_location="cpu")
+    missing, unexpected = model.load_state_dict(state, strict=False)
+    assert not unexpected, f"Unexpected adapter keys: {unexpected[:5]}"
+
+
+def set_pathway_ablation(
+    model: nn.Module,
+    disable_mlp: bool = False,
+    disable_heads: list[tuple[int, int]] | None = None,
+) -> None:
+    """Toggle specific MLP or head adapters off/on for zero-training ablation on the exact same checkpoint."""
+    dis_by_l: dict[int, set[int]] = {}
+    for li, h in (disable_heads or []):
+        dis_by_l.setdefault(int(li), set()).add(int(h))
+    for li, layer in enumerate(model.model.layers):
+        for name in ("q_proj", "o_proj"):
+            m = getattr(layer.self_attn, name)
+            if isinstance(m, HeadSliceLoRALinear):
+                m.disabled_heads = set(dis_by_l.get(li, set()))
+        for name in ("gate_proj", "up_proj", "down_proj"):
+            m = getattr(layer.mlp, name)
+            if isinstance(m, StandardLoRALinear):
+                m.disabled = bool(disable_mlp)
 
 
 def count_trainable_params(model: nn.Module) -> int:

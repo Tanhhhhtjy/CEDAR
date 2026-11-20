@@ -141,8 +141,9 @@ def build_model_components(alias: str, spec: dict) -> dict:
     dlg_c = spec["dialog_content_contrast"]
     atp_dlg_10 = L.top_k(_load_atp_head(pdir, dlg_c, "all"), 10)
 
-    # Top-5 mid-layer verification MLPs from C_content_N_CF
-    mlp_ncf = _load_atp_mlp(pdir, "C_content_N_CF", "all").view(nL, 1)
+    # Top-5 mid-layer verification MLPs from C_content_N_CF B-half (exact verified layers from B1 stage_verify:
+    # 14B [19, 22, 23, 25, 26] with M@5=0.918; 8B [18, 20, 22, 23, 27] with M@5=0.831)
+    mlp_ncf = _load_atp_mlp(pdir, "C_content_N_CF", "B").view(nL, 1)
     mlp_ncf_5 = sorted(int(li) for li, _ in L.top_k(mlp_ncf, 5))
 
     # Shared mid-layer hub heads: union of (C_pinpoint & C_content_N_CF top-20) across full + eligible runs
@@ -160,12 +161,13 @@ def build_model_components(alias: str, spec: dict) -> dict:
     r_dual_m = spec["dual_mlp_rank"]
     budget = count_head_lora_params(len(dual_heads), r_dual_h, d, hd) + count_mlp_lora_params(len(mlp_ncf_5), r_dual_m, d, d_ff)
 
-    # Random-LM: exact layer-matched random heads & mid-layer-band-matched random MLP layers (disjoint from Dual)
-    rnd_heads = L.layer_matched_random(dual_heads, H, seed=2027, exclude=set(dual_heads))
-    rng = random.Random(2027)
+    # Random-LM (seed 1 & seed 2): exact layer-matched random heads & mid-layer-band-matched random MLPs (disjoint from Dual)
     lo_m, hi_m = max(0, min(mlp_ncf_5) - 5), min(nL - 1, max(mlp_ncf_5) + 5)
     mlp_pool = [li for li in range(lo_m, hi_m + 1) if li not in set(mlp_ncf_5)]
-    rnd_mlps = sorted(rng.sample(mlp_pool, len(mlp_ncf_5)))
+    rnd_heads_1 = L.layer_matched_random(dual_heads, H, seed=2027, exclude=set(dual_heads))
+    rnd_mlps_1 = sorted(random.Random(2027).sample(mlp_pool, len(mlp_ncf_5)))
+    rnd_heads_2 = L.layer_matched_random(dual_heads, H, seed=2028, exclude=set(dual_heads))
+    rnd_mlps_2 = sorted(random.Random(2028).sample(mlp_pool, len(mlp_ncf_5)))
 
     # Parameter-matched ranks for heads-only & uniform arms
     r_pin_dla = best_head_rank_for_budget(len(dla_pin_20), budget, d, hd)
@@ -176,11 +178,21 @@ def build_model_components(alias: str, spec: dict) -> dict:
     arms = {
         "Targeted-Dual": {
             "kind": "circuit",
-            "description": "C_form(20) U C_soc(12) U C_content_N_CF(20) U dialog_content(10) Q/O slices + N_CF top-5 MLP gate/down LoRA",
+            "description": "C_form(20) U C_soc(12) U C_content_N_CF(20) U dialog_content(10) Q/O slices + B1-verified N_CF top-5 MLP gate/down LoRA",
             "heads": sort_heads(dual_heads),
             "head_rank": r_dual_h,
             "mlp_layers": mlp_ncf_5,
             "mlp_rank": r_dual_m,
+            "trainable_params": budget,
+        },
+        "Targeted-Dual-NoMargin": {
+            "kind": "circuit",
+            "description": "Ablation: identical components to Targeted-Dual with default_lambda_margin=0.0 (SFT-only)",
+            "heads": sort_heads(dual_heads),
+            "head_rank": r_dual_h,
+            "mlp_layers": mlp_ncf_5,
+            "mlp_rank": r_dual_m,
+            "default_lambda_margin": 0.0,
             "trainable_params": budget,
         },
         "Targeted-Form": {
@@ -194,7 +206,7 @@ def build_model_components(alias: str, spec: dict) -> dict:
         },
         "Pinpoint-DLA": {
             "kind": "circuit",
-            "description": "Pinpoint-style direct-path DLA(C_pinpoint) top-20 Q/O slices only (no MLP; rank-matched to Dual budget)",
+            "description": "Pinpoint-style direct-path DLA(C_pinpoint) top-20 Q/O slices only (proxy baseline, no MLP; rank-matched)",
             "heads": sort_heads(dla_pin_20),
             "head_rank": r_pin_dla,
             "mlp_layers": [],
@@ -212,13 +224,23 @@ def build_model_components(alias: str, spec: dict) -> dict:
         },
         "Random-LM": {
             "kind": "circuit",
-            "description": "Layer-matched random heads & random MLP layers disjoint from Targeted-Dual (exact same param count)",
-            "heads": sort_heads(rnd_heads),
+            "description": "Layer-matched random heads & band-matched random MLP layers (mask seed=2027, exact same param count)",
+            "heads": sort_heads(rnd_heads_1),
             "head_rank": r_dual_h,
-            "mlp_layers": rnd_mlps,
+            "mlp_layers": rnd_mlps_1,
             "mlp_rank": r_dual_m,
-            "trainable_params": count_head_lora_params(len(rnd_heads), r_dual_h, d, hd)
-            + count_mlp_lora_params(len(rnd_mlps), r_dual_m, d, d_ff),
+            "trainable_params": count_head_lora_params(len(rnd_heads_1), r_dual_h, d, hd)
+            + count_mlp_lora_params(len(rnd_mlps_1), r_dual_m, d, d_ff),
+        },
+        "Random-LM-seed2": {
+            "kind": "circuit",
+            "description": "Independent 2nd random mask for seed=1024 (mask seed=2028, exact same param count)",
+            "heads": sort_heads(rnd_heads_2),
+            "head_rank": r_dual_h,
+            "mlp_layers": rnd_mlps_2,
+            "mlp_rank": r_dual_m,
+            "trainable_params": count_head_lora_params(len(rnd_heads_2), r_dual_h, d, hd)
+            + count_mlp_lora_params(len(rnd_mlps_2), r_dual_m, d, d_ff),
         },
         "Uniform-LoRA": {
             "kind": "uniform",
@@ -229,7 +251,7 @@ def build_model_components(alias: str, spec: dict) -> dict:
         },
         "Hub-Only": {
             "kind": "circuit",
-            "description": "Ablation: ONLY the shared mid-layer routing hub heads (Q/O slices, rank=dual_head_rank)",
+            "description": "Capacity ablation: ONLY the shared mid-layer routing hub heads (Q/O slices, rank=dual_head_rank)",
             "heads": sort_heads(hub_heads),
             "head_rank": r_dual_h,
             "mlp_layers": [],
@@ -238,7 +260,7 @@ def build_model_components(alias: str, spec: dict) -> dict:
         },
         "Dual-wo-Hub": {
             "kind": "circuit",
-            "description": "Ablation: Targeted-Dual with shared mid-layer hub heads frozen",
+            "description": "Capacity ablation: Targeted-Dual with shared mid-layer hub heads frozen",
             "heads": sort_heads(dual_wo_hub_heads),
             "head_rank": r_dual_h,
             "mlp_layers": mlp_ncf_5,

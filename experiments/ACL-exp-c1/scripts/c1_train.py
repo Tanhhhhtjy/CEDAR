@@ -1,16 +1,24 @@
 #!/usr/bin/env python3
-"""ACL-exp-c1 trainer: Dual-Pathway Asymmetric Circuit LoRA with Paired Selective Margin Loss.
+"""ACL-exp-c1 trainer: Dual-Pathway Asymmetric Circuit LoRA (DAC-LoRA) with Signed Readout Margin Loss.
 
-Supports all 8 frozen arms from data/c1_components_frozen.json:
-  Targeted-Dual | Targeted-Form | Pinpoint-DLA | Pinpoint-AtP | Random-LM | Uniform-LoRA | Hub-Only | Dual-wo-Hub
-Plus ablations:
-  --lambda-margin 0.0  (WCA-unpaired / SFT-only ablation)
-  --replay-file <jsonl> (15-20% general instruction/reasoning replay)
-  --think-file  <jsonl> (Recipe B: mixed no_think + self-verified think traces)
+Supports all frozen arms from data/c1_components_frozen.json:
+  Targeted-Dual | Targeted-Dual-NoMargin | Targeted-Form | Pinpoint-DLA | Pinpoint-AtP
+  | Random-LM | Random-LM-seed2 | Uniform-LoRA | Hub-Only | Dual-wo-Hub
+
+Key guarantees (audited):
+  - rsLoRA rank-stabilized scaling s(r) = base_scale * sqrt(anchor_rank / r) (default 2 * sqrt(8 / r))
+  - Exact readout_pos located at the LAST 'Final:' inside assistant_target (works for both no_think & Recipe B think)
+  - Atomic group batching: never splits a 6-item rule base across gradient-accumulation boundaries;
+    normalizes each window by its actual item count (no tail-batch shrink)
+  - Padded microbatching (--microbatch 1/2/4) with exact per-example token-mean SFT loss (mathematically identical to mb=1)
+  - Fails fast if --replay-file or --think-file is specified but missing
+  - Always saves tiny unmerged `adapter_state.pt` alongside `merged_hf/` for zero-retraining post-hoc pathway ablations
 
 Usage (GPU):
   CUDA_VISIBLE_DEVICES=0 python experiments/ACL-exp-c1/scripts/c1_train.py \
-      --model /mnt/kcl/devuser/ckpts/Qwen3-8B --model-key qwen3_8b --arm Targeted-Dual --out-dir checkpoints/qwen3_8b/Targeted-Dual
+      --model /mnt/kcl/devuser/ckpts/Qwen3-8B --model-key qwen3_8b --arm Targeted-Dual \
+      --replay-file experiments/ACL-exp-c1/data/c1_replay_norobots_529.jsonl \
+      --microbatch 2 --out-dir checkpoints/qwen3_8b/Targeted-Dual
 
 Usage (CPU self-test):
   python experiments/ACL-exp-c1/scripts/c1_train.py --selftest-tiny
@@ -23,6 +31,7 @@ import json
 import math
 import random
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -45,8 +54,17 @@ def _input_device(model) -> torch.device:
         return next(model.parameters()).device
 
 
+def _find_subseq_last(seq: list[int], sub: list[int], start: int = 0) -> int | None:
+    if not sub or len(sub) > len(seq) - start:
+        return None
+    for i in range(len(seq) - len(sub), start - 1, -1):
+        if seq[i : i + len(sub)] == sub:
+            return i
+    return None
+
+
 def encode_sft_example(tok, ex: dict, enable_thinking: bool = False) -> dict:
-    """Encode (messages, assistant_target) with prompt tokens masked (-100) and exact Final: readout index."""
+    """Encode (messages, assistant_target) with prompt masked (-100) and exact LAST 'Final:' readout index."""
     prompt_text = tok.apply_chat_template(
         ex["messages"], tokenize=False, add_generation_prompt=True, enable_thinking=enable_thinking
     )
@@ -54,26 +72,54 @@ def encode_sft_example(tok, ex: dict, enable_thinking: bool = False) -> dict:
     eos = getattr(tok, "eos_token", "") or ""
     prompt_ids = tok.encode(prompt_text, add_special_tokens=False)
     full_ids = tok.encode(prompt_text + target_text + eos, add_special_tokens=False)
-    # Guard against BPE merge at boundary
+    boundary_split = False
     if full_ids[: len(prompt_ids)] != prompt_ids:
         target_ids = tok.encode(target_text + eos, add_special_tokens=False)
         full_ids = prompt_ids + target_ids
+        boundary_split = True
     labels = [-100] * len(prompt_ids) + full_ids[len(prompt_ids) :]
 
-    # Locate the exact logit index predicting the option letter right after "Final:"
+    # Locate the exact logit index predicting the option letter after the LAST "Final:" in assistant_target.
+    # Works for BOTH no_think ("Final: B") AND Recipe B think ("<think>...</think>\nFinal: B").
     readout_pos = None
     pos_tok = neg_tok = None
     if ex.get("margin_sign", 0) != 0 and ex.get("initial_answer") and ex.get("target_answer"):
-        key_ids = tok.encode("Final:", add_special_tokens=False)
-        anchor = tok.encode(prompt_text + "Final:", add_special_tokens=False)
-        if anchor[-len(key_ids) :] == key_ids and len(anchor) < len(full_ids):
-            # Logit at position (len(anchor) - 1) predicts token at len(anchor) (i.e. " <A|B|C|D>")
-            readout_pos = len(anchor) - 1
-            pos_tok, neg_tok = B1L.readout_token_ids(tok, "Final:", ex["target_answer"], ex["initial_answer"])
+        f_idx = target_text.rfind("Final:")
+        if f_idx >= 0:
+            prefix_in_target = target_text[: f_idx + len("Final:")]
+            if boundary_split:
+                anchor = prompt_ids + tok.encode(prefix_in_target, add_special_tokens=False)
+                prefix_for_readout = prefix_in_target
+            else:
+                prefix_for_readout = prompt_text + prefix_in_target
+                anchor = tok.encode(prefix_for_readout, add_special_tokens=False)
+            pos_tok, neg_tok = B1L.readout_token_ids(
+                tok, prefix_for_readout, ex["target_answer"], ex["initial_answer"]
+            )
+            gold_ans = ex.get("gold_answer")
+            expected_gold_tok = pos_tok if gold_ans == ex["target_answer"] else neg_tok
+
+            if len(anchor) < len(full_ids) and full_ids[: len(anchor)] == anchor:
+                cand_pos = len(anchor) - 1
+                if full_ids[cand_pos + 1] == expected_gold_tok:
+                    readout_pos = cand_pos
+            if readout_pos is None:
+                # Fallback subsequence search strictly inside assistant target span
+                key_ids = tok.encode("Final:", add_special_tokens=False)
+                loc = _find_subseq_last(full_ids, key_ids, start=len(prompt_ids))
+                if loc is not None and (loc + len(key_ids)) < len(full_ids):
+                    cand_pos = loc + len(key_ids) - 1
+                    if full_ids[cand_pos + 1] == expected_gold_tok:
+                        readout_pos = cand_pos
+            assert readout_pos is not None, (
+                f"Failed to align Final: readout_pos for {ex.get('example_id')} "
+                f"(gold={gold_ans}, target_text={target_text[:80]!r})"
+            )
 
     return {
         "example_id": ex.get("example_id", ""),
         "pair_group_id": ex.get("pair_group_id", ex.get("example_id", "")),
+        "is_replay": bool(ex.get("is_replay", ex.get("margin_sign", 0) == 0 and not ex.get("base_id"))),
         "input_ids": torch.tensor(full_ids, dtype=torch.long),
         "labels": torch.tensor(labels, dtype=torch.long),
         "margin_sign": int(ex.get("margin_sign", 0)),
@@ -91,65 +137,140 @@ def load_training_records(
     seed: int,
     limit: int | None = None,
 ) -> list[tuple[dict, bool]]:
-    """Return list of (example_dict, enable_thinking) grouped by pair_group_id with replay interleaved."""
+    """Return list of (example_dict, enable_thinking). Fails fast if optional paths do not exist."""
+    if not train_path.exists():
+        raise FileNotFoundError(f"Training file not found: {train_path}")
     rows = [json.loads(l) for l in train_path.read_text(encoding="utf-8").splitlines() if l.strip()]
     if limit:
         rows = rows[:limit]
     items: list[tuple[dict, bool]] = [(r, False) for r in rows]
 
-    if think_path and think_path.exists():
+    if think_path is not None:
+        if not think_path.exists():
+            raise FileNotFoundError(f"--think-file not found: {think_path}")
         trows = [json.loads(l) for l in think_path.read_text(encoding="utf-8").splitlines() if l.strip()]
         if limit:
             trows = trows[: max(1, limit // 3)]
         items.extend((r, True) for r in trows)
 
-    if replay_path and replay_path.exists() and replay_ratio > 0:
+    if replay_path is not None and replay_ratio > 0:
+        if not replay_path.exists():
+            raise FileNotFoundError(f"--replay-file not found: {replay_path}")
         rrows = [json.loads(l) for l in replay_path.read_text(encoding="utf-8").splitlines() if l.strip()]
         rng = random.Random(seed)
-        n_want = int(len(items) * replay_ratio / max(1e-6, 1.0 - replay_ratio))
+        n_want = int(round(len(items) * replay_ratio / max(1e-6, 1.0 - replay_ratio)))
         if len(rrows) > n_want:
             rrows = rng.sample(rrows, n_want)
         for r in rrows:
+            r = dict(r)
             r.setdefault("margin_sign", 0)
+            r["is_replay"] = True
             items.append((r, bool(r.get("enable_thinking", False))))
     return items
 
 
-def build_group_shuffled_order(encoded: list[dict], seed: int) -> list[dict]:
-    """Shuffle by pair_group_id so paired (V, V_hes, F, shell, S, P0) stay inside the same grad-accum step."""
-    groups: dict[str, list[dict]] = {}
+def build_atomic_windows(encoded: list[dict], grad_accum: int, seed: int) -> list[list[dict]]:
+    """Pack groups into grad-accum windows without EVER splitting a paired rule group across a boundary.
+
+    Replay singletons are packed into mini-groups of size <= min(6, grad_accum) and interleaved
+    between rule groups so every 6-item paired rule base stays 100% atomic inside one optimizer step.
+    """
+    rule_groups: dict[str, list[dict]] = {}
+    replay_items: list[dict] = []
     for ex in encoded:
-        groups.setdefault(ex["pair_group_id"], []).append(ex)
-    keys = list(groups.keys())
-    rng = random.Random(seed)
-    rng.shuffle(keys)
-    ordered = []
-    for k in keys:
-        g = list(groups[k])
-        rng.shuffle(g)
-        ordered.extend(g)
-    return ordered
-
-
-def compute_loss_one(model, ex: dict, lambda_margin: float, margin_m: float) -> tuple[torch.Tensor, float, float]:
-    dev = _input_device(model)
-    ids = ex["input_ids"][None].to(dev)
-    labels = ex["labels"][None].to(dev)
-    out = model(input_ids=ids, labels=labels)
-    loss_sft = out.loss
-    loss_m = torch.tensor(0.0, device=loss_sft.device, dtype=torch.float32)
-
-    if lambda_margin > 0.0 and ex["margin_sign"] != 0 and ex["readout_pos"] is not None:
-        logits_at = out.logits[0, ex["readout_pos"]].float()
-        u_theta = logits_at[ex["pos_tok"]] - logits_at[ex["neg_tok"]]
-        if ex["margin_sign"] > 0:
-            loss_m = F.relu(margin_m - u_theta)
+        if ex.get("is_replay"):
+            replay_items.append(ex)
         else:
-            loss_m = F.relu(margin_m + u_theta)
-        total = loss_sft + lambda_margin * loss_m.to(loss_sft.dtype)
-    else:
-        total = loss_sft
-    return total, float(loss_sft.detach()), float(loss_m.detach())
+            rule_groups.setdefault(ex["pair_group_id"], []).append(ex)
+
+    rng = random.Random(seed)
+    all_groups: list[list[dict]] = []
+    for k in sorted(rule_groups.keys()):
+        g = list(rule_groups[k])
+        rng.shuffle(g)
+        all_groups.append(g)
+
+    rng.shuffle(replay_items)
+    replay_chunk = max(1, min(6, grad_accum))
+    for i in range(0, len(replay_items), replay_chunk):
+        all_groups.append(replay_items[i : i + replay_chunk])
+
+    rng.shuffle(all_groups)
+
+    windows: list[list[dict]] = []
+    cur: list[dict] = []
+    for g in all_groups:
+        if cur and len(cur) + len(g) > grad_accum:
+            windows.append(cur)
+            cur = []
+        cur.extend(g)
+        if len(cur) >= grad_accum:
+            windows.append(cur)
+            cur = []
+    if cur:
+        windows.append(cur)
+    return windows
+
+
+def compute_loss_microbatch(
+    model,
+    batch: list[dict],
+    pad_token_id: int,
+    lambda_margin: float,
+    margin_m: float,
+) -> tuple[torch.Tensor, float, float]:
+    """Compute exact sum-of-per-example (SFT + Signed Readout Margin) loss over a padded microbatch.
+
+    Returns (sum_loss_tensor, sum_sft_float, sum_margin_float) so caller divides cleanly by actual window size.
+    Exact per-example token averaging ensures microbatch > 1 is mathematically identical to microbatch == 1!
+    """
+    dev = _input_device(model)
+    bsz = len(batch)
+    max_len = max(int(ex["input_ids"].numel()) for ex in batch)
+    input_ids = torch.full((bsz, max_len), pad_token_id, dtype=torch.long)
+    labels = torch.full((bsz, max_len), -100, dtype=torch.long)
+    attn_mask = torch.zeros((bsz, max_len), dtype=torch.long)
+
+    for bi, ex in enumerate(batch):
+        L = int(ex["input_ids"].numel())
+        input_ids[bi, :L] = ex["input_ids"]
+        labels[bi, :L] = ex["labels"]
+        attn_mask[bi, :L] = 1
+
+    input_ids = input_ids.to(dev)
+    labels = labels.to(dev)
+    attn_mask = attn_mask.to(dev)
+
+    out = model(input_ids=input_ids, attention_mask=attn_mask, use_cache=False)
+    logits = out.logits  # [B, T, V]
+
+    # Exact per-example mean CE over non-(-100) shifted positions (identical to sequential mb=1)
+    shift_logits = logits[:, :-1, :].contiguous()
+    shift_labels = labels[:, 1:].contiguous()
+    tok_losses = F.cross_entropy(
+        shift_logits.view(-1, shift_logits.size(-1)).float(),
+        shift_labels.view(-1),
+        ignore_index=-100,
+        reduction="none",
+    ).view(bsz, -1)
+    valid_mask = (shift_labels != -100).float()
+    per_ex_sft = tok_losses.sum(dim=1) / valid_mask.sum(dim=1).clamp_min(1.0)
+
+    total_sft = per_ex_sft.sum()
+    total_margin = torch.tensor(0.0, device=logits.device, dtype=torch.float32)
+
+    if lambda_margin > 0.0:
+        for bi, ex in enumerate(batch):
+            if ex["margin_sign"] != 0 and ex["readout_pos"] is not None:
+                logits_at = logits[bi, ex["readout_pos"]].float()
+                u_theta = logits_at[ex["pos_tok"]] - logits_at[ex["neg_tok"]]
+                if ex["margin_sign"] > 0:
+                    total_margin = total_margin + F.relu(margin_m - u_theta)
+                else:
+                    total_margin = total_margin + F.relu(margin_m + u_theta)
+
+    total_loss = total_sft + lambda_margin * total_margin
+    return total_loss, float(total_sft.detach()), float(total_margin.detach())
 
 
 def build_optimizer(model, lr: float, mlp_lr_mult: float, weight_decay: float) -> torch.optim.Optimizer:
@@ -181,10 +302,14 @@ def lr_factor(step: int, total_steps: int, warmup_steps: int) -> float:
 
 class _TinyTok:
     eos_token = " <|eos|>"
+    eos_token_id = 1
+    pad_token_id = 0
 
     def apply_chat_template(self, messages, tokenize=False, add_generation_prompt=True, enable_thinking=False):
         s = "".join(f"<|{m['role']}|> {m['content']} <|end|> " for m in messages)
-        return s + ("<|assistant|> <think> </think> " if add_generation_prompt else "")
+        if not add_generation_prompt:
+            return s
+        return s + ("<|assistant|> " if enable_thinking else "<|assistant|> <think> </think> ")
 
     def encode(self, text, add_special_tokens=False):
         return [5 + (sum(ord(ch) * 31 ** i for i, ch in enumerate(w)) % 290) for w in text.split()]
@@ -211,6 +336,49 @@ def run_selftest_tiny() -> None:
     assert any(e["margin_sign"] == 1 and e["readout_pos"] is not None for e in encoded)
     assert any(e["margin_sign"] == -1 and e["readout_pos"] is not None for e in encoded)
 
+    # 1. Verify Recipe B multi-step think readout_pos alignment (finds LAST Final: inside target!)
+    think_ex = dict(raw_rows[0])
+    think_ex["assistant_target"] = (
+        "<think> Step 1 checks Rule 1 and confirms the premise. Step 2 confirms Final: check is valid. </think>\n"
+        f"Final: {think_ex['gold_answer']}"
+    )
+    enc_think = encode_sft_example(tok, think_ex, enable_thinking=True)
+    assert enc_think["readout_pos"] is not None
+    expected_gold_tok = enc_think["pos_tok"] if think_ex["gold_answer"] == think_ex["target_answer"] else enc_think["neg_tok"]
+    assert int(enc_think["input_ids"][enc_think["readout_pos"] + 1]) == expected_gold_tok
+    print(f"[OK] Recipe B multi-step think readout_pos alignment passed (pos={enc_think['readout_pos']})")
+
+    # 2. Verify atomic group windowing with replay singletons mixed in (zero 6-item rule groups split!)
+    replay_synth = []
+    for k in range(5):
+        r = {
+            "example_id": f"REPLAY-{k}",
+            "pair_group_id": f"REPLAY-{k}",
+            "is_replay": True,
+            "margin_sign": 0,
+            "messages": [{"role": "user", "content": f"Hello {k}"}],
+            "assistant_target": f"Reply {k}",
+        }
+        replay_synth.append(encode_sft_example(tok, r, False))
+    windows = build_atomic_windows(encoded + replay_synth, grad_accum=12, seed=42)
+    for w in windows:
+        rule_gids = [e["pair_group_id"] for e in w if not e["is_replay"]]
+        for gid in set(rule_gids):
+            assert rule_gids.count(gid) == 6, f"Rule group {gid} split across windows! count={rule_gids.count(gid)}"
+    assert sum(len(w) for w in windows) == len(encoded) + len(replay_synth)
+    print(f"[OK] Atomic group windowing passed (windows={[len(w) for w in windows]}, zero split rule groups)")
+
+    # 3. Verify microbatch=2 loss equivalence with microbatch=1
+    torch.manual_seed(0)
+    m_mb = Qwen3ForCausalLM(cfg).float().eval()
+    l1_a, s1_a, m1_a = compute_loss_microbatch(m_mb, [encoded[0]], tok.pad_token_id, 0.25, 4.0)
+    l1_b, s1_b, m1_b = compute_loss_microbatch(m_mb, [encoded[1]], tok.pad_token_id, 0.25, 4.0)
+    l2, s2, m2 = compute_loss_microbatch(m_mb, encoded[:2], tok.pad_token_id, 0.25, 4.0)
+    mb_diff = abs(float(l2.detach()) - float((l1_a + l1_b).detach()))
+    assert mb_diff < 1e-4, f"microbatch=2 diverged from microbatch=1: diff={mb_diff}"
+    print(f"[OK] microbatch=2 vs microbatch=1 equivalence passed (diff={mb_diff:.2e})")
+
+    # 4. Verify all arm types: rsLoRA scaling, strict locality, merge equivalence, adapter_state save/reload & pathway ablation
     tiny_arms = {
         "Targeted-Dual": {"kind": "circuit", "heads": [[1, 0], [1, 2], [2, 1]], "head_rank": 4, "mlp_layers": [1, 2], "mlp_rank": 4},
         "Targeted-Form": {"kind": "circuit", "heads": [[2, 0], [3, 1]], "head_rank": 6, "mlp_layers": [], "mlp_rank": 0},
@@ -220,72 +388,98 @@ def run_selftest_tiny() -> None:
         "Dual-wo-Hub": {"kind": "circuit", "heads": [[1, 0], [1, 2]], "head_rank": 4, "mlp_layers": [1, 2], "mlp_rank": 4},
     }
 
-    for aname, spec in tiny_arms.items():
-        torch.manual_seed(0)
-        m = Qwen3ForCausalLM(cfg).float()
-        orig_weights = {k: v.detach().clone() for k, v in m.named_parameters()}
-        info = M.apply_c1_adapters(m, spec)
-        opt = build_optimizer(m, lr=5e-3, mlp_lr_mult=1.0, weight_decay=0.0)
-        m.train()
-        opt.zero_grad()
-        for ex in encoded[:6]:
-            loss, _, _ = compute_loss_one(m, ex, lambda_margin=0.25, margin_m=4.0)
-            (loss / 6.0).backward()
-        opt.step()
+    with tempfile.TemporaryDirectory() as tmpdir:
+        for aname, spec in tiny_arms.items():
+            torch.manual_seed(0)
+            m = Qwen3ForCausalLM(cfg).float()
+            orig_weights = {k: v.detach().clone() for k, v in m.named_parameters()}
+            info = M.apply_c1_adapters(m, spec, scaling_mode="rslora", base_scale=2.0, anchor_rank=8)
+            opt = build_optimizer(m, lr=5e-3, mlp_lr_mult=1.0, weight_decay=0.0)
+            m.train()
+            opt.zero_grad()
+            win = encoded[:6]
+            for j in range(0, len(win), 2):
+                loss_sum, _, _ = compute_loss_microbatch(m, win[j : j + 2], tok.pad_token_id, 0.25, 4.0)
+                (loss_sum / len(win)).backward()
+            opt.step()
 
-        norms = M.module_delta_norms(m)
-        assert norms["attn_delta_frob"] > 0.0, (aname, norms)
-        if spec.get("mlp_layers") or spec["kind"] == "uniform":
-            assert norms["mlp_delta_frob"] > 0.0, (aname, norms)
+            norms = M.module_delta_norms(m)
+            assert norms["attn_delta_frob"] > 0.0, (aname, norms)
+            if spec.get("mlp_layers") or spec["kind"] == "uniform":
+                assert norms["mlp_delta_frob"] > 0.0, (aname, norms)
 
-        # Check forward equivalence before vs after merge
-        m.eval()
-        test_ids = encoded[0]["input_ids"][None]
-        with torch.no_grad():
-            y_adapter = m(input_ids=test_ids).logits
-        M.merge_c1_adapters(m)
-        with torch.no_grad():
-            y_merged = m(input_ids=test_ids).logits
-        max_err = float((y_adapter - y_merged).abs().max())
-        assert max_err < 1e-4, (aname, max_err)
+            m.eval()
+            test_ids = encoded[0]["input_ids"][None]
+            with torch.no_grad():
+                y_adapter = m(input_ids=test_ids).logits
 
-        # Verify STRICT locality: untouched layers, K/V, embeddings, and untouched head slices have EXACTLY 0 diff!
-        new_weights = dict(m.named_parameters())
-        assert torch.equal(new_weights["model.embed_tokens.weight"], orig_weights["model.embed_tokens.weight"])
-        assert torch.equal(new_weights["lm_head.weight"], orig_weights["lm_head.weight"])
-        if spec["kind"] == "circuit":
-            sel_heads_by_l: dict[int, set[int]] = {}
-            for li, h in spec["heads"]:
-                sel_heads_by_l.setdefault(li, set()).add(h)
-            sel_mlps = set(spec["mlp_layers"])
-            for li in range(4):
-                assert torch.equal(
-                    new_weights[f"model.layers.{li}.self_attn.k_proj.weight"],
-                    orig_weights[f"model.layers.{li}.self_attn.k_proj.weight"],
-                )
-                assert torch.equal(
-                    new_weights[f"model.layers.{li}.self_attn.v_proj.weight"],
-                    orig_weights[f"model.layers.{li}.self_attn.v_proj.weight"],
-                )
-                if li not in sel_mlps:
+            # Save unmerged adapter_state.pt & test zero-retraining pathway ablation on Targeted-Dual
+            if aname == "Targeted-Dual":
+                ap_path = Path(tmpdir) / "adapter_state.pt"
+                M.save_c1_adapter_state(m, ap_path)
+                # Test MLP ablation & Hub ablation on live adapters
+                M.set_pathway_ablation(m, disable_mlp=True, disable_heads=None)
+                with torch.no_grad():
+                    y_nomlp = m(input_ids=test_ids).logits
+                assert float((y_adapter - y_nomlp).abs().max()) > 1e-5, "MLP ablation had zero effect!"
+                M.set_pathway_ablation(m, disable_mlp=False, disable_heads={(2, 1)})
+                with torch.no_grad():
+                    y_nohub = m(input_ids=test_ids).logits
+                assert float((y_adapter - y_nohub).abs().max()) > 1e-5, "Hub ablation had zero effect!"
+                M.set_pathway_ablation(m, disable_mlp=False, disable_heads=None)
+                # Reload onto fresh base model & verify exact match
+                torch.manual_seed(0)
+                m_reload = Qwen3ForCausalLM(cfg).float()
+                M.apply_c1_adapters(m_reload, spec, scaling_mode="rslora", base_scale=2.0, anchor_rank=8)
+                M.load_c1_adapter_state(m_reload, ap_path)
+                m_reload.eval()
+                with torch.no_grad():
+                    y_reload = m_reload(input_ids=test_ids).logits
+                assert float((y_adapter - y_reload).abs().max()) < 1e-6, "adapter_state reload mismatch!"
+                print("[OK] adapter_state.pt save/reload & zero-retraining MLP/Hub pathway ablations passed")
+
+            M.merge_c1_adapters(m)
+            with torch.no_grad():
+                y_merged = m(input_ids=test_ids).logits
+            max_err = float((y_adapter - y_merged).abs().max())
+            assert max_err < 1e-4, (aname, max_err)
+
+            new_weights = dict(m.named_parameters())
+            assert torch.equal(new_weights["model.embed_tokens.weight"], orig_weights["model.embed_tokens.weight"])
+            assert torch.equal(new_weights["lm_head.weight"], orig_weights["lm_head.weight"])
+            if spec["kind"] == "circuit":
+                sel_heads_by_l: dict[int, set[int]] = {}
+                for li, h in spec["heads"]:
+                    sel_heads_by_l.setdefault(li, set()).add(h)
+                sel_mlps = set(spec["mlp_layers"])
+                for li in range(4):
                     assert torch.equal(
-                        new_weights[f"model.layers.{li}.mlp.gate_proj.weight"],
-                        orig_weights[f"model.layers.{li}.mlp.gate_proj.weight"],
+                        new_weights[f"model.layers.{li}.self_attn.k_proj.weight"],
+                        orig_weights[f"model.layers.{li}.self_attn.k_proj.weight"],
                     )
                     assert torch.equal(
-                        new_weights[f"model.layers.{li}.mlp.down_proj.weight"],
-                        orig_weights[f"model.layers.{li}.mlp.down_proj.weight"],
+                        new_weights[f"model.layers.{li}.self_attn.v_proj.weight"],
+                        orig_weights[f"model.layers.{li}.self_attn.v_proj.weight"],
                     )
-                wq_new = new_weights[f"model.layers.{li}.self_attn.q_proj.weight"]
-                wq_old = orig_weights[f"model.layers.{li}.self_attn.q_proj.weight"]
-                wo_new = new_weights[f"model.layers.{li}.self_attn.o_proj.weight"]
-                wo_old = orig_weights[f"model.layers.{li}.self_attn.o_proj.weight"]
-                for h in range(4):
-                    sl = slice(h * 16, (h + 1) * 16)
-                    if h not in sel_heads_by_l.get(li, set()):
-                        assert torch.equal(wq_new[sl, :], wq_old[sl, :]), (aname, li, h, "q_proj leaked!")
-                        assert torch.equal(wo_new[:, sl], wo_old[:, sl]), (aname, li, h, "o_proj leaked!")
-        print(f"[OK] tiny self-test {aname:15s}: params={info['trainable_params']:6d} merge_err={max_err:.2e} norms={norms}")
+                    if li not in sel_mlps:
+                        assert torch.equal(
+                            new_weights[f"model.layers.{li}.mlp.gate_proj.weight"],
+                            orig_weights[f"model.layers.{li}.mlp.gate_proj.weight"],
+                        )
+                        assert torch.equal(
+                            new_weights[f"model.layers.{li}.mlp.down_proj.weight"],
+                            orig_weights[f"model.layers.{li}.mlp.down_proj.weight"],
+                        )
+                    wq_new = new_weights[f"model.layers.{li}.self_attn.q_proj.weight"]
+                    wq_old = orig_weights[f"model.layers.{li}.self_attn.q_proj.weight"]
+                    wo_new = new_weights[f"model.layers.{li}.self_attn.o_proj.weight"]
+                    wo_old = orig_weights[f"model.layers.{li}.self_attn.o_proj.weight"]
+                    for h in range(4):
+                        sl = slice(h * 16, (h + 1) * 16)
+                        if h not in sel_heads_by_l.get(li, set()):
+                            assert torch.equal(wq_new[sl, :], wq_old[sl, :]), (aname, li, h, "q_proj leaked!")
+                            assert torch.equal(wo_new[:, sl], wo_old[:, sl]), (aname, li, h, "o_proj leaked!")
+            print(f"[OK] tiny self-test {aname:15s}: params={info['trainable_params']:6d} merge_err={max_err:.2e} norms={norms}")
     print("[OK] ALL c1_train & c1_modules self-tests PASSED")
 
 
@@ -304,13 +498,16 @@ def main() -> None:
     ap.add_argument("--replay-ratio", type=float, default=0.15)
     ap.add_argument("--out-dir", type=Path)
     ap.add_argument("--epochs", type=int, default=3)
-    ap.add_argument("--grad-accum", type=int, default=12, help="multiple of 6 keeps paired groups together")
+    ap.add_argument("--grad-accum", type=int, default=12, help="multiple of 6 keeps paired groups atomic")
+    ap.add_argument("--microbatch", type=int, default=1, help="padded microbatch size (1/2/4) inside each window")
     ap.add_argument("--lr", type=float, default=1.5e-4)
     ap.add_argument("--mlp-lr-mult", type=float, default=1.0)
     ap.add_argument("--weight-decay", type=float, default=0.01)
-    ap.add_argument("--alpha-ratio", type=float, default=2.0)
+    ap.add_argument("--scaling-mode", choices=["rslora", "constant"], default="rslora")
+    ap.add_argument("--base-scale", type=float, default=2.0)
+    ap.add_argument("--anchor-rank", type=int, default=8)
     ap.add_argument("--dropout", type=float, default=0.05)
-    ap.add_argument("--lambda-margin", type=float, default=0.25, help="0.0 = WCA-unpaired ablation")
+    ap.add_argument("--lambda-margin", type=float, default=None, help="defaults to arm_spec default_lambda_margin or 0.25")
     ap.add_argument("--margin-m", type=float, default=4.0)
     ap.add_argument("--warmup-ratio", type=float, default=0.06)
     ap.add_argument("--max-grad-norm", type=float, default=1.0)
@@ -330,11 +527,16 @@ def main() -> None:
     torch.manual_seed(args.seed)
 
     comp = json.loads(Path(args.components_file).read_text(encoding="utf-8"))
-    arm_spec = comp["models"][args.model_key]["arms"][args.arm]
+    arms_dict = comp["models"][args.model_key]["arms"]
+    if args.arm not in arms_dict:
+        raise KeyError(f"Unknown arm {args.arm!r}. Available: {sorted(arms_dict)}")
+    arm_spec = arms_dict[args.arm]
+    lambda_margin = float(args.lambda_margin) if args.lambda_margin is not None else float(arm_spec.get("default_lambda_margin", 0.25))
 
     from transformers import AutoModelForCausalLM, AutoTokenizer
 
     tok = AutoTokenizer.from_pretrained(args.model)
+    pad_id = tok.pad_token_id if tok.pad_token_id is not None else tok.eos_token_id
     model = AutoModelForCausalLM.from_pretrained(
         args.model, torch_dtype=torch.bfloat16, device_map=args.device_map
     )
@@ -342,21 +544,33 @@ def main() -> None:
     if hasattr(model, "gradient_checkpointing_enable"):
         model.gradient_checkpointing_enable(gradient_checkpointing_kwargs={"use_reentrant": False})
 
-    attach_info = M.apply_c1_adapters(model, arm_spec, alpha_ratio=args.alpha_ratio, dropout=args.dropout)
+    attach_info = M.apply_c1_adapters(
+        model,
+        arm_spec,
+        scaling_mode=args.scaling_mode,
+        base_scale=args.base_scale,
+        anchor_rank=args.anchor_rank,
+        dropout=args.dropout,
+    )
     assert attach_info["trainable_params"] == arm_spec["trainable_params"], (
         f"Param mismatch: actual={attach_info['trainable_params']} vs frozen={arm_spec['trainable_params']}"
     )
-    print(f"[c1] {args.model_key} | {args.arm} | trainable={attach_info['trainable_params']:,}")
+    print(
+        f"[c1] {args.model_key} | {args.arm} | trainable={attach_info['trainable_params']:,} | "
+        f"scaling={args.scaling_mode} | lambda_margin={lambda_margin} | microbatch={args.microbatch}"
+    )
 
     raw_items = load_training_records(
         Path(args.train_file), args.think_file, args.replay_file, args.replay_ratio, args.seed, args.limit
     )
     encoded = [encode_sft_example(tok, r, thk) for r, thk in raw_items]
-    print(f"[c1] encoded {len(encoded)} training examples (margin_active={sum(e['readout_pos'] is not None for e in encoded)})")
+    n_margin = sum(e["readout_pos"] is not None for e in encoded)
+    n_replay = sum(e["is_replay"] for e in encoded)
+    print(f"[c1] encoded {len(encoded)} examples (margin_active={n_margin}, replay={n_replay})")
 
     opt = build_optimizer(model, lr=args.lr, mlp_lr_mult=args.mlp_lr_mult, weight_decay=args.weight_decay)
-    steps_per_epoch = math.ceil(len(encoded) / args.grad_accum)
-    total_steps = steps_per_epoch * args.epochs
+    epoch_windows = [build_atomic_windows(encoded, args.grad_accum, seed=args.seed + ep) for ep in range(args.epochs)]
+    total_steps = sum(len(ws) for ws in epoch_windows)
     warmup_steps = max(1, int(total_steps * args.warmup_ratio))
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
@@ -365,45 +579,54 @@ def main() -> None:
     global_step = 0
     model.train()
 
-    for ep in range(args.epochs):
-        ordered = build_group_shuffled_order(encoded, seed=args.seed + ep)
-        opt.zero_grad()
-        acc_sft = acc_m = 0.0
-        acc_n = 0
-        for i, ex in enumerate(ordered):
-            loss, lsft, lm = compute_loss_one(model, ex, args.lambda_margin, args.margin_m)
-            (loss / args.grad_accum).backward()
-            acc_sft += lsft
-            acc_m += lm
-            acc_n += 1
-            if acc_n == args.grad_accum or (i + 1) == len(ordered):
-                torch.nn.utils.clip_grad_norm_(
-                    [p for p in model.parameters() if p.requires_grad], args.max_grad_norm
+    for ep, windows in enumerate(epoch_windows):
+        for win in windows:
+            opt.zero_grad()
+            win_n = len(win)
+            acc_sft = acc_m = 0.0
+            for j in range(0, win_n, args.microbatch):
+                mb = win[j : j + args.microbatch]
+                loss_sum, sft_sum, m_sum = compute_loss_microbatch(
+                    model, mb, pad_id, lambda_margin, args.margin_m
                 )
-                fac = lr_factor(global_step, total_steps, warmup_steps)
-                for gi, pg in enumerate(opt.param_groups):
-                    base_lr = args.lr if gi == 0 else args.lr * args.mlp_lr_mult
-                    pg["lr"] = base_lr * fac
-                opt.step()
-                opt.zero_grad()
-                global_step += 1
-                if global_step % 10 == 0 or global_step == total_steps:
-                    row = {
-                        "epoch": ep + 1,
-                        "step": global_step,
-                        "sft_loss": round(acc_sft / acc_n, 4),
-                        "margin_loss": round(acc_m / acc_n, 4),
-                        "lr": opt.param_groups[0]["lr"],
-                        "elapsed_s": round(time.time() - t0, 1),
-                    }
-                    log_rows.append(row)
-                    print(f"[c1] ep={ep+1} step={global_step}/{total_steps} sft={row['sft_loss']:.4f} margin={row['margin_loss']:.4f}")
-                acc_sft = acc_m = 0.0
-                acc_n = 0
+                (loss_sum / win_n).backward()
+                acc_sft += sft_sum
+                acc_m += m_sum
+
+            torch.nn.utils.clip_grad_norm_(
+                [p for p in model.parameters() if p.requires_grad], args.max_grad_norm
+            )
+            fac = lr_factor(global_step, total_steps, warmup_steps)
+            for gi, pg in enumerate(opt.param_groups):
+                base_lr = args.lr if gi == 0 else args.lr * args.mlp_lr_mult
+                pg["lr"] = base_lr * fac
+            opt.step()
+            global_step += 1
+
+            if global_step % 10 == 0 or global_step == total_steps:
+                row = {
+                    "epoch": ep + 1,
+                    "step": global_step,
+                    "window_n": win_n,
+                    "sft_loss": round(acc_sft / win_n, 4),
+                    "margin_loss": round(acc_m / win_n, 4),
+                    "lr": opt.param_groups[0]["lr"],
+                    "elapsed_s": round(time.time() - t0, 1),
+                }
+                log_rows.append(row)
+                print(
+                    f"[c1] ep={ep+1} step={global_step}/{total_steps} "
+                    f"sft={row['sft_loss']:.4f} margin={row['margin_loss']:.4f}"
+                )
         norms = M.module_delta_norms(model)
         print(f"[c1] end epoch {ep+1}: {norms}")
 
     final_norms = M.module_delta_norms(model)
+    # Always save tiny unmerged adapter state for zero-retraining post-hoc pathway ablations
+    adapter_state_path = args.out_dir / "adapter_state.pt"
+    M.save_c1_adapter_state(model, adapter_state_path)
+    print(f"[c1] saved unmerged adapter state -> {adapter_state_path}")
+
     meta = {
         "model": args.model,
         "model_key": args.model_key,
@@ -413,12 +636,18 @@ def main() -> None:
         "hyperparams": {
             "epochs": args.epochs,
             "grad_accum": args.grad_accum,
+            "microbatch": args.microbatch,
             "lr": args.lr,
             "mlp_lr_mult": args.mlp_lr_mult,
-            "lambda_margin": args.lambda_margin,
+            "scaling_mode": args.scaling_mode,
+            "base_scale": args.base_scale,
+            "anchor_rank": args.anchor_rank,
+            "lambda_margin": lambda_margin,
             "margin_m": args.margin_m,
             "seed": args.seed,
             "n_examples": len(encoded),
+            "n_replay": n_replay,
+            "total_steps": total_steps,
         },
         "final_delta_norms": final_norms,
         "elapsed_seconds": round(time.time() - t0, 1),

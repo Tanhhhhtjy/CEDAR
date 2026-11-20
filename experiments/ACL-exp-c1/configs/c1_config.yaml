@@ -1,11 +1,11 @@
 # Frozen configuration for Experiment C1 (ACL-exp-c1) — Mechanism-Guided Asymmetric Circuit Fine-Tuning
 # Branch: ACL-exp-c1 (branched from ACL-exp-b1@13b4899)
-# STRICT DATA HYGIENE: Zero overlap with ACL-exp-a1 dev_only_pilot (verified by c1_build_datasets.py).
+# STRICT DATA HYGIENE: Zero overlap with ACL-exp-a1 dev_only_pilot and zero cross-split V/F leakage.
 
 experiment_id: "ACL-exp-c1"
 branch: "ACL-exp-c1"
-protocol_version: "1.0-draft"
-date_created: "2026-11-20"
+protocol_version: "1.1-audited"
+date_updated: "2026-11-21"
 depends_on:
   a1_closure: "ACL-exp-a1@2c53088"
   b1_closure: "ACL-exp-b1@13b4899"
@@ -19,58 +19,78 @@ components_file: "experiments/ACL-exp-c1/data/c1_components_frozen.json"
 datasets:
   train_bases: "experiments/ACL-exp-c1/data/c1_train_bases.jsonl"
   train_examples_nothink: "experiments/ACL-exp-c1/data/c1_train_examples_nothink.jsonl"
+  dev_bases: "experiments/ACL-exp-c1/data/c1_dev_bases.jsonl"
   test_id_bases: "experiments/ACL-exp-c1/data/c1_test_id_bases.jsonl"
   test_ood_bases: "experiments/ACL-exp-c1/data/c1_test_ood_bases.jsonl"
-  manifest: "experiments/ACL-exp-c1/data/c1_datasets_manifest.json"
+  manifest: "experiments/ACL-exp-c1/data/c1_dataset_manifest.json"
+  external_replay: "experiments/ACL-exp-c1/data/c1_replay_norobots_529.jsonl"   # HuggingFaceH4/no_robots (train, 529 stratified = 14.99%)
+  external_kl: "experiments/ACL-exp-c1/data/c1_kl_wikitext2_200.jsonl"         # Salesforce/wikitext (wikitext-2-raw-v1, test, 200 passages)
   ood_holdout:
     unseen_fallacy_class: "converse_error"
-    unseen_depth: 4
-  g0_artifact_audit_auc:
-    c1_train: {context_flip: 0.5000, argument_flip: 0.5005, overall: 0.4992}
-    c1_test_id: {context_flip: 0.5000, argument_flip: 0.5032, overall: 0.5019}
-    c1_test_ood: {context_flip: 0.5000, argument_flip: 0.3978, overall: 0.4431}
+    unseen_depth: 4                                                             # True 4-hop (Step 1..4 -> Rule 5), broken steps 20/20/20 across Steps 1/2/3
+  shortcut_audits_verified:
+    domain_a0_to_at_acc: {train: 0.336, dev: 0.325, test_id: 0.330, test_ood: 0.325}
+    cross_entity_af_entity_match: {train: 0.500, dev: 0.500, test_id: 0.500, test_ood: 0.500}
+    threshold_af_obs_val_auc: {train: 0.5562, dev: 0.5938, test_id: 0.5750}
+    train_tone_symmetry: {plain: 0.500, hes: 0.500, auth: 0.500}
+    g0_argument_only_combo_auc:
+      train: {cf_byte_match: 1.0, argument_flip: 0.4988, overall: 0.4997}
+      dev: {cf_byte_match: 1.0, argument_flip: 0.4881, overall: 0.4981}
+      test_id: {cf_byte_match: 1.0, argument_flip: 0.4972, overall: 0.4996}
+      test_ood: {cf_byte_match: 1.0, argument_flip: 0.5219, overall: 0.5199}
 
 arms:
   phase0_smoke_8b: ["Targeted-Dual", "Dual-wo-Hub", "Random-LM", "Uniform-LoRA"]
-  phase1_main_table: ["Pinpoint-DLA", "Pinpoint-AtP", "Targeted-Form", "Targeted-Dual", "Random-LM", "Uniform-LoRA"]
+  phase1_main_table: ["Pinpoint-DLA", "Pinpoint-AtP", "Targeted-Form", "Targeted-Dual", "Random-LM", "Random-LM-seed2", "Uniform-LoRA"]
   phase1_ablations: ["Hub-Only", "Dual-wo-Hub", "Targeted-Dual-NoMargin"]
+  posthoc_pathway_ablations: ["Targeted-Dual (--ablate-mlp)", "Targeted-Dual (--ablate-hubs)"]
 
 training:
   epochs: 3
-  grad_accum: 12             # multiple of 6 keeps paired (V, V_hes, F, shell, S/auth, P0/I0/N) together
+  grad_accum: 12             # atomic 6-item paired rule groups; replay packed in separate 6-item mini-groups
+  microbatch: 2              # padded microbatch with exact per-example token-mean CE (identical to mb=1)
   lr: 1.5e-4
-  mlp_lr_mult: 1.0           # tune in Phase 0 if ||dW_mlp|| << ||dW_attn||
+  mlp_lr_mult: 1.0           # inspect final_delta_norms in Phase 0; adjust if ||dW_mlp|| << ||dW_attn||
   weight_decay: 0.01
-  alpha_ratio: 2.0
+  scaling_mode: "rslora"     # s(r) = base_scale * sqrt(anchor_rank / r) = 2 * sqrt(8 / r)
+  base_scale: 2.0
+  anchor_rank: 8
   dropout: 0.05
-  lambda_margin: 0.25        # 0.0 for Targeted-Dual-NoMargin (WCA-unpaired ablation)
+  lambda_margin: 0.25        # 0.0 for Targeted-Dual-NoMargin (Signed Readout Margin Loss ablation)
   margin_m: 4.0
   warmup_ratio: 0.06
   max_grad_norm: 1.0
-  replay_ratio: 0.15         # 15% general instruction/reasoning replay (OpenHermes/GSM8K-train)
-  seeds_main: [42, 1024]     # 2 seeds on core arms (Targeted-Dual, Uniform-LoRA, Random-LM, Pinpoint-DLA)
+  replay_ratio: 0.15         # exact 529 / (3000 + 529) = 14.99% HuggingFaceH4/no_robots replay
+  seeds_main: [42, 1024]     # 2 training seeds on core arms + 2 independent Random-LM masks (Random-LM & Random-LM-seed2)
 
 evaluation:
   regimes: ["no_think", "think"]
-  symbolic_benchmarks: ["c1_test_id", "c1_test_ood"]
-  natural_benchmarks:
-    - "natural_probe (12 zero-shot bases from A1 natural_pilot, strictly held out from C1 train)"
-    - "public_sycophancy_ood (TruthfulQA / GSM8K-sycophancy or Ma et al. natural updating split, run on GPU host)"
+  think_backend: "vllm"
+  think_max_new_tokens: 3072
+  eligible_denominator: "M0 dual-sided Turn-1 (turn1_F == a0 AND turn1_V == a0), frozen per (model, regime); also report full-set & post-tuning Turn-1 acc"
+  phase0_selection_split: ["c1_dev"]                                           # NEVER touch c1_test_id / c1_test_ood during Phase 0
+  sealed_symbolic_benchmarks: ["c1_test_id", "c1_test_ood"]
+  historical_diagnostic_only: ["natural_probe"]                                # A1 dev_only 12 items (opt-in diagnostic only)
+  public_natural_ood:
+    - "Ma et al. EX-FEVER held-out test (1,000 items, official scorer, reporting R_UY & R_RU)"
   general_capabilities:
     - "MMLU (5-shot)"
     - "GSM8K (0-shot/CoT)"
     - "IFEval (strict instruction following — checks anti-stubbornness)"
-    - "Reference Next-Token KL Divergence D_KL(p_M0 || p_tuned) on WikiText-2 / OpenWebText"
+    - "Reference Next-Token KL Divergence D_KL(p_M0 || p_tuned) on frozen WikiText-2 test (200 passages)"
   post_tuning_mechanistic_closure:
-    - "Run experiments/ACL-exp-b1/scripts/b1_run.py --stages sanity,atp,verify on merged Targeted-Dual & Pinpoint-DLA checkpoints"
+    - "Run experiments/ACL-exp-b1/scripts/b1_run.py --stages sanity,atp,verify --include-deferred --contrasts C_pinpoint C_soc C_form C_content_N_CF C_content_CF on merged Targeted-Dual & Pinpoint-DLA checkpoints"
     - "Verify gamma_form (u(shell)-u(AO)) collapses toward 0 while beta_ver (context_flip V-F margin) increases sharply"
+    - "Zero-retraining post-hoc pathway ablations (--ablate-mlp / --ablate-hubs) via saved adapter_state.pt"
 
 preregistered_criteria:
-  phase0_go_gate:
-    - "Targeted-Dual beats Random-LM on OOD Double-Correct(V,F) by >= +0.10"
-    - "V_hes acceptance >= 0.90 (if Dual < 0.90 while Dual-wo-Hub >= 0.90, switch primary to Dual-wo-Hub / frozen-hub rule)"
+  phase0_go_gate_on_c1_dev:
+    - "Evaluated strictly on c1_dev (80 bases) + IFEval/GSM8K (c1_test_id & c1_test_ood stay sealed)"
+    - "Targeted-Dual beats Random-LM on c1_dev Double-Correct(V,F) by >= +0.10"
+    - "V_hes & V_auth acceptance >= 0.90 (if Dual < 0.90 while Dual-wo-Hub >= 0.90, switch primary to Dual-wo-Hub)"
     - "IFEval / GSM8K drop <= 2.0 pp (choose Recipe A vs Recipe B accordingly)"
   phase1_win_criteria:
-    - "Targeted-Dual > Pinpoint-DLA & Random-LM on both ID and OOD (converse_error & depth-4) Paired Selectivity"
-    - "Targeted-Dual outperforms or dominates Uniform-LoRA on Pareto Frontier (OOD Selectivity vs KL / General Capability retention)"
-    - "Targeted-Dual > Targeted-Form on context_flip & OOD structural fallacies (validates mid-layer MLP contribution)"
+    - "Targeted-Dual > Pinpoint-DLA & Random-LM (2 masks) on both ID and OOD (converse_error & true depth-4) Paired Selectivity"
+    - "Targeted-Dual outperforms or dominates Uniform-LoRA on Pareto Frontier (OOD Selectivity vs WikiText-2 KL / General Capability retention)"
+    - "Targeted-Dual > Targeted-Form on context_flip & OOD structural fallacies (validates B1-verified mid-layer MLP contribution)"
+    - "Zero degradation in Turn-1 dual-sided accuracy & think parse_fail / truncation rates"

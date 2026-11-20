@@ -46,7 +46,7 @@
       "arms": {
         "Targeted-Dual": {
           "kind": "circuit",
-          "description": "C_form(20) U C_soc(12) U C_content_N_CF(20) U dialog_content(10) Q/O slices + N_CF top-5 MLP gate/down LoRA",
+          "description": "C_form(20) U C_soc(12) U C_content_N_CF(20) U dialog_content(10) Q/O slices + B1-verified N_CF top-5 MLP gate/down LoRA",
           "heads": [
             [
               17,
@@ -236,12 +236,213 @@
           "head_rank": 18,
           "mlp_layers": [
             19,
-            20,
             22,
             23,
-            25
+            25,
+            26
           ],
           "mlp_rank": 8,
+          "trainable_params": 10492928
+        },
+        "Targeted-Dual-NoMargin": {
+          "kind": "circuit",
+          "description": "Ablation: identical components to Targeted-Dual with default_lambda_margin=0.0 (SFT-only)",
+          "heads": [
+            [
+              17,
+              1
+            ],
+            [
+              18,
+              1
+            ],
+            [
+              18,
+              3
+            ],
+            [
+              18,
+              4
+            ],
+            [
+              19,
+              12
+            ],
+            [
+              19,
+              25
+            ],
+            [
+              20,
+              3
+            ],
+            [
+              20,
+              12
+            ],
+            [
+              20,
+              22
+            ],
+            [
+              21,
+              5
+            ],
+            [
+              21,
+              10
+            ],
+            [
+              21,
+              11
+            ],
+            [
+              21,
+              12
+            ],
+            [
+              21,
+              13
+            ],
+            [
+              21,
+              16
+            ],
+            [
+              21,
+              19
+            ],
+            [
+              21,
+              35
+            ],
+            [
+              22,
+              1
+            ],
+            [
+              22,
+              4
+            ],
+            [
+              22,
+              19
+            ],
+            [
+              22,
+              23
+            ],
+            [
+              22,
+              24
+            ],
+            [
+              22,
+              35
+            ],
+            [
+              23,
+              3
+            ],
+            [
+              23,
+              4
+            ],
+            [
+              23,
+              26
+            ],
+            [
+              24,
+              2
+            ],
+            [
+              24,
+              15
+            ],
+            [
+              24,
+              17
+            ],
+            [
+              24,
+              19
+            ],
+            [
+              24,
+              27
+            ],
+            [
+              24,
+              37
+            ],
+            [
+              24,
+              39
+            ],
+            [
+              25,
+              15
+            ],
+            [
+              25,
+              16
+            ],
+            [
+              25,
+              18
+            ],
+            [
+              25,
+              36
+            ],
+            [
+              26,
+              0
+            ],
+            [
+              26,
+              4
+            ],
+            [
+              26,
+              37
+            ],
+            [
+              27,
+              0
+            ],
+            [
+              28,
+              24
+            ],
+            [
+              29,
+              10
+            ],
+            [
+              34,
+              26
+            ],
+            [
+              38,
+              24
+            ],
+            [
+              39,
+              13
+            ]
+          ],
+          "head_rank": 18,
+          "mlp_layers": [
+            19,
+            22,
+            23,
+            25,
+            26
+          ],
+          "mlp_rank": 8,
+          "default_lambda_margin": 0.0,
           "trainable_params": 10492928
         },
         "Targeted-Form": {
@@ -352,7 +553,7 @@
         },
         "Pinpoint-DLA": {
           "kind": "circuit",
-          "description": "Pinpoint-style direct-path DLA(C_pinpoint) top-20 Q/O slices only (no MLP; rank-matched to Dual budget)",
+          "description": "Pinpoint-style direct-path DLA(C_pinpoint) top-20 Q/O slices only (proxy baseline, no MLP; rank-matched)",
           "heads": [
             [
               28,
@@ -532,7 +733,7 @@
         },
         "Random-LM": {
           "kind": "circuit",
-          "description": "Layer-matched random heads & random MLP layers disjoint from Targeted-Dual (exact same param count)",
+          "description": "Layer-matched random heads & band-matched random MLP layers (mask seed=2027, exact same param count)",
           "heads": [
             [
               17,
@@ -723,9 +924,209 @@
           "mlp_layers": [
             14,
             15,
-            21,
-            26,
-            30
+            20,
+            24,
+            31
+          ],
+          "mlp_rank": 8,
+          "trainable_params": 10492928
+        },
+        "Random-LM-seed2": {
+          "kind": "circuit",
+          "description": "Independent 2nd random mask for seed=1024 (mask seed=2028, exact same param count)",
+          "heads": [
+            [
+              17,
+              23
+            ],
+            [
+              18,
+              2
+            ],
+            [
+              18,
+              14
+            ],
+            [
+              18,
+              26
+            ],
+            [
+              19,
+              17
+            ],
+            [
+              19,
+              24
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              11
+            ],
+            [
+              20,
+              14
+            ],
+            [
+              21,
+              0
+            ],
+            [
+              21,
+              17
+            ],
+            [
+              21,
+              23
+            ],
+            [
+              21,
+              25
+            ],
+            [
+              21,
+              26
+            ],
+            [
+              21,
+              34
+            ],
+            [
+              21,
+              38
+            ],
+            [
+              21,
+              39
+            ],
+            [
+              22,
+              0
+            ],
+            [
+              22,
+              5
+            ],
+            [
+              22,
+              11
+            ],
+            [
+              22,
+              14
+            ],
+            [
+              22,
+              17
+            ],
+            [
+              22,
+              37
+            ],
+            [
+              23,
+              10
+            ],
+            [
+              23,
+              16
+            ],
+            [
+              23,
+              20
+            ],
+            [
+              24,
+              3
+            ],
+            [
+              24,
+              6
+            ],
+            [
+              24,
+              14
+            ],
+            [
+              24,
+              18
+            ],
+            [
+              24,
+              29
+            ],
+            [
+              24,
+              31
+            ],
+            [
+              24,
+              34
+            ],
+            [
+              25,
+              14
+            ],
+            [
+              25,
+              24
+            ],
+            [
+              25,
+              25
+            ],
+            [
+              25,
+              27
+            ],
+            [
+              26,
+              14
+            ],
+            [
+              26,
+              38
+            ],
+            [
+              26,
+              39
+            ],
+            [
+              27,
+              12
+            ],
+            [
+              28,
+              23
+            ],
+            [
+              29,
+              16
+            ],
+            [
+              34,
+              17
+            ],
+            [
+              38,
+              1
+            ],
+            [
+              39,
+              31
+            ]
+          ],
+          "head_rank": 18,
+          "mlp_layers": [
+            14,
+            16,
+            20,
+            28,
+            31
           ],
           "mlp_rank": 8,
           "trainable_params": 10492928
@@ -744,7 +1145,7 @@
         },
         "Hub-Only": {
           "kind": "circuit",
-          "description": "Ablation: ONLY the shared mid-layer routing hub heads (Q/O slices, rank=dual_head_rank)",
+          "description": "Capacity ablation: ONLY the shared mid-layer routing hub heads (Q/O slices, rank=dual_head_rank)",
           "heads": [
             [
               23,
@@ -770,7 +1171,7 @@
         },
         "Dual-wo-Hub": {
           "kind": "circuit",
-          "description": "Ablation: Targeted-Dual with shared mid-layer hub heads frozen",
+          "description": "Capacity ablation: Targeted-Dual with shared mid-layer hub heads frozen",
           "heads": [
             [
               17,
@@ -944,10 +1345,10 @@
           "head_rank": 18,
           "mlp_layers": [
             19,
-            20,
             22,
             23,
-            25
+            25,
+            26
           ],
           "mlp_rank": 8,
           "trainable_params": 9737216
@@ -995,7 +1396,7 @@
       "arms": {
         "Targeted-Dual": {
           "kind": "circuit",
-          "description": "C_form(20) U C_soc(12) U C_content_N_CF(20) U dialog_content(10) Q/O slices + N_CF top-5 MLP gate/down LoRA",
+          "description": "C_form(20) U C_soc(12) U C_content_N_CF(20) U dialog_content(10) Q/O slices + B1-verified N_CF top-5 MLP gate/down LoRA",
           "heads": [
             [
               14,
@@ -1189,12 +1590,217 @@
           "head_rank": 14,
           "mlp_layers": [
             18,
-            19,
             20,
             22,
-            23
+            23,
+            27
           ],
           "mlp_rank": 8,
+          "trainable_params": 6869504
+        },
+        "Targeted-Dual-NoMargin": {
+          "kind": "circuit",
+          "description": "Ablation: identical components to Targeted-Dual with default_lambda_margin=0.0 (SFT-only)",
+          "heads": [
+            [
+              14,
+              11
+            ],
+            [
+              15,
+              9
+            ],
+            [
+              15,
+              11
+            ],
+            [
+              15,
+              13
+            ],
+            [
+              16,
+              0
+            ],
+            [
+              16,
+              22
+            ],
+            [
+              17,
+              4
+            ],
+            [
+              17,
+              13
+            ],
+            [
+              17,
+              15
+            ],
+            [
+              17,
+              27
+            ],
+            [
+              18,
+              10
+            ],
+            [
+              18,
+              11
+            ],
+            [
+              18,
+              15
+            ],
+            [
+              19,
+              10
+            ],
+            [
+              19,
+              13
+            ],
+            [
+              19,
+              21
+            ],
+            [
+              19,
+              28
+            ],
+            [
+              19,
+              29
+            ],
+            [
+              19,
+              31
+            ],
+            [
+              20,
+              1
+            ],
+            [
+              20,
+              2
+            ],
+            [
+              20,
+              3
+            ],
+            [
+              20,
+              8
+            ],
+            [
+              20,
+              9
+            ],
+            [
+              20,
+              11
+            ],
+            [
+              20,
+              15
+            ],
+            [
+              20,
+              29
+            ],
+            [
+              21,
+              19
+            ],
+            [
+              22,
+              5
+            ],
+            [
+              22,
+              8
+            ],
+            [
+              22,
+              9
+            ],
+            [
+              22,
+              11
+            ],
+            [
+              22,
+              15
+            ],
+            [
+              23,
+              0
+            ],
+            [
+              23,
+              1
+            ],
+            [
+              23,
+              3
+            ],
+            [
+              23,
+              25
+            ],
+            [
+              23,
+              26
+            ],
+            [
+              24,
+              29
+            ],
+            [
+              24,
+              31
+            ],
+            [
+              26,
+              25
+            ],
+            [
+              26,
+              26
+            ],
+            [
+              29,
+              6
+            ],
+            [
+              29,
+              11
+            ],
+            [
+              30,
+              5
+            ],
+            [
+              34,
+              28
+            ],
+            [
+              35,
+              25
+            ]
+          ],
+          "head_rank": 14,
+          "mlp_layers": [
+            18,
+            20,
+            22,
+            23,
+            27
+          ],
+          "mlp_rank": 8,
+          "default_lambda_margin": 0.0,
           "trainable_params": 6869504
         },
         "Targeted-Form": {
@@ -1309,7 +1915,7 @@
         },
         "Pinpoint-DLA": {
           "kind": "circuit",
-          "description": "Pinpoint-style direct-path DLA(C_pinpoint) top-20 Q/O slices only (no MLP; rank-matched to Dual budget)",
+          "description": "Pinpoint-style direct-path DLA(C_pinpoint) top-20 Q/O slices only (proxy baseline, no MLP; rank-matched)",
           "heads": [
             [
               23,
@@ -1489,7 +2095,7 @@
         },
         "Random-LM": {
           "kind": "circuit",
-          "description": "Layer-matched random heads & random MLP layers disjoint from Targeted-Dual (exact same param count)",
+          "description": "Layer-matched random heads & band-matched random MLP layers (mask seed=2027, exact same param count)",
           "heads": [
             [
               14,
@@ -1684,9 +2290,213 @@
           "mlp_layers": [
             13,
             14,
-            21,
-            25,
-            28
+            24,
+            28,
+            32
+          ],
+          "mlp_rank": 8,
+          "trainable_params": 6869504
+        },
+        "Random-LM-seed2": {
+          "kind": "circuit",
+          "description": "Independent 2nd random mask for seed=1024 (mask seed=2028, exact same param count)",
+          "heads": [
+            [
+              14,
+              12
+            ],
+            [
+              15,
+              5
+            ],
+            [
+              15,
+              25
+            ],
+            [
+              15,
+              29
+            ],
+            [
+              16,
+              1
+            ],
+            [
+              16,
+              12
+            ],
+            [
+              17,
+              6
+            ],
+            [
+              17,
+              9
+            ],
+            [
+              17,
+              12
+            ],
+            [
+              17,
+              24
+            ],
+            [
+              18,
+              0
+            ],
+            [
+              18,
+              6
+            ],
+            [
+              18,
+              9
+            ],
+            [
+              19,
+              0
+            ],
+            [
+              19,
+              12
+            ],
+            [
+              19,
+              18
+            ],
+            [
+              19,
+              20
+            ],
+            [
+              19,
+              22
+            ],
+            [
+              19,
+              30
+            ],
+            [
+              20,
+              0
+            ],
+            [
+              20,
+              4
+            ],
+            [
+              20,
+              12
+            ],
+            [
+              20,
+              23
+            ],
+            [
+              20,
+              24
+            ],
+            [
+              20,
+              26
+            ],
+            [
+              20,
+              28
+            ],
+            [
+              20,
+              30
+            ],
+            [
+              21,
+              9
+            ],
+            [
+              22,
+              4
+            ],
+            [
+              22,
+              13
+            ],
+            [
+              22,
+              20
+            ],
+            [
+              22,
+              23
+            ],
+            [
+              22,
+              26
+            ],
+            [
+              23,
+              10
+            ],
+            [
+              23,
+              16
+            ],
+            [
+              23,
+              19
+            ],
+            [
+              23,
+              22
+            ],
+            [
+              23,
+              24
+            ],
+            [
+              24,
+              2
+            ],
+            [
+              24,
+              14
+            ],
+            [
+              26,
+              15
+            ],
+            [
+              26,
+              24
+            ],
+            [
+              29,
+              5
+            ],
+            [
+              29,
+              15
+            ],
+            [
+              30,
+              13
+            ],
+            [
+              34,
+              10
+            ],
+            [
+              35,
+              24
+            ]
+          ],
+          "head_rank": 14,
+          "mlp_layers": [
+            13,
+            15,
+            19,
+            29,
+            31
           ],
           "mlp_rank": 8,
           "trainable_params": 6869504
@@ -1705,7 +2515,7 @@
         },
         "Hub-Only": {
           "kind": "circuit",
-          "description": "Ablation: ONLY the shared mid-layer routing hub heads (Q/O slices, rank=dual_head_rank)",
+          "description": "Capacity ablation: ONLY the shared mid-layer routing hub heads (Q/O slices, rank=dual_head_rank)",
           "heads": [
             [
               19,
@@ -1727,7 +2537,7 @@
         },
         "Dual-wo-Hub": {
           "kind": "circuit",
-          "description": "Ablation: Targeted-Dual with shared mid-layer hub heads frozen",
+          "description": "Capacity ablation: Targeted-Dual with shared mid-layer hub heads frozen",
           "heads": [
             [
               14,
@@ -1909,10 +2719,10 @@
           "head_rank": 14,
           "mlp_layers": [
             18,
-            19,
             20,
             22,
-            23
+            23,
+            27
           ],
           "mlp_rank": 8,
           "trainable_params": 6514688
