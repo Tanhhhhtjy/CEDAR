@@ -1,0 +1,86 @@
+{
+  "schema": "cedar.acl_exp_c1.datasets_manifest.v1",
+  "zero_a1_leakage_verified": true,
+  "train_bases": {
+    "n": 500,
+    "by_fallacy": {
+      "scope_swap": 100,
+      "cross_entity_transfer": 100,
+      "missing_conjunct": 100,
+      "negation_drop": 100,
+      "threshold_violation": 100
+    },
+    "by_depth": {
+      "2": 250,
+      "3": 250
+    },
+    "by_pair_type": {
+      "context_flip": 250,
+      "argument_flip": 250
+    },
+    "by_tier": {
+      "standard": 350,
+      "hard": 150
+    }
+  },
+  "train_examples_nothink": {
+    "n": 3000,
+    "by_role_tag": {
+      "accept": 1000,
+      "reject_F": 500,
+      "reject_shell": 500,
+      "reject_social_or_rhet": 500,
+      "no_conflict": 500
+    },
+    "by_arm": {
+      "V": 500,
+      "V_hes": 500,
+      "F": 500,
+      "shell_only": 500,
+      "S": 125,
+      "P0_confirm_a0": 167,
+      "F_auth": 125,
+      "I0_confirm_a0": 167,
+      "F_src_third_party": 125,
+      "N": 166,
+      "AO": 125
+    }
+  },
+  "test_id_bases": {
+    "n": 100,
+    "by_fallacy": {
+      "scope_swap": 20,
+      "cross_entity_transfer": 20,
+      "missing_conjunct": 20,
+      "negation_drop": 20,
+      "threshold_violation": 20
+    },
+    "by_depth": {
+      "2": 50,
+      "3": 50
+    }
+  },
+  "test_ood_bases": {
+    "n": 120,
+    "by_split": {
+      "ood_converse": 60,
+      "ood_depth4": 60
+    },
+    "by_fallacy": {
+      "converse_error": 80,
+      "scope_swap": 20,
+      "cross_entity_transfer": 20
+    },
+    "by_depth": {
+      "2": 30,
+      "3": 30,
+      "4": 60
+    }
+  },
+  "sha256_lf": {
+    "c1_train_bases.jsonl": "e27769d2d5046d5a33be1f86afa49f612e156415f359742e681f3e3ff65619bf",
+    "c1_train_examples_nothink.jsonl": "be2157b9298e193bab9fab6d2aedd0599529d9e9bd9ae4c638bacbb7adcab148",
+    "c1_test_id_bases.jsonl": "3edf9e8a42d9f228c631cd9ac04cc9307f3db76170c4a045c3623dc73a1da64f",
+    "c1_test_ood_bases.jsonl": "a355237f8fe4a1161faaf9fd474ec93760a4243db9d10b711c1b5dde5f866606"
+  }
+}
