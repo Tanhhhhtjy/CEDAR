@@ -1,0 +1,110 @@
+{
+  "event": "4e1284fd5d704e1e",
+  "protocol_commit": "668f5cab40d2e14324fed75da54de73c7c0e94b6",
+  "phase0_archive": "81dc5e8b1b4799bb38bed665bbc5195f90fedad9",
+  "model": "/mnt/kcl/devuser/ckpts/Qwen3-8B",
+  "training_arm": "Targeted-Dual",
+  "seed": 42,
+  "source_snapshot": "Selected scripts, configs and permitted input files from the protocol commit. External inputs verified against the frozen manifest.",
+  "input_sha256": {
+    "c1_replay_norobots_529.jsonl": "997a5da77985e84f88c8825331e1b39915bdaa2119fd407425a64fccfa80d990",
+    "c1_kl_wikitext2_200.jsonl": "97a3ed61a17e4023eabe9566fbe56768d0708aea97b662abac52dbb830315e05",
+    "c1_dev_bases.jsonl": "b51ee0404056ab5cdb61151ebeaa8522407a71696c3db3d96c46ab580e64d401",
+    "c1_train_examples_nothink.jsonl": "7fd39168602de4d62c3fd408da58d6cf54d17495ae95e968b5719c3ae6debddd"
+  },
+  "training": {
+    "examples": 3529,
+    "rules": 3000,
+    "replay": 529,
+    "margin_active": 2709,
+    "max_steps": 295,
+    "schedule_steps": 885,
+    "warmup_steps": 53,
+    "save_steps": [
+      25,
+      50,
+      100,
+      150,
+      295
+    ],
+    "approximate_training_time_from_plan_minutes": 40,
+    "physical_cards_and_starts": {
+      "S1_ctrl_15e5": {
+        "physical_gpu": 0,
+        "started_at": "2026-11-22T01:14:12+08:00"
+      },
+      "S1_lr_3e5": {
+        "physical_gpu": 2,
+        "started_at": "2026-11-22T01:14:12+08:00"
+      },
+      "S1_zero_rep": {
+        "physical_gpu": 4,
+        "started_at": "2026-11-22T01:14:12+08:00"
+      },
+      "S1_mask_fmt": {
+        "physical_gpu": 5,
+        "started_at": "2026-11-22T01:14:12+08:00"
+      }
+    }
+  },
+  "software": {
+    "torch": "2.8.0",
+    "transformers": "4.57.0",
+    "accelerate": "1.1.1",
+    "driver": "580.95.05",
+    "model_gpu": "NVIDIA A800-SXM4-40GB",
+    "precision": "bfloat16"
+  },
+  "evaluations": {
+    "backend": "hf",
+    "n_c1_dev_bases": 80,
+    "n_arms": 15,
+    "modes": [
+      "no_think",
+      "no_think_free",
+      "think"
+    ],
+    "explicit_datasets": [
+      "c1_dev"
+    ],
+    "reference_kl_datasets": [],
+    "reference_kl_texts": 200,
+    "phase0_frozen_eligibility": {
+      "no_think": 45,
+      "think": 80
+    },
+    "no_think_free_eligibility": "M0 HF on the full 80-item development set",
+    "M0_HF_baselines": {
+      "think": {
+        "physical_gpu": 3,
+        "started_at": "2026-11-22T01:14:12+08:00"
+      },
+      "no_think_free": {
+        "physical_gpu": 1,
+        "started_at": "2026-11-22T01:14:12+08:00"
+      }
+    },
+    "capability_selection": "The Step 1 commit does not supply an independent screen or a tie-break. Awaiting the frozen screen and decision rule before selecting a checkpoint."
+  },
+  "cpu_selftests": {
+    "eval": [
+      "[OK] think parser 4-case self-test passed (ok / unclosed / hit_token_limit / format_error)",
+      "[OK] c1_eval CPU self-test passed (n_bases=4, shared_elig=2, self-KL=0.0, hubs_8b=3, hubs_14b=4)"
+    ],
+    "train": [
+      "[OK] Recipe B multi-step think readout_pos alignment passed (pos=330)",
+      "[OK] Atomic group windowing passed (windows=[11, 6], zero split rule groups)",
+      "[OK] microbatch=2 vs microbatch=1 equivalence passed (diff=1.91e-06)",
+      "[OK] --mask-rule-format-ce passed (margin!=0, margin==0 rule, & replay; s_msk=1.8988 < s_unm=5.8653)",
+      "[OK] --zero-replay-loss passed (pure-replay window exact 0.0 loss & exact 0.0 grad)",
+      "[OK] adapter_state.pt save/reload & zero-retraining MLP/Hub pathway ablations passed",
+      "[OK] tiny self-test Targeted-Dual  : params=  4992 merge_err=2.38e-07 norms={'attn_delta_frob': 0.2770009873620648, 'mlp_delta_frob': 0.32119638278108764}",
+      "[OK] tiny self-test Targeted-Form  : params=  1920 merge_err=2.09e-07 norms={'attn_delta_frob': 0.22197439280735673, 'mlp_delta_frob': 0.0}",
+      "[OK] tiny self-test Pinpoint-DLA   : params=  1920 merge_err=1.79e-07 norms={'attn_delta_frob': 0.24249496574098328, 'mlp_delta_frob': 0.0}",
+      "[OK] tiny self-test Uniform-LoRA   : params=  5120 merge_err=2.98e-07 norms={'attn_delta_frob': 0.37135008738391934, 'mlp_delta_frob': 0.4559594740007823}",
+      "[OK] tiny self-test Hub-Only       : params=   640 merge_err=1.79e-07 norms={'attn_delta_frob': 0.15559930016601128, 'mlp_delta_frob': 0.0}",
+      "[OK] tiny self-test Dual-wo-Hub    : params=  4352 merge_err=2.38e-07 norms={'attn_delta_frob': 0.21688255934413475, 'mlp_delta_frob': 0.33354714187292817}",
+      "[OK] ALL c1_train & c1_modules self-tests PASSED"
+    ]
+  }
+}
