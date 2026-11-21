@@ -1,0 +1,58 @@
+{
+  "protocol_commit": "668f5cab40d2e14324fed75da54de73c7c0e94b6",
+  "matched_step": 295,
+  "reference_kl_means": {
+    "S1_lr_3e5": "0.002154",
+    "S1_zero_rep": "0.000985"
+  },
+  "relative_reduction": 0.542711234911792,
+  "trigger_kl_threshold": 0.5,
+  "kl_input": {
+    "n_texts": 200,
+    "n_tokens": 43854
+  },
+  "human_replay_sha256": "997a5da77985e84f88c8825331e1b39915bdaa2119fd407425a64fccfa80d990",
+  "teacher_model": "Qwen3-8B M0",
+  "model_local_path": "/mnt/kcl/devuser/ckpts/Qwen3-8B",
+  "teacher_generation": {
+    "backend": "vllm 0.11.0",
+    "dtype": "bfloat16",
+    "enable_thinking": false,
+    "temperature": 0,
+    "seed": 42,
+    "max_tokens": 3072,
+    "n": 1,
+    "given_prefix": "all original chat messages, including previous assistant turns, in frozen row order",
+    "length_policy": "retain each generated target and finish reason, using the same native C1 training EOS convention as the human replay arm"
+  },
+  "teacher_settings_provenance": "Step 1 does not prescribe teacher decoding. Frozen before generation; no_think matches human replay rendering, greedy/seed/cap follow Phase 0 public no_think generation.",
+  "training": {
+    "alias": "S1_m0_distill",
+    "start": "fresh M0",
+    "arm": "Targeted-Dual",
+    "recipe_source": "S1_lr_3e5",
+    "lr": 3e-05,
+    "seed": 42,
+    "epochs": 3,
+    "scheduled_steps": 885,
+    "warmup": 53,
+    "max_steps": 295,
+    "save_steps": [
+      25,
+      50,
+      100,
+      150,
+      295
+    ],
+    "microbatch": 2,
+    "grad_accum": 12,
+    "zero_replay_loss": false,
+    "mask_rule_format_ce": false,
+    "log_source_grad_norms": true
+  },
+  "controls_reused": [
+    "S1_lr_3e5",
+    "S1_zero_rep"
+  ],
+  "independent_selection": "The paired KL threshold authorizes generation. No checkpoint selection by KL. Independent screening set and its selection rule remain unresolved for capability gates."
+}
