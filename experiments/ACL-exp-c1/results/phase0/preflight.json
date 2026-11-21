@@ -1,0 +1,229 @@
+{
+  "protocol_commit": "e98f2c9f7ff0a625fb7a6e79591c54f9e6cf0509",
+  "selection_split": "c1_dev",
+  "counts": {
+    "train_bases": 500,
+    "train_examples_nothink": 3000,
+    "dev_bases": 80,
+    "test_id_bases": 100,
+    "test_ood_bases": 120,
+    "train_by_class": {
+      "scope_swap": 100,
+      "cross_entity_transfer": 100,
+      "missing_conjunct": 100,
+      "negation_drop": 100,
+      "threshold_violation": 100
+    },
+    "train_by_depth": {
+      "2": 250,
+      "3": 250
+    },
+    "dev_by_class": {
+      "scope_swap": 16,
+      "cross_entity_transfer": 16,
+      "missing_conjunct": 16,
+      "negation_drop": 16,
+      "threshold_violation": 16
+    },
+    "test_id_by_class": {
+      "scope_swap": 20,
+      "cross_entity_transfer": 20,
+      "missing_conjunct": 20,
+      "negation_drop": 20,
+      "threshold_violation": 20
+    },
+    "test_ood_by_split": {
+      "ood_converse": 60,
+      "ood_depth4": 60
+    },
+    "test_ood_depth4_broken_steps": {
+      "1": 20,
+      "2": 20,
+      "3": 20
+    },
+    "train_examples_by_arm": {
+      "V": 500,
+      "F": 500,
+      "V_hes": 250,
+      "F_hes": 250,
+      "shell_only": 500,
+      "S": 125,
+      "V_auth": 250,
+      "F_auth": 250,
+      "P0_confirm_a0": 125,
+      "I0_confirm_a0": 125,
+      "AO": 42,
+      "F_src_third_party": 42,
+      "N": 41
+    },
+    "train_examples_by_margin_sign": {
+      "1": 1000,
+      "-1": 1709,
+      "0": 291
+    }
+  },
+  "independently_rebuilt_sha256": {
+    "c1_train_bases.jsonl": "2371b2e14895f5439d5a6a038437383bfa8fff2ca5cbe472f755087e6b5b672c",
+    "c1_dev_bases.jsonl": "b51ee0404056ab5cdb61151ebeaa8522407a71696c3db3d96c46ab580e64d401",
+    "c1_train_examples_nothink.jsonl": "7fd39168602de4d62c3fd408da58d6cf54d17495ae95e968b5719c3ae6debddd",
+    "c1_test_id_bases.jsonl": "8c0349f9adf8d7316814e4a46920fde83cc848643d6c781c903ac2fb5337e771",
+    "c1_test_ood_bases.jsonl": "796d4f23d2ebcd11d82978c37674bed15d7f8473c842666b8e9e2ae25576b76b"
+  },
+  "components_rebuilt_sha256": "2c1d02ebe4f298b51760e1e9a8c30a445e05869981e9e76cde5059921731d21a",
+  "cpu_tests": {
+    "train_tiny": "passed",
+    "eval_tiny": "passed",
+    "prepare_external_offline": "passed",
+    "dataset_builder_numpy_2_2_6": "passed native assertions",
+    "dataset_builder_numpy_1_26_4": "train argument_flip OOF AUC below 0.35 native lower bound"
+  },
+  "recomputed_shortcut_audits_numpy_2_2_6": {
+    "domain_a0_to_at_acc": {
+      "train": 0.336,
+      "dev": 0.325,
+      "test_id": 0.33,
+      "test_ood": 0.325
+    },
+    "cross_entity_af_entity_match": {
+      "train": {
+        "n_pairs": 50,
+        "entity_match_acc": 0.5
+      },
+      "dev": {
+        "n_pairs": 8,
+        "entity_match_acc": 0.5
+      },
+      "test_id": {
+        "n_pairs": 10,
+        "entity_match_acc": 0.5
+      },
+      "test_ood": {
+        "n_pairs": 10,
+        "entity_match_acc": 0.5
+      }
+    },
+    "threshold_af_obs_val_auc": {
+      "train": {
+        "n_pairs": 50,
+        "obs_val_auc": 0.5562
+      },
+      "dev": {
+        "n_pairs": 8,
+        "obs_val_auc": 0.5938
+      },
+      "test_id": {
+        "n_pairs": 10,
+        "obs_val_auc": 0.575
+      }
+    },
+    "train_tone_symmetry": {
+      "plain": {
+        "accept": 500,
+        "reject": 500,
+        "p_accept": 0.5
+      },
+      "hes": {
+        "accept": 250,
+        "reject": 250,
+        "p_accept": 0.5
+      },
+      "auth": {
+        "accept": 250,
+        "reject": 250,
+        "p_accept": 0.5
+      }
+    },
+    "g0_argument_only_audit": {
+      "train": {
+        "overall_combo_auc": 0.4635,
+        "cf_byte_match": 1.0,
+        "af_combo_auc": 0.4988,
+        "af_word_auc": 0.5007
+      },
+      "dev": {
+        "overall_combo_auc": 0.4981,
+        "cf_byte_match": 1.0,
+        "af_combo_auc": 0.4881,
+        "af_word_auc": 0.4959
+      },
+      "test_id": {
+        "overall_combo_auc": 0.4996,
+        "cf_byte_match": 1.0,
+        "af_combo_auc": 0.4972,
+        "af_word_auc": 0.4996
+      },
+      "test_ood": {
+        "overall_combo_auc": 0.5199,
+        "cf_byte_match": 1.0,
+        "af_combo_auc": 0.5219,
+        "af_word_auc": 0.5172
+      }
+    }
+  },
+  "frozen_train_overall_combo_auc": 0.4997,
+  "local_groupkfold_reproducibility": {
+    "np1": {
+      "numpy": "1.26.4",
+      "sklearn": "1.7.2",
+      "train_all_fold_sha256": "bfe622b81821fd490e4668b0ec70a432490d3518d523cded618f07c5a3c128d3",
+      "train_argument_flip_fold_sha256": "a4cb70744a6b5dad79b138d5c5d0e48b3be1d6f15ef13c76d46c4a8dff76e795",
+      "word_plus_char_oof_auc": {
+        "train_all": 0.393,
+        "train_argument_flip": 0.3382,
+        "dev_all": 0.4755,
+        "dev_argument_flip": 0.4075
+      }
+    },
+    "np2": {
+      "numpy": "2.2.6",
+      "sklearn": "1.7.2",
+      "train_all_fold_sha256": "0abcdb8516b3fe7298cf1dac84dc9e113944f98a82d329e6be1dbb0d4fe7cf95",
+      "train_argument_flip_fold_sha256": "bc481adfd905060d38110417365138389ed1484dee7eb4397f31ece83f0d833f",
+      "word_plus_char_oof_auc": {
+        "train_all": 0.4635,
+        "train_argument_flip": 0.4988,
+        "dev_all": 0.4981,
+        "dev_argument_flip": 0.4881
+      }
+    }
+  },
+  "external_parquet_sources": [
+    {
+      "dataset": "HuggingFaceH4/no_robots",
+      "split": "train",
+      "revision": "e6f9a4ac5c37faeb744ba9ecf0473184d7f8105b",
+      "path": "data/train-00000-of-00001.parquet",
+      "sha256": "76d64120a2ab20eb85d6b22bdced5b1ec638a6213a97004741006745c92489ef"
+    },
+    {
+      "dataset": "Salesforce/wikitext",
+      "config": "wikitext-2-raw-v1",
+      "split": "test",
+      "revision": "b08601e04326c79dfdd32d625aee71d232d685c3",
+      "path": "wikitext-2-raw-v1/test-00000-of-00001.parquet",
+      "sha256": "5f1bea067869d04849c0f975a2b29c4ff47d867f484f5010ea5e861eab246d91"
+    }
+  ],
+  "external_formatting": "Source parquet files verified against upstream LFS SHA-256. Frozen c1_prepare_external.py sampling and serialization applied in original row order. External texts retained on the GPU host; sampled files can be regenerated from these pinned sources and data/c1_external_manifest.json.",
+  "tokenizer_preflight": {
+    "qwen3_8b": {
+      "train_examples_no_think": 3000,
+      "margin_aligned": 2709,
+      "length_max": 799,
+      "length_median": 552
+    }
+  },
+  "phase0_training": {
+    "recipe": "A",
+    "seed": 42,
+    "microbatch": 2,
+    "epochs": 3,
+    "gpu_arms": {
+      "0": "Targeted-Dual",
+      "1": "Dual-wo-Hub",
+      "2": "Random-LM",
+      "3": "Uniform-LoRA"
+    }
+  },
+  "data_audit_note": "All five generated files are byte-identical. GroupKFold assignments differ between the two local numerical runtimes. The upstream fold IDs are not frozen, so the exact source of the remaining train-overall AUC difference is unverified."
+}
