@@ -143,11 +143,21 @@ def eval_nothink_item(model, tok, a1_cfg: dict, row: dict, arm: str, opt_tok_ids
     }
 
 
+def resolve_hub_heads(comp: dict, model_key: str) -> set[tuple[int, int]]:
+    """Resolve frozen hub heads from c1_components_frozen.json (schema: models[model_key]['hub_heads'])."""
+    m_info = comp["models"][model_key]
+    raw = m_info["hub_heads"]
+    return {(int(li), int(h)) for li, h in raw}
+
+
 @torch.no_grad()
-def eval_think_item_hf(model, tok, a1_cfg: dict, row: dict, arm: str, max_new_tokens: int = 3072) -> dict:
-    """Greedy generation evaluation in think regime (HF backend) using A1's reference parser."""
-    msgs = build_messages(a1_cfg, row, arm, "think")
-    text = tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True, enable_thinking=True)
+def eval_freegen_item_hf(
+    model, tok, a1_cfg: dict, row: dict, arm: str, *, enable_thinking: bool, max_new_tokens: int
+) -> dict:
+    """Greedy generation evaluation (HF backend) for think OR free-generation no_think."""
+    regime_prompt = "think" if enable_thinking else "no_think"
+    msgs = build_messages(a1_cfg, row, arm, regime_prompt)
+    text = tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True, enable_thinking=enable_thinking)
     enc = tok(text, return_tensors="pt", add_special_tokens=False)
     dev = _input_device(model)
     gen = model.generate(
@@ -158,7 +168,9 @@ def eval_think_item_hf(model, tok, a1_cfg: dict, row: dict, arm: str, max_new_to
         pad_token_id=tok.eos_token_id,
     )
     new_toks = gen[0, enc["input_ids"].shape[1] :]
-    hit_limit = int(len(new_toks)) >= max_new_tokens and int(new_toks[-1]) != int(tok.eos_token_id)
+    hit_limit = int(len(new_toks)) >= max_new_tokens and (
+        len(new_toks) == 0 or int(new_toks[-1]) != int(tok.eos_token_id)
+    )
     raw_out = tok.decode(new_toks, skip_special_tokens=True)
     pinfo = parse_think_generation(raw_out, hit_token_limit=hit_limit)
     pred = pinfo["pred"]
@@ -183,16 +195,21 @@ def eval_think_item_hf(model, tok, a1_cfg: dict, row: dict, arm: str, max_new_to
     }
 
 
-def eval_think_dataset_vllm(llm, tok, a1_cfg: dict, rows: list[dict], arms: list[str], max_new_tokens: int = 3072) -> list[dict]:
-    """High-throughput batched greedy evaluation in think regime via vLLM."""
+def eval_freegen_dataset_vllm(
+    llm, tok, a1_cfg: dict, rows: list[dict], arms: list[str], *, enable_thinking: bool, max_new_tokens: int
+) -> list[dict]:
+    """High-throughput batched greedy evaluation via vLLM for think OR free-generation no_think."""
     from vllm import SamplingParams
 
+    regime_prompt = "think" if enable_thinking else "no_think"
     prompts = []
     meta = []
     for r in rows:
         for arm in arms:
-            msgs = build_messages(a1_cfg, r, arm, "think")
-            prompts.append(tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True, enable_thinking=True))
+            msgs = build_messages(a1_cfg, r, arm, regime_prompt)
+            prompts.append(
+                tok.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True, enable_thinking=enable_thinking)
+            )
             meta.append((r, arm))
 
     sp = SamplingParams(temperature=0.0, max_tokens=max_new_tokens)
@@ -223,6 +240,7 @@ def eval_think_dataset_vllm(llm, tok, a1_cfg: dict, rows: list[dict], arms: list
                 "is_target": pred == at,
                 "is_initial": pred == a0,
                 "gen_tokens": int(n_toks),
+                "finish_reason": comp.finish_reason,
                 "u_theta": None,
             }
         )
@@ -395,7 +413,45 @@ def run_selftest_tiny() -> None:
 
     kl = compute_reference_kl(m_tuned, m_base, tok, ["A closed harbor berth controller applies exact rules."] * 3)
     assert kl["kl_mean"] is not None and abs(kl["kl_mean"]) < 1e-6, kl
-    print(f"[OK] c1_eval CPU self-test passed (n_bases=4, shared_elig=2, self-KL={kl['kl_mean']})")
+
+    # 3. Verify real c1_components_frozen.json hub_heads lookup (guards against KeyError: 'head_sets')
+    comp_real = json.loads((C1 / "data" / "c1_components_frozen.json").read_text(encoding="utf-8"))
+    hubs_8b = resolve_hub_heads(comp_real, "qwen3_8b")
+    hubs_14b = resolve_hub_heads(comp_real, "qwen3_14b")
+    assert len(hubs_8b) == 3 and len(hubs_14b) == 4, (hubs_8b, hubs_14b)
+
+    # 4. Verify adapter_state reload onto clean base matches merged logits & hub ablation runs cleanly
+    import tempfile
+
+    spec_tiny = {"kind": "circuit", "heads": [[1, 0], [2, 1]], "head_rank": 4, "mlp_layers": [1, 2], "mlp_rank": 4}
+    torch.manual_seed(0)
+    m_work = Qwen3ForCausalLM(cfg).float()
+    M.apply_c1_adapters(m_work, spec_tiny)
+    with torch.no_grad():
+        for name, p in m_work.named_parameters():
+            if p.requires_grad and "lora_B" in name:
+                p.fill_(0.05)
+    m_work.eval()
+    t_ids = torch.tensor([[10, 20, 30, 40]], dtype=torch.long)
+    with tempfile.TemporaryDirectory() as td:
+        ap = Path(td) / "adapter_state.pt"
+        M.save_c1_adapter_state(m_work, ap)
+        M.merge_c1_adapters(m_work)
+        with torch.no_grad():
+            y_merged = m_work(input_ids=t_ids).logits
+        torch.manual_seed(0)
+        m_clean = Qwen3ForCausalLM(cfg).float()
+        M.apply_c1_adapters(m_clean, spec_tiny)
+        M.load_c1_adapter_state(m_clean, ap)
+        m_clean.eval()
+        with torch.no_grad():
+            y_reloaded = m_clean(input_ids=t_ids).logits
+        assert float((y_merged - y_reloaded).abs().max()) < 1e-4
+        M.set_pathway_ablation(m_clean, disable_mlp=False, disable_heads={(2, 1)})
+        with torch.no_grad():
+            y_ablate = m_clean(input_ids=t_ids).logits
+        assert float((y_reloaded - y_ablate).abs().max()) > 1e-5
+    print(f"[OK] c1_eval CPU self-test passed (n_bases=4, shared_elig=2, self-KL={kl['kl_mean']}, hubs_8b={len(hubs_8b)}, hubs_14b={len(hubs_14b)})")
 
 
 def main() -> None:
@@ -404,8 +460,8 @@ def main() -> None:
     ap.add_argument("--base-model", default=None, help="base model path for reference KL (requires --kl-corpus)")
     ap.add_argument("--kl-corpus", type=Path, default=None, help="frozen external JSONL/txt corpus for next-token KL")
     ap.add_argument("--alias", default="model")
-    ap.add_argument("--regime", default="no_think", choices=["no_think", "think"])
-    ap.add_argument("--backend", default="hf", choices=["hf", "vllm"], help="vllm supported for fast batched think eval")
+    ap.add_argument("--regime", default="no_think", choices=["no_think", "no_think_free", "think"])
+    ap.add_argument("--backend", default="hf", choices=["hf", "vllm"], help="vllm supported for think & no_think_free")
     ap.add_argument("--tp", type=int, default=1, help="tensor_parallel_size for vLLM backend")
     ap.add_argument("--datasets", nargs="*", default=["c1_test_id", "c1_test_ood"])
     ap.add_argument("--arms", nargs="*", default=EVAL_ARMS)
@@ -418,7 +474,7 @@ def main() -> None:
     ap.add_argument("--ablate-mlp", action="store_true", help="disable MLP adapters when loading --adapter-state")
     ap.add_argument("--ablate-hubs", action="store_true", help="disable hub head adapters when loading --adapter-state")
     ap.add_argument("--out-dir", type=Path)
-    ap.add_argument("--max-new-tokens", type=int, default=3072)
+    ap.add_argument("--max-new-tokens", type=int, default=None, help="defaults to 3072 for think, 64 for no_think_free")
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--device-map", default="auto")
     ap.add_argument("--selftest-tiny", action="store_true")
@@ -429,8 +485,9 @@ def main() -> None:
         return
 
     assert args.model and args.out_dir
-    if args.backend == "vllm" and args.regime != "think":
-        raise ValueError("--backend vllm is only supported for --regime think (no_think uses exact single-forward logits)")
+    max_new_tokens = args.max_new_tokens if args.max_new_tokens is not None else (64 if args.regime == "no_think_free" else 3072)
+    if args.backend == "vllm" and args.regime == "no_think":
+        raise ValueError("--backend vllm is only supported for --regime think or no_think_free (no_think uses exact single-forward logits)")
     if args.backend == "vllm" and args.adapter_state is not None:
         raise ValueError("--adapter-state pathway ablation requires --backend hf")
     if args.base_model and args.regime == "no_think":
@@ -465,11 +522,10 @@ def main() -> None:
             if not (args.model_key and args.arm_name):
                 raise ValueError("--adapter-state requires --model-key and --arm-name")
             comp = json.loads(Path(args.components_file).read_text(encoding="utf-8"))
-            m_info = comp["models"][args.model_key]
-            arm_spec = m_info["arms"][args.arm_name]
+            arm_spec = comp["models"][args.model_key]["arms"][args.arm_name]
             M.apply_c1_adapters(model, arm_spec)
             M.load_c1_adapter_state(model, args.adapter_state)
-            disable_heads = {tuple(h) for h in m_info["head_sets"]["hub_heads"]} if args.ablate_hubs else None
+            disable_heads = resolve_hub_heads(comp, args.model_key) if args.ablate_hubs else None
             M.set_pathway_ablation(model, disable_mlp=args.ablate_mlp, disable_heads=disable_heads)
             model.eval()
             print(f"[c1_eval] loaded adapter_state={args.adapter_state} ablate_mlp={args.ablate_mlp} ablate_hubs={args.ablate_hubs}")
@@ -495,10 +551,14 @@ def main() -> None:
         if args.regime == "no_think":
             recs = [eval_nothink_item(model, tok, a1_cfg, r, arm, opt_tok_ids) for r in rows for arm in args.arms]
         elif args.backend == "vllm":
-            recs = eval_think_dataset_vllm(llm, tok, a1_cfg, rows, args.arms, max_new_tokens=args.max_new_tokens)
+            recs = eval_freegen_dataset_vllm(
+                llm, tok, a1_cfg, rows, args.arms, enable_thinking=(args.regime == "think"), max_new_tokens=max_new_tokens
+            )
         else:
             recs = [
-                eval_think_item_hf(model, tok, a1_cfg, r, arm, max_new_tokens=args.max_new_tokens)
+                eval_freegen_item_hf(
+                    model, tok, a1_cfg, r, arm, enable_thinking=(args.regime == "think"), max_new_tokens=max_new_tokens
+                )
                 for r in rows
                 for arm in args.arms
             ]

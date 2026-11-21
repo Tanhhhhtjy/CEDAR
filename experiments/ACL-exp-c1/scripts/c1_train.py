@@ -63,8 +63,16 @@ def _find_subseq_last(seq: list[int], sub: list[int], start: int = 0) -> int | N
     return None
 
 
-def encode_sft_example(tok, ex: dict, enable_thinking: bool = False) -> dict:
-    """Encode (messages, assistant_target) with prompt masked (-100) and exact LAST 'Final:' readout index."""
+def encode_sft_example(
+    tok, ex: dict, enable_thinking: bool = False, mask_rule_format_ce: bool = False
+) -> dict:
+    """Encode (messages, assistant_target) with prompt masked (-100) and exact LAST 'Final:' readout index.
+
+    When `mask_rule_format_ce=True`, for ALL non-replay rule examples (including margin_sign == 0 items),
+    masks the constant format tokens ('Final', ':', EOS) to -100 while preserving the exact original
+    valid-token denominator (`ce_denom`, e.g., 4.0) so letter CE keeps its exact 1/4 coefficient.
+    Replay examples are NEVER format-masked.
+    """
     prompt_text = tok.apply_chat_template(
         ex["messages"], tokenize=False, add_generation_prompt=True, enable_thinking=enable_thinking
     )
@@ -78,12 +86,17 @@ def encode_sft_example(tok, ex: dict, enable_thinking: bool = False) -> dict:
         full_ids = prompt_ids + target_ids
         boundary_split = True
     labels = [-100] * len(prompt_ids) + full_ids[len(prompt_ids) :]
+    orig_valid_len = float(max(1, sum(1 for x in labels[1:] if x != -100)))
+
+    is_replay = bool(ex.get("is_replay", ex.get("margin_sign", 0) == 0 and not ex.get("base_id")))
+    margin_sign = int(ex.get("margin_sign", 0))
 
     # Locate the exact logit index predicting the option letter after the LAST "Final:" in assistant_target.
-    # Works for BOTH no_think ("Final: B") AND Recipe B think ("<think>...</think>\nFinal: B").
-    readout_pos = None
+    # Runs for ALL non-replay rule examples (both margin_sign != 0 AND margin_sign == 0) so
+    # --mask-rule-format-ce covers all 3,000 rule examples cleanly without missing the 291 margin_sign==0 items.
+    answer_readout_pos = None
     pos_tok = neg_tok = None
-    if ex.get("margin_sign", 0) != 0 and ex.get("initial_answer") and ex.get("target_answer"):
+    if not is_replay and ex.get("initial_answer") and ex.get("target_answer"):
         f_idx = target_text.rfind("Final:")
         if f_idx >= 0:
             prefix_in_target = target_text[: f_idx + len("Final:")]
@@ -102,30 +115,43 @@ def encode_sft_example(tok, ex: dict, enable_thinking: bool = False) -> dict:
             if len(anchor) < len(full_ids) and full_ids[: len(anchor)] == anchor:
                 cand_pos = len(anchor) - 1
                 if full_ids[cand_pos + 1] == expected_gold_tok:
-                    readout_pos = cand_pos
-            if readout_pos is None:
+                    answer_readout_pos = cand_pos
+            if answer_readout_pos is None:
                 # Fallback subsequence search strictly inside assistant target span
                 key_ids = tok.encode("Final:", add_special_tokens=False)
                 loc = _find_subseq_last(full_ids, key_ids, start=len(prompt_ids))
                 if loc is not None and (loc + len(key_ids)) < len(full_ids):
                     cand_pos = loc + len(key_ids) - 1
                     if full_ids[cand_pos + 1] == expected_gold_tok:
-                        readout_pos = cand_pos
-            assert readout_pos is not None, (
+                        answer_readout_pos = cand_pos
+            assert answer_readout_pos is not None, (
                 f"Failed to align Final: readout_pos for {ex.get('example_id')} "
                 f"(gold={gold_ans}, target_text={target_text[:80]!r})"
             )
 
+    if mask_rule_format_ce and not is_replay:
+        assert answer_readout_pos is not None, (
+            f"--mask-rule-format-ce requires aligned answer letter for rule item {ex.get('example_id')}"
+        )
+        ans_label_idx = answer_readout_pos + 1
+        masked = [-100] * len(full_ids)
+        masked[ans_label_idx] = full_ids[ans_label_idx]
+        labels = masked
+
+    readout_pos = answer_readout_pos if margin_sign != 0 else None
+
     return {
         "example_id": ex.get("example_id", ""),
         "pair_group_id": ex.get("pair_group_id", ex.get("example_id", "")),
-        "is_replay": bool(ex.get("is_replay", ex.get("margin_sign", 0) == 0 and not ex.get("base_id"))),
+        "is_replay": is_replay,
         "input_ids": torch.tensor(full_ids, dtype=torch.long),
         "labels": torch.tensor(labels, dtype=torch.long),
-        "margin_sign": int(ex.get("margin_sign", 0)),
+        "ce_denom": orig_valid_len,
+        "margin_sign": margin_sign,
         "readout_pos": readout_pos,
-        "pos_tok": pos_tok,
-        "neg_tok": neg_tok,
+        "answer_readout_pos": answer_readout_pos,
+        "pos_tok": pos_tok if margin_sign != 0 else None,
+        "neg_tok": neg_tok if margin_sign != 0 else None,
     }
 
 
@@ -218,11 +244,14 @@ def compute_loss_microbatch(
     pad_token_id: int,
     lambda_margin: float,
     margin_m: float,
-) -> tuple[torch.Tensor, float, float]:
+    zero_replay_loss: bool = False,
+) -> tuple[torch.Tensor, float, float, dict]:
     """Compute exact sum-of-per-example (SFT + Signed Readout Margin) loss over a padded microbatch.
 
-    Returns (sum_loss_tensor, sum_sft_float, sum_margin_float) so caller divides cleanly by actual window size.
-    Exact per-example token averaging ensures microbatch > 1 is mathematically identical to microbatch == 1!
+    - Uses each example's `ce_denom` (original valid token count before optional format masking) so
+      `--mask-rule-format-ce` preserves the exact 1/4 letter-CE weight instead of amplifying 4x.
+    - When `zero_replay_loss=True`, still runs the exact forward pass (preserving dropout RNG, window
+      denominator, and step count) and multiplies replay example SFT losses by 0.0.
     """
     dev = _input_device(model)
     bsz = len(batch)
@@ -230,21 +259,28 @@ def compute_loss_microbatch(
     input_ids = torch.full((bsz, max_len), pad_token_id, dtype=torch.long)
     labels = torch.full((bsz, max_len), -100, dtype=torch.long)
     attn_mask = torch.zeros((bsz, max_len), dtype=torch.long)
+    ce_denoms = torch.ones((bsz,), dtype=torch.float32)
+    sft_weights = torch.ones((bsz,), dtype=torch.float32)
 
     for bi, ex in enumerate(batch):
         L = int(ex["input_ids"].numel())
         input_ids[bi, :L] = ex["input_ids"]
         labels[bi, :L] = ex["labels"]
         attn_mask[bi, :L] = 1
+        ce_denoms[bi] = float(ex.get("ce_denom", max(1, int((ex["labels"][1:] != -100).sum()))))
+        if zero_replay_loss and ex.get("is_replay"):
+            sft_weights[bi] = 0.0
 
     input_ids = input_ids.to(dev)
     labels = labels.to(dev)
     attn_mask = attn_mask.to(dev)
+    ce_denoms = ce_denoms.to(dev)
+    sft_weights = sft_weights.to(dev)
 
     out = model(input_ids=input_ids, attention_mask=attn_mask, use_cache=False)
     logits = out.logits  # [B, T, V]
 
-    # Exact per-example mean CE over non-(-100) shifted positions (identical to sequential mb=1)
+    # Exact per-example CE normalized by original valid token count `ce_denom` (identical to sequential mb=1)
     shift_logits = logits[:, :-1, :].contiguous()
     shift_labels = labels[:, 1:].contiguous()
     tok_losses = F.cross_entropy(
@@ -253,24 +289,46 @@ def compute_loss_microbatch(
         ignore_index=-100,
         reduction="none",
     ).view(bsz, -1)
-    valid_mask = (shift_labels != -100).float()
-    per_ex_sft = tok_losses.sum(dim=1) / valid_mask.sum(dim=1).clamp_min(1.0)
+    per_ex_sft_raw = tok_losses.sum(dim=1) / ce_denoms.clamp_min(1.0)
+    per_ex_sft = per_ex_sft_raw * sft_weights
 
     total_sft = per_ex_sft.sum()
     total_margin = torch.tensor(0.0, device=logits.device, dtype=torch.float32)
 
-    if lambda_margin > 0.0:
-        for bi, ex in enumerate(batch):
-            if ex["margin_sign"] != 0 and ex["readout_pos"] is not None:
-                logits_at = logits[bi, ex["readout_pos"]].float()
-                u_theta = logits_at[ex["pos_tok"]] - logits_at[ex["neg_tok"]]
-                if ex["margin_sign"] > 0:
-                    total_margin = total_margin + F.relu(margin_m - u_theta)
-                else:
-                    total_margin = total_margin + F.relu(margin_m + u_theta)
+    rule_sft_sum = 0.0
+    replay_sft_sum = 0.0
+    n_rule = 0
+    n_replay = 0
+    n_margin_elig = 0
+    n_hinge_active = 0
+
+    for bi, ex in enumerate(batch):
+        val = float(per_ex_sft[bi].detach())
+        if ex.get("is_replay"):
+            replay_sft_sum += val
+            n_replay += 1
+        else:
+            rule_sft_sum += val
+            n_rule += 1
+        if lambda_margin > 0.0 and ex["margin_sign"] != 0 and ex["readout_pos"] is not None:
+            n_margin_elig += 1
+            logits_at = logits[bi, ex["readout_pos"]].float()
+            u_theta = logits_at[ex["pos_tok"]] - logits_at[ex["neg_tok"]]
+            hinge = F.relu(margin_m - u_theta) if ex["margin_sign"] > 0 else F.relu(margin_m + u_theta)
+            if float(hinge.detach()) > 0.0:
+                n_hinge_active += 1
+            total_margin = total_margin + hinge
 
     total_loss = total_sft + lambda_margin * total_margin
-    return total_loss, float(total_sft.detach()), float(total_margin.detach())
+    stats = {
+        "rule_sft_sum": rule_sft_sum,
+        "replay_sft_sum": replay_sft_sum,
+        "n_rule": n_rule,
+        "n_replay": n_replay,
+        "n_margin_elig": n_margin_elig,
+        "n_hinge_active": n_hinge_active,
+    }
+    return total_loss, float(total_sft.detach()), float(total_margin.detach()), stats
 
 
 def build_optimizer(model, lr: float, mlp_lr_mult: float, weight_decay: float) -> torch.optim.Optimizer:
@@ -371,12 +429,54 @@ def run_selftest_tiny() -> None:
     # 3. Verify microbatch=2 loss equivalence with microbatch=1
     torch.manual_seed(0)
     m_mb = Qwen3ForCausalLM(cfg).float().eval()
-    l1_a, s1_a, m1_a = compute_loss_microbatch(m_mb, [encoded[0]], tok.pad_token_id, 0.25, 4.0)
-    l1_b, s1_b, m1_b = compute_loss_microbatch(m_mb, [encoded[1]], tok.pad_token_id, 0.25, 4.0)
-    l2, s2, m2 = compute_loss_microbatch(m_mb, encoded[:2], tok.pad_token_id, 0.25, 4.0)
+    l1_a, s1_a, m1_a, _ = compute_loss_microbatch(m_mb, [encoded[0]], tok.pad_token_id, 0.25, 4.0)
+    l1_b, s1_b, m1_b, _ = compute_loss_microbatch(m_mb, [encoded[1]], tok.pad_token_id, 0.25, 4.0)
+    l2, s2, m2, _ = compute_loss_microbatch(m_mb, encoded[:2], tok.pad_token_id, 0.25, 4.0)
     mb_diff = abs(float(l2.detach()) - float((l1_a + l1_b).detach()))
     assert mb_diff < 1e-4, f"microbatch=2 diverged from microbatch=1: diff={mb_diff}"
     print(f"[OK] microbatch=2 vs microbatch=1 equivalence passed (diff={mb_diff:.2e})")
+
+    # 3b. Verify --mask-rule-format-ce on: (a) margin_sign != 0 rule, (b) margin_sign == 0 rule, (c) replay item!
+    m0_rule_raw = next(r for r in [json.loads(l) for l in train_path.read_text(encoding="utf-8").splitlines()[:60]] if r["margin_sign"] == 0)
+    rep_raw = {
+        "example_id": "REPLAY-MASK-TEST",
+        "pair_group_id": "REPLAY-MASK-TEST",
+        "is_replay": True,
+        "margin_sign": 0,
+        "messages": [{"role": "user", "content": "Say hello"}],
+        "assistant_target": "Hello there friend",
+    }
+    enc_v_unm = encode_sft_example(tok, raw_rows[0], False, mask_rule_format_ce=False)
+    enc_v_msk = encode_sft_example(tok, raw_rows[0], False, mask_rule_format_ce=True)
+    enc_m0_msk = encode_sft_example(tok, m0_rule_raw, False, mask_rule_format_ce=True)
+    enc_rep_unm = encode_sft_example(tok, rep_raw, False, mask_rule_format_ce=False)
+    enc_rep_msk = encode_sft_example(tok, rep_raw, False, mask_rule_format_ce=True)
+    # Rule items (both margin_sign!=0 and margin_sign==0): exactly 1 supervised token (the answer letter), same ce_denom!
+    assert int((enc_v_msk["labels"] != -100).sum()) == 1 and enc_v_msk["ce_denom"] == enc_v_unm["ce_denom"]
+    assert int((enc_m0_msk["labels"] != -100).sum()) == 1 and enc_m0_msk["readout_pos"] is None and enc_m0_msk["answer_readout_pos"] is not None
+    # Replay item: untouched!
+    assert torch.equal(enc_rep_msk["labels"], enc_rep_unm["labels"]) and int((enc_rep_msk["labels"] != -100).sum()) >= 3
+    # Verify exact 1/ce_denom coefficient (masked CE < unmasked CE and strictly equals letter_ce / ce_denom)
+    _, s_unm, _, _ = compute_loss_microbatch(m_mb, [enc_v_unm], tok.pad_token_id, 0.0, 4.0)
+    _, s_msk, _, _ = compute_loss_microbatch(m_mb, [enc_v_msk], tok.pad_token_id, 0.0, 4.0)
+    assert 0.0 < s_msk < s_unm, (s_msk, s_unm)
+    print(f"[OK] --mask-rule-format-ce passed (margin!=0, margin==0 rule, & replay; s_msk={s_msk:.4f} < s_unm={s_unm:.4f})")
+
+    # 3c. Verify --zero-replay-loss on both mixed and pure-replay windows (exact 0.0 replay loss + valid zero backward)
+    torch.manual_seed(0)
+    m_zr = Qwen3ForCausalLM(cfg).float()
+    M.apply_c1_adapters(m_zr, {"kind": "circuit", "heads": [[1, 0]], "head_rank": 4, "mlp_layers": [1], "mlp_rank": 4})
+    m_zr.train()
+    m_zr.zero_grad()
+    loss_pr, sft_pr, marg_pr, st_pr = compute_loss_microbatch(
+        m_zr, replay_synth[:2], tok.pad_token_id, 0.25, 4.0, zero_replay_loss=True
+    )
+    assert sft_pr == 0.0 and marg_pr == 0.0 and st_pr["replay_sft_sum"] == 0.0
+    (loss_pr / 2.0).backward()
+    for p in m_zr.parameters():
+        if p.requires_grad:
+            assert p.grad is not None and float(p.grad.abs().max()) == 0.0
+    print("[OK] --zero-replay-loss passed (pure-replay window exact 0.0 loss & exact 0.0 grad)")
 
     # 4. Verify all arm types: rsLoRA scaling, strict locality, merge equivalence, adapter_state save/reload & pathway ablation
     tiny_arms = {
@@ -399,7 +499,7 @@ def run_selftest_tiny() -> None:
             opt.zero_grad()
             win = encoded[:6]
             for j in range(0, len(win), 2):
-                loss_sum, _, _ = compute_loss_microbatch(m, win[j : j + 2], tok.pad_token_id, 0.25, 4.0)
+                loss_sum, _, _, _ = compute_loss_microbatch(m, win[j : j + 2], tok.pad_token_id, 0.25, 4.0)
                 (loss_sum / len(win)).backward()
             opt.step()
 
@@ -498,6 +598,10 @@ def main() -> None:
     ap.add_argument("--replay-ratio", type=float, default=0.15)
     ap.add_argument("--out-dir", type=Path)
     ap.add_argument("--epochs", type=int, default=3)
+    ap.add_argument("--max-steps", type=int, default=None, help="optional early stop while preserving full --epochs LR/warmup horizon")
+    ap.add_argument("--save-steps", default="", help="comma-separated optimizer steps to save adapter_state_stepNNNN.pt")
+    ap.add_argument("--zero-replay-loss", action="store_true", help="keep replay windows/forward/RNG/denom identical while zeroing replay loss")
+    ap.add_argument("--mask-rule-format-ce", action="store_true", help="mask Final/:/EOS CE on ALL rule items (incl. margin_sign==0) while preserving 1/4 denom")
     ap.add_argument("--grad-accum", type=int, default=12, help="multiple of 6 keeps paired groups atomic")
     ap.add_argument("--microbatch", type=int, default=1, help="padded microbatch size (1/2/4) inside each window")
     ap.add_argument("--lr", type=float, default=1.5e-4)
@@ -563,38 +667,59 @@ def main() -> None:
     raw_items = load_training_records(
         Path(args.train_file), args.think_file, args.replay_file, args.replay_ratio, args.seed, args.limit
     )
-    encoded = [encode_sft_example(tok, r, thk) for r, thk in raw_items]
+    encoded = [encode_sft_example(tok, r, thk, mask_rule_format_ce=args.mask_rule_format_ce) for r, thk in raw_items]
     n_margin = sum(e["readout_pos"] is not None for e in encoded)
+    n_rule_aligned = sum(e["answer_readout_pos"] is not None for e in encoded)
     n_replay = sum(e["is_replay"] for e in encoded)
-    print(f"[c1] encoded {len(encoded)} examples (margin_active={n_margin}, replay={n_replay})")
+    print(
+        f"[c1] encoded {len(encoded)} examples (rule_aligned={n_rule_aligned}, margin_active={n_margin}, "
+        f"replay={n_replay}, mask_rule_format_ce={args.mask_rule_format_ce}, zero_replay_loss={args.zero_replay_loss})"
+    )
 
     opt = build_optimizer(model, lr=args.lr, mlp_lr_mult=args.mlp_lr_mult, weight_decay=args.weight_decay)
     epoch_windows = [build_atomic_windows(encoded, args.grad_accum, seed=args.seed + ep) for ep in range(args.epochs)]
     total_steps = sum(len(ws) for ws in epoch_windows)
     warmup_steps = max(1, int(total_steps * args.warmup_ratio))
+    stop_steps = min(total_steps, args.max_steps) if args.max_steps is not None else total_steps
+    save_steps = {int(s.strip()) for s in args.save_steps.split(",") if s.strip()}
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
     log_rows = []
+    saved_checkpoints = []
     t0 = time.time()
     global_step = 0
     model.train()
 
     for ep, windows in enumerate(epoch_windows):
+        if global_step >= stop_steps:
+            break
         for win in windows:
+            if global_step >= stop_steps:
+                break
             opt.zero_grad()
             win_n = len(win)
             acc_sft = acc_m = 0.0
+            acc_rule_sft = acc_rep_sft = 0.0
+            win_n_rule = win_n_rep = win_n_melig = win_n_hact = 0
             for j in range(0, win_n, args.microbatch):
                 mb = win[j : j + args.microbatch]
-                loss_sum, sft_sum, m_sum = compute_loss_microbatch(
-                    model, mb, pad_id, lambda_margin, args.margin_m
+                loss_sum, sft_sum, m_sum, st = compute_loss_microbatch(
+                    model, mb, pad_id, lambda_margin, args.margin_m, zero_replay_loss=args.zero_replay_loss
                 )
                 (loss_sum / win_n).backward()
                 acc_sft += sft_sum
                 acc_m += m_sum
+                acc_rule_sft += st["rule_sft_sum"]
+                acc_rep_sft += st["replay_sft_sum"]
+                win_n_rule += st["n_rule"]
+                win_n_rep += st["n_replay"]
+                win_n_melig += st["n_margin_elig"]
+                win_n_hact += st["n_hinge_active"]
 
-            torch.nn.utils.clip_grad_norm_(
-                [p for p in model.parameters() if p.requires_grad], args.max_grad_norm
+            grad_norm = float(
+                torch.nn.utils.clip_grad_norm_(
+                    [p for p in model.parameters() if p.requires_grad], args.max_grad_norm
+                )
             )
             fac = lr_factor(global_step, total_steps, warmup_steps)
             for gi, pg in enumerate(opt.param_groups):
@@ -603,23 +728,35 @@ def main() -> None:
             opt.step()
             global_step += 1
 
-            if global_step % 10 == 0 or global_step == total_steps:
+            if global_step in save_steps:
+                ck_path = args.out_dir / f"adapter_state_step{global_step:04d}.pt"
+                M.save_c1_adapter_state(model, ck_path)
+                saved_checkpoints.append({"step": global_step, "path": ck_path.name, "norms": M.module_delta_norms(model)})
+                print(f"[c1] saved intermediate adapter checkpoint -> {ck_path}")
+
+            if global_step % 10 == 0 or global_step == stop_steps or global_step in save_steps:
                 row = {
                     "epoch": ep + 1,
                     "step": global_step,
                     "window_n": win_n,
+                    "n_rule": win_n_rule,
+                    "n_replay": win_n_rep,
                     "sft_loss": round(acc_sft / win_n, 4),
+                    "rule_sft_loss": round(acc_rule_sft / win_n_rule, 4) if win_n_rule else None,
+                    "replay_sft_loss": round(acc_rep_sft / win_n_rep, 4) if win_n_rep else None,
                     "margin_loss": round(acc_m / win_n, 4),
+                    "hinge_active_rate": round(win_n_hact / win_n_melig, 4) if win_n_melig else None,
+                    "grad_norm": round(grad_norm, 4),
                     "lr": opt.param_groups[0]["lr"],
                     "elapsed_s": round(time.time() - t0, 1),
                 }
                 log_rows.append(row)
                 print(
-                    f"[c1] ep={ep+1} step={global_step}/{total_steps} "
-                    f"sft={row['sft_loss']:.4f} margin={row['margin_loss']:.4f}"
+                    f"[c1] ep={ep+1} step={global_step}/{stop_steps} (sched={total_steps}) "
+                    f"sft={row['sft_loss']:.4f} margin={row['margin_loss']:.4f} gnorm={row['grad_norm']:.3f}"
                 )
         norms = M.module_delta_norms(model)
-        print(f"[c1] end epoch {ep+1}: {norms}")
+        print(f"[c1] end epoch {ep+1} (step={global_step}): {norms}")
 
     final_norms = M.module_delta_norms(model)
     # Always save tiny unmerged adapter state for zero-retraining post-hoc pathway ablations
@@ -635,6 +772,11 @@ def main() -> None:
         "trainable_params": attach_info["trainable_params"],
         "hyperparams": {
             "epochs": args.epochs,
+            "max_steps": args.max_steps,
+            "stop_steps": stop_steps,
+            "save_steps": sorted(save_steps),
+            "zero_replay_loss": args.zero_replay_loss,
+            "mask_rule_format_ce": args.mask_rule_format_ce,
             "grad_accum": args.grad_accum,
             "microbatch": args.microbatch,
             "lr": args.lr,
@@ -646,9 +788,12 @@ def main() -> None:
             "margin_m": args.margin_m,
             "seed": args.seed,
             "n_examples": len(encoded),
+            "n_rule_aligned": n_rule_aligned,
             "n_replay": n_replay,
             "total_steps": total_steps,
+            "warmup_steps": warmup_steps,
         },
+        "saved_checkpoints": saved_checkpoints,
         "final_delta_norms": final_norms,
         "elapsed_seconds": round(time.time() - t0, 1),
         "log": log_rows,
