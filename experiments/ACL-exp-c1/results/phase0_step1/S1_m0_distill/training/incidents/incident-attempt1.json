@@ -1,0 +1,18 @@
+{
+  "attempt": 1,
+  "physical_gpu": 5,
+  "started_at": "2026-11-22T02:01:15+08:00",
+  "last_logged_optimizer_step": 40,
+  "optimizer_state_saved": false,
+  "completed_checkpoints": [
+    25
+  ],
+  "interrupted_checkpoint_sha256": "392949c7ee74fefc048b14a62287f1aaace758c1d67480ef265da87c67ea019f",
+  "error": "Traceback (most recent call last):\n  File \"/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c1/step1-668f5ca/source/experiments/ACL-exp-c1/scripts/c1_train.py\", line 867, in <module>\n    main()\n  File \"/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c1/step1-668f5ca/source/experiments/ACL-exp-c1/scripts/c1_train.py\", line 740, in main\n    loss_sum, sft_sum, m_sum, st = compute_loss_microbatch(\n  File \"/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c1/step1-668f5ca/source/experiments/ACL-exp-c1/scripts/c1_train.py\", line 284, in compute_loss_microbatch\n    tok_losses = F.cross_entropy(\n  File \"/mnt/vllm310/lib/python3.10/site-packages/torch/nn/functional.py\", line 3462, in cross_entropy\n    return torch._C._nn.cross_entropy_loss(\ntorch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.83 GiB. GPU 0 has a total capacity of 39.49 GiB of which 264.88 MiB is free. Including non-PyTorch memory, this process has 23.09 GiB memory in use. Process 1299618 has 16.13 GiB memory in use. Of the allocated memory 21.92 GiB is allocated by PyTorch, and 677.35 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+  "other_gpu_client_at_oom": {
+    "pid": 1299618,
+    "process": "decision-serve",
+    "gpu_memory_GiB_from_trace": 16.13
+  },
+  "response": "Archived partial run; requeue fresh same seed/config/model/replay on a newly idle GPU; no evaluation of interrupted checkpoint used in the accepted comparison."
+}
