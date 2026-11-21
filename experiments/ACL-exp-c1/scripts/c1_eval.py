@@ -38,6 +38,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import statistics
 import sys
 import time
@@ -150,6 +151,67 @@ def resolve_hub_heads(comp: dict, model_key: str) -> set[tuple[int, int]]:
     return {(int(li), int(h)) for li, h in raw}
 
 
+def checkpoint_scaling(state_path: Path, model_key: str, arm_name: str, arm_spec: dict) -> dict:
+    config_path = state_path.with_name("adapter_config.json")
+    meta_path = state_path.with_name("train_meta.json")
+    if config_path.is_file():
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        scaling = config["scaling"]
+    elif meta_path.is_file():
+        config = json.loads(meta_path.read_text(encoding="utf-8"))
+        scaling = config["hyperparams"]
+    else:
+        return {}  # A standalone legacy state has no recorded scale. Use the protocol defaults.
+    if (config["model_key"], config["arm"], config["arm_spec"]) != (model_key, arm_name, arm_spec):
+        raise ValueError(f"Checkpoint arm or mask does not match {model_key}/{arm_name}: {state_path}")
+    return {k: scaling[k] for k in ("scaling_mode", "base_scale", "anchor_rank")}
+
+
+def generation_record(row, arm, text, n_tokens, finish_reason, *, enable_thinking):
+    hit_limit = finish_reason == "length"
+    if enable_thinking:
+        parsed = parse_think_generation(text, hit_token_limit=hit_limit)
+    else:
+        # The no_think prompt requires exactly one Final line and a completed response.
+        match = re.fullmatch(r"Final: ([A-D])(?:\r?\n)?", text)
+        pred = match[1] if match and finish_reason == "stop" else None
+        parsed = {
+            "pred": pred,
+            "parse_ok": pred is not None,
+            "parse_status": "ok" if pred else ("truncated" if hit_limit else "format_error"),
+            "truncated": hit_limit,
+            "generated_text": text,
+        }
+    return {
+        "base_id": row["base_id"],
+        "split": row.get("split", "unknown"),
+        "pair_type": row["pair_type"],
+        "fallacy_class": row["fallacy_class"],
+        "difficulty_depth": row["difficulty_depth"],
+        "arm": arm,
+        "initial_answer": row["initial_answer"],
+        "target_answer": row["target_answer"],
+        **parsed,
+        "is_target": parsed["pred"] == row["target_answer"],
+        "is_initial": parsed["pred"] == row["initial_answer"],
+        "gen_tokens": n_tokens,
+        "finish_reason": finish_reason,
+        "u_theta": None,
+    }
+
+
+def effective_eos_ids(config, tok) -> set[int]:
+    ids = config.eos_token_id if config.eos_token_id is not None else tok.eos_token_id
+    return {ids} if isinstance(ids, int) else set(ids or ())
+
+
+def decode_format_completion(tok, token_ids, finish_reason: str, eos_ids) -> str:
+    # Remove just the stop token. Other control tokens are part of the generated answer.
+    if finish_reason == "stop" and len(token_ids) and int(token_ids[-1]) in eos_ids:
+        token_ids = token_ids[:-1]
+    return tok.decode(token_ids, skip_special_tokens=False, clean_up_tokenization_spaces=False)
+
+
 @torch.no_grad()
 def eval_freegen_item_hf(
     model, tok, a1_cfg: dict, row: dict, arm: str, *, enable_thinking: bool, max_new_tokens: int
@@ -168,35 +230,16 @@ def eval_freegen_item_hf(
         pad_token_id=tok.eos_token_id,
     )
     new_toks = gen[0, enc["input_ids"].shape[1] :]
-    hit_limit = int(len(new_toks)) >= max_new_tokens and (
-        len(new_toks) == 0 or int(new_toks[-1]) != int(tok.eos_token_id)
-    )
-    raw_out = tok.decode(new_toks, skip_special_tokens=True)
-    pinfo = parse_think_generation(raw_out, hit_token_limit=hit_limit)
-    pred = pinfo["pred"]
-    a0, at = row["initial_answer"], row["target_answer"]
-    return {
-        "base_id": row["base_id"],
-        "split": row.get("split", "unknown"),
-        "pair_type": row["pair_type"],
-        "fallacy_class": row["fallacy_class"],
-        "difficulty_depth": row["difficulty_depth"],
-        "arm": arm,
-        "initial_answer": a0,
-        "target_answer": at,
-        "pred": pred,
-        "parse_status": pinfo["parse_status"],
-        "parse_ok": pinfo["parse_ok"],
-        "truncated": pinfo["truncated"],
-        "is_target": pred == at,
-        "is_initial": pred == a0,
-        "gen_tokens": int(len(new_toks)),
-        "u_theta": None,
-    }
+    eos_ids = effective_eos_ids(model.generation_config, tok)
+    ended_with_eos = len(new_toks) > 0 and int(new_toks[-1]) in eos_ids
+    finish_reason = "length" if len(new_toks) >= max_new_tokens and not ended_with_eos else "stop"
+    raw_out = (tok.decode(new_toks, skip_special_tokens=True) if enable_thinking
+               else decode_format_completion(tok, new_toks, finish_reason, eos_ids))
+    return generation_record(row, arm, raw_out, len(new_toks), finish_reason, enable_thinking=enable_thinking)
 
 
 def eval_freegen_dataset_vllm(
-    llm, tok, a1_cfg: dict, rows: list[dict], arms: list[str], *, enable_thinking: bool, max_new_tokens: int
+    llm, tok, a1_cfg: dict, rows: list[dict], arms: list[str], *, enable_thinking: bool, max_new_tokens: int, eos_ids=()
 ) -> list[dict]:
     """High-throughput batched greedy evaluation via vLLM for think OR free-generation no_think."""
     from vllm import SamplingParams
@@ -215,34 +258,11 @@ def eval_freegen_dataset_vllm(
     sp = SamplingParams(temperature=0.0, max_tokens=max_new_tokens)
     outputs = llm.generate(prompts, sp)
     recs = []
-    for (r, arm), out in zip(meta, outputs):
+    for (r, arm), out in zip(meta, outputs, strict=True):
         comp = out.outputs[0]
-        raw_out = comp.text
-        n_toks = len(comp.token_ids)
-        hit_limit = (comp.finish_reason == "length") or (n_toks >= max_new_tokens)
-        pinfo = parse_think_generation(raw_out, hit_token_limit=hit_limit)
-        pred = pinfo["pred"]
-        a0, at = r["initial_answer"], r["target_answer"]
+        text = comp.text if enable_thinking else decode_format_completion(tok, comp.token_ids, comp.finish_reason, eos_ids)
         recs.append(
-            {
-                "base_id": r["base_id"],
-                "split": r.get("split", "unknown"),
-                "pair_type": r["pair_type"],
-                "fallacy_class": r["fallacy_class"],
-                "difficulty_depth": r["difficulty_depth"],
-                "arm": arm,
-                "initial_answer": a0,
-                "target_answer": at,
-                "pred": pred,
-                "parse_status": pinfo["parse_status"],
-                "parse_ok": pinfo["parse_ok"],
-                "truncated": pinfo["truncated"],
-                "is_target": pred == at,
-                "is_initial": pred == a0,
-                "gen_tokens": int(n_toks),
-                "finish_reason": comp.finish_reason,
-                "u_theta": None,
-            }
+            generation_record(r, arm, text, len(comp.token_ids), comp.finish_reason, enable_thinking=enable_thinking)
         )
     return recs
 
@@ -403,7 +423,14 @@ def run_selftest_tiny() -> None:
     a1_cfg = load_config()
     opt_ids = get_cached_option_token_ids(tok)
 
-    rows = [json.loads(l) for l in (C1 / "data" / "c1_test_ood_bases.jsonl").read_text(encoding="utf-8").splitlines()[:4]]
+    rows = [json.loads(l) for l in DEFAULT_DATASETS["c1_dev"].read_text(encoding="utf-8").splitlines()[:4]]
+    for text, stop, expected in [
+        ("Final: A", "stop", "ok"), ("Final: B\n", "stop", "ok"),
+        ("Final: A\nBecause ...", "stop", "format_error"), ("Final: A\nFinal: B", "stop", "format_error"),
+        ("<think>why</think>\nFinal: B", "stop", "format_error"), ("Final: A", "length", "truncated"),
+    ]:
+        record = generation_record(rows[0], "V", text, 4, stop, enable_thinking=False)
+        assert record["parse_status"] == expected, record
     recs = [eval_nothink_item(m_tuned, tok, a1_cfg, r, a, opt_ids) for r in rows for a in ("turn1_F", "turn1_V", "AO", "shell_only", "F", "V")]
     shared = {rows[0]["base_id"], rows[1]["base_id"]}
     ds_summ = build_dataset_summary(recs, shared_eligible_ids=shared)
@@ -424,9 +451,10 @@ def run_selftest_tiny() -> None:
     import tempfile
 
     spec_tiny = {"kind": "circuit", "heads": [[1, 0], [2, 1]], "head_rank": 4, "mlp_layers": [1, 2], "mlp_rank": 4}
+    scaling = {"scaling_mode": "constant", "base_scale": 1.5, "anchor_rank": 8}
     torch.manual_seed(0)
     m_work = Qwen3ForCausalLM(cfg).float()
-    M.apply_c1_adapters(m_work, spec_tiny)
+    M.apply_c1_adapters(m_work, spec_tiny, **scaling)
     with torch.no_grad():
         for name, p in m_work.named_parameters():
             if p.requires_grad and "lora_B" in name:
@@ -435,13 +463,15 @@ def run_selftest_tiny() -> None:
     t_ids = torch.tensor([[10, 20, 30, 40]], dtype=torch.long)
     with tempfile.TemporaryDirectory() as td:
         ap = Path(td) / "adapter_state.pt"
+        config = {"model_key": "qwen3_8b", "arm": "Targeted-Dual", "arm_spec": spec_tiny, "scaling": scaling}
+        ap.with_name("adapter_config.json").write_text(json.dumps(config), encoding="utf-8")
         M.save_c1_adapter_state(m_work, ap)
         M.merge_c1_adapters(m_work)
         with torch.no_grad():
             y_merged = m_work(input_ids=t_ids).logits
         torch.manual_seed(0)
         m_clean = Qwen3ForCausalLM(cfg).float()
-        M.apply_c1_adapters(m_clean, spec_tiny)
+        M.apply_c1_adapters(m_clean, spec_tiny, **checkpoint_scaling(ap, "qwen3_8b", "Targeted-Dual", spec_tiny))
         M.load_c1_adapter_state(m_clean, ap)
         m_clean.eval()
         with torch.no_grad():
@@ -451,6 +481,15 @@ def run_selftest_tiny() -> None:
         with torch.no_grad():
             y_ablate = m_clean(input_ids=t_ids).logits
         assert float((y_reloaded - y_ablate).abs().max()) > 1e-5
+        partial = torch.load(ap, map_location="cpu", weights_only=True)
+        partial.pop(next(iter(partial)))
+        torch.save(partial, ap)
+        try:
+            M.load_c1_adapter_state(m_clean, ap)
+        except ValueError as exc:
+            assert "missing=" in str(exc)
+        else:
+            raise AssertionError("Incomplete adapter state was accepted")
     print(f"[OK] c1_eval CPU self-test passed (n_bases=4, shared_elig=2, self-KL={kl['kl_mean']}, hubs_8b={len(hubs_8b)}, hubs_14b={len(hubs_14b)})")
 
 
@@ -463,7 +502,8 @@ def main() -> None:
     ap.add_argument("--regime", default="no_think", choices=["no_think", "no_think_free", "think"])
     ap.add_argument("--backend", default="hf", choices=["hf", "vllm"], help="vllm supported for think & no_think_free")
     ap.add_argument("--tp", type=int, default=1, help="tensor_parallel_size for vLLM backend")
-    ap.add_argument("--datasets", nargs="*", default=["c1_test_id", "c1_test_ood"])
+    ap.add_argument("--datasets", nargs="*", choices=DEFAULT_DATASETS,
+                    help="defaults to c1_dev for no_think_free, or the Phase 1 test sets for the original regimes")
     ap.add_argument("--arms", nargs="*", default=EVAL_ARMS)
     ap.add_argument("--eligible-ids-out", type=Path, default=None, help="export M0 dual-sided Turn-1 eligible base_ids JSON")
     ap.add_argument("--eligible-ids-in", type=Path, default=None, help="reuse frozen M0 eligible base_ids JSON")
@@ -485,6 +525,12 @@ def main() -> None:
         return
 
     assert args.model and args.out_dir
+    if args.datasets is None:
+        args.datasets = ["c1_dev"] if args.regime == "no_think_free" else ["c1_test_id", "c1_test_ood"]
+    if (args.ablate_hubs or args.ablate_mlp) and args.adapter_state is None:
+        ap.error("pathway ablation requires --adapter-state on a clean base model")
+    if args.base_model and args.regime != "no_think":
+        ap.error("reference KL requires --regime no_think")
     max_new_tokens = args.max_new_tokens if args.max_new_tokens is not None else (64 if args.regime == "no_think_free" else 3072)
     if args.backend == "vllm" and args.regime == "no_think":
         raise ValueError("--backend vllm is only supported for --regime think or no_think_free (no_think uses exact single-forward logits)")
@@ -512,10 +558,19 @@ def main() -> None:
 
     llm = None
     model = None
+    eos_ids = set()
     if args.backend == "vllm":
         from vllm import LLM
 
         llm = LLM(model=args.model, dtype="bfloat16", tensor_parallel_size=args.tp)
+        if args.regime == "no_think_free":
+            from transformers import AutoConfig, GenerationConfig
+
+            try:
+                config = GenerationConfig.from_pretrained(args.model)
+            except OSError:
+                config = AutoConfig.from_pretrained(args.model)
+            eos_ids = effective_eos_ids(config, tok)
     else:
         model = AutoModelForCausalLM.from_pretrained(args.model, torch_dtype=torch.bfloat16, device_map=args.device_map).eval()
         if args.adapter_state is not None:
@@ -523,7 +578,8 @@ def main() -> None:
                 raise ValueError("--adapter-state requires --model-key and --arm-name")
             comp = json.loads(Path(args.components_file).read_text(encoding="utf-8"))
             arm_spec = comp["models"][args.model_key]["arms"][args.arm_name]
-            M.apply_c1_adapters(model, arm_spec)
+            scaling = checkpoint_scaling(args.adapter_state, args.model_key, args.arm_name, arm_spec)
+            M.apply_c1_adapters(model, arm_spec, **scaling)
             M.load_c1_adapter_state(model, args.adapter_state)
             disable_heads = resolve_hub_heads(comp, args.model_key) if args.ablate_hubs else None
             M.set_pathway_ablation(model, disable_mlp=args.ablate_mlp, disable_heads=disable_heads)
@@ -552,7 +608,8 @@ def main() -> None:
             recs = [eval_nothink_item(model, tok, a1_cfg, r, arm, opt_tok_ids) for r in rows for arm in args.arms]
         elif args.backend == "vllm":
             recs = eval_freegen_dataset_vllm(
-                llm, tok, a1_cfg, rows, args.arms, enable_thinking=(args.regime == "think"), max_new_tokens=max_new_tokens
+                llm, tok, a1_cfg, rows, args.arms, enable_thinking=(args.regime == "think"), max_new_tokens=max_new_tokens,
+                eos_ids=eos_ids,
             )
         else:
             recs = [

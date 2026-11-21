@@ -68,10 +68,10 @@ def encode_sft_example(
 ) -> dict:
     """Encode (messages, assistant_target) with prompt masked (-100) and exact LAST 'Final:' readout index.
 
-    When `mask_rule_format_ce=True`, for ALL non-replay rule examples (including margin_sign == 0 items),
+    When `mask_rule_format_ce=True`, for all no_think rule examples (including margin_sign == 0 items),
     masks the constant format tokens ('Final', ':', EOS) to -100 while preserving the exact original
     valid-token denominator (`ce_denom`, e.g., 4.0) so letter CE keeps its exact 1/4 coefficient.
-    Replay examples are NEVER format-masked.
+    Replay targets and Recipe B reasoning traces keep their original labels.
     """
     prompt_text = tok.apply_chat_template(
         ex["messages"], tokenize=False, add_generation_prompt=True, enable_thinking=enable_thinking
@@ -129,7 +129,7 @@ def encode_sft_example(
                 f"(gold={gold_ans}, target_text={target_text[:80]!r})"
             )
 
-    if mask_rule_format_ce and not is_replay:
+    if mask_rule_format_ce and not is_replay and not enable_thinking:
         assert answer_readout_pos is not None, (
             f"--mask-rule-format-ce requires aligned answer letter for rule item {ex.get('example_id')}"
         )
@@ -245,6 +245,7 @@ def compute_loss_microbatch(
     lambda_margin: float,
     margin_m: float,
     zero_replay_loss: bool = False,
+    return_source_losses: bool = False,
 ) -> tuple[torch.Tensor, float, float, dict]:
     """Compute exact sum-of-per-example (SFT + Signed Readout Margin) loss over a padded microbatch.
 
@@ -260,75 +261,76 @@ def compute_loss_microbatch(
     labels = torch.full((bsz, max_len), -100, dtype=torch.long)
     attn_mask = torch.zeros((bsz, max_len), dtype=torch.long)
     ce_denoms = torch.ones((bsz,), dtype=torch.float32)
-    sft_weights = torch.ones((bsz,), dtype=torch.float32)
 
     for bi, ex in enumerate(batch):
         L = int(ex["input_ids"].numel())
         input_ids[bi, :L] = ex["input_ids"]
         labels[bi, :L] = ex["labels"]
         attn_mask[bi, :L] = 1
-        ce_denoms[bi] = float(ex.get("ce_denom", max(1, int((ex["labels"][1:] != -100).sum()))))
-        if zero_replay_loss and ex.get("is_replay"):
-            sft_weights[bi] = 0.0
+        if "ce_denom" in ex:
+            ce_denoms[bi] = ex["ce_denom"]
+        else:
+            ce_denoms[bi] = (ex["labels"][1:] != -100).sum().clamp_min(1)
 
     input_ids = input_ids.to(dev)
-    labels = labels.to(dev)
     attn_mask = attn_mask.to(dev)
-    ce_denoms = ce_denoms.to(dev)
-    sft_weights = sft_weights.to(dev)
 
     out = model(input_ids=input_ids, attention_mask=attn_mask, use_cache=False)
     logits = out.logits  # [B, T, V]
 
     # Exact per-example CE normalized by original valid token count `ce_denom` (identical to sequential mb=1)
     shift_logits = logits[:, :-1, :].contiguous()
-    shift_labels = labels[:, 1:].contiguous()
+    shift_labels = labels[:, 1:].contiguous().to(logits.device)
     tok_losses = F.cross_entropy(
         shift_logits.view(-1, shift_logits.size(-1)).float(),
         shift_labels.view(-1),
         ignore_index=-100,
         reduction="none",
     ).view(bsz, -1)
-    per_ex_sft_raw = tok_losses.sum(dim=1) / ce_denoms.clamp_min(1.0)
-    per_ex_sft = per_ex_sft_raw * sft_weights
+    per_ex_sft_raw = tok_losses.sum(dim=1) / ce_denoms.to(logits.device).clamp_min(1.0)
+    replay_flags = [bool(ex.get("is_replay")) for ex in batch]
+    is_replay = torch.tensor(replay_flags, device=logits.device, dtype=torch.bool)
+    per_ex_sft = per_ex_sft_raw.masked_fill(is_replay, 0.0) if zero_replay_loss else per_ex_sft_raw
 
     total_sft = per_ex_sft.sum()
     total_margin = torch.tensor(0.0, device=logits.device, dtype=torch.float32)
 
-    rule_sft_sum = 0.0
-    replay_sft_sum = 0.0
-    n_rule = 0
-    n_replay = 0
-    n_margin_elig = 0
-    n_hinge_active = 0
+    rule_sft = per_ex_sft[~is_replay].sum()
+    replay_sft_raw = per_ex_sft_raw[is_replay].sum()
+    n_replay = sum(replay_flags)
+    n_rule = bsz - n_replay
+    hinge_values = []
 
     for bi, ex in enumerate(batch):
-        val = float(per_ex_sft[bi].detach())
-        if ex.get("is_replay"):
-            replay_sft_sum += val
-            n_replay += 1
-        else:
-            rule_sft_sum += val
-            n_rule += 1
-        if lambda_margin > 0.0 and ex["margin_sign"] != 0 and ex["readout_pos"] is not None:
-            n_margin_elig += 1
+        if ex["margin_sign"] != 0 and ex["readout_pos"] is not None:
             logits_at = logits[bi, ex["readout_pos"]].float()
             u_theta = logits_at[ex["pos_tok"]] - logits_at[ex["neg_tok"]]
             hinge = F.relu(margin_m - u_theta) if ex["margin_sign"] > 0 else F.relu(margin_m + u_theta)
-            if float(hinge.detach()) > 0.0:
-                n_hinge_active += 1
-            total_margin = total_margin + hinge
+            hinge_values.append(hinge.detach())
+            if lambda_margin > 0.0:
+                total_margin = total_margin + hinge
 
     total_loss = total_sft + lambda_margin * total_margin
+    n_active = (torch.stack(hinge_values) > 0).sum() if hinge_values else total_sft.new_zeros(())
+    summed_sft, summed_margin, rule_value, replay_value, active = torch.stack(
+        [total_sft, total_margin, rule_sft, replay_sft_raw, n_active]
+    ).detach().tolist()
     stats = {
-        "rule_sft_sum": rule_sft_sum,
-        "replay_sft_sum": replay_sft_sum,
+        "rule_sft_sum": rule_value,
+        "replay_sft_sum": 0.0 if zero_replay_loss else replay_value,
+        "replay_sft_raw_sum": replay_value,
         "n_rule": n_rule,
         "n_replay": n_replay,
-        "n_margin_elig": n_margin_elig,
-        "n_hinge_active": n_hinge_active,
+        "n_margin_elig": len(hinge_values),
+        "n_hinge_active": int(active),
     }
-    return total_loss, float(total_sft.detach()), float(total_margin.detach()), stats
+    if return_source_losses:
+        stats["source_losses"] = {}
+        if n_rule:
+            stats["source_losses"]["rule"] = rule_sft + lambda_margin * total_margin
+        if n_replay:
+            stats["source_losses"]["replay"] = per_ex_sft[is_replay].sum()
+    return total_loss, summed_sft, summed_margin, stats
 
 
 def build_optimizer(model, lr: float, mlp_lr_mult: float, weight_decay: float) -> torch.optim.Optimizer:
@@ -401,6 +403,7 @@ def run_selftest_tiny() -> None:
         f"Final: {think_ex['gold_answer']}"
     )
     enc_think = encode_sft_example(tok, think_ex, enable_thinking=True)
+    assert torch.equal(enc_think["labels"], encode_sft_example(tok, think_ex, True, True)["labels"])
     assert enc_think["readout_pos"] is not None
     expected_gold_tok = enc_think["pos_tok"] if think_ex["gold_answer"] == think_ex["target_answer"] else enc_think["neg_tok"]
     assert int(enc_think["input_ids"][enc_think["readout_pos"] + 1]) == expected_gold_tok
@@ -459,7 +462,11 @@ def run_selftest_tiny() -> None:
     # Verify exact 1/ce_denom coefficient (masked CE < unmasked CE and strictly equals letter_ce / ce_denom)
     _, s_unm, _, _ = compute_loss_microbatch(m_mb, [enc_v_unm], tok.pad_token_id, 0.0, 4.0)
     _, s_msk, _, _ = compute_loss_microbatch(m_mb, [enc_v_msk], tok.pad_token_id, 0.0, 4.0)
-    assert 0.0 < s_msk < s_unm, (s_msk, s_unm)
+    pos = enc_v_msk["answer_readout_pos"]
+    with torch.no_grad():
+        letter_logits = m_mb(input_ids=enc_v_msk["input_ids"][None]).logits[0, pos]
+        letter_ce = F.cross_entropy(letter_logits, enc_v_msk["labels"][pos + 1])
+    assert 0.0 < s_msk < s_unm and abs(s_msk - float(letter_ce) / enc_v_unm["ce_denom"]) < 1e-5
     print(f"[OK] --mask-rule-format-ce passed (margin!=0, margin==0 rule, & replay; s_msk={s_msk:.4f} < s_unm={s_unm:.4f})")
 
     # 3c. Verify --zero-replay-loss on both mixed and pure-replay windows (exact 0.0 replay loss + valid zero backward)
@@ -472,6 +479,7 @@ def run_selftest_tiny() -> None:
         m_zr, replay_synth[:2], tok.pad_token_id, 0.25, 4.0, zero_replay_loss=True
     )
     assert sft_pr == 0.0 and marg_pr == 0.0 and st_pr["replay_sft_sum"] == 0.0
+    assert st_pr["replay_sft_raw_sum"] > 0
     (loss_pr / 2.0).backward()
     for p in m_zr.parameters():
         if p.requires_grad:
@@ -601,7 +609,8 @@ def main() -> None:
     ap.add_argument("--max-steps", type=int, default=None, help="optional early stop while preserving full --epochs LR/warmup horizon")
     ap.add_argument("--save-steps", default="", help="comma-separated optimizer steps to save adapter_state_stepNNNN.pt")
     ap.add_argument("--zero-replay-loss", action="store_true", help="keep replay windows/forward/RNG/denom identical while zeroing replay loss")
-    ap.add_argument("--mask-rule-format-ce", action="store_true", help="mask Final/:/EOS CE on ALL rule items (incl. margin_sign==0) while preserving 1/4 denom")
+    ap.add_argument("--mask-rule-format-ce", action="store_true", help="keep only letter CE with its original weight on no_think rule items")
+    ap.add_argument("--log-source-grad-norms", action="store_true", help="measure pre-clip rule and replay gradient contributions at logged steps")
     ap.add_argument("--grad-accum", type=int, default=12, help="multiple of 6 keeps paired groups atomic")
     ap.add_argument("--microbatch", type=int, default=1, help="padded microbatch size (1/2/4) inside each window")
     ap.add_argument("--lr", type=float, default=1.5e-4)
@@ -627,6 +636,12 @@ def main() -> None:
         return
 
     assert args.model and args.model_key and args.arm and args.out_dir
+    if args.max_steps is not None and args.max_steps < 1:
+        ap.error("--max-steps must be positive")
+    try:
+        save_steps = {int(s.strip()) for s in args.save_steps.split(",") if s.strip()}
+    except ValueError:
+        ap.error("--save-steps requires comma-separated optimizer step numbers")
     random.seed(args.seed)
     torch.manual_seed(args.seed)
 
@@ -671,6 +686,8 @@ def main() -> None:
     n_margin = sum(e["readout_pos"] is not None for e in encoded)
     n_rule_aligned = sum(e["answer_readout_pos"] is not None for e in encoded)
     n_replay = sum(e["is_replay"] for e in encoded)
+    if args.zero_replay_loss and not n_replay:
+        ap.error("--zero-replay-loss requires replay samples in the training windows")
     print(
         f"[c1] encoded {len(encoded)} examples (rule_aligned={n_rule_aligned}, margin_active={n_margin}, "
         f"replay={n_replay}, mask_rule_format_ce={args.mask_rule_format_ce}, zero_replay_loss={args.zero_replay_loss})"
@@ -681,9 +698,16 @@ def main() -> None:
     total_steps = sum(len(ws) for ws in epoch_windows)
     warmup_steps = max(1, int(total_steps * args.warmup_ratio))
     stop_steps = min(total_steps, args.max_steps) if args.max_steps is not None else total_steps
-    save_steps = {int(s.strip()) for s in args.save_steps.split(",") if s.strip()}
+    if any(step < 1 or step > stop_steps for step in save_steps):
+        ap.error(f"--save-steps entries must be between 1 and {stop_steps}")
+    trainable = [p for p in model.parameters() if p.requires_grad]
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
+    adapter_config = {
+        "model_key": args.model_key, "arm": args.arm, "arm_spec": arm_spec,
+        "scaling": {"scaling_mode": args.scaling_mode, "base_scale": args.base_scale, "anchor_rank": args.anchor_rank},
+    }
+    (args.out_dir / "adapter_config.json").write_text(json.dumps(adapter_config, indent=2) + "\n", encoding="utf-8")
     log_rows = []
     saved_checkpoints = []
     t0 = time.time()
@@ -698,19 +722,38 @@ def main() -> None:
                 break
             opt.zero_grad()
             win_n = len(win)
+            next_step = global_step + 1
+            log_step = next_step % 10 == 0 or next_step == stop_steps or next_step in save_steps
+            measure_sources = args.log_source_grad_norms and log_step
+            mixed_window = any(e["is_replay"] for e in win) and any(not e["is_replay"] for e in win)
+            source_grads = {}
+            if measure_sources and mixed_window and not args.zero_replay_loss:
+                source_grads = {
+                    source: [torch.zeros_like(p, dtype=torch.float32) for p in trainable]
+                    for source in ("rule", "replay")
+                }
             acc_sft = acc_m = 0.0
-            acc_rule_sft = acc_rep_sft = 0.0
+            acc_rule_sft = acc_rep_sft = acc_raw_replay = 0.0
             win_n_rule = win_n_rep = win_n_melig = win_n_hact = 0
             for j in range(0, win_n, args.microbatch):
                 mb = win[j : j + args.microbatch]
                 loss_sum, sft_sum, m_sum, st = compute_loss_microbatch(
-                    model, mb, pad_id, lambda_margin, args.margin_m, zero_replay_loss=args.zero_replay_loss
+                    model, mb, pad_id, lambda_margin, args.margin_m, zero_replay_loss=args.zero_replay_loss,
+                    return_source_losses=bool(source_grads),
                 )
+                # Sample each source on the same dropout realization without writing optimizer .grad.
+                if source_grads:
+                    for source, objective in st.pop("source_losses").items():
+                        grads = torch.autograd.grad(objective / win_n, trainable, retain_graph=True, allow_unused=True)
+                        for buf, grad in zip(source_grads[source], grads):
+                            if grad is not None:
+                                buf.add_(grad.detach())
                 (loss_sum / win_n).backward()
                 acc_sft += sft_sum
                 acc_m += m_sum
                 acc_rule_sft += st["rule_sft_sum"]
                 acc_rep_sft += st["replay_sft_sum"]
+                acc_raw_replay += st["replay_sft_raw_sum"]
                 win_n_rule += st["n_rule"]
                 win_n_rep += st["n_replay"]
                 win_n_melig += st["n_margin_elig"]
@@ -718,7 +761,7 @@ def main() -> None:
 
             grad_norm = float(
                 torch.nn.utils.clip_grad_norm_(
-                    [p for p in model.parameters() if p.requires_grad], args.max_grad_norm
+                    trainable, args.max_grad_norm
                 )
             )
             fac = lr_factor(global_step, total_steps, warmup_steps)
@@ -734,7 +777,7 @@ def main() -> None:
                 saved_checkpoints.append({"step": global_step, "path": ck_path.name, "norms": M.module_delta_norms(model)})
                 print(f"[c1] saved intermediate adapter checkpoint -> {ck_path}")
 
-            if global_step % 10 == 0 or global_step == stop_steps or global_step in save_steps:
+            if log_step:
                 row = {
                     "epoch": ep + 1,
                     "step": global_step,
@@ -744,12 +787,21 @@ def main() -> None:
                     "sft_loss": round(acc_sft / win_n, 4),
                     "rule_sft_loss": round(acc_rule_sft / win_n_rule, 4) if win_n_rule else None,
                     "replay_sft_loss": round(acc_rep_sft / win_n_rep, 4) if win_n_rep else None,
+                    "replay_sft_loss_unweighted": round(acc_raw_replay / win_n_rep, 4) if win_n_rep else None,
                     "margin_loss": round(acc_m / win_n, 4),
                     "hinge_active_rate": round(win_n_hact / win_n_melig, 4) if win_n_melig else None,
                     "grad_norm": round(grad_norm, 4),
                     "lr": opt.param_groups[0]["lr"],
                     "elapsed_s": round(time.time() - t0, 1),
                 }
+                if measure_sources:
+                    if source_grads:
+                        for source, buffers in source_grads.items():
+                            norms = torch.stack([buf.norm().to(trainable[0].device) for buf in buffers])
+                            row[f"{source}_grad_norm"] = float(norms.norm())
+                    else:
+                        row["rule_grad_norm"] = grad_norm if win_n_rule else 0.0
+                        row["replay_grad_norm"] = 0.0 if win_n_rule else grad_norm
                 log_rows.append(row)
                 print(
                     f"[c1] ep={ep+1} step={global_step}/{stop_steps} (sched={total_steps}) "
@@ -777,6 +829,7 @@ def main() -> None:
             "save_steps": sorted(save_steps),
             "zero_replay_loss": args.zero_replay_loss,
             "mask_rule_format_ce": args.mask_rule_format_ce,
+            "log_source_grad_norms": args.log_source_grad_norms,
             "grad_accum": args.grad_accum,
             "microbatch": args.microbatch,
             "lr": args.lr,

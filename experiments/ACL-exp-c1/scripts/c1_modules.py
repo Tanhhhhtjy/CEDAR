@@ -264,9 +264,12 @@ def save_c1_adapter_state(model: nn.Module, path) -> None:
 
 
 def load_c1_adapter_state(model: nn.Module, path) -> None:
-    state = torch.load(path, map_location="cpu")
-    missing, unexpected = model.load_state_dict(state, strict=False)
-    assert not unexpected, f"Unexpected adapter keys: {unexpected[:5]}"
+    state = torch.load(path, map_location="cpu", weights_only=True)
+    expected = {name for name, _ in model.named_parameters() if name.endswith((".lora_A", ".lora_B"))}
+    missing, extra = expected - state.keys(), state.keys() - expected
+    if missing or extra:
+        raise ValueError(f"Adapter keys do not match: missing={sorted(missing)}, extra={sorted(extra)}")
+    model.load_state_dict(state, strict=False)
 
 
 def set_pathway_ablation(
