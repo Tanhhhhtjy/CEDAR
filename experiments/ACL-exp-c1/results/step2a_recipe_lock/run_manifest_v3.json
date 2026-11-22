@@ -1,0 +1,72 @@
+{
+  "protocol_commit": "134f729d021bb5fc1a189f05317419662566988d",
+  "resumed_from": "32ee0837c6bfbc93ba9d6cc80886903785f986e3",
+  "reused_training_and_M0": true,
+  "merge_gate": "v3",
+  "base_model": "/mnt/kcl/devuser/ckpts/Qwen3-8B",
+  "datasets": {
+    "c1_dev": 80,
+    "c1_proxy_ood": 240,
+    "c1_proxy_template_ood": 120
+  },
+  "inputs_sha256": {
+    "c1_dev_bases.jsonl": "b51ee0404056ab5cdb61151ebeaa8522407a71696c3db3d96c46ab580e64d401",
+    "c1_train_examples_nothink.jsonl": "7fd39168602de4d62c3fd408da58d6cf54d17495ae95e968b5719c3ae6debddd",
+    "c1_proxy_ood_bases.jsonl": "53ff2aebf8b10949d5757126b80d8059239d077b05e4828287721e1cbc705556",
+    "c1_proxy_template_ood_bases.jsonl": "7408f8c397b0c0790722d1d810d5c0a94f54b5f88e2ce2e098c107ff8000e940",
+    "c1_kl_wikitext2_200.jsonl": "97a3ed61a17e4023eabe9566fbe56768d0708aea97b662abac52dbb830315e05",
+    "c1_replay_norobots_529.jsonl": "997a5da77985e84f88c8825331e1b39915bdaa2119fd407425a64fccfa80d990"
+  },
+  "components_sha256": "2c1d02ebe4f298b51760e1e9a8c30a445e05869981e9e76cde5059921731d21a",
+  "scripts": {
+    "c1_eval": {
+      "sha256": "bb438b458dad174896d87c73e2d7ae89187339e469b20ee277f21da5410d0e26",
+      "cpu_selftest": "[OK] c1_eval CPU self-test passed (n_bases=4, shared_elig=2, self-KL=0.0, hubs_8b=3, hubs_14b=4)"
+    },
+    "c1_train": {
+      "sha256": "1ef49b5e7a75ad04891ecd513d8c185276d4d2371500981b3775088439782fdf",
+      "cpu_selftest": "[OK] ALL c1_train & c1_modules self-tests PASSED"
+    },
+    "c1_merge_and_check": {
+      "sha256": "1532a17d8f3f313ecddc90a33b766e66ace5cc1dc5125c7cf5441b13c0e54d3e",
+      "cpu_selftest": "[OK] c1_merge_and_check v3 CPU self-test passed (bf16 mean_abs=0.00069, mean_kl=4.10e-07, last_kl=5.87e-07, top1=1.000)"
+    },
+    "c1_step2_stats": {
+      "sha256": "ea5c610bc9ab9d30b27d27b56e01bf1fb91b5c7d60e4598203e0f07da45fcb00",
+      "cpu_selftest": "[OK] c1_step2_stats v2 CPU self-test passed (GO + ALL 4 Astra counterexamples + Opus tie-break verified)"
+    }
+  },
+  "capabilities_sha256": {
+    "spec.json": "54c8fd3ee7c51bea2cb705ba8bd1349f2543c4269e83833338db02d0eb9f1a29",
+    "generate.py": "8b7ec0a499c66fb6608b9a76de16fcd87484284a57def019615bf61f8327992e",
+    "score.py": "03eccee316b3413b339a1f524a7a080d69e67ffef9a37b71a8e2fb63ee61304b",
+    "data/ifeval.jsonl": "6a85310ca8ce15eff755aa08a3a4ff931c7e273e7515ebb3c492ea85fd8288f2",
+    "data/gsm8k.jsonl": "752adc99f23132275139f1f7be57126b08735a55daf0c56859ee6df70abafbac"
+  },
+  "checkpoint_steps": {
+    "s2a_dual_w10": [
+      200
+    ],
+    "s2a_dual_w17": [
+      200,
+      295
+    ],
+    "s2a_unif_w10": [
+      295
+    ]
+  },
+  "think_backend": "vllm",
+  "no_think_backend": "hf",
+  "max_think_tokens": 3072,
+  "scheduler": "repo-watch/run_on_idle.py --numeric-cuda-ids --count 1",
+  "checkpoint_sha256": {
+    "s2a_dual_w10_s200": "f55747e1839e781335eb9d1e7b949a9be82b0f8a0a95e5025c67cc0ff3a49df8",
+    "s2a_dual_w17_s200": "4083f185436a9b74a53c4ada1ea7cdf16083e70931713364741ed50bf5cbda4d",
+    "s2a_dual_w17_s295": "882ab0fb2264fb91d2ff72021ce36a51d1fb8cab414bf27bc301bccd399854b6",
+    "s2a_unif_w10_s295": "c5795252db8a76ae6354e7a06b9297b83c3035f1e1cddaa32175cf92ef1b3d30"
+  },
+  "eligible_ids_sha256": {
+    "no_think": "805c803045133b7ab06b19036ceca34286509e2a1e0308da711fa1e8a99bb99a",
+    "think": "6affc44b88914ea99f57d09ced80b5641e8394b99bd8b8f0b1d2515b26d10c82"
+  }
+}
