@@ -1,6 +1,6 @@
 # ACL-exp-c1 · Step 2A-diag 零训练同 KL 诊断任务单（~25 分钟，4 卡并行）
 
-- **状态**：**READY FOR EXECUTION**（监控拉取后立刻执行本任务单；**零训练、绝不重训任何权重、绝不执行 Step 2B、绝不触碰封存测试集 `c1_test_id / c1_test_ood`**，推完 `STEP2A_DIAG_READOUT.md` 后保持空闲等待下一步指令）
+- **状态**：**COMPLETED (`f5a631a`) — 请勿重复执行本单；下一待执行任务为 `STEP2A_LIVE_COMPLETE_TASK.md`！**
 - **基线提交**：`ACL-exp-c1@07f8a3e`（全部使用 Step 2A 已存盘的 `Qwen3-8B` `adapter_state` 权重）
 - **三个明确科学目标**：
   1. **同权重公平比对（`w=1.0 @ 295`）**：补评磁盘上现成的 `s2a_dual_w10/adapter_state_step0295.pt`（与 `s2a_unif_w10 @ 295` 同为 `accept_weight=1.0`、295 步），在 `no_think`（全 3 集 + KL）与 `vLLM think`（全 3 集）上直接一对一配对比较；

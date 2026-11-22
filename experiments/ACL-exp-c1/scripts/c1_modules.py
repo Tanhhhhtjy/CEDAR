@@ -125,12 +125,12 @@ class HeadSliceLoRALinear(nn.Module):
         for i, h in enumerate(self.head_indices):
             if h in self.disabled_heads:
                 continue
-            dw = ((self.lora_B[i].float() @ self.lora_A[i].float()) * self.scale).to(W.device, W.dtype)
+            dw = ((self.lora_B[i].float() @ self.lora_A[i].float()) * self.scale).to(W.device)
             sl = slice(h * self.head_dim, (h + 1) * self.head_dim)
             if self.axis == "out":
-                W[sl, :] += dw
+                W[sl, :].copy_((W[sl, :].float() + dw).to(W.dtype))
             else:
-                W[:, sl] += dw
+                W[:, sl].copy_((W[:, sl].float() + dw).to(W.dtype))
         return self.base
 
 
@@ -180,8 +180,8 @@ class StandardLoRALinear(nn.Module):
     def merge_into_base(self) -> nn.Linear:
         if not self.disabled:
             W = self.base.weight.data
-            dw = ((self.lora_B.float() @ self.lora_A.float()) * self.scale).to(W.device, W.dtype)
-            W += dw
+            dw = ((self.lora_B.float() @ self.lora_A.float()) * self.scale).to(W.device)
+            W.copy_((W.float() + dw).to(W.dtype))
         return self.base
 
 
