@@ -1,0 +1,85 @@
+{
+  "schema": "cedar.acl_exp_c1.vllm_lora_parity.v2",
+  "base_model": "/mnt/kcl/devuser/ckpts/Qwen3-8B",
+  "model_key": "qwen3_8b",
+  "arm": "Random-LM",
+  "adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c1/step2b-showdown-52a58813/weights/42/std_random_lm/adapter_state.pt",
+  "adapter_state_sha256": "0c4785701c683a4df70a17be8b8c99eb7e4b5dce0d303d9fc3d9f29dfc895b77",
+  "peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c1/step2b-showdown-52a58813/weights/peft/std_random_lm",
+  "peft_adapter_model_sha256": "5a1e68e19a8f27abc689c248ccf4401e9f14b40a210ffa3781445d6b2b4e3fd9",
+  "r_export": 112,
+  "vllm_max_lora_rank": 128,
+  "dataset": "c1_dev",
+  "arms": [
+    "V",
+    "F"
+  ],
+  "n_bases": 40,
+  "m0_hf_vs_vllm": {
+    "n_positions": 80,
+    "n_vf_pairs": 40,
+    "u_coverage_rate": 1.0,
+    "n_u_compared": 80,
+    "n_u_missing": 0,
+    "n_positions_missing_any_option": 0,
+    "option_match_count": 80,
+    "option_match_rate": 1.0,
+    "double_correct_hf": 0,
+    "double_correct_vllm": 0,
+    "double_correct_delta": 0,
+    "du_signed_mean": -0.05,
+    "du_signed_median": 0.0,
+    "du_abs_mean": 0.25625,
+    "du_abs_max": 1.25,
+    "du_positive_frac": 0.2875,
+    "n_near_boundary_lt1": 0,
+    "n_near_boundary_flips": 0,
+    "thresholds": {
+      "max_abs_mean_du": 0.25,
+      "max_abs_du_mean": 0.35,
+      "min_option_match": 0.95,
+      "required_u_coverage": 1.0
+    },
+    "flips": [],
+    "passed": true
+  },
+  "lora_hf_live_vs_vllm_native": {
+    "n_positions": 80,
+    "n_vf_pairs": 40,
+    "u_coverage_rate": 1.0,
+    "n_u_compared": 80,
+    "n_u_missing": 0,
+    "n_positions_missing_any_option": 0,
+    "option_match_count": 79,
+    "option_match_rate": 0.9875,
+    "double_correct_hf": 22,
+    "double_correct_vllm": 21,
+    "double_correct_delta": -1,
+    "du_signed_mean": 0.00678,
+    "du_signed_median": 0.0,
+    "du_abs_mean": 0.25935,
+    "du_abs_max": 1.00148,
+    "du_positive_frac": 0.4625,
+    "n_near_boundary_lt1": 7,
+    "n_near_boundary_flips": 1,
+    "thresholds": {
+      "max_abs_mean_du": 0.25,
+      "max_abs_du_mean": 0.35,
+      "min_option_match": 0.95,
+      "required_u_coverage": 1.0
+    },
+    "flips": [
+      {
+        "base_id": "C1-DEV-017",
+        "arm": "F",
+        "hf_pred": "B",
+        "vllm_pred": "C",
+        "u_hf": 0.0,
+        "u_vllm": 0.3519
+      }
+    ],
+    "passed": true
+  },
+  "passed": true,
+  "elapsed_seconds": 151.6
+}
