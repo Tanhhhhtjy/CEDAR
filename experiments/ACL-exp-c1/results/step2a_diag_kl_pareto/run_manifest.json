@@ -1,0 +1,60 @@
+{
+  "protocol_commit": "d174dab8accc17a4e6ab1f8a636a493dac55a316",
+  "baseline_commit": "07f8a3e59b3f48a82077affda5c78c21570ec303",
+  "checkpoints": {
+    "dual_w10_s295": {
+      "sha256": "e201a03005778fc77389f4eac706f4b89ec235e2456cf6619bc639af4cc00214",
+      "arm": "Targeted-Dual",
+      "path": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c1/step2a/ckpts/s2a_dual_w10/adapter_state_step0295.pt"
+    },
+    "dual_w17_s295": {
+      "sha256": "882ab0fb2264fb91d2ff72021ce36a51d1fb8cab414bf27bc301bccd399854b6",
+      "arm": "Targeted-Dual",
+      "path": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c1/step2a/ckpts/s2a_dual_w17/adapter_state_step0295.pt"
+    },
+    "unif_w10_s295": {
+      "sha256": "c5795252db8a76ae6354e7a06b9297b83c3035f1e1cddaa32175cf92ef1b3d30",
+      "arm": "Uniform-LoRA",
+      "path": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c1/step2a/ckpts/s2a_unif_w10/adapter_state_step0295.pt"
+    },
+    "unif_w10_s200": {
+      "sha256": "0f6cc3d79d32d902e6874326527325e20d1677175c115876b8a98e3a24be19cc",
+      "arm": "Uniform-LoRA",
+      "path": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c1/step2a/ckpts/s2a_unif_w10/adapter_state_step0200.pt"
+    }
+  },
+  "cpu_selftests": {
+    "c1_eval": "[OK] c1_eval CPU self-test passed (n_bases=4, shared_elig=2, self-KL=0.0, hubs_8b=3, hubs_14b=4)",
+    "c1_diag_merge_kl": "[OK] c1_diag_merge_kl CPU self-test passed (max_passage_kl=5.53e-07)"
+  },
+  "datasets": {
+    "c1_dev": 80,
+    "c1_proxy_ood": 240,
+    "c1_proxy_template_ood": 120
+  },
+  "new_no_think": [
+    "dual_w10_s295_g100",
+    "dual_w10_s295_g125",
+    "dual_w10_s295_g150",
+    "dual_w17_s295_g075",
+    "dual_w17_s295_g125",
+    "dual_w17_s295_g150",
+    "unif_w10_s295_g075",
+    "unif_w10_s295_g125",
+    "unif_w10_s200_g100"
+  ],
+  "reused_g100": [
+    "dual_w17_s295",
+    "unif_w10_s295"
+  ],
+  "eligible_ids_sha256": {
+    "no_think": "805c803045133b7ab06b19036ceca34286509e2a1e0308da711fa1e8a99bb99a",
+    "think": "6affc44b88914ea99f57d09ced80b5641e8394b99bd8b8f0b1d2515b26d10c82"
+  },
+  "scripts_sha256": {
+    "c1_merge_and_check.py": "1532a17d8f3f313ecddc90a33b766e66ace5cc1dc5125c7cf5441b13c0e54d3e",
+    "c1_diag_merge_kl.py": "dfb7935423f441c44d187548b6e67f4b7821ca93ed876b315790c7d48da47abc",
+    "c1_eval.py": "6f35549d13edd900aaba57813a53ea0ce8eb4786791dd7dc514c546985b20c3d"
+  },
+  "kl_corpus_sha256": "97a3ed61a17e4023eabe9566fbe56768d0708aea97b662abac52dbb830315e05"
+}
