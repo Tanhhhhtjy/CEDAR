@@ -479,6 +479,29 @@ def run_selftest_tiny() -> None:
         with torch.no_grad():
             y_reloaded = m_clean(input_ids=t_ids).logits
         assert float((y_merged - y_reloaded).abs().max()) < 1e-4
+        # Verify --adapter-scale gamma: scale=0.0 matches base model exact, scale=1.5 matches exact W0 + 1.5*dW
+        torch.manual_seed(0)
+        m_zero = Qwen3ForCausalLM(cfg).float()
+        with torch.no_grad():
+            y_base_ref = m_zero(input_ids=t_ids).logits
+        sc0 = dict(checkpoint_scaling(ap, "qwen3_8b", "Targeted-Dual", spec_tiny))
+        sc0["base_scale"] = sc0.get("base_scale", 2.0) * 0.0
+        M.apply_c1_adapters(m_zero, spec_tiny, **sc0)
+        M.load_c1_adapter_state(m_zero, ap)
+        m_zero.eval()
+        with torch.no_grad():
+            y_gamma0 = m_zero(input_ids=t_ids).logits
+        assert float((y_gamma0 - y_base_ref).abs().max()) < 1e-6, "adapter_scale=0.0 diverged from base!"
+        torch.manual_seed(0)
+        m_g15 = Qwen3ForCausalLM(cfg).float()
+        sc15 = dict(checkpoint_scaling(ap, "qwen3_8b", "Targeted-Dual", spec_tiny))
+        sc15["base_scale"] = sc15.get("base_scale", 2.0) * 1.5
+        M.apply_c1_adapters(m_g15, spec_tiny, **sc15)
+        M.load_c1_adapter_state(m_g15, ap)
+        m_g15.eval()
+        with torch.no_grad():
+            y_gamma15 = m_g15(input_ids=t_ids).logits
+        assert float((y_gamma15 - y_reloaded).abs().max()) > 1e-5
         M.set_pathway_ablation(m_clean, disable_mlp=False, disable_heads={(2, 1)})
         with torch.no_grad():
             y_ablate = m_clean(input_ids=t_ids).logits
@@ -510,6 +533,7 @@ def main() -> None:
     ap.add_argument("--eligible-ids-out", type=Path, default=None, help="export M0 dual-sided Turn-1 eligible base_ids JSON")
     ap.add_argument("--eligible-ids-in", type=Path, default=None, help="reuse frozen M0 eligible base_ids JSON")
     ap.add_argument("--adapter-state", type=Path, default=None, help="optional unmerged adapter_state.pt for zero-retraining ablations")
+    ap.add_argument("--adapter-scale", type=float, default=1.0, help="zero-training delta scale gamma in W0 + gamma*dW (requires --adapter-state)")
     ap.add_argument("--components-file", default=str(C1 / "data" / "c1_components_frozen.json"))
     ap.add_argument("--model-key", choices=["qwen3_14b", "qwen3_8b"], default=None)
     ap.add_argument("--arm-name", default=None, help="arm name in c1_components_frozen.json when loading --adapter-state")
@@ -531,6 +555,10 @@ def main() -> None:
         args.datasets = ["c1_dev"] if args.regime == "no_think_free" else ["c1_test_id", "c1_test_ood"]
     if (args.ablate_hubs or args.ablate_mlp) and args.adapter_state is None:
         ap.error("pathway ablation requires --adapter-state on a clean base model")
+    if args.adapter_scale != 1.0 and args.adapter_state is None:
+        ap.error("--adapter-scale requires --adapter-state on a clean base model")
+    if args.adapter_scale < 0.0:
+        ap.error("--adapter-scale must be >= 0.0")
     if args.base_model and args.regime != "no_think":
         ap.error("reference KL requires --regime no_think")
     max_new_tokens = args.max_new_tokens if args.max_new_tokens is not None else (64 if args.regime == "no_think_free" else 3072)
@@ -580,7 +608,9 @@ def main() -> None:
                 raise ValueError("--adapter-state requires --model-key and --arm-name")
             comp = json.loads(Path(args.components_file).read_text(encoding="utf-8"))
             arm_spec = comp["models"][args.model_key]["arms"][args.arm_name]
-            scaling = checkpoint_scaling(args.adapter_state, args.model_key, args.arm_name, arm_spec)
+            scaling = dict(checkpoint_scaling(args.adapter_state, args.model_key, args.arm_name, arm_spec))
+            if args.adapter_scale != 1.0:
+                scaling["base_scale"] = float(scaling.get("base_scale", 2.0)) * float(args.adapter_scale)
             M.apply_c1_adapters(model, arm_spec, **scaling)
             M.load_c1_adapter_state(model, args.adapter_state)
             disable_heads = resolve_hub_heads(comp, args.model_key) if args.ablate_hubs else None
@@ -594,7 +624,10 @@ def main() -> None:
                     )
             M.set_pathway_ablation(model, disable_mlp=args.ablate_mlp, disable_heads=disable_heads)
             model.eval()
-            print(f"[c1_eval] loaded adapter_state={args.adapter_state} ablate_mlp={args.ablate_mlp} ablate_hubs={args.ablate_hubs}")
+            print(
+                f"[c1_eval] loaded adapter_state={args.adapter_state} adapter_scale={args.adapter_scale} "
+                f"ablate_mlp={args.ablate_mlp} ablate_hubs={args.ablate_hubs}"
+            )
 
     args.out_dir.mkdir(parents=True, exist_ok=True)
     report: dict = {
@@ -602,6 +635,7 @@ def main() -> None:
         "model": args.model,
         "regime": args.regime,
         "backend": args.backend,
+        "adapter_scale": args.adapter_scale,
         "ablate_mlp": args.ablate_mlp,
         "ablate_hubs": args.ablate_hubs,
         "datasets": {},

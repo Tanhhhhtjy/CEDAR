@@ -1,6 +1,6 @@
 # ACL-exp-c1 · Step 2A 任务单（v2 续跑：跳过已完成训练与 M0，修正 Uniform 合并分布门禁并完成 Wave 2A.2 评测）
 
-- **状态**：**READY FOR EXECUTION（v2 续跑）**（监控拉取后立刻从 **Wave 2A.15 续跑**；**严禁重训已完成的三组权重与 M0**，**严禁提前执行 `STEP2_CAUSAL_SHOWDOWN_PLAN.md`（Step 2B）**，Step 2A 推完最终 `STEP2A_READOUT.md` 后暂停等待三方对齐）
+- **状态**：**COMPLETED (`07f8a3e`) — 请勿重复执行本单；下一待执行任务为 `STEP2A_DIAG_KL_PARETO_TASK.md`！**
 - **v2 续跑说明（相对 `32ee083`）**：
   - Wave 2A.1 的 3 组训练与 M0 在三份数据集上的基线（`c1_dev`, `c1_proxy_ood`, `c1_proxy_template_ood`）均已成功完成并入库；3 个 `Targeted-Dual` 检查点合并已全部通过。
   - 仅 `s2a_unif_w10_s295`（`Uniform-LoRA`）因改写全 36 层（含第 0 层 attention-sink 激活极值），在全局 6,184 万元素中单点 `max_abs = 8.95` 触发旧上限 `< 2.0`，但其真实概率分布完全一致（`mean_abs = 0.0688`、`last_position_kl = 7.09e-8`、`top1 = 402/407 = 98.8%`、`last_position_max_abs = 1.76`）。
