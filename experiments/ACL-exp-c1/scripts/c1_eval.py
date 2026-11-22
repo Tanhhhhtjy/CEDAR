@@ -82,11 +82,22 @@ DEFAULT_DATASETS = {
     "c1_dev": C1 / "data" / "c1_dev_bases.jsonl",
     "c1_proxy_ood": C1 / "data" / "c1_proxy_ood_bases.jsonl",
     "c1_proxy_template_ood": C1 / "data" / "c1_proxy_template_ood_bases.jsonl",
+    "c1_proxy_template_v2": C1 / "data" / "c1_proxy_template_v2_bases.jsonl",
+    "c1_step2b_confirm_ce": C1 / "data" / "c1_step2b_confirm_ce_bases.jsonl",
     "c1_test_id": C1 / "data" / "c1_test_id_bases.jsonl",
     "c1_test_ood": C1 / "data" / "c1_test_ood_bases.jsonl",
     # Historical A1 dev_only diagnostic (opt-in only via --datasets natural_probe)
     "natural_probe": REPO / "experiments" / "ACL-exp-a1" / "data" / "natural_pilot_seed_12_v2_2.jsonl",
 }
+
+VLLM_SUPPORTED_MAX_LORA_RANKS = (8, 16, 32, 64, 128, 256)
+
+
+def _recommended_vllm_max_lora_rank(r_export: int) -> int:
+    for cand in VLLM_SUPPORTED_MAX_LORA_RANKS:
+        if cand >= r_export:
+            return cand
+    raise ValueError(f"PEFT LoRA rank {r_export} exceeds max supported vLLM LoRA rank {VLLM_SUPPORTED_MAX_LORA_RANKS[-1]}")
 
 
 def _input_device(model) -> torch.device:
@@ -129,6 +140,7 @@ def eval_nothink_item(model, tok, a1_cfg: dict, row: dict, arm: str, opt_tok_ids
     u_theta = opt_logits[at] - opt_logits[a0]
     return {
         "base_id": row["base_id"],
+        "cell_id": row.get("cell_id"),
         "split": row.get("split", "unknown"),
         "pair_type": row["pair_type"],
         "fallacy_class": row["fallacy_class"],
@@ -186,6 +198,7 @@ def generation_record(row, arm, text, n_tokens, finish_reason, *, enable_thinkin
         }
     return {
         "base_id": row["base_id"],
+        "cell_id": row.get("cell_id"),
         "split": row.get("split", "unknown"),
         "pair_type": row["pair_type"],
         "fallacy_class": row["fallacy_class"],
@@ -241,7 +254,16 @@ def eval_freegen_item_hf(
 
 
 def eval_freegen_dataset_vllm(
-    llm, tok, a1_cfg: dict, rows: list[dict], arms: list[str], *, enable_thinking: bool, max_new_tokens: int, eos_ids=()
+    llm,
+    tok,
+    a1_cfg: dict,
+    rows: list[dict],
+    arms: list[str],
+    *,
+    enable_thinking: bool,
+    max_new_tokens: int,
+    eos_ids=(),
+    lora_request=None,
 ) -> list[dict]:
     """High-throughput batched greedy evaluation via vLLM for think OR free-generation no_think."""
     from vllm import SamplingParams
@@ -258,7 +280,10 @@ def eval_freegen_dataset_vllm(
             meta.append((r, arm))
 
     sp = SamplingParams(temperature=0.0, max_tokens=max_new_tokens)
-    outputs = llm.generate(prompts, sp)
+    if lora_request is not None:
+        outputs = llm.generate(prompts, sp, lora_request=lora_request)
+    else:
+        outputs = llm.generate(prompts, sp)
     recs = []
     for (r, arm), out in zip(meta, outputs, strict=True):
         comp = out.outputs[0]
@@ -531,8 +556,10 @@ def main() -> None:
                     help="defaults to c1_dev for no_think_free, or the Phase 1 test sets for the original regimes")
     ap.add_argument("--arms", nargs="*", default=EVAL_ARMS)
     ap.add_argument("--eligible-ids-out", type=Path, default=None, help="export M0 dual-sided Turn-1 eligible base_ids JSON")
+    ap.add_argument("--merge-eligible-ids-out", action="store_true", help="merge new dataset keys into existing --eligible-ids-out JSON instead of overwriting")
     ap.add_argument("--eligible-ids-in", type=Path, default=None, help="reuse frozen M0 eligible base_ids JSON")
-    ap.add_argument("--adapter-state", type=Path, default=None, help="optional unmerged adapter_state.pt for zero-retraining ablations")
+    ap.add_argument("--adapter-state", type=Path, default=None, help="optional unmerged adapter_state.pt for lossless HF live eval & ablations")
+    ap.add_argument("--peft-lora-dir", type=Path, default=None, help="optional PEFT LoRA dir exported by c1_export_peft_lora.py for lossless vLLM --enable-lora")
     ap.add_argument("--adapter-scale", type=float, default=1.0, help="zero-training delta scale gamma in W0 + gamma*dW (requires --adapter-state)")
     ap.add_argument("--components-file", default=str(C1 / "data" / "c1_components_frozen.json"))
     ap.add_argument("--model-key", choices=["qwen3_14b", "qwen3_8b"], default=None)
@@ -566,6 +593,10 @@ def main() -> None:
         raise ValueError("--backend vllm is only supported for --regime think or no_think_free (no_think uses exact single-forward logits)")
     if args.backend == "vllm" and args.adapter_state is not None:
         raise ValueError("--adapter-state pathway ablation requires --backend hf")
+    if args.peft_lora_dir is not None and args.backend != "vllm":
+        ap.error("--peft-lora-dir requires --backend vllm")
+    if args.peft_lora_dir is not None and args.adapter_state is not None:
+        ap.error("cannot combine --peft-lora-dir and --adapter-state")
     if args.base_model and args.regime == "no_think":
         if args.kl_corpus is None or not args.kl_corpus.exists():
             raise FileNotFoundError(
@@ -589,10 +620,34 @@ def main() -> None:
     llm = None
     model = None
     eos_ids = set()
+    lora_request = None
+    max_lora_rank = None
     if args.backend == "vllm":
         from vllm import LLM
 
-        llm = LLM(model=args.model, dtype="bfloat16", tensor_parallel_size=args.tp)
+        if args.peft_lora_dir is not None:
+            from vllm.lora.request import LoRARequest
+
+            cfg_path = args.peft_lora_dir / "adapter_config.json"
+            if not cfg_path.is_file():
+                raise FileNotFoundError(f"--peft-lora-dir missing adapter_config.json: {cfg_path}")
+            peft_cfg = json.loads(cfg_path.read_text(encoding="utf-8"))
+            r_export = int(peft_cfg["r"])
+            max_lora_rank = _recommended_vllm_max_lora_rank(r_export)
+            llm = LLM(
+                model=args.model,
+                dtype="bfloat16",
+                tensor_parallel_size=args.tp,
+                enable_lora=True,
+                max_lora_rank=max_lora_rank,
+            )
+            lora_request = LoRARequest("c1_lora", 1, str(args.peft_lora_dir))
+            print(
+                f"[c1_eval] vLLM native LoRA enabled: dir={args.peft_lora_dir} "
+                f"r={r_export} max_lora_rank={max_lora_rank}"
+            )
+        else:
+            llm = LLM(model=args.model, dtype="bfloat16", tensor_parallel_size=args.tp)
         if args.regime == "no_think_free":
             from transformers import AutoConfig, GenerationConfig
 
@@ -635,6 +690,8 @@ def main() -> None:
         "model": args.model,
         "regime": args.regime,
         "backend": args.backend,
+        "peft_lora_dir": str(args.peft_lora_dir) if args.peft_lora_dir else None,
+        "vllm_max_lora_rank": max_lora_rank,
         "adapter_scale": args.adapter_scale,
         "ablate_mlp": args.ablate_mlp,
         "ablate_hubs": args.ablate_hubs,
@@ -652,8 +709,15 @@ def main() -> None:
             recs = [eval_nothink_item(model, tok, a1_cfg, r, arm, opt_tok_ids) for r in rows for arm in args.arms]
         elif args.backend == "vllm":
             recs = eval_freegen_dataset_vllm(
-                llm, tok, a1_cfg, rows, args.arms, enable_thinking=(args.regime == "think"), max_new_tokens=max_new_tokens,
+                llm,
+                tok,
+                a1_cfg,
+                rows,
+                args.arms,
+                enable_thinking=(args.regime == "think"),
+                max_new_tokens=max_new_tokens,
                 eos_ids=eos_ids,
+                lora_request=lora_request,
             )
         else:
             recs = [
@@ -679,8 +743,12 @@ def main() -> None:
 
     if args.eligible_ids_out is not None:
         args.eligible_ids_out.parent.mkdir(parents=True, exist_ok=True)
-        args.eligible_ids_out.write_text(json.dumps(exported_elig, indent=2) + "\n", encoding="utf-8", newline="\n")
-        print(f"[c1_eval] exported dual-sided Turn-1 eligible IDs -> {args.eligible_ids_out}")
+        merged_elig: dict[str, list[str]] = {}
+        if args.merge_eligible_ids_out and args.eligible_ids_out.is_file():
+            merged_elig = json.loads(args.eligible_ids_out.read_text(encoding="utf-8"))
+        merged_elig.update(exported_elig)
+        args.eligible_ids_out.write_text(json.dumps(merged_elig, indent=2) + "\n", encoding="utf-8", newline="\n")
+        print(f"[c1_eval] exported dual-sided Turn-1 eligible IDs ({sorted(merged_elig)}) -> {args.eligible_ids_out}")
 
     if args.base_model and args.regime == "no_think":
         m_base = AutoModelForCausalLM.from_pretrained(

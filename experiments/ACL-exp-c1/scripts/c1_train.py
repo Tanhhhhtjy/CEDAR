@@ -27,6 +27,7 @@ Usage (CPU self-test):
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import random
@@ -838,7 +839,8 @@ def main() -> None:
     # Always save tiny unmerged adapter state for zero-retraining post-hoc pathway ablations
     adapter_state_path = args.out_dir / "adapter_state.pt"
     M.save_c1_adapter_state(model, adapter_state_path)
-    print(f"[c1] saved unmerged adapter state -> {adapter_state_path}")
+    adapter_state_sha = hashlib.sha256(adapter_state_path.read_bytes()).hexdigest()
+    print(f"[c1] saved unmerged adapter state -> {adapter_state_path} (sha256={adapter_state_sha[:12]}...)")
 
     meta = {
         "model": args.model,
@@ -846,6 +848,7 @@ def main() -> None:
         "arm": args.arm,
         "arm_spec": arm_spec,
         "trainable_params": attach_info["trainable_params"],
+        "adapter_state_sha256": adapter_state_sha,
         "hyperparams": {
             "epochs": args.epochs,
             "max_steps": args.max_steps,

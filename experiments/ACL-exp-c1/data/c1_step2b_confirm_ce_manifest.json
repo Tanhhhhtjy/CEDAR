@@ -1,0 +1,60 @@
+{
+  "schema": "cedar.acl_exp_c1.step2b_confirm_ce_manifest.v2",
+  "design": "2x2_crossed_counterfactual_zero_shortcut",
+  "seed": 20270419,
+  "sealed_test_sets_touched": false,
+  "excluded_ood_axes": [
+    "converse_error",
+    "depth_4"
+  ],
+  "file": "experiments/ACL-exp-c1/data/c1_step2b_confirm_ce_bases.jsonl",
+  "sha256": "47389c57aeac28630ed3d770d9b03549b9b1850704eaf882fd1985141b645d49",
+  "audits": {
+    "domain_a0_to_at_acc": 0.3333,
+    "turn1_context_only_audit": {
+      "exact_turn1_ctx_vf_byte_match": 1.0,
+      "astra_rule_checker_double_correct": 0,
+      "tfidf_groupkfold_auc": 0.5
+    },
+    "turn2_argument_only_audit": {
+      "exact_turn2_vf_multiset_equal": true,
+      "entity_switch_counter_acc": 0.5,
+      "tfidf_groupkfold_auc": 0.5
+    },
+    "external_turn2_vf_overlap": 0,
+    "counts": {
+      "total_bases": 1728,
+      "total_2x2_cells": 864,
+      "by_domain": {
+        "airspace_corridor": 288,
+        "cleanroom_fab": 288,
+        "coldchain_depot": 288,
+        "freight_customs": 288,
+        "mining_hoist": 288,
+        "orbital_relay": 288
+      },
+      "by_depth": {
+        "2": 864,
+        "3": 864
+      },
+      "by_default_policy_position": {
+        "after_rules": 864,
+        "before_rules": 864
+      },
+      "by_transition": {
+        "A->B": 144,
+        "A->C": 144,
+        "A->D": 144,
+        "B->A": 144,
+        "B->C": 144,
+        "B->D": 144,
+        "C->A": 144,
+        "C->B": 144,
+        "C->D": 144,
+        "D->A": 144,
+        "D->B": 144,
+        "D->C": 144
+      }
+    }
+  }
+}

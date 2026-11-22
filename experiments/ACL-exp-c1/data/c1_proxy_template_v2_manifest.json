@@ -1,0 +1,56 @@
+{
+  "schema": "cedar.acl_exp_c1.proxy_template_v2_manifest.v1",
+  "purpose": "Step 2B natural ambiguity-free 0%-template-overlap & domain-disjoint Proxy-Template-v2 set",
+  "master_seed": 20270519,
+  "sealed_test_sets_touched": false,
+  "zero_train_skeleton_overlap_verified": true,
+  "v1_grammar_bugs_fixed": [
+    "Replaced ambiguous 'Supersede the standing assignment of X to Y' with 'Override rule [Ck]: Whenever ..., replace the default assignment for X with Y.'",
+    "Replaced double-verb '<conc> holds whenever <cond>' with 'Whenever <cond>, it follows that <conc>.'"
+  ],
+  "diagnostic_caveat": "Depth-3 cross_entity_transfer/argument_flip (6 bases) inherits the standard Turn-2 entity-switch cue; report context_flip (60 bases) separately as the shortcut-free template-generalization slice.",
+  "counts": {
+    "total_bases": 120,
+    "by_pair_type": {
+      "context_flip": 60,
+      "argument_flip": 60
+    },
+    "by_depth": {
+      "2": 60,
+      "3": 60
+    },
+    "by_fallacy_class": {
+      "scope_swap": 24,
+      "cross_entity_transfer": 24,
+      "missing_conjunct": 24,
+      "negation_drop": 24,
+      "threshold_violation": 24
+    }
+  },
+  "audits": {
+    "train_skeleton_overlap": {
+      "V": 0,
+      "F": 0,
+      "context": 0,
+      "total_bases": 120
+    },
+    "domain_a0_to_at_acc": 0.3667,
+    "cross_entity_af_entity_match": {
+      "n_pairs": 12,
+      "entity_match_acc": 0.5
+    },
+    "threshold_af_obs_val_auc": {
+      "n_pairs": 12,
+      "obs_val_auc": 0.5833
+    },
+    "g0_argument_only_audit": {
+      "overall_combo_auc": 0.5011,
+      "cf_byte_match": 1.0,
+      "af_combo_auc": 0.4979,
+      "af_word_auc": 0.4999
+    }
+  },
+  "sha256": {
+    "c1_proxy_template_v2_bases.jsonl": "ba2f2a547cf7f7a07327b3d926003c761135171d4f6f3ac3cbf843b72d08802c"
+  }
+}

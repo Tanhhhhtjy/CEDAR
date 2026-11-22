@@ -1,3 +1,9 @@
+# [ARCHIVED / SUPERSEDED] ACL-exp-c1 · 旧版 Step 2 草案（已由 `STEP2B_FINAL_SHOWDOWN_PLAN.md` 正式取代）
+
+> **⚠️ ARCHIVED — DO NOT EXECUTE**：本文件为 Step 2A 之前的旧版草案（包含旧 `1.68M`、5 类训练、Step-1 权重复用、BF16 合并评测与旧 v2 统计口径），已由 **[`STEP2B_FINAL_SHOWDOWN_PLAN.md`](STEP2B_FINAL_SHOWDOWN_PLAN.md)** 全面取代。保留本文件仅作历史追溯记录。
+
+---
+
 # ACL-exp-c1 · Step 2B 草案（暂缓执行）：8B 机制定位 vs 双随机掩码 / 均匀 LoRA 独立新域与留出类因果对决
 
 - **状态**：**DRAFT / DO NOT EXECUTE YET — 必须等待 `STEP2A_RECIPE_LOCK_TASK.md`（Step 2A）出齐结果并完成三方对齐后，锁定全绿配方再正式下发！**
