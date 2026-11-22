@@ -1,12 +1,13 @@
 {
   "tag": "zero_rep_s150",
-  "protocol_commit": "45fbb782d04a83a406c11b9b5afee9f35ea2ea78",
+  "protocol_commit": "4221f475006e71d2c0cf916ce29de512f7bd182d",
   "adapter_sha256": "53bfce5f43b7caa5d46e29f802dbe604c44ec8ac6ea9ce52e6337395d9483a08",
   "base_model": "/mnt/kcl/devuser/ckpts/Qwen3-8B",
   "precision": "bfloat16",
-  "physical_gpu": 5,
-  "started_at": "2026-11-22T03:35:04+08:00",
-  "ended_at": "2026-11-22T03:35:13+08:00",
+  "metrics_dtype": "float32",
+  "physical_gpu": 4,
+  "started_at": "2026-11-22T13:00:27+08:00",
+  "ended_at": "2026-11-22T13:02:50+08:00",
   "prompt_base_id": "C1-DEV-001",
   "arm": "turn1_F",
   "regime": "think",
@@ -16,12 +17,22 @@
     407,
     151936
   ],
-  "max_abs_logit_error": 0.8125,
-  "last_position_max_abs_logit_error": 0.65625,
-  "max_abs_logit_error_threshold_exclusive": 0.05,
+  "thresholds": {
+    "mean_abs_logit_error_lt": 0.25,
+    "last_position_kl_lt": 0.01,
+    "top1_argmax_match_rate_gte": 0.95,
+    "max_abs_logit_error_lt": 2.0
+  },
   "generation_eos_token_id": [
     151645,
     151643
   ],
-  "passed": false
+  "mean_abs_logit_error": 0.042782723903656006,
+  "last_position_kl": 1.0493549496004562e-07,
+  "top1_argmax_match_count": 402,
+  "num_positions": 407,
+  "top1_argmax_match_rate": 0.9877149877149877,
+  "max_abs_logit_error": 0.8125,
+  "last_position_max_abs_logit_error": 0.65625,
+  "passed": true
 }
