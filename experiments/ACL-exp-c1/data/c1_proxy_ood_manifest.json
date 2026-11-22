@@ -1,0 +1,61 @@
+{
+  "schema": "cedar.acl_exp_c1.proxy_ood_manifest.v1",
+  "purpose": "Step 2 independent unseen-domain Proxy-OOD evaluation set (strictly disjoint from A1, train, dev, and sealed test_id/test_ood)",
+  "master_seed": 20270219,
+  "sealed_test_sets_touched": false,
+  "domain_disjointness_verified": true,
+  "domains": [
+    "airspace_corridor",
+    "cleanroom_fab",
+    "freight_customs",
+    "orbital_relay",
+    "coldchain_depot",
+    "mining_hoist"
+  ],
+  "counts": {
+    "total_bases": 240,
+    "by_pair_type": {
+      "context_flip": 120,
+      "argument_flip": 120
+    },
+    "by_depth": {
+      "2": 120,
+      "3": 120
+    },
+    "by_fallacy_class": {
+      "scope_swap": 48,
+      "cross_entity_transfer": 48,
+      "missing_conjunct": 48,
+      "negation_drop": 48,
+      "threshold_violation": 48
+    },
+    "by_domain": {
+      "coldchain_depot": 40,
+      "mining_hoist": 40,
+      "airspace_corridor": 40,
+      "cleanroom_fab": 40,
+      "freight_customs": 40,
+      "orbital_relay": 40
+    }
+  },
+  "shortcut_audits": {
+    "domain_a0_to_at_acc": 0.35,
+    "cross_entity_af_entity_match": {
+      "n_pairs": 24,
+      "entity_match_acc": 0.5
+    },
+    "threshold_af_obs_val_auc": {
+      "n_pairs": 24,
+      "obs_val_auc": 0.5686
+    },
+    "g0_argument_only_audit": {
+      "overall_combo_auc": 0.5027,
+      "cf_byte_match": 1.0,
+      "af_combo_auc": 0.5047,
+      "af_word_auc": 0.5089
+    }
+  },
+  "sha256": {
+    "c1_proxy_ood_bases.jsonl": "53ff2aebf8b10949d5757126b80d8059239d077b05e4828287721e1cbc705556"
+  }
+}

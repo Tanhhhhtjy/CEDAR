@@ -80,6 +80,8 @@ EVAL_ARMS = [
 
 DEFAULT_DATASETS = {
     "c1_dev": C1 / "data" / "c1_dev_bases.jsonl",
+    "c1_proxy_ood": C1 / "data" / "c1_proxy_ood_bases.jsonl",
+    "c1_proxy_template_ood": C1 / "data" / "c1_proxy_template_ood_bases.jsonl",
     "c1_test_id": C1 / "data" / "c1_test_id_bases.jsonl",
     "c1_test_ood": C1 / "data" / "c1_test_ood_bases.jsonl",
     # Historical A1 dev_only diagnostic (opt-in only via --datasets natural_probe)
@@ -582,6 +584,14 @@ def main() -> None:
             M.apply_c1_adapters(model, arm_spec, **scaling)
             M.load_c1_adapter_state(model, args.adapter_state)
             disable_heads = resolve_hub_heads(comp, args.model_key) if args.ablate_hubs else None
+            if disable_heads:
+                arm_heads = {(int(li), int(h)) for li, h in arm_spec.get("heads", [])}
+                matched_hubs = arm_heads & disable_heads
+                if arm_spec.get("kind") != "circuit" or not matched_hubs:
+                    raise ValueError(
+                        f"--ablate-hubs requested for arm={args.arm_name!r}, but 0 hub heads overlap with this arm "
+                        f"(kind={arm_spec.get('kind')!r}, n_hubs={len(disable_heads)})"
+                    )
             M.set_pathway_ablation(model, disable_mlp=args.ablate_mlp, disable_heads=disable_heads)
             model.eval()
             print(f"[c1_eval] loaded adapter_state={args.adapter_state} ablate_mlp={args.ablate_mlp} ablate_hubs={args.ablate_hubs}")

@@ -246,6 +246,7 @@ def compute_loss_microbatch(
     margin_m: float,
     zero_replay_loss: bool = False,
     return_source_losses: bool = False,
+    accept_weight: float = 1.0,
 ) -> tuple[torch.Tensor, float, float, dict]:
     """Compute exact sum-of-per-example (SFT + Signed Readout Margin) loss over a padded microbatch.
 
@@ -291,6 +292,13 @@ def compute_loss_microbatch(
     replay_flags = [bool(ex.get("is_replay")) for ex in batch]
     is_replay = torch.tensor(replay_flags, device=logits.device, dtype=torch.bool)
     per_ex_sft = per_ex_sft_raw.masked_fill(is_replay, 0.0) if zero_replay_loss else per_ex_sft_raw
+    if accept_weight != 1.0:
+        acc_weights = torch.tensor(
+            [accept_weight if (not ex.get("is_replay") and int(ex.get("margin_sign", 0)) > 0) else 1.0 for ex in batch],
+            device=logits.device,
+            dtype=per_ex_sft.dtype,
+        )
+        per_ex_sft = per_ex_sft * acc_weights
 
     total_sft = per_ex_sft.sum()
     total_margin = torch.tensor(0.0, device=logits.device, dtype=torch.float32)
@@ -308,7 +316,8 @@ def compute_loss_microbatch(
             hinge = F.relu(margin_m - u_theta) if ex["margin_sign"] > 0 else F.relu(margin_m + u_theta)
             hinge_values.append(hinge.detach())
             if lambda_margin > 0.0:
-                total_margin = total_margin + hinge
+                w_m = accept_weight if ex["margin_sign"] > 0 else 1.0
+                total_margin = total_margin + w_m * hinge
 
     total_loss = total_sft + lambda_margin * total_margin
     n_active = (torch.stack(hinge_values) > 0).sum() if hinge_values else total_sft.new_zeros(())
@@ -486,6 +495,18 @@ def run_selftest_tiny() -> None:
             assert p.grad is not None and float(p.grad.abs().max()) == 0.0
     print("[OK] --zero-replay-loss passed (pure-replay window exact 0.0 loss & exact 0.0 grad)")
 
+    # 3d. Verify --accept-weight scales margin_sign>0 rule items by exact factor while leaving margin_sign<=0 & replay untouched
+    m_zr.eval()
+    _, s_v1, m_v1, _ = compute_loss_microbatch(m_zr, [enc_v_unm], tok.pad_token_id, 0.25, 4.0, accept_weight=1.0)
+    _, s_v2, m_v2, _ = compute_loss_microbatch(m_zr, [enc_v_unm], tok.pad_token_id, 0.25, 4.0, accept_weight=1.7)
+    assert abs(s_v2 - 1.7 * s_v1) < 1e-4 and abs(m_v2 - 1.7 * m_v1) < 1e-4, (s_v1, s_v2, m_v1, m_v2)
+    f_raw = next(r for r in raw_rows if r["margin_sign"] < 0)
+    enc_f_unm = encode_sft_example(tok, f_raw, False, mask_rule_format_ce=False)
+    _, s_f1, m_f1, _ = compute_loss_microbatch(m_zr, [enc_f_unm], tok.pad_token_id, 0.25, 4.0, accept_weight=1.0)
+    _, s_f2, m_f2, _ = compute_loss_microbatch(m_zr, [enc_f_unm], tok.pad_token_id, 0.25, 4.0, accept_weight=1.7)
+    assert abs(s_f2 - s_f1) < 1e-6 and abs(m_f2 - m_f1) < 1e-6
+    print("[OK] --accept-weight passed (exact 1.7x on margin_sign>0, exact 1.0x on margin_sign<0)")
+
     # 4. Verify all arm types: rsLoRA scaling, strict locality, merge equivalence, adapter_state save/reload & pathway ablation
     tiny_arms = {
         "Targeted-Dual": {"kind": "circuit", "heads": [[1, 0], [1, 2], [2, 1]], "head_rank": 4, "mlp_layers": [1, 2], "mlp_rank": 4},
@@ -622,6 +643,7 @@ def main() -> None:
     ap.add_argument("--dropout", type=float, default=0.05)
     ap.add_argument("--lambda-margin", type=float, default=None, help="defaults to arm_spec default_lambda_margin or 0.25")
     ap.add_argument("--margin-m", type=float, default=4.0)
+    ap.add_argument("--accept-weight", type=float, default=1.0, help="loss multiplier on accept (margin_sign>0) rule items (default 1.0)")
     ap.add_argument("--warmup-ratio", type=float, default=0.06)
     ap.add_argument("--max-grad-norm", type=float, default=1.0)
     ap.add_argument("--seed", type=int, default=42)
@@ -638,6 +660,8 @@ def main() -> None:
     assert args.model and args.model_key and args.arm and args.out_dir
     if args.max_steps is not None and args.max_steps < 1:
         ap.error("--max-steps must be positive")
+    if args.accept_weight <= 0.0:
+        ap.error("--accept-weight must be positive")
     try:
         save_steps = {int(s.strip()) for s in args.save_steps.split(",") if s.strip()}
     except ValueError:
@@ -739,7 +763,7 @@ def main() -> None:
                 mb = win[j : j + args.microbatch]
                 loss_sum, sft_sum, m_sum, st = compute_loss_microbatch(
                     model, mb, pad_id, lambda_margin, args.margin_m, zero_replay_loss=args.zero_replay_loss,
-                    return_source_losses=bool(source_grads),
+                    return_source_losses=bool(source_grads), accept_weight=args.accept_weight,
                 )
                 # Sample each source on the same dropout realization without writing optimizer .grad.
                 if source_grads:
@@ -839,6 +863,7 @@ def main() -> None:
             "anchor_rank": args.anchor_rank,
             "lambda_margin": lambda_margin,
             "margin_m": args.margin_m,
+            "accept_weight": args.accept_weight,
             "seed": args.seed,
             "n_examples": len(encoded),
             "n_rule_aligned": n_rule_aligned,
