@@ -1,0 +1,38 @@
+{
+  "protocol_commit": "a561e1eebf3777202e8ca15d7652183225dc278f",
+  "previous_results_commit": "f5a631aae1ebc9396de30228ab83ef4650127402",
+  "datasets": {
+    "c1_dev": 80,
+    "c1_proxy_ood": 240,
+    "c1_proxy_template_ood": 120
+  },
+  "checkpoints": {
+    "unif_w10_s295": "c5795252db8a76ae6354e7a06b9297b83c3035f1e1cddaa32175cf92ef1b3d30",
+    "dual_w17_s295": "882ab0fb2264fb91d2ff72021ce36a51d1fb8cab414bf27bc301bccd399854b6",
+    "dual_w10_s295": "e201a03005778fc77389f4eac706f4b89ec235e2456cf6619bc639af4cc00214"
+  },
+  "historical_references": {
+    "unif_w10_s295_merged": "step2a_recipe_lock/s2a_unif_w10_s295",
+    "dual_w17_s295_merged": "step2a_recipe_lock/s2a_dual_w17_s295",
+    "dual_w10_s295_live": "step2a_diag_kl_pareto/dual_w10_s295_g100"
+  },
+  "additional_merged_reference": {
+    "tag": "dual_w10_s295_g100_merged_reference",
+    "source": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c1/step2a-diag-d174dab8/merged/dual_w10_s295_g100",
+    "merge_protocol": "legacy BF16 double rounding",
+    "merge_check_commit": "222b952bf859253de5f32131a4de83e531d01c08",
+    "reason": "Complete missing matched three-dataset no_think merged reference requested in Table 1."
+  },
+  "eligible_ids_sha256": "805c803045133b7ab06b19036ceca34286509e2a1e0308da711fa1e8a99bb99a",
+  "kl_corpus_sha256": "97a3ed61a17e4023eabe9566fbe56768d0708aea97b662abac52dbb830315e05",
+  "source_sha256": {
+    "c1_eval": "6f35549d13edd900aaba57813a53ea0ce8eb4786791dd7dc514c546985b20c3d",
+    "c1_modules": "24a41e58e9981e70aefde844d387cc4bd6c1615600a14445560895f9835a57e3",
+    "c1_diag_weight_rounding": "f13788b02094e459a61e1caa9c50315ec4b4117a1d8bd47ff1f6e80b4455ba55",
+    "c1_train": "1ef49b5e7a75ad04891ecd513d8c185276d4d2371500981b3775088439782fdf"
+  },
+  "cpu_selftests": {
+    "c1_train": "[OK] ALL c1_train & c1_modules self-tests PASSED",
+    "c1_diag_weight_rounding": "[OK] c1_diag_weight_rounding CPU self-test passed (bf16_single_zero=0.101 <= bf16_double_zero=0.101)"
+  }
+}
