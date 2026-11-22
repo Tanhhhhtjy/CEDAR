@@ -89,14 +89,36 @@ def extract_gsm8k_gold(answer_field: str) -> str:
     return val
 
 
+def _ensure_absl_shim() -> None:
+    """If `absl` is absent in the vLLM venv, provide a minimal stdlib logging shim for Google's IFEval."""
+    try:
+        import absl.logging  # type: ignore  # noqa: F401
+        return
+    except ImportError:
+        pass
+    import logging as _py_logging
+    import types
+
+    absl_mod = types.ModuleType("absl")
+    absl_log = types.ModuleType("absl.logging")
+    for fn_name in ("debug", "info", "warning", "warn", "error", "critical", "fatal", "exception", "log"):
+        setattr(absl_log, fn_name, getattr(_py_logging, "critical" if fn_name == "fatal" else fn_name))
+    absl_mod.logging = absl_log  # type: ignore[attr-defined]
+    sys.modules.setdefault("absl", absl_mod)
+    sys.modules.setdefault("absl.logging", absl_log)
+
+
 def score_ifeval_records(
     rows: list[dict[str, Any]],
     generations: list[dict[str, Any]],
     ifeval_lib_dir: Path | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Score IFEval prompts using official Google `evaluation_lib.test_instruction_following_strict`."""
-    if ifeval_lib_dir is not None and str(ifeval_lib_dir) not in sys.path:
-        sys.path.insert(0, str(ifeval_lib_dir))
+    _ensure_absl_shim()
+    if ifeval_lib_dir is not None:
+        for p in (ifeval_lib_dir, ifeval_lib_dir.parent):
+            if str(p) not in sys.path:
+                sys.path.insert(0, str(p))
     try:
         import evaluation_lib  # type: ignore
     except ImportError:

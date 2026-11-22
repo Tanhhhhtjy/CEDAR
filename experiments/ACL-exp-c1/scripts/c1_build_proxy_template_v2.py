@@ -72,7 +72,7 @@ def rewrite_rule_v2(rule_line: str) -> str:
     mo = re.match(r"^If (.+?), override the default classification and assign (.+?) to (.+)\.$", body)
     if mo:
         cond, ent, out = mo.group(1), mo.group(2), mo.group(3)
-        return f"Override rule [C{num}]: Whenever {cond}, replace the default assignment for {ent} with {out}."
+        return f"[C{num}] Only when {cond} is established, the classification of {ent} changes from the default to {out}."
 
     # Case 3: distractor audit rule "If COND, record a routine audit note for ENT."
     md = re.match(r"^If (.+?), record a routine audit note for (.+)\.$", body)
@@ -118,7 +118,7 @@ def rewrite_context_v2(ctx: str) -> str:
         elif s.startswith("Based only on the listed facts and rules, what is the assigned classification for "):
             ent = s[len("Based only on the listed facts and rules, what is the assigned classification for ") :].rstrip("?")
             out_lines.append(
-                f"Using only the baseline records and decision clauses above, determine the valid outcome for {ent}."
+                f"Based solely on the baseline records and decision clauses above, what is the valid outcome for {ent}?"
             )
         else:
             out_lines.append(line)

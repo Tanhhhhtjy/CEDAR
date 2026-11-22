@@ -1,10 +1,10 @@
 # ACL-exp-c1 · Step 2B 最终执行方案（Qwen3-8B 机制定位 vs 双随机掩码 / 均匀 LoRA 无损因果对决）
 
-- **状态**：**`STAGED — WAIT FOR STEP2B_PREFLIGHT_TASK.md GREEN SIGN-OFF`（必须等待 `STEP2B_PREFLIGHT_TASK.md` 2 卡实卡预飞验收全部通过后再切换为 `READY TO EXECUTE` 启动 8 卡！）**
-- **基线提交**：`ACL-exp-c1@410e21f` + Astra 预飞审计全量修订（2×2 零捷径主集、100% 4 选项 `prompt_logprobs` 逐组保真门禁、v4 统计四态门禁与版本化 `c1_eval_capabilities.py`）
-- **取代文档**：本方案正式取代已归档旧草案 `STEP2_CAUSAL_SHOWDOWN_PLAN.md`。
+- **状态**：**`READY TO EXECUTE`（立即执行！含前置 10 分钟 Wave 2B.05 硬门禁，门禁全绿后自动无缝进入 8 卡 Wave 2B.1 → 2B.2 → 2B.25 → 条件 2B.3！）**
+- **预飞已验证基线**：`STEP2B_PREFLIGHT_TASK.md` 已实卡验证 vLLM 0.11.0 原生 `--enable-lora` 在全部三种秩上 100% 四选项覆盖全绿通过（`max_r=128`: `79/80=98.75%`, `du_abs=0.305`; `max_r=32`: `80/80=100%`, `du_abs=0.228`; `max_r=8`: `79/80=98.75%`, `du_abs=0.266`）；同时已根据预飞实测将 `c1_step2b_confirm_ce` 升级为单链 2×2 零捷径构造（`v3`, sha256=`c6c4bfb95b12...`）、修复 `c1_proxy_template_v2` 条件陈述句并给 `c1_eval_capabilities.py` 补上 `absl.logging` 标准库垫片。
+- **取代文档**：本方案正式取代已归档旧草案 `STEP2_CAUSAL_SHOWDOWN_PLAN.md` 与已完成的 `STEP2B_PREFLIGHT_TASK.md`。
 - **硬件与预计总耗时**：**8 × NVIDIA A800 40GB**
-  - Pre-Flight（`STEP2B_PREFLIGHT_TASK.md`，2 卡单独先行）：~10 分钟
+  - Wave 2B.05（2 卡自动门禁：新版单链 2×2 M0 冻结合格题 `≥ 800` 校验 + `c1_eval_capabilities.py` 20 题原生 LoRA 烟测）：~10 分钟
   - Wave 2B.1（8 组训练）+ Wave 2B.2（8 组无损全量评测 + 逐组保真 + 能力评测 + Standard 权重舍入 GPU 诊断）：~80–95 分钟
   - Wave 2B.3（条件触发：仅当单种子达到 `CANDIDATE` 时，3 卡补跑独立 `seed=1024` 方向复现）：~25 分钟
 
@@ -73,19 +73,27 @@
 
 ---
 
-## 四、Wave 2B.1–2B.3 完整执行流程（Pre-Flight 通过后启动）
+## 四、Wave 2B.05–2B.3 全自动执行流程（全部写入 `experiments/ACL-exp-c1/results/step2b_8b_showdown/`）
 
-1. **复用 Pre-Flight 已冻结的 M0 产物**：将 `results/step2b_preflight/M0/` 复制到 `results/step2b_8b_showdown/M0/`（确保三键齐全且 `c1_step2b_confirm_ce` 合格题 `≥ 800`）。
-2. **Wave 2B.1（8 卡并行，~22 分钟）**：GPUs 0–7 并行完成全部 8 组 200 步训练；将每组的 `train_meta.json`（补充写入 `adapter_state_sha256`）同步复制到 `results/step2b_8b_showdown/<TAG>/train_meta.json`。
+0. **Wave 2B.0（CPU ~15 秒）**：跑通全部 6 个脚本的 CPU 自检（`c1_export_peft_lora`, `c1_check_vllm_lora_parity`, `c1_eval_capabilities`, `c1_step2_stats`, `c1_eval`, `c1_train`），任一失败立即中止。
+1. **Wave 2B.05（2 卡并行前置硬门禁，~10–15 分钟，全绿后自动进入 Wave 2B.1）**：
+   - **GPU 0（M0 冻结与 `≥ 800` 检出力断言）**：
+     1. M0 HF `no_think` on 新版单链 2×2 `c1_step2b_confirm_ce`（8 核心臂：`turn1_F turn1_V AO shell_only F V V_hes V_auth`），输出至 `results/step2b_8b_showdown/M0/no_think/`（保存 `eval_summary_no_think_confirm_ce.json` 与 `eligible_ids.json`）。
+     2. M0 HF `no_think` on `c1_dev c1_proxy_template_v2`（全 15 臂，`--merge-eligible-ids-out`），确认 `eligible_ids.json` 三键齐全，且 **`len(eligible_ids["c1_step2b_confirm_ce"]) >= 800`**！（若 `< 800`，立刻推送 `M0` 诊断结果并中止，不启动 8 卡训练！）
+     3. M0 vLLM `think` on `c1_dev c1_proxy_template_v2`（全 15 臂），导出 `results/step2b_8b_showdown/M0/think/eligible_ids.json`。
+   - **GPU 1（能力评测脚本端到端 20 题原生 LoRA 烟测）**：
+     - 复用已有 `s2a_dual_w17` 导出的 `peft_r128` 跑 `c1_eval_capabilities.py --limit 20`（指向 `<CAP_DIR>/data/{ifeval,gsm8k}.jsonl` 与 `<CAP_DIR>/vendor/instruction_following_eval`）；若 `/mnt/vllm310` 仍缺 `nltk`/`langdetect` 等第三方包，自动改用 `--skip-ifeval-score` 生成 `ifeval_raw.jsonl` 后调用服务器上原有的评分 Python / `<CAP_DIR>/score.py` 完成 IFEval 评分并写入标准 `summary.json` + `items.jsonl`！
+2. **Wave 2B.1（8 卡并行，~22 分钟）**：GPUs 0–7 并行完成全部 8 组 200 步训练；将每组的 `train_meta.json`（含自动写入的 `adapter_state_sha256`）同步复制到 `results/step2b_8b_showdown/<TAG>/train_meta.json`。
 3. **Wave 2B.2（8 卡并行，1 卡 1 组，~45–50 分钟）**：每张卡对负责的 `<TAG>`（`@200`）按序执行：
    1. **导出 PEFT LoRA**（`c1_export_peft_lora.py`，内置 FP32 `< 1e-5` 与 BF16 `cos ≥ 0.999` 断言，输出至 `<WORK_DIR>/step2b_peft/<TAG>`）。
    2. **逐组 SHA 绑定保真校验**（~2 分钟，`c1_check_vllm_lora_parity.py --dataset c1_dev --limit 40` -> `<TAG>/vllm_lora_parity.json`，100% 4 选项 `prompt_logprobs` 覆盖，`du_abs_mean ≤ 0.35`，不通过立即停止该组）。
-   3. **HF live `no_think` 主终点**（~8 分钟，`--datasets c1_step2b_confirm_ce --arms turn1_F turn1_V AO shell_only F V V_hes V_auth`）。
+   3. **HF live `no_think` 主终点**（~12 分钟，`--datasets c1_step2b_confirm_ce --arms turn1_F turn1_V AO shell_only F V V_hes V_auth`）。
    4. **HF live `no_think` 次级集 + WikiText-2 KL**（~5 分钟，`--datasets c1_dev c1_proxy_template_v2 --base-model ... --kl-corpus ...`）。
    5. **vLLM 原生 LoRA `think`**（~10 分钟，`--backend vllm --peft-lora-dir <PEFT_DIR> --datasets c1_dev c1_proxy_template_v2`）。
-   6. **vLLM 原生 LoRA `IFEval` + `GSM8K`**（~18 分钟，`scripts/c1_eval_capabilities.py --peft-lora-dir <PEFT_DIR>` -> `<TAG>/capabilities/{summary.json,items.jsonl}`）。
-   7. **GPU 权重舍入成因诊断（仅 Standard 4 组，GPUs 0–3 各跑 1 组，~3 分钟）**：运行 `scripts/c1_diag_weight_rounding.py`（需 GPU，因脚本加载基座 + 合并两份 8B 并计算 200 段 KL），写入 `results/step2b_8b_showdown/weight_rounding_<TAG>.json`，区分合并鲁棒性来自空间集中度还是机制定位！
+   6. **vLLM 原生 LoRA `IFEval` + `GSM8K`**（~18 分钟，`scripts/c1_eval_capabilities.py --peft-lora-dir <PEFT_DIR>` [按 Wave 2B.05 验证过的 IFEval 评分方式] -> `<TAG>/capabilities/{summary.json,items.jsonl}`）。
+   7. **GPU 权重舍入成因诊断（仅 Standard 4 组，GPUs 0–3 各跑 1 组，~3 分钟）**：运行 `scripts/c1_diag_weight_rounding.py`（需 GPU，加载基座 + 合并两份 8B 并计算 200 段 KL），写入 `results/step2b_8b_showdown/weight_rounding_<TAG>.json`。
    8. **轻量轨迹补测**（~2 分钟）：HF live `no_think` 补测 `@100/@150` 在 `c1_dev`。
+   - *(每完成一组可分批提交推送，避免最后单次推送过大)*。
 4. **Wave 2B.25（CPU ~10 秒）**：
    ```bash
    python experiments/ACL-exp-c1/scripts/c1_step2_stats.py \
@@ -94,7 +102,7 @@
    ```
    - 单种子最高仅给 **`CANDIDATE`**（`overall_go_14b=False`）！
 5. **Wave 2B.3（条件触发：仅当 Wave 2B.25 输出 `verdict=CANDIDATE` 时自动执行，3 卡并行，~25 分钟）**：
-   - 仅对 `candidate_single_seed_tier` 的 3 个因果组（`Dual`, `Random-1`, `Random-2`）使用 **`--seed 1024`** 重训 200 步，复制带 `seed=1024` 与独立 `adapter_state_sha256` 的 `train_meta.json`，跑 HF live `no_think`（`c1_step2b_confirm_ce` 8 核心臂）写入 `results/step2b_8b_showdown_seed1024/`；
+   - 仅对 `candidate_single_seed_tier` 的 3 个因果组（`Dual`, `Random-1`, `Random-2`）使用 **`--seed 1024`** 重训 200 步，复制含 `seed=1024` 与独立 `adapter_state_sha256` 的 `train_meta.json`，跑 HF live `no_think`（`c1_step2b_confirm_ce` 8 核心臂）写入 `results/step2b_8b_showdown_seed1024/`；
    - 重跑 `c1_step2_stats.py --results-dir results/step2b_8b_showdown --seed2-dir results/step2b_8b_showdown_seed1024`，输出最终四态判定（`GO / HOLD / STOP`）并推送至 `origin/ACL-exp-c1`！
 
 ---

@@ -1,6 +1,6 @@
 # ACL-exp-c1 · Step 2B-Preflight 任务单（2 卡 10 分钟实卡预飞验收，正式 8 卡开跑前必过硬门禁）
 
-- **状态**：**`READY TO EXECUTE`（立即执行；仅跑本预飞验收，暂不执行 `STEP2B_FINAL_SHOWDOWN_PLAN.md` 的 8 卡训练！）**
+- **状态**：**`COMPLETED / SUPERSEDED BY STEP2B_FINAL_SHOWDOWN_PLAN.md`（预飞三秩 `max_r=128/32/8` 保真已 100% 全绿通过；M0 校准与 `c1_eval_capabilities.py` `absl` 兼容均已修复，请直接执行 `STEP2B_FINAL_SHOWDOWN_PLAN.md`！）**
 - **目的**：严格落实起飞前实卡验收，在消耗 8 卡算力前，用 2 张 A800 在 ~10 分钟内实测验证 3 件决定性事项：
   1. **新版 2×2 零捷径主终点 `c1_step2b_confirm_ce`（1,728 题）上的 M0 真实 `no_think` 双侧 Turn-1 合格题数**是否达到 `≥ 800`（并冻结 `M0/no_think/eligible_ids.json` 三键合并写入与 `M0/think/eligible_ids.json`）；
   2. **vLLM 0.11.0 原生 `--enable-lora` 跨后端保真校验（v2：100% 4 选项 `prompt_logprobs` 覆盖）**在 Step 2B 实际用到的全部三种秩 **`max_lora_rank = 128 / 32 / 8`** 上是否全部 `passed=True`；
