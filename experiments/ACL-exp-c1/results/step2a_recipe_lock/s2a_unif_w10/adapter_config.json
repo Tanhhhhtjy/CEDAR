@@ -1,0 +1,21 @@
+{
+  "model_key": "qwen3_8b",
+  "arm": "Uniform-LoRA",
+  "arm_spec": {
+    "kind": "uniform",
+    "description": "All-layer uniform LoRA on q_proj, o_proj, gate_proj, down_proj (rank-matched to Dual total budget)",
+    "uniform_rank": 4,
+    "target_modules": [
+      "q_proj",
+      "o_proj",
+      "gate_proj",
+      "down_proj"
+    ],
+    "trainable_params": 7077888
+  },
+  "scaling": {
+    "scaling_mode": "rslora",
+    "base_scale": 2.0,
+    "anchor_rank": 8
+  }
+}
