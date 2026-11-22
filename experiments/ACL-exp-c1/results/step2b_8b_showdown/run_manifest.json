@@ -1,0 +1,28 @@
+{
+  "protocol_commit": "52a588138a89f9a95e0a1240e41e7b09b5c02456",
+  "cpu_selftests": {
+    "cpu-c1_check_vllm_lora_parity": "[OK] c1_check_vllm_lora_parity v2 CPU self-test passed (good=PASS, drift+4.5=FAIL, 39/40-missing=FAIL, du_abs=0.36=FAIL)",
+    "cpu-c1_eval": "[OK] c1_eval CPU self-test passed (n_bases=4, shared_elig=2, self-KL=0.0, hubs_8b=3, hubs_14b=4)",
+    "cpu-c1_eval_capabilities": "[OK] c1_eval_capabilities CPU self-test passed (GSM8K extraction & scoring verified)",
+    "cpu-c1_export_peft_lora": "[OK] PEFT export self-test Uniform-LoRA  : r_export= 2 (vllm_max_r= 8) dw_err=0.00e+00 logit_err=3.13e-07",
+    "cpu-c1_step2_stats": "[OK] c1_step2_stats v4 CPU self-test passed (McNemar 600:600 + ALL 12 Astra/Opus counterexamples verified)",
+    "cpu-c1_train": "[OK] ALL c1_train & c1_modules self-tests PASSED"
+  },
+  "input_sha256": {
+    "c1_step2b_confirm_ce_bases.jsonl": "c6c4bfb95b12aa3f59b542805617bd2828b8f2aeaaf45483440f5cfc2768b887",
+    "c1_dev_bases.jsonl": "b51ee0404056ab5cdb61151ebeaa8522407a71696c3db3d96c46ab580e64d401",
+    "c1_proxy_template_v2_bases.jsonl": "e7aa95ef83f5ccc27befac92c485e9289c8026242344a25aa89b4185a94ae3f6",
+    "c1_train_examples_wo_ce_nothink.jsonl": "6978ffbe3538b2170b020c31b1a90e2a44116155d28a308295272a99f6bdb894",
+    "c1_kl_wikitext2_200.jsonl": "97a3ed61a17e4023eabe9566fbe56768d0708aea97b662abac52dbb830315e05",
+    "c1_components_frozen.json": "2c1d02ebe4f298b51760e1e9a8c30a445e05869981e9e76cde5059921731d21a",
+    "c1_components_step2_tight.json": "27e41c69727cb19795558ade05be4e479ae1b1a31102a832c3f90b65f779e4c8",
+    "ifeval.jsonl": "6a85310ca8ce15eff755aa08a3a4ff931c7e273e7515ebb3c492ea85fd8288f2",
+    "gsm8k.jsonl": "752adc99f23132275139f1f7be57126b08735a55daf0c56859ee6df70abafbac"
+  },
+  "model": "/mnt/kcl/devuser/ckpts/Qwen3-8B",
+  "cap_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c1/e98f2c9/capabilities",
+  "smoke_peft_sha256": "0a2f8eb17088800e0210d913904cebe4a6b3aa754e92acd0f20596aa6ec81f8d",
+  "preflight_rank_evidence_commit": "bcf2692dee8eeb52e52b34423467798bc3152c50",
+  "reference_eligibility": "recompute M0 with the new datasets",
+  "scoring": "pinned capability runner with official IFEval and existing task-local dependencies"
+}
