@@ -49,6 +49,14 @@ ARM_ORDER_C35 = (
     "armC_m3v2_soft_b1_iit",
     "armD_m3v2_soft_rnd_iit",
     "armE_unif_soft_b1_iit",
+    # Stage 3 KL-Surgical M3-v3 + Conflict-Free PCGrad Soft-Gated IIT arms
+    "s3_puremid_corr",
+    "s3_puremid_pcgrad_b1",
+    "s3_puremid_pcgrad_rnd",
+    "s3_puremid_randmask",
+    "s3_tightbridge_corr",
+    "s3_tightbridge_pcgrad_b1",
+    "s3_m3v2_pcgrad_b1",
 )
 
 
@@ -431,12 +439,34 @@ def main() -> None:
         ("C_vs_E", "armC_m3v2_soft_b1_iit", "armE_unif_soft_b1_iit"),
         ("C_vs_u2", "armC_m3v2_soft_b1_iit", "u2_corridor"),
         ("E_vs_u2", "armE_unif_soft_b1_iit", "u2_corridor"),
+        # Stage 3 comparisons
+        ("s3_puremid_vs_u2", "s3_puremid_corr", "u2_corridor"),
+        ("s3_puremid_vs_randmask", "s3_puremid_corr", "s3_puremid_randmask"),
+        ("s3_puremid_vs_armB", "s3_puremid_corr", "armB_m3v2_corridor"),
+        ("s3_pm_b1_vs_corr", "s3_puremid_pcgrad_b1", "s3_puremid_corr"),
+        ("s3_pm_b1_vs_rnd", "s3_puremid_pcgrad_b1", "s3_puremid_pcgrad_rnd"),
+        ("s3_pm_b1_vs_u2", "s3_puremid_pcgrad_b1", "u2_corridor"),
+        ("s3_tight_vs_u2", "s3_tightbridge_corr", "u2_corridor"),
+        ("s3_tight_vs_armB", "s3_tightbridge_corr", "armB_m3v2_corridor"),
+        ("s3_tb_b1_vs_corr", "s3_tightbridge_pcgrad_b1", "s3_tightbridge_corr"),
+        ("s3_tb_b1_vs_u2", "s3_tightbridge_pcgrad_b1", "u2_corridor"),
+        ("s3_m3v2_pc_vs_armC", "s3_m3v2_pcgrad_b1", "armC_m3v2_soft_b1_iit"),
+        ("s3_m3v2_pc_vs_armB", "s3_m3v2_pcgrad_b1", "armB_m3v2_corridor"),
+        ("s3_m3v2_pc_vs_u2", "s3_m3v2_pcgrad_b1", "u2_corridor"),
     ]
     if strongest_u:
-        if f"B_vs_{strongest_u}" not in {p[0] for p in pairs}:
-            pairs.append((f"B_vs_{strongest_u}", "armB_m3v2_corridor", strongest_u))
-        if f"C_vs_{strongest_u}" not in {p[0] for p in pairs}:
-            pairs.append((f"C_vs_{strongest_u}", "armC_m3v2_soft_b1_iit", strongest_u))
+        for cand_arm, prefix in (
+            ("armB_m3v2_corridor", "B"),
+            ("armC_m3v2_soft_b1_iit", "C"),
+            ("s3_puremid_corr", "s3_puremid"),
+            ("s3_puremid_pcgrad_b1", "s3_pm_b1"),
+            ("s3_tightbridge_corr", "s3_tight"),
+            ("s3_tightbridge_pcgrad_b1", "s3_tb_b1"),
+            ("s3_m3v2_pcgrad_b1", "s3_m3v2_pc"),
+        ):
+            pname = f"{prefix}_vs_{strongest_u}"
+            if pname not in {p[0] for p in pairs}:
+                pairs.append((pname, cand_arm, strongest_u))
 
     pairwise = {}
     for pname, a, b in pairs:
@@ -447,32 +477,30 @@ def main() -> None:
             }
 
     verdicts = {}
-    if strongest_u and "armC_m3v2_soft_b1_iit" in arm_data:
-        verdicts["armC_m3v2_soft_b1_iit"] = decide_dual_path_strict(
-            cand_name="armC_m3v2_soft_b1_iit",
-            u_best_name=strongest_u,
-            cmp_vs_u_best=pairwise[f"C_vs_{strongest_u}"]["four_cell"],
-            cmp_joint_vs_u_best=pairwise[f"C_vs_{strongest_u}"]["joint_t1_4cell"],
-            cmp_vs_rnd_iit=pairwise.get("C_vs_D", {}).get("four_cell"),
-            cmp_vs_no_iit=pairwise.get("C_vs_B", {}).get("four_cell"),
-            require_iit_controls=True,
-            cand_kl=arm_data["armC_m3v2_soft_b1_iit"].get("wiki_kl"),
-            u_best_kl=arm_data[strongest_u].get("wiki_kl"),
-            cand_health=arm_data["armC_m3v2_soft_b1_iit"]["health"],
-        )
-    if strongest_u and "armB_m3v2_corridor" in arm_data:
-        verdicts["armB_m3v2_corridor"] = decide_dual_path_strict(
-            cand_name="armB_m3v2_corridor",
-            u_best_name=strongest_u,
-            cmp_vs_u_best=pairwise[f"B_vs_{strongest_u}"]["four_cell"],
-            cmp_joint_vs_u_best=pairwise[f"B_vs_{strongest_u}"]["joint_t1_4cell"],
-            cmp_vs_rnd_iit=None,
-            cmp_vs_no_iit=None,
-            require_iit_controls=False,
-            cand_kl=arm_data["armB_m3v2_corridor"].get("wiki_kl"),
-            u_best_kl=arm_data[strongest_u].get("wiki_kl"),
-            cand_health=arm_data["armB_m3v2_corridor"]["health"],
-        )
+    if strongest_u:
+        cand_specs = [
+            ("armC_m3v2_soft_b1_iit", f"C_vs_{strongest_u}", "C_vs_D", "C_vs_B", True),
+            ("armB_m3v2_corridor", f"B_vs_{strongest_u}", None, None, False),
+            ("s3_puremid_corr", f"s3_puremid_vs_{strongest_u}", None, None, False),
+            ("s3_puremid_pcgrad_b1", f"s3_pm_b1_vs_{strongest_u}", "s3_pm_b1_vs_rnd", "s3_pm_b1_vs_corr", True),
+            ("s3_tightbridge_corr", f"s3_tight_vs_{strongest_u}", None, None, False),
+            ("s3_tightbridge_pcgrad_b1", f"s3_tb_b1_vs_{strongest_u}", None, "s3_tb_b1_vs_corr", False),
+            ("s3_m3v2_pcgrad_b1", f"s3_m3v2_pc_vs_{strongest_u}", None, "s3_m3v2_pc_vs_armB", False),
+        ]
+        for cname, pk_u, pk_rnd, pk_no, req_iit in cand_specs:
+            if cname in arm_data and pk_u in pairwise:
+                verdicts[cname] = decide_dual_path_strict(
+                    cand_name=cname,
+                    u_best_name=strongest_u,
+                    cmp_vs_u_best=pairwise[pk_u]["four_cell"],
+                    cmp_joint_vs_u_best=pairwise[pk_u]["joint_t1_4cell"],
+                    cmp_vs_rnd_iit=pairwise.get(pk_rnd, {}).get("four_cell") if pk_rnd else None,
+                    cmp_vs_no_iit=pairwise.get(pk_no, {}).get("four_cell") if pk_no else None,
+                    require_iit_controls=req_iit,
+                    cand_kl=arm_data[cname].get("wiki_kl"),
+                    u_best_kl=arm_data[strongest_u].get("wiki_kl"),
+                    cand_health=arm_data[cname]["health"],
+                )
 
     out_doc = {
         "schema": "cedar.acl_exp_c35.stats.v1",

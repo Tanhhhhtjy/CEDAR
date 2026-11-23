@@ -55,6 +55,19 @@ M3V2_SPECS: dict[str, dict[str, Any]] = {
         "z2_tier2_count": 10,
         "z2_tier2_rank": 10,
         "z2_tier3_rank": 6,
+        # Stage 3 M3-v3 KL-Surgical specs
+        "v3_puremid_z2_top_mlp_rank": 10,
+        "v3_puremid_z2_rest_mlp_rank": 6,
+        "v3_tight_z1_layers": [10, 13],  # 4 layers MLP-only, ZERO Z1 Q/O, L0-9 frozen!
+        "v3_tight_z1_mlp_rank": 4,
+        "v3_tight_z2_top_mlp_rank": 10,
+        "v3_tight_z2_rest_mlp_rank": 4,
+        "v3_z2_tier1_count": 10,
+        "v3_z2_tier1_rank": 18,
+        "v3_z2_tier2_count": 12,
+        "v3_z2_tier2_rank": 10,
+        "v3_z2_tier3_rank": 6,
+        "v3_z3_form_head_rank": 2,
     },
     "qwen3_14b": {
         "late_z1_layers": [9, 15],  # Upper 7 layers of Zone 1; L0-8 completely frozen!
@@ -68,6 +81,19 @@ M3V2_SPECS: dict[str, dict[str, Any]] = {
         "z2_tier2_count": 12,
         "z2_tier2_rank": 12,
         "z2_tier3_rank": 6,
+        # Stage 3 M3-v3 KL-Surgical specs
+        "v3_puremid_z2_top_mlp_rank": 10,
+        "v3_puremid_z2_rest_mlp_rank": 6,
+        "v3_tight_z1_layers": [11, 15],  # 5 layers MLP-only, ZERO Z1 Q/O, L0-10 frozen!
+        "v3_tight_z1_mlp_rank": 4,
+        "v3_tight_z2_top_mlp_rank": 10,
+        "v3_tight_z2_rest_mlp_rank": 4,
+        "v3_z2_tier1_count": 10,
+        "v3_z2_tier1_rank": 22,
+        "v3_z2_tier2_count": 12,
+        "v3_z2_tier2_rank": 12,
+        "v3_z2_tier3_rank": 7,
+        "v3_z3_form_head_rank": 2,
     },
 }
 
@@ -192,6 +218,77 @@ def build_c35_model_entry(alias: str, c3_entry: dict[str, Any], v2_cfg: dict[str
     z3_p = sum(2 * int(r) * (d + hd) for k, r in v2_head_ranks.items() if hd_diag[k]["zone"] == 3)
     assert z1_p + z2_p + z3_p == v2_params
 
+    # 4. Stage 3 KL-Surgical `M3-v3-PureMid`, `M3-v3-PureMid-Random-Mask`, and `M3-v3-TightBridge`!
+    # Keep ONLY Zone-3 `form_only_heads` at minimal r=2 so B1-IIT form pathway remains 100% trainable at ~1% cost.
+    b1_form_z3_keys = sorted(
+        f"{li}:{h}" for li, h in c3_entry["iit_targets"]["b1"]["form_only_heads"] if z3_lo <= int(li) <= z3_hi
+    )
+    vt1_n, vt2_n = int(v2_cfg["v3_z2_tier1_count"]), int(v2_cfg["v3_z2_tier2_count"])
+    vr1, vr2, vr3 = int(v2_cfg["v3_z2_tier1_rank"]), int(v2_cfg["v3_z2_tier2_rank"]), int(v2_cfg["v3_z2_tier3_rank"])
+    vr_z3f = int(v2_cfg["v3_z3_form_head_rank"])
+
+    v3_head_ranks: dict[str, int] = {}
+    for idx, k in enumerate(z2_non_conf):
+        v3_head_ranks[k] = vr1 if idx < vt1_n else (vr2 if idx < (vt1_n + vt2_n) else vr3)
+    for k in sorted(k for k in z2_keys if k in conflicting_set):
+        v3_head_ranks[k] = vr3
+    for k in b1_form_z3_keys:
+        v3_head_ranks[k] = vr_z3f
+    v3_head_ranks = dict(sorted(v3_head_ranks.items(), key=lambda kv: tuple(int(x) for x in kv[0].split(":"))))
+    EXP3C._enforce_layer_rank_cap(v3_head_ranks, max_cap=128)
+
+    # 4a. M3-v3-PureMid: ZERO Zone-1 (L0-13 frozen!), ALL Zone-2 MLPs (top-5 @ r10, rest @ r6), 42 B1 Z2 heads, 5 Z3 form heads @ r2
+    pm_mlp_ranks: dict[str, int] = {
+        str(li): int(v2_cfg["v3_puremid_z2_top_mlp_rank"] if li in ncf_top5 else v2_cfg["v3_puremid_z2_rest_mlp_rank"])
+        for li in range(z2_lo, z2_hi + 1)
+    }
+    pm_params = _count_mlp_dict_params(pm_mlp_ranks, d, d_ff) + EXP3C._count_head_dict_params(v3_head_ranks, d, hd)
+    pm_max_r, pm_layer_qo = _max_packed_rank_v2(v3_head_ranks, [], 0, pm_mlp_ranks)
+    assert pm_max_r <= 128 and abs(pm_params / unif["trainable_params"] - 1.0) * 100.0 <= 2.0, (alias, pm_params, pm_max_r)
+    pm_z2_p = _count_mlp_dict_params(pm_mlp_ranks, d, d_ff) + sum(
+        2 * int(r) * (d + hd) for k, r in v3_head_ranks.items() if hd_diag[k]["zone"] == 2
+    )
+    pm_z3_p = sum(2 * int(r) * (d + hd) for k, r in v3_head_ranks.items() if hd_diag[k]["zone"] == 3)
+    assert pm_z2_p + pm_z3_p == pm_params
+
+    # 4b. M3-v3-PureMid-Random-Mask: IDENTICAL 0 Zone-1 & per-layer rank multiset, disjoint random heads & disjoint random top-5 Z2 MLPs!
+    rng_pm_rm = random.Random(2036)
+    pm_by_l: dict[int, list[int]] = defaultdict(list)
+    for k, r in v3_head_ranks.items():
+        pm_by_l[int(k.split(":")[0])].append(r)
+    pm_excl = {(int(k.split(":")[0]), int(k.split(":")[1])) for k in v3_head_ranks}
+    pm_rm_head_ranks: dict[str, int] = {}
+    for li in sorted(pm_by_l):
+        rs = pm_by_l[li]
+        pool = [h for h in range(H) if (li, h) not in pm_excl]
+        chosen = sorted(rng_pm_rm.sample(pool, len(rs)))
+        for h, r in zip(chosen, rs):
+            pm_rm_head_ranks[f"{li}:{h}"] = r
+    EXP3C._enforce_layer_rank_cap(pm_rm_head_ranks, max_cap=128)
+    pm_rm_top5 = set(rng_pm_rm.sample(z2_non_ncf, len(ncf_top5)))
+    pm_rm_mlp_ranks: dict[str, int] = {
+        str(li): int(v2_cfg["v3_puremid_z2_top_mlp_rank"] if li in pm_rm_top5 else v2_cfg["v3_puremid_z2_rest_mlp_rank"])
+        for li in range(z2_lo, z2_hi + 1)
+    }
+    pm_rm_params = _count_mlp_dict_params(pm_rm_mlp_ranks, d, d_ff) + EXP3C._count_head_dict_params(pm_rm_head_ranks, d, hd)
+    assert pm_rm_params == pm_params
+
+    # 4c. M3-v3-TightBridge: L0-9 frozen, L10-13 MLP-only @ r4 (ZERO Z1 Q/O!), ALL Zone-2 MLPs (top-5 @ r10, rest @ r4), 42 B1 Z2 heads, 5 Z3 form heads @ r2
+    tb_lo, tb_hi = v2_cfg["v3_tight_z1_layers"]
+    tb_z1_layers = list(range(tb_lo, tb_hi + 1))
+    tb_mlp_ranks: dict[str, int] = {str(li): int(v2_cfg["v3_tight_z1_mlp_rank"]) for li in tb_z1_layers}
+    for li in range(z2_lo, z2_hi + 1):
+        tb_mlp_ranks[str(li)] = int(v2_cfg["v3_tight_z2_top_mlp_rank"] if li in ncf_top5 else v2_cfg["v3_tight_z2_rest_mlp_rank"])
+    tb_params = _count_mlp_dict_params(tb_mlp_ranks, d, d_ff) + EXP3C._count_head_dict_params(v3_head_ranks, d, hd)
+    tb_max_r, tb_layer_qo = _max_packed_rank_v2(v3_head_ranks, [], 0, tb_mlp_ranks)
+    assert tb_max_r <= 128 and abs(tb_params / unif["trainable_params"] - 1.0) * 100.0 <= 2.0, (alias, tb_params, tb_max_r)
+    tb_z1_p = sum(2 * int(tb_mlp_ranks[str(li)]) * (d + d_ff) for li in tb_z1_layers)
+    tb_z2_p = sum(2 * int(tb_mlp_ranks[str(li)]) * (d + d_ff) for li in range(z2_lo, z2_hi + 1)) + sum(
+        2 * int(r) * (d + hd) for k, r in v3_head_ranks.items() if hd_diag[k]["zone"] == 2
+    )
+    tb_z3_p = pm_z3_p
+    assert tb_z1_p + tb_z2_p + tb_z3_p == tb_params
+
     architectures = {
         "Uniform-LoRA": unif,
         "M3-v1": m3v1,
@@ -233,6 +330,67 @@ def build_c35_model_entry(alias: str, c3_entry: dict[str, Any], v2_cfg: dict[str
             "max_packed_layer_rank": _max_packed_rank_v2(rm_head_ranks, late_z1_layers, lz1_qo_r, rm_mlp_ranks)[0],
             "trainable_params": rm_params,
         },
+        "M3-v3-PureMid": {
+            "kind": "m3_dac",
+            "description": (
+                f"Stage 3 KL-Surgical Pure Mid-Layer Core: ALL Zone 1 L{z1_lo}-{z1_hi} 100% FROZEN (0 params -> targets >=30% KL reduction); "
+                f"Full Zone 2 L{z2_lo}-{z2_hi} ALL MLPs (top-5 B1 N_CF @ r={v2_cfg['v3_puremid_z2_top_mlp_rank']}, rest @ r={v2_cfg['v3_puremid_z2_rest_mlp_rank']}) "
+                f"+ {len(z2_keys)} B1 Z2 heads 3-tier {vr1}/{vr2}/{vr3}; "
+                f"Zone 3 ZERO MLPs + {len(b1_form_z3_keys)} Z3 form_only heads @ r={vr_z3f}"
+            ),
+            "zones": zones,
+            "frozen_early_layers": list(range(z1_lo, z1_hi + 1)),
+            "zone1_dense_qo_layers": [],
+            "zone1_dense_qo_rank": 0,
+            "mlp_layers": sorted(int(k) for k in pm_mlp_ranks),
+            "mlp_ranks": pm_mlp_ranks,
+            "mlp_ncf_layers": sorted(ncf_top5),
+            "mlp_dialog_z3_layers": [],
+            "head_ranks": v3_head_ranks,
+            "conflicting_heads": m3v1["conflicting_heads"],
+            "max_packed_layer_rank": pm_max_r,
+            "per_layer_packed_qo_rank": {str(k): v for k, v in pm_layer_qo.items()},
+            "zone_trainable_params": {"zone1": 0, "zone2": pm_z2_p, "zone3": pm_z3_p},
+            "trainable_params": pm_params,
+        },
+        "M3-v3-PureMid-Random-Mask": {
+            "kind": "m3_dac",
+            "description": "Unconfounded attribution control for M3-v3-PureMid: identical 0 Zone-1 & per-layer rank multiset with disjoint random top-5 MLPs and disjoint random heads",
+            "zones": zones,
+            "frozen_early_layers": list(range(z1_lo, z1_hi + 1)),
+            "zone1_dense_qo_layers": [],
+            "zone1_dense_qo_rank": 0,
+            "mlp_layers": sorted(int(k) for k in pm_rm_mlp_ranks),
+            "mlp_ranks": pm_rm_mlp_ranks,
+            "head_ranks": pm_rm_head_ranks,
+            "max_packed_layer_rank": _max_packed_rank_v2(pm_rm_head_ranks, [], 0, pm_rm_mlp_ranks)[0],
+            "zone_trainable_params": {"zone1": 0, "zone2": pm_z2_p, "zone3": pm_z3_p},
+            "trainable_params": pm_rm_params,
+        },
+        "M3-v3-TightBridge": {
+            "kind": "m3_dac",
+            "description": (
+                f"Stage 3 KL-Surgical Tight MLP-Only Bridge: L{z1_lo}-{tb_lo-1} FROZEN + ZERO Z1 Q/O; "
+                f"Late-Z1 L{tb_lo}-{tb_hi} MLP-only @ r={v2_cfg['v3_tight_z1_mlp_rank']}; "
+                f"Full Zone 2 L{z2_lo}-{z2_hi} ALL MLPs (top-5 B1 N_CF @ r={v2_cfg['v3_tight_z2_top_mlp_rank']}, rest @ r={v2_cfg['v3_tight_z2_rest_mlp_rank']}) "
+                f"+ {len(z2_keys)} B1 Z2 heads 3-tier {vr1}/{vr2}/{vr3}; "
+                f"Zone 3 ZERO MLPs + {len(b1_form_z3_keys)} Z3 form_only heads @ r={vr_z3f}"
+            ),
+            "zones": zones,
+            "frozen_early_layers": list(range(z1_lo, tb_lo)),
+            "zone1_dense_qo_layers": [],
+            "zone1_dense_qo_rank": 0,
+            "mlp_layers": sorted(int(k) for k in tb_mlp_ranks),
+            "mlp_ranks": tb_mlp_ranks,
+            "mlp_ncf_layers": sorted(ncf_top5),
+            "mlp_dialog_z3_layers": [],
+            "head_ranks": v3_head_ranks,
+            "conflicting_heads": m3v1["conflicting_heads"],
+            "max_packed_layer_rank": tb_max_r,
+            "per_layer_packed_qo_rank": {str(k): v for k, v in tb_layer_qo.items()},
+            "zone_trainable_params": {"zone1": tb_z1_p, "zone2": tb_z2_p, "zone3": tb_z3_p},
+            "trainable_params": tb_params,
+        },
     }
 
     return {
@@ -263,7 +421,7 @@ def main() -> None:
     for alias, m in models_out.items():
         anc = m["uniform_anchor_params"]
         print(f"\n=== {alias} (Uniform r=4 anchor = {anc:,} params) ===")
-        for aname in ("Uniform-LoRA", "M3-v1", "M3-v2", "M3-v2-Random-Mask"):
+        for aname in ("Uniform-LoRA", "M3-v1", "M3-v2", "M3-v3-PureMid", "M3-v3-PureMid-Random-Mask", "M3-v3-TightBridge"):
             a = m["architectures"][aname]
             p = a["trainable_params"]
             rel = (p / anc - 1.0) * 100.0

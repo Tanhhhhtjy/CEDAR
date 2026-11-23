@@ -420,8 +420,10 @@ def combine_main_and_capped_iit_grads(
     g_main: dict[int, torch.Tensor],
     g_iit: dict[int, torch.Tensor],
     iit_grad_ratio_cap: float,
+    use_pcgrad: bool = False,
 ) -> dict[str, float | None]:
-    """Compute exact same-batch grad norms & cosine similarity (global + Zone-2), cap IIT <= cap * norm_main, sum into `.grad`."""
+    """Compute exact same-batch grad norms & cosine similarity (global + Zone-2), optionally PCGrad-project out negative
+    conflict (`g_iit <- g_iit - (dot / ||g_main||^2) * g_main` when `dot < 0`), cap IIT <= cap * norm_main, sum into `.grad`."""
     z2_param_ids: set[int] = set()
     for _, mod in M35.iter_c3_adapters(model):
         if mod.c3_zone == 2:
@@ -466,16 +468,43 @@ def combine_main_and_capped_iit_grads(
     norm_iit_z2 = math.sqrt(max(0.0, norm_iit_z2_sq))
     cos_z2 = (dot_z2 / (norm_main_z2 * norm_iit_z2)) if (norm_main_z2 > 1e-12 and norm_iit_z2 > 1e-12) else None
 
-    if iit_grad_ratio_cap > 0.0 and norm_iit_raw > 1e-12 and norm_main > 1e-12:
-        iit_cap_scale = min(1.0, (float(iit_grad_ratio_cap) * norm_main) / norm_iit_raw)
+    # Optional conflict-free PCGrad orthogonal projection: whenever <g_main, g_iit> < 0, subtract the opposing component!
+    pcgrad_projected = 0
+    g_iit_eff: dict[int, torch.Tensor] = g_iit
+    norm_iit_proj = norm_iit_raw
+    cos_after_pcgrad = cos_all
+    if use_pcgrad and dot_all < 0.0 and norm_main_sq > 1e-24 and norm_iit_raw > 1e-12:
+        pcgrad_projected = 1
+        proj_coeff = dot_all / norm_main_sq  # strictly negative
+        g_iit_eff = {}
+        proj_sq = 0.0
+        for p in trainable_params:
+            pid = id(p)
+            gm = g_main.get(pid)
+            gi = g_iit.get(pid)
+            if gm is not None and gi is not None:
+                gp = (gi.float() - proj_coeff * gm.float()).to(gi.dtype)
+            elif gi is not None:
+                gp = gi
+            elif gm is not None:
+                gp = (-proj_coeff * gm.float()).to(gm.dtype)
+            else:
+                continue
+            g_iit_eff[pid] = gp
+            proj_sq += float(gp.float().pow(2).sum())
+        norm_iit_proj = math.sqrt(max(0.0, proj_sq))
+        cos_after_pcgrad = 0.0 if norm_iit_proj > 1e-12 else None
+
+    if iit_grad_ratio_cap > 0.0 and norm_iit_proj > 1e-12 and norm_main > 1e-12:
+        iit_cap_scale = min(1.0, (float(iit_grad_ratio_cap) * norm_main) / norm_iit_proj)
     else:
         iit_cap_scale = 1.0
-    norm_iit_applied = norm_iit_raw * iit_cap_scale
+    norm_iit_applied = norm_iit_proj * iit_cap_scale
 
     for p in trainable_params:
         pid = id(p)
         gm = g_main.get(pid)
-        gi = g_iit.get(pid)
+        gi = g_iit_eff.get(pid)
         if gm is not None and gi is not None:
             p.grad = gm + gi * iit_cap_scale
         elif gm is not None:
@@ -488,10 +517,13 @@ def combine_main_and_capped_iit_grads(
     return {
         "norm_main": norm_main,
         "norm_iit_raw": norm_iit_raw,
+        "norm_iit_proj": norm_iit_proj,
         "norm_iit_applied": norm_iit_applied,
         "iit_cap_scale": iit_cap_scale,
+        "pcgrad_projected": pcgrad_projected,
         "cos_main_iit": cos_all,
         "cos_main_iit_z2": cos_z2,
+        "cos_after_pcgrad": cos_after_pcgrad,
     }
 
 
@@ -786,7 +818,21 @@ def run_selftest_tiny() -> None:
     gi_tiny = {id(p): 0.1 * torch.ones_like(p) for p in tps}
     c_b = combine_main_and_capped_iit_grads(m_g, gm_syn, gi_tiny, iit_grad_ratio_cap=0.30)
     assert abs(c_b["cos_main_iit"] - 1.0) < 1e-5 and c_b["iit_cap_scale"] == 1.0, c_b
-    print("[OK] 5. Same-batch main/IIT grad cosine & independent 0.30x cap verified")
+    # Case C: PCGrad on exact opposite grad -> opposing component completely zeroed, leaving exact g_main!
+    c_pc1 = combine_main_and_capped_iit_grads(m_g, gm_syn, gi_huge_opp, iit_grad_ratio_cap=0.30, use_pcgrad=True)
+    assert c_pc1["pcgrad_projected"] == 1 and c_pc1["norm_iit_proj"] < 1e-4, c_pc1
+    assert abs(float(tps[0].grad.mean()) - 1.0) < 1e-5
+    # Case D: PCGrad on diagonal conflicting grad -> preserves orthogonal component with EXACT 0 dot product with g_main!
+    gm_d = {id(p): torch.zeros_like(p) for p in tps}
+    gi_d = {id(p): torch.zeros_like(p) for p in tps}
+    gm_d[id(tps[0])].view(-1)[0] = 1.0
+    gi_d[id(tps[0])].view(-1)[0] = -3.0
+    gi_d[id(tps[0])].view(-1)[1] = 4.0
+    c_pc2 = combine_main_and_capped_iit_grads(m_g, gm_d, gi_d, iit_grad_ratio_cap=0.30, use_pcgrad=True)
+    assert c_pc2["pcgrad_projected"] == 1 and abs(c_pc2["cos_main_iit"] - (-0.6)) < 1e-5, c_pc2
+    assert abs(c_pc2["norm_iit_proj"] - 4.0) < 1e-4 and abs(c_pc2["norm_iit_applied"] - 0.30) < 1e-4, c_pc2
+    assert abs(float(tps[0].grad.view(-1)[0]) - 1.0) < 1e-5 and abs(float(tps[0].grad.view(-1)[1]) - 0.30) < 1e-5
+    print("[OK] 5. Same-batch grad cosine, 0.30x cap, AND conflict-free PCGrad orthogonal projection verified")
 
     # 6. Atomic Step-K resume bundle bit-for-bit equivalence check!
     with tempfile.TemporaryDirectory() as td:
@@ -879,6 +925,7 @@ def main() -> None:
     ap.add_argument("--iit-alpha-end", type=float, default=0.70)
     ap.add_argument("--iit-source-margin-gate", type=float, default=2.0, help="Min 4-option gold margin to trigger IIT")
     ap.add_argument("--iit-grad-ratio-cap", type=float, default=0.30, help="Max ||g_iit|| / ||g_main|| BEFORE global clipping")
+    ap.add_argument("--iit-pcgrad", action="store_true", help="Orthogonally project out negative-cosine IIT gradient conflict against g_main")
     ap.add_argument("--lambda-iit-form", type=float, default=0.15)
     ap.add_argument("--lambda-iit-ver", type=float, default=0.25)
     ap.add_argument("--margin-iit", type=float, default=3.5)
@@ -1089,10 +1136,13 @@ def main() -> None:
         grad_info: dict[str, float | None] = {
             "norm_main": math.sqrt(max(0.0, norm_main_sq)),
             "norm_iit_raw": 0.0,
+            "norm_iit_proj": 0.0,
             "norm_iit_applied": 0.0,
             "iit_cap_scale": 1.0,
+            "pcgrad_projected": 0,
             "cos_main_iit": None,
             "cos_main_iit_z2": None,
+            "cos_after_pcgrad": None,
         }
 
         if iit_alpha > 0.0:
@@ -1141,7 +1191,9 @@ def main() -> None:
 
             g_iit = {id(p): p.grad.detach().clone() for p in trainable_params if p.grad is not None}
             grad_info = combine_main_and_capped_iit_grads(
-                model, g_main=g_main, g_iit=g_iit, iit_grad_ratio_cap=args.iit_grad_ratio_cap
+                model, g_main=g_main, g_iit=g_iit,
+                iit_grad_ratio_cap=args.iit_grad_ratio_cap,
+                use_pcgrad=args.iit_pcgrad,
             )
             del g_main, g_iit
 
@@ -1172,10 +1224,13 @@ def main() -> None:
             "iit_form_sign_hit": round(iit_f_sign_hit / max(1.0, iit_f_trig), 3) if iit_f_trig > 0 else None,
             "norm_main": round(float(grad_info["norm_main"] or 0.0), 4),
             "norm_iit_raw": round(float(grad_info["norm_iit_raw"] or 0.0), 4),
+            "norm_iit_proj": round(float(grad_info.get("norm_iit_proj") or 0.0), 4),
             "norm_iit_applied": round(float(grad_info["norm_iit_applied"] or 0.0), 4),
             "iit_cap_scale": round(float(grad_info["iit_cap_scale"] or 1.0), 4),
+            "pcgrad_projected": int(grad_info.get("pcgrad_projected") or 0),
             "cos_main_iit": round(float(grad_info["cos_main_iit"]), 4) if grad_info["cos_main_iit"] is not None else None,
             "cos_main_iit_z2": round(float(grad_info["cos_main_iit_z2"]), 4) if grad_info["cos_main_iit_z2"] is not None else None,
+            "cos_after_pcgrad": round(float(grad_info["cos_after_pcgrad"]), 4) if grad_info.get("cos_after_pcgrad") is not None else None,
             "eff_main_upd": round(float(grad_info["norm_main"] or 0.0) * global_clip_scale, 4),
             "eff_iit_upd": round(float(grad_info["norm_iit_applied"] or 0.0) * global_clip_scale, 4),
             "prox_z1": round(prox_val, 5),
@@ -1242,6 +1297,7 @@ def main() -> None:
         "mean_eff_main_upd": round(sum(r["eff_main_upd"] for r in iit_rows) / len(iit_rows), 4) if iit_rows else None,
         "mean_eff_iit_upd": round(sum(r["eff_iit_upd"] for r in iit_rows) / len(iit_rows), 4) if iit_rows else None,
         "frac_steps_iit_capped": round(sum(1 for r in iit_rows if r["iit_cap_scale"] < 0.9999) / len(iit_rows), 4) if iit_rows else None,
+        "frac_steps_pcgrad_projected": round(sum(r.get("pcgrad_projected", 0) for r in iit_rows) / len(iit_rows), 4) if iit_rows else None,
         "mean_cos_main_iit": round(sum(cos_vals) / len(cos_vals), 4) if cos_vals else None,
         "median_cos_main_iit": round(sorted(cos_vals)[len(cos_vals) // 2], 4) if cos_vals else None,
         "frac_cos_negative": round(sum(1 for x in cos_vals if x < 0.0) / len(cos_vals), 4) if cos_vals else None,
@@ -1308,6 +1364,7 @@ def main() -> None:
             "iit_alpha_end": args.iit_alpha_end,
             "iit_source_margin_gate": args.iit_source_margin_gate,
             "iit_grad_ratio_cap": args.iit_grad_ratio_cap,
+            "iit_pcgrad": bool(args.iit_pcgrad),
             "lambda_iit_form": args.lambda_iit_form,
             "lambda_iit_ver": args.lambda_iit_ver,
             "margin_iit": args.margin_iit,
