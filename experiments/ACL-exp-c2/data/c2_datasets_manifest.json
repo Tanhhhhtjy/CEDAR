@@ -1,0 +1,94 @@
+{
+  "schema": "cedar.acl_exp_c2.dataset_manifest.v1",
+  "sealed_test_sets_touched": false,
+  "excluded_ood_axes": [
+    "converse_error",
+    "depth_4"
+  ],
+  "counts": {
+    "c2_train_bases": 600,
+    "c2_train_examples_nothink": 6000,
+    "c2_confirm_bidir_bases": 360,
+    "c2_stealth_stress_bases": 180,
+    "stealth_late_buried": 120,
+    "classical_natural_sophisms": 60
+  },
+  "class_breakdown": {
+    "c2_train": {
+      "scope_swap": 120,
+      "threshold_violation": 120,
+      "negation_drop": 120,
+      "cross_entity_transfer": 120,
+      "missing_conjunct": 120
+    },
+    "c2_confirm_bidir": {
+      "scope_swap": 72,
+      "missing_conjunct": 72,
+      "negation_drop": 72,
+      "threshold_violation": 72,
+      "cross_entity_transfer": 72
+    },
+    "c2_stealth_stress": {
+      "late_scope_swap": 30,
+      "late_missing_conjunct": 30,
+      "late_negation_drop": 30,
+      "late_threshold_violation": 30,
+      "petitio_principii": 15,
+      "equivocation": 15,
+      "false_cause": 15,
+      "suppressed_condition": 15
+    }
+  },
+  "train_phrasing_styles": {
+    "style_a": 300,
+    "style_b": 300
+  },
+  "train_example_arms": {
+    "V": 600,
+    "F": 600,
+    "V_auth": 600,
+    "V_hes": 600,
+    "F_auth": 600,
+    "F_hes": 600,
+    "shell_only": 600,
+    "AO": 600,
+    "S": 600,
+    "P0_confirm_a0": 150,
+    "I0_confirm_a0": 150,
+    "F_src_third_party": 150,
+    "N": 150
+  },
+  "audits": {
+    "domain_pool_disjoint_from_A1_C1_PROXY": true,
+    "v2_skeleton_overlap": {
+      "V": 0,
+      "ctx": 0
+    },
+    "g0_tfidf_auc": {
+      "c2_train": {
+        "overall_auc": 0.4873,
+        "cf_byte_match": 1.0
+      },
+      "c2_confirm_bidir": {
+        "overall_auc": 0.4288,
+        "cf_byte_match": 1.0
+      },
+      "stealth_late_buried": {
+        "overall_auc": 0.5,
+        "cf_byte_match": 1.0
+      }
+    },
+    "domain_a0_to_at_acc": {
+      "c2_train": 0.3467,
+      "c2_confirm_bidir": 0.0,
+      "c2_stealth_stress": 0.0
+    },
+    "classical_sophism_v_to_f_len_ratio_mean": 0.955
+  },
+  "sha256": {
+    "c2_train_bases.jsonl": "ca65547f6c18095db92f24acbe0314f5d3da49d587d35408485d3cbbd4650f31",
+    "c2_train_examples_nothink.jsonl": "85e83a26af2d7c757deb4ca7582601e180530afd5435a147be6ccc35b3c46a98",
+    "c2_confirm_bidir_bases.jsonl": "668e432bd461a8f264e7db408256d453e85fa3065f3dcbb0ac5813afaa67818d",
+    "c2_stealth_stress_bases.jsonl": "3231b7468358e7ada2704bcebb2571e8bb02facdca58f880fb38e7ea9af5ef3a"
+  }
+}
