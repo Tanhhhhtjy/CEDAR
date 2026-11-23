@@ -1,0 +1,73 @@
+{
+  "protocol_commit": "fb5c03cb2bb20ee15ac7025489212f7f38c1537d",
+  "verified_at": "2026-11-24T05:53:59+08:00",
+  "selftests": {
+    "c35_export_peft_lora": [
+      "[OK] c35 PEFT export self-test M3-v2       : r_export=14 (vllm_max_r=16) dw_err=1.49e-08 logit_err=2.09e-07",
+      "[OK] c35 PEFT export self-test M3-v1       : r_export=12 (vllm_max_r=16) dw_err=1.49e-08 logit_err=2.38e-07",
+      "[OK] c35 PEFT export self-test Uniform-LoRA: r_export= 4 (vllm_max_r= 8) dw_err=1.49e-08 logit_err=2.12e-07"
+    ],
+    "c35_stage4_multiseed_stats": [
+      "[OK] c35_stage4_multiseed_stats self-test PASSED: pooled diff=+9.00 pp CI=[4.0, 15.0]"
+    ]
+  },
+  "train_file_sha256": "26a206808b79faa8473cb2fdb90baf01c2936ee4c2e3db15ffdcc1b743d5f466",
+  "arms": [
+    {
+      "tag": "s4_s1024_puremid",
+      "seed": 1024,
+      "physical_gpu": 0,
+      "start": "2026-11-24T05:52:07+08:00",
+      "first_optimizer_step": "[step   1/300] sft=2.981 corr=26.373 a=0.00 trig=0.00 g_m=30.52 g_iit=0.00->0.00 cos=  n/a tot=30.50"
+    },
+    {
+      "tag": "s4_s1024_u1_base",
+      "seed": 1024,
+      "physical_gpu": 1,
+      "start": "2026-11-24T05:52:07+08:00",
+      "first_optimizer_step": "[step   1/300] sft=2.981 corr=13.925 a=0.00 trig=0.00 g_m=11.63 g_iit=0.00->0.00 cos=  n/a tot=11.62"
+    },
+    {
+      "tag": "s4_s1024_puremid_randmask",
+      "seed": 1024,
+      "physical_gpu": 2,
+      "start": "2026-11-24T05:52:07+08:00",
+      "first_optimizer_step": "[step   1/300] sft=2.981 corr=26.373 a=0.00 trig=0.00 g_m=27.39 g_iit=0.00->0.00 cos=  n/a tot=27.38"
+    },
+    {
+      "tag": "s4_s1024_u2_corridor",
+      "seed": 1024,
+      "physical_gpu": 3,
+      "start": "2026-11-24T05:52:07+08:00",
+      "first_optimizer_step": "[step   1/300] sft=2.981 corr=26.373 a=0.00 trig=0.00 g_m=31.73 g_iit=0.00->0.00 cos=  n/a tot=31.75"
+    },
+    {
+      "tag": "s4_s42_v4_mlpplus",
+      "seed": 42,
+      "physical_gpu": 4,
+      "start": "2026-11-24T05:52:07+08:00",
+      "first_optimizer_step": "[step   1/300] sft=2.575 corr=23.271 a=0.00 trig=0.00 g_m=28.20 g_iit=0.00->0.00 cos=  n/a tot=28.12"
+    },
+    {
+      "tag": "s4_s1024_v4_mlpplus",
+      "seed": 1024,
+      "physical_gpu": 5,
+      "start": "2026-11-24T05:52:07+08:00",
+      "first_optimizer_step": "[step   1/300] sft=2.981 corr=26.373 a=0.00 trig=0.00 g_m=29.97 g_iit=0.00->0.00 cos=  n/a tot=30.00"
+    },
+    {
+      "tag": "s4_s1024_v4_bridge2",
+      "seed": 1024,
+      "physical_gpu": 6,
+      "start": "2026-11-24T05:52:07+08:00",
+      "first_optimizer_step": "[step   1/300] sft=2.981 corr=26.373 a=0.00 trig=0.00 g_m=30.30 g_iit=0.00->0.00 cos=  n/a tot=30.25"
+    },
+    {
+      "tag": "s4_s42_v4_bridge2",
+      "seed": 42,
+      "physical_gpu": 7,
+      "start": "2026-11-24T05:52:07+08:00",
+      "first_optimizer_step": "[step   1/300] sft=2.575 corr=23.271 a=0.00 trig=0.00 g_m=28.58 g_iit=0.00->0.00 cos=  n/a tot=28.62"
+    }
+  ]
+}
