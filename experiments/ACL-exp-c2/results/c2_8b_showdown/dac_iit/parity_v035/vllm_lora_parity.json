@@ -1,0 +1,85 @@
+{
+  "schema": "cedar.acl_exp_c1.vllm_lora_parity.v2",
+  "base_model": "/mnt/kcl/devuser/ckpts/Qwen3-8B",
+  "model_key": "qwen3_8b",
+  "arm": "Targeted-Dual",
+  "adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c2/showdown-c62cf156/c2_ckpts/42/dac_iit/adapter_state.pt",
+  "adapter_state_sha256": "7fb112d0c8acb830d3e5102b4375ece635737387a66bffdb2e4d43b182599724",
+  "peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c2/showdown-c62cf156/c2_peft/dac_iit",
+  "peft_adapter_model_sha256": "b28623701fe8cfc98c0e55ac03eee0ece07976a53775fbf4bff2e80c915b14f2",
+  "r_export": 112,
+  "vllm_max_lora_rank": 128,
+  "dataset": "c1_dev",
+  "arms": [
+    "V",
+    "F"
+  ],
+  "n_bases": 40,
+  "m0_hf_vs_vllm": {
+    "n_positions": 80,
+    "n_vf_pairs": 40,
+    "u_coverage_rate": 1.0,
+    "n_u_compared": 80,
+    "n_u_missing": 0,
+    "n_positions_missing_any_option": 0,
+    "option_match_count": 80,
+    "option_match_rate": 1.0,
+    "double_correct_hf": 0,
+    "double_correct_vllm": 0,
+    "double_correct_delta": 0,
+    "du_signed_mean": -0.05,
+    "du_signed_median": 0.0,
+    "du_abs_mean": 0.25625,
+    "du_abs_max": 1.25,
+    "du_positive_frac": 0.2875,
+    "n_near_boundary_lt1": 0,
+    "n_near_boundary_flips": 0,
+    "thresholds": {
+      "max_abs_mean_du": 0.25,
+      "max_abs_du_mean": 0.35,
+      "min_option_match": 0.95,
+      "required_u_coverage": 1.0
+    },
+    "flips": [],
+    "passed": true
+  },
+  "lora_hf_live_vs_vllm_native": {
+    "n_positions": 80,
+    "n_vf_pairs": 40,
+    "u_coverage_rate": 1.0,
+    "n_u_compared": 80,
+    "n_u_missing": 0,
+    "n_positions_missing_any_option": 0,
+    "option_match_count": 79,
+    "option_match_rate": 0.9875,
+    "double_correct_hf": 24,
+    "double_correct_vllm": 23,
+    "double_correct_delta": -1,
+    "du_signed_mean": 0.00583,
+    "du_signed_median": 0.0,
+    "du_abs_mean": 0.38108,
+    "du_abs_max": 1.5,
+    "du_positive_frac": 0.475,
+    "n_near_boundary_lt1": 2,
+    "n_near_boundary_flips": 1,
+    "thresholds": {
+      "max_abs_mean_du": 0.25,
+      "max_abs_du_mean": 0.35,
+      "min_option_match": 0.95,
+      "required_u_coverage": 1.0
+    },
+    "flips": [
+      {
+        "base_id": "C1-DEV-034",
+        "arm": "V",
+        "hf_pred": "B",
+        "vllm_pred": "C",
+        "u_hf": 0.0,
+        "u_vllm": -0.5
+      }
+    ],
+    "passed": false
+  },
+  "passed": false,
+  "elapsed_seconds": 144.5
+}
