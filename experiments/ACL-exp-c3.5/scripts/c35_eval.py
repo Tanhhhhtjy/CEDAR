@@ -18,13 +18,16 @@ C35 = HERE.parents[0]
 REPO = C35.parents[1]
 C3 = REPO / "experiments" / "ACL-exp-c3"
 
+sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(C3 / "scripts"))
 sys.path.insert(0, str(REPO / "experiments" / "ACL-exp-c1" / "scripts"))
 sys.path.insert(0, str(REPO / "experiments" / "ACL-exp-a1" / "scripts"))
 sys.path.insert(0, str(REPO / "experiments" / "ACL-exp-b1" / "scripts"))
 
 import c3_eval as C3EV  # noqa: E402
+import c35_modules as M35  # noqa: E402
 
+C3EV.M3 = M35
 C3EV.C3_DATASETS["c3_blind_confirm_v2"] = C35 / "data" / "c3_blind_confirm_v2_bases.jsonl"
 C3EV.C3_DATASETS["c3_blind_think_v2"] = C35 / "data" / "c3_blind_think_v2_bases.jsonl"
 
@@ -67,6 +70,8 @@ def main() -> None:
     if "--selftest-tiny" in sys.argv[1:]:
         run_selftest_tiny()
         return
+    if "--components-file" not in sys.argv:
+        sys.argv.extend(["--components-file", str(C35 / "data" / "c35_components_frozen.json")])
     C3EV.main()
 
 

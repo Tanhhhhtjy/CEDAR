@@ -275,6 +275,40 @@ def _render_md(doc: dict[str, Any]) -> str:
                 f"| `{cname}` | **{c4['diff_pp']:+.2f}** `{c4['ci95_pp']}` (p={c4['p_two_sided']:.4f}) "
                 f"| **{cj['diff_pp']:+.2f}** `{cj['ci95_pp']}` (p={cj['p_two_sided']:.4f}) |"
             )
+    if doc.get("verdicts"):
+        lines += [
+            "",
+            "## 3. Strict Dual-Path Verdicts",
+            "",
+            "| Candidate | vs Strongest Uniform | 4-Cell Diff (CI_low) | Joint CI_low | Beats Rnd / No-IIT | KL Red% | Health | **Verdict** |",
+            "|---|---|---:|---:|---|---:|---|---|",
+        ]
+        for cand, v in doc["verdicts"].items():
+            kl_s = f"{v['kl_reduction_vs_u_best_pct']:+.1f}%" if v.get("kl_reduction_vs_u_best_pct") is not None else "—"
+            bi = f"{v['beats_rnd_iit_pp']} / {v['beats_no_iit_pp']}"
+            lines.append(
+                f"| `{cand}` | `{v['vs_strongest_uniform']}` | {v['diff_pp']:+.2f} ({v['ci95_low_pp']:+.2f}) "
+                f"| {v['joint_ci95_low_pp']:+.2f} | {bi} | {kl_s} | {v['health_passed']} | **{v['verdict']}** |"
+            )
+    # Paired position sensitivity diagnostic table
+    pos_rows = []
+    for arm in doc["arms_present"]:
+        pd = doc["per_arm"][arm]["all"].get("paired_position_diag")
+        if pd:
+            pos_rows.append((arm, pd))
+    if pos_rows:
+        lines += [
+            "",
+            "## 4. Paired Default-Rule Position Sensitivity (`60` Matched Semantic Graphs)",
+            "",
+            "| Arm | `before_rules` 4-Cell | `after_rules` 4-Cell | `before_rules` Turn-1 | `after_rules` Turn-1 |",
+            "|---|---:|---:|---:|---:|",
+        ]
+        for arm, pd in pos_rows:
+            lines.append(
+                f"| `{arm}` | {pd['before_rules_4cell']*100:.1f}% | {pd['after_rules_4cell']*100:.1f}% "
+                f"| {pd['before_rules_t1']*100:.1f}% | {pd['after_rules_t1']*100:.1f}% |"
+            )
     return "\n".join(lines) + "\n"
 
 
@@ -391,14 +425,18 @@ def main() -> None:
         ("m2_vs_u2", "m2_corridor", "u2_corridor"),
         ("A_vs_m2", "armA_m3v1_relax", "m2_corridor"),
         ("B_vs_A", "armB_m3v2_corridor", "armA_m3v1_relax"),
+        ("B_vs_u2", "armB_m3v2_corridor", "u2_corridor"),
         ("C_vs_B", "armC_m3v2_soft_b1_iit", "armB_m3v2_corridor"),
         ("C_vs_D", "armC_m3v2_soft_b1_iit", "armD_m3v2_soft_rnd_iit"),
         ("C_vs_E", "armC_m3v2_soft_b1_iit", "armE_unif_soft_b1_iit"),
+        ("C_vs_u2", "armC_m3v2_soft_b1_iit", "u2_corridor"),
         ("E_vs_u2", "armE_unif_soft_b1_iit", "u2_corridor"),
     ]
     if strongest_u:
-        pairs.append((f"B_vs_{strongest_u}", "armB_m3v2_corridor", strongest_u))
-        pairs.append((f"C_vs_{strongest_u}", "armC_m3v2_soft_b1_iit", strongest_u))
+        if f"B_vs_{strongest_u}" not in {p[0] for p in pairs}:
+            pairs.append((f"B_vs_{strongest_u}", "armB_m3v2_corridor", strongest_u))
+        if f"C_vs_{strongest_u}" not in {p[0] for p in pairs}:
+            pairs.append((f"C_vs_{strongest_u}", "armC_m3v2_soft_b1_iit", strongest_u))
 
     pairwise = {}
     for pname, a, b in pairs:

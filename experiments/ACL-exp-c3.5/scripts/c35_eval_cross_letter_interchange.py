@@ -51,6 +51,7 @@ REPO = C35.parents[1]
 C1 = REPO / "experiments" / "ACL-exp-c1"
 C3 = REPO / "experiments" / "ACL-exp-c3"
 
+sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(C3 / "scripts"))
 sys.path.insert(0, str(C1 / "scripts"))
 sys.path.insert(0, str(REPO / "experiments" / "ACL-exp-a1" / "scripts"))
@@ -60,7 +61,7 @@ import b1_lib as B1L  # noqa: E402
 import c1_eval as C1EV  # noqa: E402
 import c3_eval as C3EV  # noqa: E402
 import c3_eval_interchange as IC3  # noqa: E402
-import c3_modules as M3  # noqa: E402
+import c35_modules as M3  # noqa: E402
 from render_prompts import build_messages, load_config  # noqa: E402
 
 OPTION_LETTERS = ("A", "B", "C", "D")
@@ -372,7 +373,7 @@ def main() -> None:
     ap.add_argument("--alias", default="model")
     ap.add_argument("--arch", default=None, help="Omit for M0 base model")
     ap.add_argument("--adapter-state", type=Path, default=None)
-    ap.add_argument("--components-file", type=Path, default=C3 / "data" / "c3_components_frozen.json")
+    ap.add_argument("--components-file", type=Path, default=C35 / "data" / "c35_components_frozen.json")
     ap.add_argument("--dataset-file", type=Path, default=C35 / "data" / "c3_blind_confirm_v2_bases.jsonl")
     ap.add_argument("--n-cf", type=int, default=30)
     ap.add_argument("--n-af", type=int, default=30)
