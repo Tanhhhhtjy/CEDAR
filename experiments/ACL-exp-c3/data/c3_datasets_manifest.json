@@ -1,0 +1,146 @@
+{
+  "schema": "cedar.acl_exp_c3.datasets_manifest.v1",
+  "sealed_test_touched": false,
+  "excluded_classes": [
+    "converse_error",
+    "depth_4"
+  ],
+  "only_if_bug_occurrences": 0,
+  "train_domains": [
+    "bridge_span",
+    "greenhouse_bay",
+    "foundry_kiln",
+    "archive_annex",
+    "wind_turbine",
+    "ferry_dispatch"
+  ],
+  "dev_domains": [
+    "airspace_corridor",
+    "cleanroom_fab",
+    "freight_customs",
+    "orbital_relay",
+    "coldchain_depot",
+    "mining_hoist"
+  ],
+  "blind_confirm_domains": [
+    "observatory_dome",
+    "substation_grid",
+    "canal_lock",
+    "cellar_vault",
+    "seismic_array",
+    "telemetry_buoy"
+  ],
+  "broken_step_counts_non_ce": {
+    "c3_train": {
+      "2": 160,
+      "1": 160,
+      "3": 160
+    },
+    "c3_dev": {
+      "1": 40,
+      "2": 40,
+      "3": 40
+    },
+    "c3_blind_confirm": {
+      "1": 280,
+      "2": 280,
+      "3": 280
+    }
+  },
+  "blind_confirm_families": 960,
+  "factor_independence_chi2": {
+    "c3_train_non_ce": {
+      "domain_x_pos": {
+        "chi2": 7.0944,
+        "df": 5,
+        "p": 0.2137
+      },
+      "domain_x_style": {
+        "chi2": 1.6716,
+        "df": 5,
+        "p": 0.8925
+      },
+      "pos_x_style": {
+        "chi2": 1.2,
+        "df": 1,
+        "p": 0.2733
+      }
+    },
+    "c3_dev_non_ce": {
+      "domain_x_pos": {
+        "chi2": 6.4,
+        "df": 5,
+        "p": 0.2692
+      },
+      "domain_x_style": {
+        "chi2": 8.0,
+        "df": 5,
+        "p": 0.1562
+      },
+      "pos_x_style": {
+        "chi2": 0.0,
+        "df": 1,
+        "p": 1.0
+      }
+    },
+    "c3_blind_non_ce": {
+      "domain_x_pos": {
+        "chi2": 2.6286,
+        "df": 5,
+        "p": 0.757
+      }
+    }
+  },
+  "skeleton_overlap": {
+    "c3_train_vs_c3_blind_V": 0,
+    "c3_train_vs_c3_blind_ctx": 0,
+    "c3_train_vs_proxy_v2_V": 0,
+    "c3_train_vs_proxy_v2_ctx": 0
+  },
+  "g0_tfidf_auc": {
+    "c3_train": {
+      "overall_auc": 0.4853,
+      "cf_byte_match": 1.0
+    },
+    "c3_dev": {
+      "overall_auc": 0.4637,
+      "cf_byte_match": 1.0
+    },
+    "c3_blind_confirm": {
+      "overall_auc": 0.51,
+      "cf_byte_match": 1.0
+    }
+  },
+  "domain_a0_to_at_acc": {
+    "c3_train": 0.3783,
+    "c3_dev": 0.0,
+    "c3_blind_confirm": 0.0
+  },
+  "files": {
+    "c3_train_bases.jsonl": {
+      "count": 600,
+      "bytes": 9549322,
+      "sha256": "911ba90f447a2a1e5940026d560d192153db17824e415c47042d635fb922a657"
+    },
+    "c3_train_examples_nothink.jsonl": {
+      "count": 6000,
+      "bytes": 16908588,
+      "sha256": "26a206808b79faa8473cb2fdb90baf01c2936ee4c2e3db15ffdcc1b743d5f466"
+    },
+    "c3_dev_bases.jsonl": {
+      "count": 180,
+      "bytes": 2950600,
+      "sha256": "66850b1810f72640a07953827eb7aeee61448f9296e2d4d21ac43e5638114c26"
+    },
+    "c3_blind_confirm_bases.jsonl": {
+      "count": 1080,
+      "bytes": 20043878,
+      "sha256": "9e419022343b2b26cb9e8b969bad6e0ad7121a9d6ea5cfc193a7c7dde5f981ba"
+    },
+    "c3_blind_think_bases.jsonl": {
+      "count": 240,
+      "bytes": 4356688,
+      "sha256": "9aced7b00b5d34f51743fd31525ac55c300319229b1b938e2ad6663ad6bfefaa"
+    }
+  }
+}
