@@ -68,6 +68,19 @@ M3V2_SPECS: dict[str, dict[str, Any]] = {
         "v3_z2_tier2_rank": 10,
         "v3_z2_tier3_rank": 6,
         "v3_z3_form_head_rank": 2,
+        # Stage 4 M3-v4 specs (100% pure Zone-2 High-MLP & 2-layer L12-13 Bridge, ZERO Zone-3!)
+        "v4_mlpplus_z2_top_mlp_rank": 12,
+        "v4_mlpplus_z2_rest_mlp_rank": 8,
+        "v4_mlpplus_t1_r": 14,
+        "v4_mlpplus_t2_r": 8,
+        "v4_mlpplus_t3_r": 4,
+        "v4_bridge2_z1_layers": [12, 13],  # ONLY 2 late layers MLP-only @ r=4!
+        "v4_bridge2_z1_mlp_rank": 4,
+        "v4_bridge2_z2_top_mlp_rank": 10,
+        "v4_bridge2_z2_rest_mlp_rank": 6,
+        "v4_bridge2_t1_r": 16,
+        "v4_bridge2_t2_r": 10,
+        "v4_bridge2_t3_r": 6,
     },
     "qwen3_14b": {
         "late_z1_layers": [9, 15],  # Upper 7 layers of Zone 1; L0-8 completely frozen!
@@ -94,6 +107,19 @@ M3V2_SPECS: dict[str, dict[str, Any]] = {
         "v3_z2_tier2_rank": 12,
         "v3_z2_tier3_rank": 7,
         "v3_z3_form_head_rank": 2,
+        # Stage 4 M3-v4 specs (14B mirror)
+        "v4_mlpplus_z2_top_mlp_rank": 12,
+        "v4_mlpplus_z2_rest_mlp_rank": 8,
+        "v4_mlpplus_t1_r": 16,
+        "v4_mlpplus_t2_r": 10,
+        "v4_mlpplus_t3_r": 5,
+        "v4_bridge2_z1_layers": [14, 15],  # ONLY 2 late layers MLP-only @ r=4!
+        "v4_bridge2_z1_mlp_rank": 4,
+        "v4_bridge2_z2_top_mlp_rank": 10,
+        "v4_bridge2_z2_rest_mlp_rank": 6,
+        "v4_bridge2_t1_r": 20,
+        "v4_bridge2_t2_r": 12,
+        "v4_bridge2_t3_r": 6,
     },
 }
 
@@ -289,6 +315,38 @@ def build_c35_model_entry(alias: str, c3_entry: dict[str, Any], v2_cfg: dict[str
     tb_z3_p = pm_z3_p
     assert tb_z1_p + tb_z2_p + tb_z3_p == tb_params
 
+    # 5. Stage 4 `M3-v4-PureMid-MLP+` (100% Zone 2, ZERO Z1, ZERO Z3, boosted Zone-2 MLPs!) & `M3-v4-Bridge2` (2-layer L12-13 MLP + full PureMid Z2 MLPs, ZERO Z3!)
+    def _build_z2_only_heads(tr1: int, tr2: int, tr3: int) -> dict[str, int]:
+        hr: dict[str, int] = {}
+        for idx, k in enumerate(z2_non_conf):
+            hr[k] = tr1 if idx < vt1_n else (tr2 if idx < (vt1_n + vt2_n) else tr3)
+        for k in sorted(k for k in z2_keys if k in conflicting_set):
+            hr[k] = tr3
+        hr = dict(sorted(hr.items(), key=lambda kv: tuple(int(x) for x in kv[0].split(":"))))
+        EXP3C._enforce_layer_rank_cap(hr, max_cap=128)
+        return hr
+
+    v4_mp_heads = _build_z2_only_heads(int(v2_cfg["v4_mlpplus_t1_r"]), int(v2_cfg["v4_mlpplus_t2_r"]), int(v2_cfg["v4_mlpplus_t3_r"]))
+    v4_mp_mlps = {
+        str(li): int(v2_cfg["v4_mlpplus_z2_top_mlp_rank"] if li in ncf_top5 else v2_cfg["v4_mlpplus_z2_rest_mlp_rank"])
+        for li in range(z2_lo, z2_hi + 1)
+    }
+    v4_mp_params = _count_mlp_dict_params(v4_mp_mlps, d, d_ff) + EXP3C._count_head_dict_params(v4_mp_heads, d, hd)
+    v4_mp_max_r, v4_mp_layer_qo = _max_packed_rank_v2(v4_mp_heads, [], 0, v4_mp_mlps)
+    assert v4_mp_max_r <= 128 and abs(v4_mp_params / unif["trainable_params"] - 1.0) * 100.0 <= 2.5, (alias, v4_mp_params, v4_mp_max_r)
+
+    b2_lo, b2_hi = v2_cfg["v4_bridge2_z1_layers"]
+    b2_z1_layers = list(range(b2_lo, b2_hi + 1))
+    v4_b2_heads = _build_z2_only_heads(int(v2_cfg["v4_bridge2_t1_r"]), int(v2_cfg["v4_bridge2_t2_r"]), int(v2_cfg["v4_bridge2_t3_r"]))
+    v4_b2_mlps: dict[str, int] = {str(li): int(v2_cfg["v4_bridge2_z1_mlp_rank"]) for li in b2_z1_layers}
+    for li in range(z2_lo, z2_hi + 1):
+        v4_b2_mlps[str(li)] = int(v2_cfg["v4_bridge2_z2_top_mlp_rank"] if li in ncf_top5 else v2_cfg["v4_bridge2_z2_rest_mlp_rank"])
+    v4_b2_params = _count_mlp_dict_params(v4_b2_mlps, d, d_ff) + EXP3C._count_head_dict_params(v4_b2_heads, d, hd)
+    v4_b2_max_r, v4_b2_layer_qo = _max_packed_rank_v2(v4_b2_heads, [], 0, v4_b2_mlps)
+    assert v4_b2_max_r <= 128 and abs(v4_b2_params / unif["trainable_params"] - 1.0) * 100.0 <= 2.5, (alias, v4_b2_params, v4_b2_max_r)
+    b2_z1_p = sum(2 * int(v4_b2_mlps[str(li)]) * (d + d_ff) for li in b2_z1_layers)
+    b2_z2_p = v4_b2_params - b2_z1_p
+
     architectures = {
         "Uniform-LoRA": unif,
         "M3-v1": m3v1,
@@ -391,6 +449,53 @@ def build_c35_model_entry(alias: str, c3_entry: dict[str, Any], v2_cfg: dict[str
             "zone_trainable_params": {"zone1": tb_z1_p, "zone2": tb_z2_p, "zone3": tb_z3_p},
             "trainable_params": tb_params,
         },
+        "M3-v4-PureMid-MLP+": {
+            "kind": "m3_dac",
+            "description": (
+                f"Stage 4 100% Pure Zone-2 High-MLP: ZERO Zone-1 L{z1_lo}-{z1_hi}, ZERO Zone-3 L{z3_lo}-{z3_hi}; "
+                f"ALL Zone-2 MLPs L{z2_lo}-{z2_hi} boosted (top-5 B1 N_CF @ r={v2_cfg['v4_mlpplus_z2_top_mlp_rank']}, "
+                f"rest @ r={v2_cfg['v4_mlpplus_z2_rest_mlp_rank']}) + {len(v4_mp_heads)} B1 Z2 heads 3-tier "
+                f"{v2_cfg['v4_mlpplus_t1_r']}/{v2_cfg['v4_mlpplus_t2_r']}/{v2_cfg['v4_mlpplus_t3_r']}"
+            ),
+            "zones": zones,
+            "frozen_early_layers": list(range(z1_lo, z1_hi + 1)),
+            "zone1_dense_qo_layers": [],
+            "zone1_dense_qo_rank": 0,
+            "mlp_layers": sorted(int(k) for k in v4_mp_mlps),
+            "mlp_ranks": v4_mp_mlps,
+            "mlp_ncf_layers": sorted(ncf_top5),
+            "mlp_dialog_z3_layers": [],
+            "head_ranks": v4_mp_heads,
+            "conflicting_heads": m3v1["conflicting_heads"],
+            "max_packed_layer_rank": v4_mp_max_r,
+            "per_layer_packed_qo_rank": {str(k): v for k, v in v4_mp_layer_qo.items()},
+            "zone_trainable_params": {"zone1": 0, "zone2": v4_mp_params, "zone3": 0},
+            "trainable_params": v4_mp_params,
+        },
+        "M3-v4-Bridge2": {
+            "kind": "m3_dac",
+            "description": (
+                f"Stage 4 2-Layer Late-Z1 MLP Bridge + Full PureMid Zone-2 MLPs (ZERO Z1 Q/O, ZERO Zone-3): "
+                f"L{z1_lo}-{b2_lo-1} FROZEN; L{b2_lo}-{b2_hi} MLP-only @ r={v2_cfg['v4_bridge2_z1_mlp_rank']}; "
+                f"ALL Zone-2 MLPs L{z2_lo}-{z2_hi} (top-5 B1 N_CF @ r={v2_cfg['v4_bridge2_z2_top_mlp_rank']}, "
+                f"rest @ r={v2_cfg['v4_bridge2_z2_rest_mlp_rank']}) + {len(v4_b2_heads)} B1 Z2 heads 3-tier "
+                f"{v2_cfg['v4_bridge2_t1_r']}/{v2_cfg['v4_bridge2_t2_r']}/{v2_cfg['v4_bridge2_t3_r']}"
+            ),
+            "zones": zones,
+            "frozen_early_layers": list(range(z1_lo, b2_lo)),
+            "zone1_dense_qo_layers": [],
+            "zone1_dense_qo_rank": 0,
+            "mlp_layers": sorted(int(k) for k in v4_b2_mlps),
+            "mlp_ranks": v4_b2_mlps,
+            "mlp_ncf_layers": sorted(ncf_top5),
+            "mlp_dialog_z3_layers": [],
+            "head_ranks": v4_b2_heads,
+            "conflicting_heads": m3v1["conflicting_heads"],
+            "max_packed_layer_rank": v4_b2_max_r,
+            "per_layer_packed_qo_rank": {str(k): v for k, v in v4_b2_layer_qo.items()},
+            "zone_trainable_params": {"zone1": b2_z1_p, "zone2": b2_z2_p, "zone3": 0},
+            "trainable_params": v4_b2_params,
+        },
     }
 
     return {
@@ -421,7 +526,7 @@ def main() -> None:
     for alias, m in models_out.items():
         anc = m["uniform_anchor_params"]
         print(f"\n=== {alias} (Uniform r=4 anchor = {anc:,} params) ===")
-        for aname in ("Uniform-LoRA", "M3-v1", "M3-v2", "M3-v3-PureMid", "M3-v3-PureMid-Random-Mask", "M3-v3-TightBridge"):
+        for aname in ("Uniform-LoRA", "M3-v1", "M3-v2", "M3-v3-PureMid", "M3-v3-PureMid-Random-Mask", "M3-v3-TightBridge", "M3-v4-PureMid-MLP+", "M3-v4-Bridge2"):
             a = m["architectures"][aname]
             p = a["trainable_params"]
             rel = (p / anc - 1.0) * 100.0
