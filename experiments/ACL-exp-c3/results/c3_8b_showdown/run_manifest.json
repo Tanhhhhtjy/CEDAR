@@ -1,0 +1,40 @@
+{
+  "protocol_commit": "8438e5e2a39c770491d2d9814da9a55b5df5a084",
+  "model": "/mnt/kcl/devuser/ckpts/Qwen3-8B",
+  "seed": 42,
+  "trainable_arms": 8,
+  "training_steps": 300,
+  "save_steps": [
+    50,
+    100,
+    200,
+    300
+  ],
+  "dev_selection_dataset": "c3_dev",
+  "gpu_allocator": "run_on_idle.py",
+  "think_backend": "vllm",
+  "hold_after_single_seed": true,
+  "data_sha256": {
+    "c3_train_bases.jsonl": "911ba90f447a2a1e5940026d560d192153db17824e415c47042d635fb922a657",
+    "c3_train_examples_nothink.jsonl": "26a206808b79faa8473cb2fdb90baf01c2936ee4c2e3db15ffdcc1b743d5f466",
+    "c3_dev_bases.jsonl": "66850b1810f72640a07953827eb7aeee61448f9296e2d4d21ac43e5638114c26",
+    "c3_blind_confirm_bases.jsonl": "9e419022343b2b26cb9e8b969bad6e0ad7121a9d6ea5cfc193a7c7dde5f981ba",
+    "c3_blind_think_bases.jsonl": "9aced7b00b5d34f51743fd31525ac55c300319229b1b938e2ad6663ad6bfefaa"
+  },
+  "components_sha256": "e1121314d1ad193de49eb535cf521b77b274c4f85401cd31d5a3cf04cabc90e9",
+  "c2_uniform_probe_adapter_sha256": "8f2d80702f880b556f3be84a98780ab3159b2d3ebe7ad5d291cec91920a1356d",
+  "wikitext_kl_sha256": "97a3ed61a17e4023eabe9566fbe56768d0708aea97b662abac52dbb830315e05",
+  "ifeval_sha256": "6a85310ca8ce15eff755aa08a3a4ff931c7e273e7515ebb3c492ea85fd8288f2",
+  "gsm8k_sha256": "752adc99f23132275139f1f7be57126b08735a55daf0c56859ee6df70abafbac",
+  "cpu_selftests_passed": [
+    "c3_modules",
+    "c3_eval",
+    "c3_probe_unif_zones",
+    "c3_train",
+    "c3_select_dev_ckpt",
+    "c3_export_peft_lora",
+    "c3_check_vllm_lora_parity",
+    "c3_eval_interchange",
+    "c3_stats"
+  ]
+}
