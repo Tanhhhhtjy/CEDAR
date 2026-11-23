@@ -1,0 +1,9 @@
+{
+  "start": "2026-11-23T12:53:57+08:00",
+  "end": "2026-11-23T12:58:14+08:00",
+  "physical_gpu": "5",
+  "files": [
+    "c2_8b_showdown/unif_paired/vllm_lora_parity.json"
+  ],
+  "traceback": "Traceback (most recent call last):\n  File \"/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c2/showdown-c62cf156/job.py\", line 10, in <module>\n    files=dispatch(name)\n  File \"/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c2/showdown-c62cf156/stages.py\", line 133, in dispatch\n    if op=='parity': return parity(tag)\n  File \"/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c2/showdown-c62cf156/stages.py\", line 51, in parity\n    run('c1_check_vllm_lora_parity',*flags,'--dataset','c1_dev','--limit',40,'--peft-lora-dir',peft,'--out-json',out)\n  File \"/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c2/showdown-c62cf156/runtime.py\", line 43, in run\n    subprocess.run(cmd,cwd=SRC,check=True)\n  File \"/usr/lib/python3.10/subprocess.py\", line 526, in run\n    raise CalledProcessError(retcode, process.args,\nsubprocess.CalledProcessError: Command '['/mnt/vllm310/bin/python', '-u', '/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c2/showdown-c62cf156/source/experiments/ACL-exp-c1/scripts/c1_check_vllm_lora_parity.py', '--base-model', '/mnt/kcl/devuser/ckpts/Qwen3-8B', '--model-key', 'qwen3_8b', '--arm', 'Uniform-LoRA', '--components-file', '/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c2/showdown-c62cf156/source/experiments/ACL-exp-c1/data/c1_components_frozen.json', '--adapter-state', '/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c2/showdown-c62cf156/c2_ckpts/42/unif_paired/adapter_state.pt', '--dataset', 'c1_dev', '--limit', '40', '--peft-lora-dir', '/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c2/showdown-c62cf156/c2_peft/unif_paired', '--out-json', '/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c2/showdown-c62cf156/payload/c2_8b_showdown/unif_paired/vllm_lora_parity.json']' returned non-zero exit status 2.\n"
+}
