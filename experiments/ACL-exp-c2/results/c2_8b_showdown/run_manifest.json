@@ -1,0 +1,65 @@
+{
+  "protocol_commit": "c62cf15698bc9326b4986e6e08ce8a0fc698b0de",
+  "base_model": "/mnt/kcl/devuser/ckpts/Qwen3-8B",
+  "data_sha256": {
+    "c2_train_bases.jsonl": "ca65547f6c18095db92f24acbe0314f5d3da49d587d35408485d3cbbd4650f31",
+    "c2_train_examples_nothink.jsonl": "85e83a26af2d7c757deb4ca7582601e180530afd5435a147be6ccc35b3c46a98",
+    "c2_confirm_bidir_bases.jsonl": "668e432bd461a8f264e7db408256d453e85fa3065f3dcbb0ac5813afaa67818d",
+    "c2_stealth_stress_bases.jsonl": "3231b7468358e7ada2704bcebb2571e8bb02facdca58f880fb38e7ea9af5ef3a",
+    "c1_kl_wikitext2_200.jsonl": "97a3ed61a17e4023eabe9566fbe56768d0708aea97b662abac52dbb830315e05",
+    "c1_components_frozen.json": "2c1d02ebe4f298b51760e1e9a8c30a445e05869981e9e76cde5059921731d21a",
+    "ifeval.jsonl": "6a85310ca8ce15eff755aa08a3a4ff931c7e273e7515ebb3c492ea85fd8288f2",
+    "gsm8k.jsonl": "752adc99f23132275139f1f7be57126b08735a55daf0c56859ee6df70abafbac",
+    "c1_proxy_template_v2_bases.jsonl": "e7aa95ef83f5ccc27befac92c485e9289c8026242344a25aa89b4185a94ae3f6",
+    "c1_dev_bases.jsonl": "b51ee0404056ab5cdb61151ebeaa8522407a71696c3db3d96c46ab580e64d401"
+  },
+  "cpu_tests": {
+    "cpu-eval": "[OK] ALL c2_eval self-tests PASSED!",
+    "cpu-stats": "[OK] ALL c2_stats self-tests PASSED (positive 2x2 interaction, parity fail guard, null STOP)!",
+    "cpu-train": "[OK] ALL c2_train_iit self-tests PASSED!"
+  },
+  "thinking_backend": "vllm",
+  "gpu_selection": "run_on_idle.py --numeric-cuda-ids --count 1 per job",
+  "datasets": {
+    "c2_confirm_bidir": 360,
+    "c2_stealth_stress": 180,
+    "c1_proxy_template_v2": 120,
+    "c1_dev": 80
+  },
+  "arms": {
+    "dac_iit": [
+      "Targeted-Dual",
+      "dac_iit"
+    ],
+    "dac_paired": [
+      "Targeted-Dual",
+      "paired2x2"
+    ],
+    "dac_base": [
+      "Targeted-Dual",
+      "base"
+    ],
+    "rnd1_iit": [
+      "Random-LM",
+      "dac_iit"
+    ],
+    "rnd2_iit": [
+      "Random-LM-seed2",
+      "dac_iit"
+    ],
+    "rnd1_base": [
+      "Random-LM",
+      "base"
+    ],
+    "unif_paired": [
+      "Uniform-LoRA",
+      "paired2x2"
+    ],
+    "unif_base": [
+      "Uniform-LoRA",
+      "base"
+    ]
+  },
+  "seed": 42,
+  "cpu_test_python": "/mnt/vllm310/bin/python"
+}
