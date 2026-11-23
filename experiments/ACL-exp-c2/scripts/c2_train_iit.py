@@ -41,7 +41,7 @@ import sys
 import tempfile
 import time
 from collections import defaultdict
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from pathlib import Path
 from typing import Any
 
@@ -326,13 +326,10 @@ def differentiable_interchange_forward(
     head_dim: int,
     k_max: int = 8,
 ):
-    """Context manager yielding scalar `u_patched` while keeping `patch_hooks` alive through `.backward()`!
+    """Yield the patched target readout with gradients through the clean source forward.
 
-    CRITICAL PYTORCH GC INVARIANT (unit-tested to < 1e-6 vs non-GC!):
-    When `gradient_checkpointing_enable(use_reentrant=False)` is active, `.backward()` recomputes each
-    checkpointed layer's forward pass. Removing `patch_hooks` before `.backward()` silently drops the
-    interchange during recomputation and cuts gradients into `src`! Keeping `patch_hooks` registered
-    until AFTER `.backward()` finishes guarantees bit-exact GC equivalence!
+    Each target layer installs its patch for that layer's execution, including
+    its checkpoint replay. Source replay uses the original unpatched callable.
     """
     dev = C1T._input_device(model)
     p_s = int(src_ex["answer_readout_pos"])
@@ -381,44 +378,52 @@ def differentiable_interchange_forward(
         for hk in rec_hooks:
             hk.remove()
 
-    # Step 2: Differentiable target forward; keep patch_hooks alive until caller exits context (AFTER .backward()!)
-    patch_hooks = []
-    try:
-        for l, hs in heads_by_layer.items():
-            o_mod = model.model.layers[l].self_attn.o_proj
+    @contextmanager
+    def patch_target_layer(layer_i):
+        layer = model.model.layers[layer_i]
+        heads = heads_by_layer.get(layer_i, ())
+        with ExitStack() as hooks:
+            if heads:
+                def patch_heads_input(_module, inputs):
+                    patched = inputs[0].clone()
+                    for h in heads:
+                        head_slice = slice(h * head_dim, (h + 1) * head_dim)
+                        patched[:, sl_t, head_slice] = cached_head_slices[layer_i, h].to(patched)
+                    return (patched, *inputs[1:])
 
-            def _make_patch_o(layer_i: int, h_list: list[int]):
-                def _hook(_mod, inp):
-                    x = inp[0]  # [1, T_t, H*hd]
-                    x_new = x.clone()
-                    for h in h_list:
-                        src_slice = cached_head_slices[(layer_i, h)].to(device=x.device, dtype=x.dtype)
-                        x_new[:, sl_t, h * head_dim : (h + 1) * head_dim] = src_slice
-                    return (x_new,) + inp[1:]
-                return _hook
+                hooks.enter_context(layer.self_attn.o_proj.register_forward_pre_hook(patch_heads_input))
+            if layer_i in mlp_set:
+                def patch_mlp_output(_module, _inputs, output):
+                    tensor = output[0] if isinstance(output, tuple) else output
+                    patched = tensor.clone()
+                    patched[:, sl_t, :] = cached_mlp_out[layer_i].to(patched)
+                    return (patched, *output[1:]) if isinstance(output, tuple) else patched
 
-            patch_hooks.append(o_mod.register_forward_pre_hook(_make_patch_o(l, hs)))
+                hooks.enter_context(layer.mlp.register_forward_hook(patch_mlp_output))
+            yield
 
-        for l in mlp_set:
-            mlp_mod = model.model.layers[l].mlp
+    def checkpoint_with_patch(checkpoint, layer_i):
+        def checkpoint_target(function, *args, **kwargs):
+            def patched_forward(*inputs, **forward_kwargs):
+                with patch_target_layer(layer_i):
+                    return function(*inputs, **forward_kwargs)
+            return checkpoint(patched_forward, *args, **kwargs)
+        return checkpoint_target
 
-            def _make_patch_mlp(layer_i: int):
-                def _hook(_mod, _inp, out):
-                    t = out[0] if isinstance(out, tuple) else out
-                    t_new = t.clone()
-                    t_new[:, sl_t, :] = cached_mlp_out[layer_i].to(device=t.device, dtype=t.dtype)
-                    return (t_new,) + out[1:] if isinstance(out, tuple) else t_new
-                return _hook
-
-            patch_hooks.append(mlp_mod.register_forward_hook(_make_patch_mlp(l)))
-
+    # Capture target hooks inside the checkpoint's callable. A later source
+    # replay (possibly with a shorter sequence) must see a clean layer.
+    with ExitStack() as target:
+        for layer_i in sorted(set(heads_by_layer) | mlp_set):
+            layer = model.model.layers[layer_i]
+            if layer.training and getattr(layer, "gradient_checkpointing", False):
+                checkpoint = layer._gradient_checkpointing_func
+                target.callback(setattr, layer, "_gradient_checkpointing_func", checkpoint)
+                layer._gradient_checkpointing_func = checkpoint_with_patch(checkpoint, layer_i)
+            else:
+                target.enter_context(patch_target_layer(layer_i))
         tgt_ids = tgt_ex["input_ids"][None].to(dev)
-        out_tgt = model(input_ids=tgt_ids, use_cache=False).logits
-        logits_at = out_tgt[0, p_t].float()
-        yield logits_at[tgt_ex["pos_tok"]] - logits_at[tgt_ex["neg_tok"]]
-    finally:
-        for hk in patch_hooks:
-            hk.remove()
+        logits_at = model(input_ids=tgt_ids, use_cache=False).logits[0, p_t].float()
+    yield logits_at[tgt_ex["pos_tok"]] - logits_at[tgt_ex["neg_tok"]]
 
 
 def compute_and_backward_iit_for_group(
@@ -648,6 +653,16 @@ def run_selftest_tiny() -> None:
 
     # 3 & 4. Verify Differentiable IIT Interchange (non-GC vs GC use_reentrant=False equivalence + non-zero grads on ALL 3 groups!)
     grp_by_arm = {e["arm"]: e for e in grp0}
+    # Different source/target lengths must preserve the target-only intervention during replay.
+    for name in ("F", "V_hes"):
+        original = grp_by_arm[name]
+        prefix = original["input_ids"][:16]
+        grp_by_arm[name] = {
+            **original,
+            "input_ids": torch.cat((prefix, original["input_ids"])),
+            "answer_readout_pos": original["answer_readout_pos"] + prefix.numel(),
+        }
+    assert grp_by_arm["F"]["answer_readout_pos"] - grp_by_arm["V"]["answer_readout_pos"] >= 8
     grads_by_gc = {}
     for use_gc in (False, True):
         m_iit = Qwen3ForCausalLM(cfg).float()
@@ -674,6 +689,12 @@ def run_selftest_tiny() -> None:
         st = compute_and_backward_iit_for_group(
             m_iit, grp_by_arm, u_map[gid], tiny_part, head_dim=16,
             step_idx=0, group_idx=0, n_groups_in_window=1,
+            lambda_iit_form=0.15, lambda_iit_ver=0.25, margin_iit=10.0,
+        )
+        # Reverse the verification swap as well (longer source, shorter target).
+        compute_and_backward_iit_for_group(
+            m_iit, grp_by_arm, u_map[gid], tiny_part, head_dim=16,
+            step_idx=1, group_idx=0, n_groups_in_window=1,
             lambda_iit_form=0.15, lambda_iit_ver=0.25, margin_iit=10.0,
         )
         grads_by_gc[use_gc] = {n: p.grad.detach().clone() for n, p in m_iit.named_parameters() if p.requires_grad}
