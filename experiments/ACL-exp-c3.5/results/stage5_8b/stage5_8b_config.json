@@ -1,0 +1,83 @@
+{
+  "scale": "qwen3_8b",
+  "arms": {
+    "u1_base": {
+      "42": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/payload/stage5_8b/s5_8b_s42_u1_base",
+      "1024": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/payload/stage5_8b/s5_8b_s1024_u1_base"
+    },
+    "u2_corridor": {
+      "42": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/payload/stage5_8b/s5_8b_s42_u2_corridor",
+      "1024": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/payload/stage5_8b/s5_8b_s1024_u2_corridor"
+    },
+    "M3-v4-PureMid-MLP+": {
+      "42": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/payload/stage5_8b/s5_8b_s42_v4_mlpplus",
+      "1024": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/payload/stage5_8b/s5_8b_s1024_v4_mlpplus"
+    },
+    "M3-v4-PureMid-MLP+-Random-Mask": {
+      "42": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/payload/stage5_8b/s5_8b_s42_v4_randmask1",
+      "1024": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/payload/stage5_8b/s5_8b_s1024_v4_randmask1"
+    },
+    "M3-v4-PureMid-MLP+-Random-Mask2": {
+      "42": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/payload/stage5_8b/s5_8b_s42_v4_randmask2",
+      "1024": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/payload/stage5_8b/s5_8b_s1024_v4_randmask2"
+    }
+  },
+  "pair_specs": [
+    [
+      "Corridor_vs_Base",
+      "u2_corridor",
+      "u1_base"
+    ],
+    [
+      "M3-v4-PureMid-MLP+_vs_u2",
+      "M3-v4-PureMid-MLP+",
+      "u2_corridor"
+    ],
+    [
+      "M3-v4-PureMid-MLP+-Random-Mask_vs_u2",
+      "M3-v4-PureMid-MLP+-Random-Mask",
+      "u2_corridor"
+    ],
+    [
+      "M3-v4-PureMid-MLP+-Random-Mask2_vs_u2",
+      "M3-v4-PureMid-MLP+-Random-Mask2",
+      "u2_corridor"
+    ],
+    [
+      "v4_MLPplus_vs_v4_RandMask",
+      "M3-v4-PureMid-MLP+",
+      "M3-v4-PureMid-MLP+-Random-Mask"
+    ],
+    [
+      "v4_MLPplus_vs_v4_RandMask2",
+      "M3-v4-PureMid-MLP+",
+      "M3-v4-PureMid-MLP+-Random-Mask2"
+    ]
+  ],
+  "pareto_candidates": [
+    "M3-v4-PureMid-MLP+",
+    "M3-v4-PureMid-MLP+-Random-Mask",
+    "M3-v4-PureMid-MLP+-Random-Mask2"
+  ],
+  "m0_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/payload/stage5_8b/M0",
+  "datasets": [
+    {
+      "name": "c3_blind_confirm_v2",
+      "file": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/source/experiments/ACL-exp-c3.5/data/c3_blind_confirm_v2_bases.jsonl",
+      "think_name": "c3_blind_think_v2"
+    },
+    {
+      "name": "c3_blind_confirm_v3",
+      "file": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/source/experiments/ACL-exp-c3.5/data/c3_blind_confirm_v3_bases.jsonl",
+      "think_name": "c3_blind_think_v3"
+    }
+  ],
+  "exfever_regimes": [
+    "no_think",
+    "think"
+  ],
+  "m0_anchor": {
+    "ifeval": 440,
+    "gsm8k": 496
+  }
+}
