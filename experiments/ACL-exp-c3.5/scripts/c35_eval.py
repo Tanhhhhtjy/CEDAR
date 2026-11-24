@@ -32,6 +32,7 @@ C3EV.C3_DATASETS["c3_blind_confirm_v2"] = C35 / "data" / "c3_blind_confirm_v2_ba
 C3EV.C3_DATASETS["c3_blind_think_v2"] = C35 / "data" / "c3_blind_think_v2_bases.jsonl"
 C3EV.C3_DATASETS["c3_blind_confirm_v3"] = C35 / "data" / "c3_blind_confirm_v3_bases.jsonl"
 C3EV.C3_DATASETS["c3_blind_think_v3"] = C35 / "data" / "c3_blind_think_v3_bases.jsonl"
+C3EV.C3_DATASETS["c3_entity_balanced_v1"] = C35 / "data" / "c3_entity_balanced_v1_bases.jsonl"
 
 
 def run_selftest_tiny() -> None:

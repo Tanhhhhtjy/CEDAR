@@ -226,7 +226,10 @@ def _load_arm_strict(
     th_p = arm_dir / "think" / f"records_think_{think_dataset_name}.jsonl"
     if th_p.is_file():
         tr = C3S._load_jsonl(th_p)
-        th_pf = round(sum(not bool(r.get("parse_ok", True)) for r in tr) / max(1, len(tr)), 4)
+        assert len(tr) > 0, f"Empty think records file refused (fail-closed): {th_p}"
+        for idx_r, r in enumerate(tr):
+            assert isinstance(r.get("parse_ok"), bool), f"Missing/non-bool parse_ok in {th_p} row {idx_r}"
+        th_pf = round(sum(not r["parse_ok"] for r in tr) / len(tr), 4)
         th_4c = S35.summarize_v2(S35.compute_base_metrics_v2(tr))["four_cell_family_weighted"]
 
     health = evaluate_health_gates_relative(

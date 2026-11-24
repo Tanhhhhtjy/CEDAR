@@ -898,7 +898,7 @@ def main() -> None:
     ap.add_argument("--model", type=str)
     ap.add_argument("--model-key", choices=("qwen3_8b", "qwen3_14b"), default="qwen3_8b")
     ap.add_argument("--arch", type=str, default="M3-v2", help="Architecture key in c35_components_frozen.json")
-    ap.add_argument("--loss-mode", choices=("base", "corridor", "corridor_iit"), default="corridor_iit")
+    ap.add_argument("--loss-mode", choices=("base", "corridor", "corridor_iit", "corridor_only", "tone_inv_only"), default="corridor_iit")
     ap.add_argument("--iit-target", choices=("none", "b1", "rnd_head_1", "rnd_head_2", "rnd_full_1", "rnd_full_2"), default="none")
     ap.add_argument("--components-file", type=Path, default=C35 / "data" / "c35_components_frozen.json")
     ap.add_argument("--train-file", type=Path, default=C3 / "data" / "c3_train_examples_nothink.jsonl")
@@ -1069,7 +1069,8 @@ def main() -> None:
         inv_act_sum = 0.0
 
         # Pass 1: Detached readouts (`u_theta` + true 4-option gold margin `u_4opt_gold`)
-        if args.loss_mode in ("corridor", "corridor_iit"):
+        use_tone_inv = args.loss_mode in ("corridor", "corridor_iit", "tone_inv_only")
+        if use_tone_inv:
             u_map, m4_map = collect_window_readouts_4opt_nograd(
                 model, win, pad_id, microbatch=args.microbatch, opt_tok_ids=opt_tok_ids
             )
@@ -1080,7 +1081,9 @@ def main() -> None:
                 for a, gv in arm_g.items():
                     paired_chain_grads[(gid, a)] = gv
 
-        # Pass 2: Main Task (`SFT + Corridor + Tone-Invariance + Zone-1 Prox`)
+        # Pass 2: Main Task (`SFT + Corridor/Base-Hinge + Tone-Invariance + Zone-1 Prox`)
+        mb_loss_mode = "base" if args.loss_mode in ("base", "tone_inv_only") else "corridor"
+        mb_margin_min = 4.0 if args.loss_mode in ("base", "tone_inv_only") else args.margin_min
         win_sft = 0.0
         win_marg = 0.0
         win_signed = 0
@@ -1091,13 +1094,13 @@ def main() -> None:
             mb = win[j : j + args.microbatch]
             loss_sum, st_mb = C3T.compute_loss_microbatch_c3(
                 model, mb, pad_id,
-                loss_mode=args.loss_mode,
+                loss_mode=mb_loss_mode,
                 aux_weight=args.aux_weight,
                 lambda_margin=args.lambda_margin,
-                margin_min=args.margin_min if args.loss_mode != "base" else 4.0,
+                margin_min=mb_margin_min,
                 margin_max=args.margin_max,
                 lambda_cap=args.lambda_cap,
-                paired_chain_grads=paired_chain_grads if args.loss_mode in ("corridor", "corridor_iit") else None,
+                paired_chain_grads=paired_chain_grads if use_tone_inv else None,
                 n_groups_in_window=n_groups,
                 win_n=win_n,
             )
