@@ -30,6 +30,8 @@ import c35_modules as M35  # noqa: E402
 C3EV.M3 = M35
 C3EV.C3_DATASETS["c3_blind_confirm_v2"] = C35 / "data" / "c3_blind_confirm_v2_bases.jsonl"
 C3EV.C3_DATASETS["c3_blind_think_v2"] = C35 / "data" / "c3_blind_think_v2_bases.jsonl"
+C3EV.C3_DATASETS["c3_blind_confirm_v3"] = C35 / "data" / "c3_blind_confirm_v3_bases.jsonl"
+C3EV.C3_DATASETS["c3_blind_think_v3"] = C35 / "data" / "c3_blind_think_v3_bases.jsonl"
 
 
 def run_selftest_tiny() -> None:
@@ -39,7 +41,7 @@ def run_selftest_tiny() -> None:
     import c1_train as C1T
     from render_prompts import load_config
 
-    for ds in ("c3_blind_confirm_v2", "c3_blind_think_v2"):
+    for ds in ("c3_blind_confirm_v2", "c3_blind_think_v2", "c3_blind_confirm_v3", "c3_blind_think_v3"):
         p = C3EV.C3_DATASETS[ds]
         assert p.is_file(), p
 

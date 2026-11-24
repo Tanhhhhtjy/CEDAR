@@ -335,6 +335,72 @@ def build_c35_model_entry(alias: str, c3_entry: dict[str, Any], v2_cfg: dict[str
     v4_mp_max_r, v4_mp_layer_qo = _max_packed_rank_v2(v4_mp_heads, [], 0, v4_mp_mlps)
     assert v4_mp_max_r <= 128 and abs(v4_mp_params / unif["trainable_params"] - 1.0) * 100.0 <= 2.5, (alias, v4_mp_params, v4_mp_max_r)
 
+    # 5b. Stage 5 Strictly Rank-Matched Random-Mask Controls for `M3-v4-PureMid-MLP+` (Mask #1 & independent Mask #2)!
+    def _build_v4_mlpplus_random_mask(mask_seed: int, mask_label: str) -> dict[str, Any]:
+        rng_v4 = random.Random(mask_seed)
+        by_l: dict[int, list[int]] = defaultdict(list)
+        for k, r in v4_mp_heads.items():
+            by_l[int(k.split(":")[0])].append(r)
+        excl = {(int(k.split(":")[0]), int(k.split(":")[1])) for k in v4_mp_heads}
+        rm_heads: dict[str, int] = {}
+        for li in sorted(by_l):
+            rs = list(by_l[li])
+            rng_v4.shuffle(rs)
+            pool = [h for h in range(H) if (li, h) not in excl]
+            assert len(pool) >= len(rs), (alias, li, len(pool), len(rs))
+            chosen = sorted(rng_v4.sample(pool, len(rs)))
+            for h, r in zip(chosen, rs):
+                rm_heads[f"{li}:{h}"] = r
+        rm_heads = dict(sorted(rm_heads.items(), key=lambda kv: tuple(int(x) for x in kv[0].split(":"))))
+        EXP3C._enforce_layer_rank_cap(rm_heads, max_cap=128)
+        rm_top5 = sorted(rng_v4.sample(z2_non_ncf, len(ncf_top5)))
+        rm_top5_set = set(rm_top5)
+        rm_mlps: dict[str, int] = {
+            str(li): int(v2_cfg["v4_mlpplus_z2_top_mlp_rank"] if li in rm_top5_set else v2_cfg["v4_mlpplus_z2_rest_mlp_rank"])
+            for li in range(z2_lo, z2_hi + 1)
+        }
+        rm_p = _count_mlp_dict_params(rm_mlps, d, d_ff) + EXP3C._count_head_dict_params(rm_heads, d, hd)
+        rm_mr, rm_lqo = _max_packed_rank_v2(rm_heads, [], 0, rm_mlps)
+
+        # Strict exact-match invariants demanded by Astra's pre-flight audit!
+        assert rm_p == v4_mp_params, (alias, mask_label, rm_p, v4_mp_params)
+        assert rm_mr == v4_mp_max_r, (alias, mask_label, rm_mr, v4_mp_max_r)
+        assert set(rm_heads).isdisjoint(set(v4_mp_heads)), (alias, mask_label)
+        assert rm_top5_set.isdisjoint(ncf_top5), (alias, mask_label)
+        assert sorted(rm_mlps.values()) == sorted(v4_mp_mlps.values()), (alias, mask_label)
+        for li in sorted(by_l):
+            rm_l_rs = sorted(r for k, r in rm_heads.items() if int(k.split(":")[0]) == li)
+            assert rm_l_rs == sorted(by_l[li]), (alias, mask_label, li, rm_l_rs, by_l[li])
+        return {
+            "kind": "m3_dac",
+            "description": (
+                f"Stage 5 Strictly Rank-Matched Random-Mask Control ({mask_label}, seed={mask_seed}) for M3-v4-PureMid-MLP+: "
+                f"IDENTICAL 0 Zone-1, 0 Zone-3, IDENTICAL per-layer Q/O head count & rank multiset inside L{z2_lo}-{z2_hi}, "
+                f"IDENTICAL MLP rank multiset ({len(ncf_top5)}x r={v2_cfg['v4_mlpplus_z2_top_mlp_rank']} + "
+                f"{len(z2_non_ncf)}x r={v2_cfg['v4_mlpplus_z2_rest_mlp_rank']}), strictly disjoint random head coords & non-B1 top-5 MLP layers"
+            ),
+            "mask_seed": mask_seed,
+            "zones": zones,
+            "frozen_early_layers": list(range(z1_lo, z1_hi + 1)),
+            "zone1_dense_qo_layers": [],
+            "zone1_dense_qo_rank": 0,
+            "mlp_layers": sorted(int(k) for k in rm_mlps),
+            "mlp_ranks": rm_mlps,
+            "mlp_top5_random_layers": rm_top5,
+            "mlp_ncf_layers": [],
+            "mlp_dialog_z3_layers": [],
+            "head_ranks": rm_heads,
+            "max_packed_layer_rank": rm_mr,
+            "per_layer_packed_qo_rank": {str(k): v for k, v in rm_lqo.items()},
+            "zone_trainable_params": {"zone1": 0, "zone2": rm_p, "zone3": 0},
+            "trainable_params": rm_p,
+        }
+
+    v4_mp_rm1 = _build_v4_mlpplus_random_mask(2037, "Mask1")
+    v4_mp_rm2 = _build_v4_mlpplus_random_mask(2038, "Mask2")
+    assert set(v4_mp_rm1["head_ranks"]) != set(v4_mp_rm2["head_ranks"])
+    assert v4_mp_rm1["mlp_top5_random_layers"] != v4_mp_rm2["mlp_top5_random_layers"]
+
     b2_lo, b2_hi = v2_cfg["v4_bridge2_z1_layers"]
     b2_z1_layers = list(range(b2_lo, b2_hi + 1))
     v4_b2_heads = _build_z2_only_heads(int(v2_cfg["v4_bridge2_t1_r"]), int(v2_cfg["v4_bridge2_t2_r"]), int(v2_cfg["v4_bridge2_t3_r"]))
@@ -472,6 +538,8 @@ def build_c35_model_entry(alias: str, c3_entry: dict[str, Any], v2_cfg: dict[str
             "zone_trainable_params": {"zone1": 0, "zone2": v4_mp_params, "zone3": 0},
             "trainable_params": v4_mp_params,
         },
+        "M3-v4-PureMid-MLP+-Random-Mask": v4_mp_rm1,
+        "M3-v4-PureMid-MLP+-Random-Mask2": v4_mp_rm2,
         "M3-v4-Bridge2": {
             "kind": "m3_dac",
             "description": (
@@ -526,13 +594,17 @@ def main() -> None:
     for alias, m in models_out.items():
         anc = m["uniform_anchor_params"]
         print(f"\n=== {alias} (Uniform r=4 anchor = {anc:,} params) ===")
-        for aname in ("Uniform-LoRA", "M3-v1", "M3-v2", "M3-v3-PureMid", "M3-v3-PureMid-Random-Mask", "M3-v3-TightBridge", "M3-v4-PureMid-MLP+", "M3-v4-Bridge2"):
+        for aname in (
+            "Uniform-LoRA", "M3-v1", "M3-v2", "M3-v3-PureMid", "M3-v3-PureMid-Random-Mask",
+            "M3-v3-TightBridge", "M3-v4-PureMid-MLP+", "M3-v4-PureMid-MLP+-Random-Mask",
+            "M3-v4-PureMid-MLP+-Random-Mask2", "M3-v4-Bridge2",
+        ):
             a = m["architectures"][aname]
             p = a["trainable_params"]
             rel = (p / anc - 1.0) * 100.0
             mr = a["max_packed_layer_rank"]
             zp = a.get("zone_trainable_params", {})
-            print(f"  {aname:18s}: {p:10,d} ({rel:+5.2f}%) | max_layer_r={mr:3d} | zones={zp}")
+            print(f"  {aname:32s}: {p:10,d} ({rel:+5.2f}%) | max_layer_r={mr:3d} | zones={zp}")
 
 
 if __name__ == "__main__":
