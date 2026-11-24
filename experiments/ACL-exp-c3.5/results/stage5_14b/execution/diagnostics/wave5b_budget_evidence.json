@@ -1,0 +1,42 @@
+{
+  "status": "await_budget_decision",
+  "protocol_commit": "45ba5fd09d566a18bb8a4fbd9a09e93aafcfaf86",
+  "previous_receipt": "eb404f5961b1fe8c5f6b37064b42b79d356de597",
+  "training_rows": 6000,
+  "training_file_sha256": "26a206808b79faa8473cb2fdb90baf01c2936ee4c2e3db15ffdcc1b743d5f466",
+  "window_function": "experiments/ACL-exp-c1/scripts/c1_train.py:build_atomic_windows",
+  "train_script": "experiments/ACL-exp-c3.5/scripts/c35_train.py",
+  "default_epochs": 1,
+  "required_14b": {
+    "seed": 42,
+    "microbatch": 1,
+    "grad_accum": 40,
+    "max_steps": 300,
+    "checkpoint_steps": [
+      120,
+      200,
+      250,
+      300
+    ]
+  },
+  "verified_windows": {
+    "20": {
+      "seed": 42,
+      "windows_first_epoch": 300,
+      "examples_first_epoch": 6000,
+      "examples_in_300_steps_if_two_epochs_available": 6000
+    },
+    "40": {
+      "seed": 42,
+      "windows_first_epoch": 150,
+      "examples_first_epoch": 6000,
+      "examples_in_300_steps_if_two_epochs_available": 12000
+    }
+  },
+  "unreachable_checkpoints_with_default_epochs": [
+    200,
+    250,
+    300
+  ],
+  "scope": "14B Wave 5B formal training only. 8B and 14B preflight continue."
+}
