@@ -308,6 +308,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--selftest-tiny", action="store_true")
     ap.add_argument("--config-json", type=Path, help="Stage 5 aggregation manifest JSON specifying scale, M0 anchor, datasets & arm directories")
+    ap.add_argument("--m0-cap-json", type=Path, default=None, help="Optional path to scale's own M0 capabilities/summary.json (overrides m0_anchor in config)")
     ap.add_argument("--n-boot", type=int, default=5000)
     ap.add_argument("--out-dir", type=Path)
     args = ap.parse_args()
@@ -319,32 +320,43 @@ def main() -> None:
     assert args.config_json and args.out_dir, "--config-json and --out-dir are required"
     cfg = json.loads(args.config_json.read_text(encoding="utf-8"))
     scale = cfg["scale"]  # e.g. "qwen3_8b" or "qwen3_14b"
-    ifeval_m0 = int(cfg["m0_anchor"]["ifeval"])
-    gsm8k_m0 = int(cfg["m0_anchor"]["gsm8k"])
+    if args.m0_cap_json is not None:
+        m0_cap = json.loads(args.m0_cap_json.read_text(encoding="utf-8"))
+        ifeval_m0 = int(m0_cap["ifeval"]["n_correct_prompts"])
+        gsm8k_m0 = int(m0_cap["gsm8k"]["n_correct"])
+        m0_anchor = {"ifeval": ifeval_m0, "gsm8k": gsm8k_m0, "source": str(args.m0_cap_json)}
+    else:
+        m0_anchor = cfg["m0_anchor"]
+        ifeval_m0 = int(m0_anchor["ifeval"])
+        gsm8k_m0 = int(m0_anchor["gsm8k"])
     datasets = cfg["datasets"]  # list of {"name": "c3_blind_confirm_v3", "file": "...", "think_name": "c3_blind_think_v3"}
     arms_spec = cfg["arms"]  # {logical_name: {seed_str: dir_path}}
     pair_specs = cfg["pair_specs"]  # list of [pair_name, arm_a, arm_b]
-    pareto_candidates = cfg.get("pareto_candidates", ["M3-v4-PureMid-MLP+"])
-    exfever_regime = cfg.get("exfever_regime", "no_think")
+    pareto_candidates = cfg.get("pareto_candidates", ["M3-v4-PureMid-MLP+", "M3-v4-PureMid-MLP+-Random-Mask"])
+    exfever_regimes = cfg.get("exfever_regimes", [cfg.get("exfever_regime", "no_think")])
 
     out_doc: dict[str, Any] = {
         "schema": "cedar.acl_exp_c35.stage5_stats.v1",
         "scale": scale,
-        "m0_anchor": cfg["m0_anchor"],
+        "m0_anchor": m0_anchor,
         "by_dataset": {},
         "exfever": {},
     }
 
-    # Collect EX-FEVER across all arms (+ M0 if provided)
-    if "m0_dir" in cfg and cfg["m0_dir"]:
-        ex_m0 = _load_exfever_summary(Path(cfg["m0_dir"]), "M0", regime=exfever_regime)
-        if ex_m0:
-            out_doc["exfever"]["M0"] = ex_m0["metrics"]["headline"]
-    for mname, sdict in arms_spec.items():
-        for sd, dstr in sdict.items():
-            ex = _load_exfever_summary(Path(dstr), mname, regime=exfever_regime)
-            if ex:
-                out_doc["exfever"][f"{mname}@s{sd}"] = ex["metrics"]["headline"]
+    # Collect EX-FEVER across all arms (+ M0 if provided) for every configured regime
+    for ex_reg in exfever_regimes:
+        reg_map: dict[str, Any] = {}
+        if "m0_dir" in cfg and cfg["m0_dir"]:
+            ex_m0 = _load_exfever_summary(Path(cfg["m0_dir"]), "M0", regime=ex_reg)
+            if ex_m0:
+                reg_map["M0"] = ex_m0["metrics"]["headline"]
+        for mname, sdict in arms_spec.items():
+            for sd, dstr in sdict.items():
+                ex = _load_exfever_summary(Path(dstr), mname, regime=ex_reg)
+                if ex:
+                    reg_map[f"{mname}@s{sd}"] = ex["metrics"]["headline"]
+        if reg_map:
+            out_doc["exfever"][ex_reg] = reg_map
 
     for ds_cfg in datasets:
         dname = ds_cfg["name"]
@@ -486,17 +498,18 @@ def main() -> None:
         md.append("")
 
     if out_doc["exfever"]:
-        md.append(f"## External Natural-Language Benchmark: Ma et al. EX-FEVER (`1,000` Official Test, `{exfever_regime}`)")
-        md.append("")
-        md.append("| Model | Turn-1 Acc | `n_correct / n_wrong` | `R_UY` (↓) | `R_RU` Evidence (↑) | `R_RU` User-Evid (↑) | Selectivity (`R_RU - R_UY`) |")
-        md.append("|---|---:|---:|---:|---:|---:|---:|")
-        for k, h in out_doc["exfever"].items():
-            md.append(
-                f"| `{k}` | {h.get('acc')}% | {h.get('n_orig_correct')} / {h.get('n_orig_wrong')} | "
-                f"**{h.get('r_uy')}%** ({h.get('r_uy_k_n')}) | **{h.get('r_ru_evidence')}%** ({h.get('r_ru_evidence_k_n')}) | "
-                f"{h.get('r_ru_user_evidence')}% ({h.get('r_ru_user_evidence_k_n')}) | **{h.get('selectivity_ru_minus_uy')}** |"
-            )
-        md.append("")
+        for ex_reg, reg_map in out_doc["exfever"].items():
+            md.append(f"## External Natural-Language Benchmark: Ma et al. EX-FEVER (`1,000` Official Test, `{ex_reg}`)")
+            md.append("")
+            md.append("| Model | Turn-1 Acc | `n_correct / n_wrong` | `R_UY` (↓) | `R_RU` Evidence (↑) | `R_RU` User-Evid (↑) | Selectivity (`R_RU - R_UY`) |")
+            md.append("|---|---:|---:|---:|---:|---:|---:|")
+            for k, h in reg_map.items():
+                md.append(
+                    f"| `{k}` | {h.get('acc')}% | {h.get('n_orig_correct')} / {h.get('n_orig_wrong')} | "
+                    f"**{h.get('r_uy')}%** ({h.get('r_uy_k_n')}) | **{h.get('r_ru_evidence')}%** ({h.get('r_ru_evidence_k_n')}) | "
+                    f"{h.get('r_ru_user_evidence')}% ({h.get('r_ru_user_evidence_k_n')}) | **{h.get('selectivity_ru_minus_uy')}** |"
+                )
+            md.append("")
 
     md_p = args.out_dir / f"C35_STAGE5_{scale.upper()}_READOUT.md"
     md_p.write_text("\n".join(md) + "\n", encoding="utf-8", newline="\n")

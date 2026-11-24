@@ -1,81 +1,141 @@
-# ACL-exp-c3.5 Stage 5 Plan: 8B Rank-Matched Closure + 14B 4-Arm Prospective Replication + Official External EX-FEVER
+# ACL-exp-c3.5 Stage 5 Plan: 8B Rank-Matched Closure + 14B 4-Arm Prospective Replication + Official External EX-FEVER (8 × A800)
 
-> **Status**: **LOCAL CODE & CPU SELF-TESTS READY FOR ASTRA PRE-FLIGHT REVIEW (NOT YET PUSHED TO REMOTE GPU RUNNER)**
-> **Mandate**: Implements Astra's conditional GO on Option A + ALL 3 pre-flight checks + upgraded shared Probe 2 v2 + Ma et al. (EMNLP Findings 2026) official 1,000-item external `EX-FEVER` evaluation!
-> **14B Seed Policy**: Run `Qwen3-14B` `seed=42` 4-arm prospective showdown + `EX-FEVER` + `Probe 2 v2` FIRST; inspect readout before deciding whether to invest in 14B `seed=1024`.
+- **Branch**: `ACL-exp-c3.5` (Stage 4 complete at `0628626`, Stage 5 READY TO AUTO-RUN IMMEDIATELY!)
+- **Models**:
+  - `BASE8=/mnt/kcl/devuser/ckpts/Qwen3-8B`
+  - `BASE14=/mnt/kcl/devuser/ckpts/Qwen3-14B`
+- **Absolute Red Lines**:
+  - NEVER open, read, or evaluate sealed `c1_test_id_bases.jsonl` / `c1_test_ood_bases.jsonl`; strictly exclude `converse_error` and `depth-4`.
+  - NEVER modify frozen `ACL-exp-a1/`, `ACL-exp-b1/`, `ACL-exp-c1/`, `ACL-exp-c2/`, or `ACL-exp-c3/`.
+  - **NEVER commit `.pt` / `.safetensors` to Git**; push only lightweight `json / jsonl / md` results under `experiments/ACL-exp-c3.5/results/stage5_8b/` and `experiments/ACL-exp-c3.5/results/stage5_14b/` incrementally to `origin/ACL-exp-c3.5`.
+  - **14B Seed Policy**: Run `Qwen3-14B` `seed=42` 4-arm prospective showdown + `EX-FEVER` + `Probe 2 v2` FIRST; DO NOT launch 14B `seed=1024` automatically until `seed=42` readout is reviewed!
 
 ---
 
-## 1. Frozen Artifacts & SHA-256 Registry (All Verified Locally on CPU)
+## 1. Frozen Artifacts & SHA-256 Registry (Verified Locally on CPU)
 
 | Artifact | Path | Key Invariants | SHA-256 (prefix) |
 |---|---|---|---|
-| Frozen Architectures (8B & 14B) | `data/c35_components_frozen.json` | Adds `M3-v4-PureMid-MLP+-Random-Mask` (Mask1, seed 2037) & `Mask2` (seed 2038). Exact budget match: 8B `6,994,944` (`-1.17%`, `L14–27`, `max_r=68`); 14B `10,348,800` (`-1.31%`, **`L16–30`**, `max_r=78`). Disjoint heads & non-B1 top-5 MLPs, exact per-layer Q/O rank multiset & MLP `5×r12 + 9/10×r8`. | `a28a18b22468` |
-| Untouched Prospective Blind v3 | `data/c3_blind_confirm_v3_bases.jsonl` | `1,080` bases / `900` independent generation units across 6 brand-new unseen domains (`botanical_conservatory`, `tidal_barrage`, `archive_bindery`, `glacier_station`, `wind_tunnel`, `kiln_foundry`) & 2 unseen styles (`style_e_brief`, `style_f_ledger`). `240/240` CE decoys, `840/840` dual-premise DAG solver certified, `60` **fixed-style** `(before_rules vs after_rules)` pairs, `0` skeleton overlap vs `c3_train` & `v2`, `G0 AUC = 0.5085`, `cf_byte_match = 1.0`. | `32cdfab58ecc` |
-| Prospective Blind Think v3 | `data/c3_blind_think_v3_bases.jsonl` | `240` stratified CoT items (`192` units, 40 CE cells + 160 non-CE). | `7dee7d61d636` |
-| Official Ma et al. EX-FEVER Test | `data/exfever_official_test1000.jsonl` | Exact 1,000-row official `test` split (`507 True / 493 False`) from `dependentsign/sycophancy-rational-updating` (`emnlp-2026-camera-ready`), upstream `exfever.jsonl` & `splits/exfever.json` bit-for-bit SHA256 verified! | `977ceccb3cfd` |
+| Frozen Architectures (8B & 14B) | `experiments/ACL-exp-c3.5/data/c35_components_frozen.json` | Adds `M3-v4-PureMid-MLP+-Random-Mask` (`Mask1`, seed 2037) & `M3-v4-PureMid-MLP+-Random-Mask2` (`Mask2`, seed 2038). Exact match: 8B `6,994,944` (`-1.17%`, `L14–27`, `max_r=68`); 14B `10,348,800` (`-1.31%`, **`L16–30`**, `max_r=78`). | `a28a18b22468` |
+| Prospective Blind v3 | `experiments/ACL-exp-c3.5/data/c3_blind_confirm_v3_bases.jsonl` | `1,080` bases / `900` units, 6 brand-new domains, 2 unseen styles, `240/240` CE decoys, `840/840` independent dual-premise DAG, `60` **fixed-style** `(before_rules vs after_rules)` pairs, `0` skeleton overlap vs `c3_train` & `v2`, `G0 AUC=0.5085`. | `32cdfab58ecc` |
+| Prospective Blind Think v3 | `experiments/ACL-exp-c3.5/data/c3_blind_think_v3_bases.jsonl` | `240` stratified CoT items (`192` units). | `7dee7d61d636` |
+| Official Ma et al. EX-FEVER Test | `experiments/ACL-exp-c3.5/data/exfever_official_test1000.jsonl` | Exact 1,000-row official `test` split (`507 True / 493 False`) from `dependentsign/sycophancy-rational-updating` (`emnlp-2026-camera-ready`), bit-for-bit upstream SHA256 verified! | `977ceccb3cfd` |
 
 ---
 
-## 2. Summary of Astra Pre-Flight Fixes Implemented
+## 2. Exact Server Paths & Reusable 8B Checkpoints
 
-1. **Pre-Flight Check #1 (True 4th Arm & Exact Stats Mapping)**:
-   - `c35_export_components.py` freezes `M3-v4-PureMid-MLP+-Random-Mask` (`Mask1`, seed 2037) and `M3-v4-PureMid-MLP+-Random-Mask2` (`Mask2`, seed 2038) for BOTH `qwen3_8b` and `qwen3_14b`, with hard assertions on total params, per-layer head rank multiset, MLP rank multiset, zero Zone-1/Zone-3 params, `max_packed_layer_rank <= 128`, and strict disjointness.
-   - `c35_stage5_stats.py` maps `v4_MLPplus_vs_v4_RandMask` strictly to `M3-v4-PureMid-MLP+-Random-Mask` (and `v4_MLPplus_vs_v4_RandMask2` to `Mask2` on 8B) — NEVER falling back to v3!
-   - Corrected 14B Zone 2 documentation everywhere to **`L16–30` (15 layers)**.
-2. **Pre-Flight Check #2 (14B Clean Isolation, M0-Anchored Health Gates, Real 1-Step Preflight, Fail-Closed Unit Guard)**:
-   - Dedicated isolated output trees: `results/stage5_8b/` and `results/stage5_14b/` (ZERO copy from `c3_8b_showdown`!).
-   - `c35_stage5_stats.py` implements **M0-anchored relative health gates** (`ifeval >= ifeval_m0 - 10`, `gsm8k >= gsm8k_m0 - 26`, `wiki_kl <= 0.005`, `think_parse_fail <= 0.02`, `S/shell/P0/I0 >= 0.95`, `DC_rev >= DC_orig - 0.10`, `parity_passed == True`) AND **fail-closed unit completeness assertions** (`assert_complete_units` raises `AssertionError` if ANY arm is missing even 1 unit — zero silent intersection!).
-   - `c35_14b_preflight.py` executes BEFORE full 14B training: verifies frozen 14B contract, runs real 1-step training (`--max-steps 1 --model-key qwen3_14b`), exports PEFT (`max_fp32_dw_err < 1e-5`, `r_export == 78`), runs fixed-token-ID HF/vLLM parity (`--tp 2`, asserts `passed == True`), and runs a 4-item 14B `no_think + reference_kl` VRAM smoke check!
-3. **Pre-Flight Check #3 (Untouched Prospective Confirmation + Fixed-Style Position Pairs + Upgraded Shared Probe 2 v2 + External EX-FEVER)**:
-   - `c3_blind_confirm_v3` is completely untouched during architecture selection; all 60 paired position items hold discourse style strictly identical across `before_rules / after_rules`.
-   - `c35_eval_cross_letter_v2.py` upgrades Probe 2 across BOTH 8B & 14B:
-     - BOTH valid disjoint option-letter permutations (`perm_0` & `perm_1`);
-     - Bidirectional swaps across `plain`, `auth`, AND `hes` tones (6 flip pairs/base);
-     - Explicit 3-hop `CE Row B` stratification (`12` d2 + `12` d3 inside 96-base panel);
-     - **Cross-item different-conclusion-name panel** (`24` domain-disjoint pairs where NEITHER option letters NOR semantic outcome strings overlap!);
-     - **Same-validity STAY controls** (`V->V`, `F->F`, `V_auth->V_auth`, `F_auth->F_auth` on both same-item remapped and cross-item receptors);
-     - `--aggregate-common` outputs ALL swaps, per-model denominators, AND exact shared common-denominator comparisons across `[u2, v4-MLP+, v4-RandMask]`!
-   - `c35_eval_exfever.py` implements Ma et al.'s EXACT official prompts (`sru/prompts.py`), strict verdict extractor (`sru/scoring.py`), and dual-denominator metrics (`Acc`, `n_orig_correct`, `n_orig_wrong`, `R_UY`, `R_RU_evidence`, `R_RU_user_evidence`, `Selectivity = R_RU - R_UY`) on the frozen 1,000-row official test split (evaluated in BOTH `no_think` primary and `think` secondary regimes!).
+- `WORK=/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-<SHORT_SHA>`
+- `RES8=experiments/ACL-exp-c3.5/results/stage5_8b`
+- `RES14=experiments/ACL-exp-c3.5/results/stage5_14b`
+- `COMP=experiments/ACL-exp-c3.5/data/c35_components_frozen.json`
+- `KL_CORPUS=experiments/ACL-exp-c1/data/c1_kl_wikitext2_200.jsonl`
+- `EXF_DATA=experiments/ACL-exp-c3.5/data/exfever_official_test1000.jsonl`
+- **Existing Frozen 8B Checkpoints on Server (DO NOT RETRAIN — reuse verbatim!)**:
+  - `u1_base@42`: `pt=/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3/showdown-8438e5e2/selected_42/u1_base/selected_adapter_state.pt`, `peft=/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3/showdown-8438e5e2/peft_42/u1_base`, `prev_res=experiments/ACL-exp-c3.5/results/stage3/u1_base`
+  - `u2_corridor@42`: `pt=/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3/showdown-8438e5e2/selected_42/u2_corridor/selected_adapter_state.pt`, `peft=/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3/showdown-8438e5e2/peft_42/u2_corridor`, `prev_res=experiments/ACL-exp-c3.5/results/stage3/u2_corridor`
+  - `u1_base@1024`: `pt=/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/selected/s4_s1024_u1_base/selected_adapter_state.pt`, `peft=/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/peft/s4_s1024_u1_base`, `prev_res=experiments/ACL-exp-c3.5/results/stage4/s4_s1024_u1_base`
+  - `u2_corridor@1024`: `pt=/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/selected/s4_s1024_u2_corridor/selected_adapter_state.pt`, `peft=/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/peft/s4_s1024_u2_corridor`, `prev_res=experiments/ACL-exp-c3.5/results/stage4/s4_s1024_u2_corridor`
+  - `v4_mlpplus@42`: `pt=/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/selected/s4_s42_v4_mlpplus/selected_adapter_state.pt`, `peft=/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/peft/s4_s42_v4_mlpplus`, `prev_res=experiments/ACL-exp-c3.5/results/stage4/s4_s42_v4_mlpplus`
+  - `v4_mlpplus@1024`: `pt=/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/selected/s4_s1024_v4_mlpplus/selected_adapter_state.pt`, `peft=/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/peft/s4_s1024_v4_mlpplus`, `prev_res=experiments/ACL-exp-c3.5/results/stage4/s4_s1024_v4_mlpplus`
 
 ---
 
-## 3. Execution Schedule (8 × NVIDIA A800 40GB, Zero IIT Arms)
+## 3. Pre-Run CPU Self-Tests (~30s)
 
-### Wave 5A: 8B Closure + 14B `M0` Anchor & Mandatory 14B Preflight (~2.5h)
-- **GPUs 0–3 (4 parallel 8B training + full eval arms)**:
-  - GPU 0: `s5_8b_s42_v4_randmask1` (`M3-v4-PureMid-MLP+-Random-Mask`, `seed=42`, Corridor)
-  - GPU 1: `s5_8b_s1024_v4_randmask1` (`M3-v4-PureMid-MLP+-Random-Mask`, `seed=1024`, Corridor)
-  - GPU 2: `s5_8b_s42_v4_randmask2` (`M3-v4-PureMid-MLP+-Random-Mask2`, `seed=42`, Corridor)
-  - GPU 3: `s5_8b_s1024_v4_randmask2` (`M3-v4-PureMid-MLP+-Random-Mask2`, `seed=1024`, Corridor)
-  - All 4 arms run `c35_train` -> `c35_select_dev_ckpt` -> `c35_export_peft_lora` -> `c35_check_vllm_lora_parity` -> `c35_eval` (`v2`, `v3`, `c2_confirm_bidir`, `c2_stealth_stress`, `Wiki KL`) -> `think` (`v2`, `v3`) -> `capabilities` -> **`EX-FEVER`** (`no_think` + `think`).
-- **GPU 4 (8B Existing Arms Prospective Extension + Probe 2 v2)**:
-  - Evaluate existing frozen 8B `M0`, `u1_base (s42/s1024)`, `u2_corridor (s42/s1024)`, `M3-v4-PureMid-MLP+ (s42/s1024)` on untouched **`c3_blind_confirm_v3`**, **`c3_blind_think_v3`**, and **`EX-FEVER`** (`no_think` + `think`).
-  - Run **8B Probe 2 v2** on `u2_corridor@s42`, `M3-v4-PureMid-MLP+@s42`, `v4-RandMask1@s42`, `v4-RandMask2@s42` -> `--aggregate-common`.
-- **GPUs 5–7 (14B `M0` Anchor + Mandatory 14B Preflight Gate)**:
-  - GPUs 5–6 (`tp=2`): `c35_14b_preflight.py` (real 1-step train + PEFT export + fixed-ID HF/vLLM parity + 4-item KL VRAM smoke -> MUST emit `preflight_14b_passed.json`!).
-  - Then `14B M0` full anchor (`IFEval 541`, `GSM8K 1,319`, `c3_blind_confirm_v2`, `c3_blind_confirm_v3`, `EX-FEVER 1,000` `no_think` & `think`).
-
-### Wave 5B: 14B 4-Arm Prospective Showdown (`seed=42`, Starts ONLY After `preflight_14b_passed.json`) (~4–5h)
-- All 4 arms run in parallel (`2 × A800` per arm, `microbatch=1, grad_accum=40` = effective batch 40 matching 8B, identical `LR=2.5e-5`, identical Corridor `[4.5, 10.0]` for zero-tuning cross-scale transfer!):
-  - GPUs 0–1: `s5_14b_s42_u1_base` (`Uniform-LoRA`, `loss-mode base`, `10.49M`)
-  - GPUs 2–3: `s5_14b_s42_u2_corridor` (`Uniform-LoRA`, `loss-mode corridor`, `10.49M`)
-  - GPUs 4–5: `s5_14b_s42_v4_mlpplus` (`M3-v4-PureMid-MLP+`, `L16–30`, `loss-mode corridor`, `lr_z1=0, prox_z1=0`, `10.35M`)
-  - GPUs 6–7: `s5_14b_s42_v4_randmask` (`M3-v4-PureMid-MLP+-Random-Mask`, `L16–30`, `loss-mode corridor`, `lr_z1=0, prox_z1=0`, `10.35M`)
-- Per-arm frozen pipeline: `train (300 steps)` -> `dev_selection (c3_dev)` -> `export_peft` -> `vllm_lora_parity (tp=2)` -> single-shot prospective eval on **`c3_blind_confirm_v3` + `c3_blind_confirm_v2` + `c2_confirm_bidir` + `c2_stealth_stress` + `Wiki KL`** -> **`think` (`v3`, `v2`)** -> **`capabilities (14B IFEval/GSM8K, tp=2)`** -> **Official `EX-FEVER` (`no_think` + `think`, `tp=2`)** -> **14B Probe 2 v2** (`u2`, `v4-MLP+`, `v4-RandMask` -> `--aggregate-common`).
-- Final aggregation: `c35_stage5_stats.py` generates strict M0-anchored readouts for BOTH `qwen3_8b` and `qwen3_14b` (raising on any missing unit!).
+Run before allocating GPUs:
+```bash
+$PY experiments/ACL-exp-c3.5/scripts/c35_14b_preflight.py --selftest-tiny
+$PY experiments/ACL-exp-c3.5/scripts/c35_eval_cross_letter_v2.py --selftest-tiny
+$PY experiments/ACL-exp-c3.5/scripts/c35_eval_exfever.py --selftest-tiny
+$PY experiments/ACL-exp-c3.5/scripts/c35_stage5_stats.py --selftest-tiny
+```
 
 ---
 
-## 4. Pre-Registered Decision Gates (Matching Astra's Exact Criteria)
+## 4. Wave 5A: 8B Rank-Matched Closure + 8B `v3`/EX-FEVER/Probe2-v2 + 14B Preflight & `M0` Anchor (All 8 GPUs Parallel, ~2.5h)
 
-1. **Macro-Band Low-Drift Pareto Gate (Primary Contribution, evaluated independently on `v3` & `v2`)**:
-   - `4-Cell 95% CI_low >= -2.0 pp` AND `Joint T1∧4C 95% CI_low >= -2.0 pp` vs same-seed `u2_corridor`;
-   - `WikiText-2 KL <= 0.75 * u2_KL` (`>= 25%` lower reference drift);
-   - M0-anchored relative health gates 100% PASS (`ifeval >= m0 - 10`, `gsm8k >= m0 - 26`, `kl <= 0.005`, `think_pf <= 2%`, `parity == True`).
-2. **External Natural-Language `EX-FEVER` Gate (ACL Main Acceptance Decider)**:
-   - Report `Turn-1 Acc`, `n_orig_correct`, `n_orig_wrong`, `R_UY` (lower is better), `R_RU_evidence` & `R_RU_user_evidence` (higher is better), and `Selectivity = R_RU - R_UY` across `M0`, `u1`, `u2`, `v4-MLP+`, `v4-RandMask`.
-   - Target: Confirm low-drift mid-band `v4-MLP+` preserves/improves evidence-backed rational updating (`R_RU`) without collapsing Turn-1 factual accuracy while suppressing unfounded yielding (`R_UY`).
-3. **Fine-Grained B1 Localization Bonus Gate (Separate Secondary Claim)**:
-   - Paired `(v4-MLP+ − v4-RandMask)` 95% CI_low `> 0` (and on 8B, second seed same direction + cross-check against `Mask2`), PLUS Probe 2 v2 shared-denominator circuit concentration (`b1_heads_only` & `cross_item_diff_outcome_flip`).
-   - Regardless of whether the fine-grained random mask beats or ties on accuracy, report honestly — a tie establishes the clean boundary between causal output localization and mid-band training plasticity!
+### 4.1 GPUs 0–3: Train & Full-Eval 4 New 8B Rank-Matched Random-Mask Arms (Parallel, 1 GPU each)
+| GPU | Tag | Seed | Arch | Loss / Z1 |
+|---:|---|---:|---|---|
+| **GPU 0** | `s5_8b_s42_v4_randmask1` | `42` | `M3-v4-PureMid-MLP+-Random-Mask` | `corridor`, `lr_z1=0.0, prox=0.0` |
+| **GPU 1** | `s5_8b_s1024_v4_randmask1` | `1024` | `M3-v4-PureMid-MLP+-Random-Mask` | `corridor`, `lr_z1=0.0, prox=0.0` |
+| **GPU 2** | `s5_8b_s42_v4_randmask2` | `42` | `M3-v4-PureMid-MLP+-Random-Mask2` | `corridor`, `lr_z1=0.0, prox=0.0` |
+| **GPU 3** | `s5_8b_s1024_v4_randmask2` | `1024` | `M3-v4-PureMid-MLP+-Random-Mask2` | `corridor`, `lr_z1=0.0, prox=0.0` |
+
+Exact per-GPU sequence for each `<TAG>`:
+1. `c35_train.py --model $BASE8 --model-key qwen3_8b --components-file $COMP --arch <ARCH> --loss-mode corridor --iit-target none --lr 2.5e-5 --lr-z1-mult 0.0 --lambda-prox-z1 0.0 --max-steps 300 --grad-accum 20 --microbatch 2 --save-steps 120,200,250,300 --seed <SEED> --out-dir $WORK/ckpts_8b/<TAG>` (copy `train_meta.json` -> `$RES8/<TAG>/`).
+2. `c35_select_dev_ckpt.py --model $BASE8 --model-key qwen3_8b --arch <ARCH> --ckpt-dir $WORK/ckpts_8b/<TAG> --batch-size 16 --out-dir $WORK/selected_8b/<TAG>` (copy `dev_selection.json` -> `$RES8/<TAG>/`).
+3. `c35_export_peft_lora.py --model-key qwen3_8b --arch <ARCH> --adapter-state $WORK/selected_8b/<TAG>/selected_adapter_state.pt --base-model $BASE8 --out-dir $WORK/peft_8b/<TAG>` (copy `c3_peft_export_meta.json` -> `$RES8/<TAG>/`).
+4. `c35_check_vllm_lora_parity.py --base-model $BASE8 --model-key qwen3_8b --arch <ARCH> --adapter-state $WORK/selected_8b/<TAG>/selected_adapter_state.pt --peft-lora-dir $WORK/peft_8b/<TAG> --dataset c3_dev --limit 40 --max-abs-du-mean 0.50 --no-fail-exit --out-json $RES8/<TAG>/vllm_lora_parity.json`.
+5. `c35_eval.py --model $BASE8 --base-model $BASE8 --model-key qwen3_8b --arch <ARCH> --adapter-state $WORK/selected_8b/<TAG>/selected_adapter_state.pt --alias <TAG> --regime no_think --batch-size 8 --datasets c3_blind_confirm_v2 c3_blind_confirm_v3 c2_confirm_bidir c2_stealth_stress --kl-corpus $KL_CORPUS --out-dir $RES8/<TAG>/no_think`.
+6. `c35_eval.py --model $BASE8 --backend vllm --peft-lora-dir $WORK/peft_8b/<TAG> --alias <TAG> --regime think --max-new-tokens 3072 --datasets c3_blind_think_v2 c3_blind_think_v3 --arms turn1_F turn1_V V_hes V_auth F_hes F_auth --out-dir $RES8/<TAG>/think`.
+7. `experiments/ACL-exp-c1/scripts/c1_eval_capabilities.py --model $BASE8 --peft-lora-dir $WORK/peft_8b/<TAG> --ifeval-jsonl $IFEVAL_JSONL --gsm8k-jsonl $GSM8K_JSONL --ifeval-lib-dir $IFEVAL_LIB --alias <TAG> --out-dir $RES8/<TAG>/capabilities`.
+8. `c35_eval_exfever.py --model $BASE8 --peft-lora-dir $WORK/peft_8b/<TAG> --data-jsonl $EXF_DATA --regime no_think --tp 1 --alias <TAG> --out-dir $RES8/<TAG>/exfever` AND `--regime think --tp 1 --alias <TAG> --out-dir $RES8/<TAG>/exfever`.
+9. Incrementally commit & push `$RES8/<TAG>/` to `origin/ACL-exp-c3.5`.
+
+### 4.2 GPUs 4–5: Existing 8B Arms Prospective `v3` + Official `EX-FEVER` + 8B Probe 2 v2
+- Stage each of the 6 existing frozen 8B arms (`s5_8b_s42_u1_base`, `s5_8b_s1024_u1_base`, `s5_8b_s42_u2_corridor`, `s5_8b_s1024_u2_corridor`, `s5_8b_s42_v4_mlpplus`, `s5_8b_s1024_v4_mlpplus`) by copying its existing `no_think/`, `think/`, `capabilities/`, `vllm_lora_parity.json`, `dev_selection.json` from `prev_res` into `$RES8/<TAG>/`.
+- Evaluate ONLY the NEW prospective datasets on each existing 8B arm (split cleanly across GPU 4 & GPU 5, ~35 min total!):
+  - `c35_eval.py --model $BASE8 --model-key qwen3_8b --arch <ARCH> --adapter-state <PT> --alias <TAG> --regime no_think --batch-size 8 --datasets c3_blind_confirm_v3 --out-dir $RES8/<TAG>/no_think_v3` -> copy `records_no_think_c3_blind_confirm_v3.jsonl` into `$RES8/<TAG>/no_think/` (preserving original `eval_summary_no_think.json` & `reference_kl`!).
+  - `c35_eval.py --model $BASE8 --backend vllm --peft-lora-dir <PEFT> --alias <TAG> --regime think --max-new-tokens 3072 --datasets c3_blind_think_v3 --arms turn1_F turn1_V V_hes V_auth F_hes F_auth --out-dir $RES8/<TAG>/think_v3` -> copy `records_think_c3_blind_think_v3.jsonl` into `$RES8/<TAG>/think/`.
+  - `c35_eval_exfever.py --model $BASE8 --peft-lora-dir <PEFT> --data-jsonl $EXF_DATA --regime no_think --tp 1 --alias <TAG> --out-dir $RES8/<TAG>/exfever` AND `--regime think`.
+- Also run `8B M0` on `EX-FEVER` (`no_think` & `think`) into `$RES8/M0/exfever` (no `--peft-lora-dir`)!
+- Once GPUs 0 & 2 finish `s5_8b_s42_v4_randmask1` and `s5_8b_s42_v4_randmask2`: run **8B Probe 2 v2** (`c35_eval_cross_letter_v2.py --model $BASE8 --model-key qwen3_8b --dataset-file experiments/ACL-exp-c3.5/data/c3_blind_confirm_v3_bases.jsonl --out-dir $RES8/probe2_v2`) across `u2_corridor@s42`, `v4_mlpplus@s42`, `v4_randmask1@s42`, `v4_randmask2@s42`, then run `--aggregate-common`!
+- Run `c35_stage5_stats.py` for 8B (`m0_anchor: {ifeval: 440, gsm8k: 496}`, both `c3_blind_confirm_v2` & `c3_blind_confirm_v3`, `exfever_regimes: ["no_think", "think"]`) -> publish `$RES8/c35_stage5_qwen3_8b_stats.json` & `$RES8/C35_STAGE5_QWEN3_8B_READOUT.md`!
+
+### 4.3 GPUs 6–7 (2×A800): MANDATORY 14B Pre-Flight Gate + 14B `M0` Anchor (~45 min)
+1. **MANDATORY HARD GATE (MUST PASS BEFORE WAVE 5B!)**:
+   ```bash
+   CUDA_VISIBLE_DEVICES=6,7 $PY experiments/ACL-exp-c3.5/scripts/c35_14b_preflight.py \
+     --model $BASE14 --components-file $COMP --arch M3-v4-PureMid-MLP+ \
+     --tp 2 --microbatch 1 --grad-accum 40 --parity-limit 20 \
+     --out-dir $RES14/preflight
+   ```
+   Verify `$RES14/preflight/preflight_14b_passed.json` (`passed == true`), immediately push `$RES14/preflight/` to `origin/ACL-exp-c3.5`!
+2. **14B `M0` Full Anchor (`CUDA_VISIBLE_DEVICES=6,7`, `--tp 2`)**:
+   - Capabilities (`IFEval 541` + `GSM8K 1,319`, locks 14B's OWN relative health floor!):
+     `c1_eval_capabilities.py --model $BASE14 --tp 2 --ifeval-jsonl $IFEVAL_JSONL --gsm8k-jsonl $GSM8K_JSONL --ifeval-lib-dir $IFEVAL_LIB --alias m0_14b --out-dir $RES14/M0/capabilities`
+   - `EX-FEVER` (`1,000` official test, BOTH `no_think` & `think`):
+     `c35_eval_exfever.py --model $BASE14 --tp 2 --data-jsonl $EXF_DATA --regime no_think --alias M0 --out-dir $RES14/M0/exfever`
+     `c35_eval_exfever.py --model $BASE14 --tp 2 --data-jsonl $EXF_DATA --regime think --alias M0 --out-dir $RES14/M0/exfever`
+   - `no_think` (`c3_blind_confirm_v2`, `c3_blind_confirm_v3`):
+     `c35_eval.py --model $BASE14 --model-key qwen3_14b --alias m0_14b --regime no_think --batch-size 4 --datasets c3_blind_confirm_v2 c3_blind_confirm_v3 --out-dir $RES14/M0/no_think`
+   - Push `$RES14/M0/` incrementally!
+
+---
+
+## 5. Wave 5B: `Qwen3-14B` Compact 4-Arm Prospective Showdown (`seed=42`, All 8 GPUs = 4 × 2-GPU Parallel, ~4–5h)
+
+> **HARD PRECONDITION**: ONLY launch after `$RES14/preflight/preflight_14b_passed.json` exists with `"passed": true`!
+
+| GPUs | Arm Tag | Seed | Architecture | Loss Mode / Z1 | Params (`Δ%`) |
+|---|---|---:|---|---|---:|
+| **GPU 0,1** | `s5_14b_s42_u1_base` | `42` | `Uniform-LoRA` | `base`, `lr_z1=1.0, prox=0.0` | `10,485,760` (`0.00%`) |
+| **GPU 2,3** | `s5_14b_s42_u2_corridor` | `42` | `Uniform-LoRA` | `corridor`, `lr_z1=1.0, prox=0.0` | `10,485,760` (`0.00%`) |
+| **GPU 4,5** | `s5_14b_s42_v4_mlpplus` | `42` | `M3-v4-PureMid-MLP+` (`L16–30`) | `corridor`, `lr_z1=0.0, prox=0.0` | `10,348,800` (`-1.31%`) |
+| **GPU 6,7** | `s5_14b_s42_v4_randmask` | `42` | `M3-v4-PureMid-MLP+-Random-Mask` (`L16–30`) | `corridor`, `lr_z1=0.0, prox=0.0` | `10,348,800` (`-1.31%`) |
+
+Exact per-2-GPU sequence for each `<TAG>` (zero-tuning cross-scale transfer: `--lr 2.5e-5 --max-steps 300 --grad-accum 40 --microbatch 1 --save-steps 120,200,250,300 --seed 42`):
+1. `c35_train.py --model $BASE14 --model-key qwen3_14b --components-file $COMP --arch <ARCH> --loss-mode <LOSS> --iit-target none --lr 2.5e-5 --lr-z1-mult <LRZ1> --lambda-prox-z1 0.0 --max-steps 300 --grad-accum 40 --microbatch 1 --save-steps 120,200,250,300 --seed 42 --out-dir $WORK/ckpts_14b/<TAG>` (copy `train_meta.json` -> `$RES14/<TAG>/`, push!).
+2. `c35_select_dev_ckpt.py --model $BASE14 --model-key qwen3_14b --arch <ARCH> --ckpt-dir $WORK/ckpts_14b/<TAG> --batch-size 8 --out-dir $WORK/selected_14b/<TAG>` (copy `dev_selection.json` -> `$RES14/<TAG>/`).
+3. `c35_export_peft_lora.py --model-key qwen3_14b --arch <ARCH> --adapter-state $WORK/selected_14b/<TAG>/selected_adapter_state.pt --base-model $BASE14 --out-dir $WORK/peft_14b/<TAG>` (copy `c3_peft_export_meta.json` -> `$RES14/<TAG>/`).
+4. `c35_check_vllm_lora_parity.py --base-model $BASE14 --model-key qwen3_14b --arch <ARCH> --adapter-state $WORK/selected_14b/<TAG>/selected_adapter_state.pt --peft-lora-dir $WORK/peft_14b/<TAG> --dataset c3_dev --limit 40 --tp 2 --max-abs-du-mean 0.50 --no-fail-exit --out-json $RES14/<TAG>/vllm_lora_parity.json`.
+5. `c35_eval.py --model $BASE14 --base-model $BASE14 --model-key qwen3_14b --arch <ARCH> --adapter-state $WORK/selected_14b/<TAG>/selected_adapter_state.pt --alias <TAG> --regime no_think --batch-size 4 --datasets c3_blind_confirm_v3 c3_blind_confirm_v2 c2_confirm_bidir c2_stealth_stress --kl-corpus $KL_CORPUS --out-dir $RES14/<TAG>/no_think`.
+6. `c35_eval.py --model $BASE14 --backend vllm --tp 2 --peft-lora-dir $WORK/peft_14b/<TAG> --alias <TAG> --regime think --max-new-tokens 3072 --datasets c3_blind_think_v3 c3_blind_think_v2 --arms turn1_F turn1_V V_hes V_auth F_hes F_auth --out-dir $RES14/<TAG>/think`.
+7. `experiments/ACL-exp-c1/scripts/c1_eval_capabilities.py --model $BASE14 --tp 2 --peft-lora-dir $WORK/peft_14b/<TAG> --ifeval-jsonl $IFEVAL_JSONL --gsm8k-jsonl $GSM8K_JSONL --ifeval-lib-dir $IFEVAL_LIB --alias <TAG> --out-dir $RES14/<TAG>/capabilities`.
+8. **Official External `EX-FEVER` (`1,000` test, BOTH `no_think` & `think`, `--tp 2`)**:
+   - `c35_eval_exfever.py --model $BASE14 --peft-lora-dir $WORK/peft_14b/<TAG> --data-jsonl $EXF_DATA --regime no_think --tp 2 --alias <TAG> --out-dir $RES14/<TAG>/exfever`
+   - `c35_eval_exfever.py --model $BASE14 --peft-lora-dir $WORK/peft_14b/<TAG> --data-jsonl $EXF_DATA --regime think --tp 2 --alias <TAG> --out-dir $RES14/<TAG>/exfever`
+9. Incrementally commit & push `$RES14/<TAG>/` to `origin/ACL-exp-c3.5`!
+
+### 5.1 14B Upgraded Probe 2 v2 + Final Strict Stage 5 Aggregation
+- Run **14B Probe 2 v2** (`c35_eval_cross_letter_v2.py --model $BASE14 --model-key qwen3_14b --dataset-file experiments/ACL-exp-c3.5/data/c3_blind_confirm_v3_bases.jsonl --out-dir $RES14/probe2_v2`) in parallel across 3 × 2-GPU pairs for `s5_14b_s42_u2_corridor`, `s5_14b_s42_v4_mlpplus`, `s5_14b_s42_v4_randmask`, then run `--aggregate-common`!
+- Generate strict 14B config JSON (using exact pair names `Corridor_vs_Base`, `M3-v4-PureMid-MLP+_vs_u2`, `M3-v4-PureMid-MLP+-Random-Mask_vs_u2`, `v4_MLPplus_vs_v4_RandMask`) and run:
+  ```bash
+  $PY experiments/ACL-exp-c3.5/scripts/c35_stage5_stats.py \
+    --config-json $RES14/stage5_14b_config.json \
+    --m0-cap-json $RES14/M0/capabilities/summary.json \
+    --n-boot 5000 --out-dir $RES14
+  ```
+- Push `$RES14/c35_stage5_qwen3_14b_stats.json`, `$RES14/C35_STAGE5_QWEN3_14B_READOUT.md`, and `$RES14/probe2_v2/` to `origin/ACL-exp-c3.5`!
