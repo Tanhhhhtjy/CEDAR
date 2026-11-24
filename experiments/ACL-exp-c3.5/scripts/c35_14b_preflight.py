@@ -160,7 +160,7 @@ def main() -> None:
     ap.add_argument("--arch", type=str, default="M3-v4-PureMid-MLP+")
     ap.add_argument("--tp", type=int, default=2)
     ap.add_argument("--microbatch", type=int, default=1)
-    ap.add_argument("--grad-accum", type=int, default=40)
+    ap.add_argument("--grad-accum", type=int, default=20)
     ap.add_argument("--parity-limit", type=int, default=20)
     ap.add_argument("--out-dir", type=Path, default=C35 / "results" / "stage5_14b" / "preflight")
     args = ap.parse_args()
