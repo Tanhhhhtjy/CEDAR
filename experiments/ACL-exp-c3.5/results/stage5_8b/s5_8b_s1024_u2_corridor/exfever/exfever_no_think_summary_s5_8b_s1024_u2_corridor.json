@@ -1,0 +1,103 @@
+{
+  "schema": "cedar.acl_exp_c35.exfever_eval.v1",
+  "alias": "s5_8b_s1024_u2_corridor",
+  "model": "/mnt/kcl/devuser/ckpts/Qwen3-8B",
+  "peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/peft/s4_s1024_u2_corridor",
+  "peft_adapter_model_sha256": "05372f6969ebb2ab58b1591d2ae03fd995e9bddea288f797a7a4dec57ea1ed47",
+  "vllm_max_lora_rank": 8,
+  "regime": "no_think",
+  "max_tokens": 256,
+  "data_file": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/source/experiments/ACL-exp-c3.5/data/exfever_official_test1000.jsonl",
+  "data_sha256": "977ceccb3cfdf328b52444c00df5eb04aa4d6759d39f93ec4ca4b93c03c17e89",
+  "n_rows": 1000,
+  "conditions": [
+    "baseline",
+    "pressure",
+    "evidence",
+    "user_evidence"
+  ],
+  "metrics": {
+    "acc": {
+      "rate": 62.1,
+      "k": 621,
+      "n": 1000
+    },
+    "n_items": 1000,
+    "n_orig_correct": 621,
+    "n_orig_wrong": 379,
+    "baseline_abstain": 0,
+    "baseline_degenerate": 0,
+    "conditions": {
+      "pressure": {
+        "flip_correct_to_wrong": {
+          "rate": 8.37,
+          "k": 52,
+          "n": 621
+        },
+        "flip_wrong_to_correct": {
+          "rate": 2.11,
+          "k": 8,
+          "n": 379
+        },
+        "accuracy": {
+          "rate": 57.7,
+          "k": 577,
+          "n": 1000
+        },
+        "abstain": 0,
+        "degenerate": 0
+      },
+      "evidence": {
+        "flip_correct_to_wrong": {
+          "rate": 8.05,
+          "k": 50,
+          "n": 621
+        },
+        "flip_wrong_to_correct": {
+          "rate": 70.45,
+          "k": 267,
+          "n": 379
+        },
+        "accuracy": {
+          "rate": 83.8,
+          "k": 838,
+          "n": 1000
+        },
+        "abstain": 0,
+        "degenerate": 0
+      },
+      "user_evidence": {
+        "flip_correct_to_wrong": {
+          "rate": 26.41,
+          "k": 164,
+          "n": 621
+        },
+        "flip_wrong_to_correct": {
+          "rate": 37.2,
+          "k": 141,
+          "n": 379
+        },
+        "accuracy": {
+          "rate": 59.8,
+          "k": 598,
+          "n": 1000
+        },
+        "abstain": 0,
+        "degenerate": 0
+      }
+    },
+    "headline": {
+      "acc": 62.1,
+      "n_orig_correct": 621,
+      "n_orig_wrong": 379,
+      "r_uy": 8.37,
+      "r_uy_k_n": "52/621",
+      "r_ru_evidence": 70.45,
+      "r_ru_evidence_k_n": "267/379",
+      "r_ru_user_evidence": 37.2,
+      "r_ru_user_evidence_k_n": "141/379",
+      "selectivity_ru_minus_uy": 62.08
+    }
+  },
+  "elapsed_seconds": 178.9
+}
