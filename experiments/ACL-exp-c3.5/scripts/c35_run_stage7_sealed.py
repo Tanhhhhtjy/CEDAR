@@ -20,9 +20,11 @@ Modes:
 from __future__ import annotations
 
 import argparse
+import gc
 import hashlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -211,6 +213,69 @@ def build_stage7_jobs(
     return jobs
 
 
+def _merged_shards_match(mdir: Path, expected_shards: dict[str, str]) -> bool:
+    if not mdir.is_dir():
+        return False
+    for sh_name, exp_sh in sorted(expected_shards.items()):
+        sp = mdir / sh_name
+        if not sp.is_file() or sha256_file(sp) != exp_sh:
+            return False
+    return True
+
+
+def _recreate_pinpoint_merged_exact(
+    *,
+    base_model: str,
+    peft_dir: Path,
+    mdir: Path,
+    expected_shards: dict[str, str],
+) -> str | None:
+    """Reproduce Stage 6 Pinpoint-DLA-Corridor BF16 merged shards bit-for-bit (never weakens SHA-256 lock).
+
+    Note: Stage 6 `s6_8b_s42_pinpoint_dla_corridor/vllm_merged_parity.json` passed on direct BF16 merge
+    (`dtype="bfloat16"`, NO `merge_accumulation_dtype="float32"`). We try exact PEFT BF16 recipes
+    (CPU, CUDA, and safe_merge variants) and stop as soon as ALL 4 shard SHA-256 hashes match bit-for-bit.
+    """
+    import torch
+    from peft import PeftModel
+    from transformers import AutoModelForCausalLM, AutoTokenizer
+
+    recipes: list[tuple[str, str, bool, bool]] = [("bf16_cpu", "cpu", True, False)]
+    if torch.cuda.is_available():
+        recipes.append(("bf16_cuda", "cuda:0", True, False))
+    recipes.append(("bf16_cpu_no_autocast", "cpu", False, False))
+    if torch.cuda.is_available():
+        recipes.append(("bf16_cuda_no_autocast", "cuda:0", False, False))
+    recipes.append(("bf16_cpu_safe", "cpu", True, True))
+    if torch.cuda.is_available():
+        recipes.append(("bf16_cuda_safe", "cuda:0", True, True))
+
+    for rname, dev, autocast_adp, safe_m in recipes:
+        print(f"  [INFO] Re-merging Pinpoint-DLA-Corridor ({rname}) into {mdir} ...", flush=True)
+        if mdir.exists():
+            shutil.rmtree(mdir)
+        dm = "cpu" if dev == "cpu" else {"": dev}
+        base = AutoModelForCausalLM.from_pretrained(
+            base_model, dtype=torch.bfloat16, device_map=dm, trust_remote_code=True
+        )
+        pm = PeftModel.from_pretrained(base, str(peft_dir), autocast_adapter_dtype=autocast_adp)
+        merged = pm.merge_and_unload(safe_merge=safe_m)
+        if dev != "cpu":
+            merged = merged.to("cpu")
+        mdir.mkdir(parents=True, exist_ok=True)
+        merged.save_pretrained(mdir, safe_serialization=True)
+        AutoTokenizer.from_pretrained(base_model, trust_remote_code=True).save_pretrained(mdir)
+        del merged, pm, base
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        if _merged_shards_match(mdir, expected_shards):
+            print(f"  [OK] Pinpoint-DLA-Corridor merged shards matched bit-for-bit via recipe={rname}!", flush=True)
+            return rname
+        print(f"  [WARN] Recipe {rname} did not match all 4 locked shard SHA-256s; trying next exact BF16 recipe...", flush=True)
+    return None
+
+
 def verify_server_assets(
     cfg: dict[str, Any],
     *,
@@ -285,7 +350,8 @@ def verify_server_assets(
                         errors.append(f"[{tag}] PEFT SHA mismatch: {act_p} != {arm['expected_peft_sha256']}")
             elif arm.get("think_backend") == "vllm_bf16_merged":
                 mdir = Path(arm["server_merged_model"])
-                if not mdir.is_dir() and recreate_pinpoint_merged:
+                exp_shards = arm["expected_merged_shards_sha256"]
+                if not _merged_shards_match(mdir, exp_shards) and recreate_pinpoint_merged:
                     peft_dir = Path("/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/peft_8b/s6_8b_s42_pinpoint_dla_corridor")
                     peft_st = peft_dir / "adapter_model.safetensors"
                     exp_pinpoint_peft_sha = "ee3454fdf4cb3aba1a640dcd1c859eb835a5df8e6ac86d6282f0ce2a6ce87d76"
@@ -294,22 +360,17 @@ def verify_server_assets(
                     elif sha256_file(peft_st) != exp_pinpoint_peft_sha:
                         errors.append(f"[{tag}] Source PEFT SHA mismatch before re-merge: {sha256_file(peft_st)} != {exp_pinpoint_peft_sha}")
                     else:
-                        print(f"  [INFO] Source PEFT verified; re-merging Pinpoint-DLA-Corridor into {mdir} (float32 accum -> BF16)...")
-                        import torch
-                        from peft import PeftModel
-                        from transformers import AutoModelForCausalLM, AutoTokenizer
-
-                        base = AutoModelForCausalLM.from_pretrained(sc["base_model"], dtype=torch.float32, device_map="cpu", trust_remote_code=True)
-                        pm = PeftModel.from_pretrained(base, str(peft_dir))
-                        merged = pm.merge_and_unload().to(dtype=torch.bfloat16)
-                        mdir.mkdir(parents=True, exist_ok=True)
-                        merged.save_pretrained(mdir, safe_serialization=True)
-                        AutoTokenizer.from_pretrained(sc["base_model"], trust_remote_code=True).save_pretrained(mdir)
-                        del merged, pm, base
+                        print(f"  [INFO] Source PEFT verified ({exp_pinpoint_peft_sha[:16]}...); matching Stage 6 direct BF16 merged shards...")
+                        _recreate_pinpoint_merged_exact(
+                            base_model=sc["base_model"],
+                            peft_dir=peft_dir,
+                            mdir=mdir,
+                            expected_shards=exp_shards,
+                        )
                 if not mdir.is_dir():
                     errors.append(f"[{tag}] Missing BF16 merged dir {mdir} (re-run with --recreate-pinpoint-merged if deleted after Stage 6)")
                 else:
-                    for sh_name, exp_sh in sorted(arm["expected_merged_shards_sha256"].items()):
+                    for sh_name, exp_sh in sorted(exp_shards.items()):
                         sp = mdir / sh_name
                         if not sp.is_file():
                             errors.append(f"[{tag}] Missing merged shard {sp}")

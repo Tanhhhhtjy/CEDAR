@@ -25,8 +25,9 @@ $PY experiments/ACL-exp-c3.5/scripts/c35_stage7_stats.py --dry-run-open
 $PY experiments/ACL-exp-c3.5/scripts/c35_run_stage7_sealed.py --dry-run-plan
 
 # 2. Verify ALL 23 adapter .pt, 21 PEFT .safetensors, Pinpoint BF16 merged shards, CAA frozen vector (L2==42.4911), and dataset SHA-256s!
-# Note: --recreate-pinpoint-merged is a safe no-op if merged_8b/ already exists; if cleaned up after Stage 6,
-# it verifies source PEFT SHA-256 (ee3454fdf4cb3aba...), re-merges FP32->BF16, and verifies all 4 shard SHA-256s bit-for-bit!
+# Note: --recreate-pinpoint-merged is a safe no-op if all 4 shard SHA-256s already match; otherwise it verifies
+# source PEFT SHA-256 (ee3454fdf4cb3aba...), reproduces Stage 6's direct BF16 merge (CPU/CUDA exact), and enforces
+# bit-for-bit verification of all 4 locked shard SHA-256s before proceeding!
 $PY experiments/ACL-exp-c3.5/scripts/c35_run_stage7_sealed.py --verify-only --recreate-pinpoint-merged
 ```
 
