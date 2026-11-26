@@ -1,6 +1,6 @@
-# Pre-Registration Protocol for Final One-Shot Unsealing (`c1_test_id` & `c1_test_ood`) — **STATUS: HOLD (DRAFT)**
+# Pre-Registration Protocol for Final One-Shot Unsealing (`c1_test_id` & `c1_test_ood`) — **SUPERSEDED BY SIGNED PROTOCOL**
 
-> **ABSOLUTE HOLD**: This document is a pre-unseal draft prepared BEFORE Stage 6 executes. Sealed files `experiments/ACL-exp-c1/data/c1_test_id_bases.jsonl` and `experiments/ACL-exp-c1/data/c1_test_ood_bases.jsonl` have **NOT** been opened, inspected, or evaluated. Final unsealing (`--allow-sealed-final`) is STRICTLY BLOCKED until Stage 6 completes, all adapter weight SHA-256 hashes below are populated and frozen, and this protocol is timestamp-signed!
+> **SUPERSEDED**: This pre-Stage-6 draft has been superseded by the formal, signed Stage 7 pre-registration protocol [`PRE_REGISTRATION_SEALED_TEST.md`](PRE_REGISTRATION_SEALED_TEST.md) and machine-verified lockfile [`data/stage7_sealed_config.json`](data/stage7_sealed_config.json) (which lock every full 64-char adapter/PEFT/merged-shard SHA-256, per-arm backend, frozen CAA vector spec, Holm-Bonferroni multiplicity, and open-data dry-run verification). Retained for historical audit transparency only.
 
 ---
 

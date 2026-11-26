@@ -22,9 +22,12 @@ CPU Self-Test:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import math
 import statistics
 import sys
+import tempfile
 import time
 from collections import defaultdict
 from contextlib import contextmanager
@@ -361,11 +364,151 @@ def run_selftest_tiny() -> None:
         assert 0.0 <= sc["dev_joint_uw"] <= 1.0
         assert 0.0 <= sc["dev_turn1_dual_acc"] <= 1.0
 
+    # Test Stage 7 frozen-vector guardrails (SHA-256 check, L2 check, sealed-requires-frozen, no-overwrite)!
+    with tempfile.TemporaryDirectory() as td:
+        td_p = Path(td)
+        vec_pt = td_p / "caa_directions_train.pt"
+        torch.save({"dirs": dirs, "meta": meta}, vec_pt)
+        good_sha = _sha256_file(vec_pt)
+        expected_l2 = float(dirs["anti_syco"][2].float().norm().item())
+
+        # 1. Sealed dataset WITHOUT --allow-sealed-final MUST fail
+        try:
+            _validate_caa_frozen_guards(
+                datasets=["c1_test_id"], out_dir=td_p / "o1",
+                frozen_vector_file=vec_pt, allow_sealed_final=False, no_overwrite=True,
+                expected_vector_sha256=good_sha,
+            )
+            raise RuntimeError("Should have blocked sealed dataset without --allow-sealed-final!")
+        except PermissionError:
+            pass
+
+        # 2. Sealed dataset WITH --allow-sealed-final but WITHOUT --frozen-vector-file MUST fail (never re-search dev!)
+        try:
+            _validate_caa_frozen_guards(
+                datasets=["c1_test_id"], out_dir=td_p / "o1",
+                frozen_vector_file=None, allow_sealed_final=True, no_overwrite=True,
+                expected_vector_sha256=None,
+            )
+            raise RuntimeError("Should have required --frozen-vector-file for sealed eval!")
+        except AssertionError:
+            pass
+
+        # 3. Wrong vector SHA-256 MUST fail
+        try:
+            _validate_caa_frozen_guards(
+                datasets=["c1_dev"], out_dir=td_p / "o1",
+                frozen_vector_file=vec_pt, allow_sealed_final=False, no_overwrite=True,
+                expected_vector_sha256="f" * 64,
+            )
+            raise RuntimeError("Should have caught CAA vector SHA-256 mismatch!")
+        except AssertionError:
+            pass
+
+        # 4. Exact SHA-256 + L2 check succeeds, wrong L2 fails
+        vec_loaded, v_sha, v_l2 = load_frozen_caa_vector(
+            vec_pt, mode="anti_syco", layer=2,
+            expected_sha256=good_sha, expected_l2=expected_l2,
+        )
+        assert v_sha == good_sha and abs(v_l2 - expected_l2) < 1e-4 and vec_loaded.shape == dirs["anti_syco"][2].shape
+        try:
+            load_frozen_caa_vector(vec_pt, mode="anti_syco", layer=2, expected_sha256=good_sha, expected_l2=expected_l2 + 5.0)
+            raise RuntimeError("Should have caught L2 mismatch!")
+        except AssertionError:
+            pass
+
+        # 5. No-overwrite blocks duplicate output
+        nt_o = td_p / "o2" / "no_think"
+        nt_o.mkdir(parents=True, exist_ok=True)
+        (nt_o / "records_no_think_c1_dev.jsonl").write_text("{}\n", encoding="utf-8")
+        try:
+            _validate_caa_frozen_guards(
+                datasets=["c1_dev"], out_dir=td_p / "o2",
+                frozen_vector_file=vec_pt, allow_sealed_final=False, no_overwrite=True,
+                expected_vector_sha256=good_sha,
+            )
+            raise RuntimeError("Should have blocked overwrite!")
+        except FileExistsError:
+            pass
+
     print(
-        f"[OK] c35_eval_caa self-test PASSED (real summarize_v2 schema verified!): "
+        f"[OK] c35_eval_caa self-test PASSED (real summarize_v2 + Stage 7 frozen-vector/SHA256/no-overwrite guards!): "
         f"norms={meta['vector_l2_norms']}, kl0={kl0['kl_mean']}, kl1={kl1['kl_mean']}, "
         f"dev_a0={sc_0}, dev_a15={sc_1}"
     )
+
+
+def _sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for ch in iter(lambda: f.read(1 << 20), b""):
+            h.update(ch)
+    return h.hexdigest()
+
+
+def _validate_caa_frozen_guards(
+    *,
+    datasets: list[str],
+    out_dir: Path,
+    frozen_vector_file: Path | None,
+    allow_sealed_final: bool,
+    no_overwrite: bool,
+    expected_vector_sha256: str | None,
+) -> bool:
+    has_sealed = any(d in C3EV.SEALED_DATASETS for d in datasets)
+    if has_sealed and not allow_sealed_final:
+        raise PermissionError(f"[SEALED BLOCKED] Refusing CAA eval on {datasets} without --allow-sealed-final!")
+    if has_sealed and frozen_vector_file is None:
+        raise AssertionError(
+            "[SEALED REQUIRES FROZEN VECTOR] Sealed CAA evaluation MUST pass --frozen-vector-file "
+            "(never re-extract directions or re-search dev grid during sealed unsealing!)."
+        )
+    if frozen_vector_file is not None:
+        if not frozen_vector_file.is_file():
+            raise FileNotFoundError(f"Missing --frozen-vector-file: {frozen_vector_file}")
+        actual_sha = _sha256_file(frozen_vector_file)
+        if expected_vector_sha256 and actual_sha != expected_vector_sha256.strip().lower():
+            raise AssertionError(f"[CAA VECTOR SHA256 MISMATCH] actual={actual_sha} != expected={expected_vector_sha256}")
+
+    enforce_no_overwrite = bool(no_overwrite or has_sealed)
+    if enforce_no_overwrite:
+        nt_dir = out_dir / "no_think"
+        targets = [nt_dir / "eval_summary_no_think.json"] + [nt_dir / f"records_no_think_{ds}.jsonl" for ds in datasets]
+        existing = [str(p) for p in targets if p.exists()]
+        if existing:
+            raise FileExistsError(f"[NO-OVERWRITE BLOCKED] Refusing to overwrite existing CAA output(s): {existing}")
+    return enforce_no_overwrite
+
+
+def load_frozen_caa_vector(
+    frozen_vector_file: Path,
+    *,
+    mode: str,
+    layer: int,
+    expected_sha256: str | None = None,
+    expected_l2: float | None = None,
+    l2_tol: float = 0.02,
+) -> tuple[torch.Tensor, str, float]:
+    actual_sha = _sha256_file(frozen_vector_file)
+    if expected_sha256:
+        exp = expected_sha256.strip().lower()
+        if actual_sha != exp:
+            raise AssertionError(f"[CAA VECTOR SHA256 MISMATCH] actual={actual_sha} != expected={exp}")
+    payload = torch.load(frozen_vector_file, map_location="cpu", weights_only=False)
+    dirs = payload["dirs"]
+    if mode not in dirs:
+        raise KeyError(f"Frozen CAA vector file missing mode {mode!r}; available={sorted(dirs.keys())}")
+    layer_map = dirs[mode]
+    vec = layer_map[layer] if layer in layer_map else layer_map[str(layer)]
+    vec = vec.detach().float().cpu()
+    v_l2 = float(vec.norm().item())
+    if not math.isfinite(v_l2) or v_l2 <= 0.0:
+        raise AssertionError(f"Invalid CAA vector L2 norm: {v_l2}")
+    if expected_l2 is not None and abs(v_l2 - float(expected_l2)) > l2_tol:
+        raise AssertionError(
+            f"[CAA VECTOR L2 MISMATCH] mode={mode} layer={layer}: actual_l2={v_l2:.4f} vs expected={expected_l2:.4f}"
+        )
+    return vec, actual_sha, round(v_l2, 4)
 
 
 def main() -> None:
@@ -383,6 +526,17 @@ def main() -> None:
     ap.add_argument("--exfever-batch-size", type=int, default=16)
     ap.add_argument("--datasets", type=str, default="c3_blind_confirm_v2,c3_blind_confirm_v3,c3_entity_balanced_v1")
     ap.add_argument("--out-dir", type=Path)
+    # Stage 7 Frozen-Vector Sealed Evaluation Flags (zero re-extraction, zero dev re-search!)
+    ap.add_argument("--frozen-vector-file", type=Path, default=None, help="Pre-extracted caa_directions_train.pt from Stage 6")
+    ap.add_argument("--expected-vector-sha256", type=str, default=None)
+    ap.add_argument("--expected-vector-l2", type=float, default=None)
+    ap.add_argument("--frozen-mode", type=str, default="anti_syco")
+    ap.add_argument("--frozen-layer", type=int, default=22)
+    ap.add_argument("--frozen-alpha", type=float, default=1.0)
+    ap.add_argument("--allow-sealed-final", action="store_true")
+    ap.add_argument("--no-overwrite", action="store_true")
+    ap.add_argument("--skip-kl", action="store_true")
+    ap.add_argument("--skip-exfever", action="store_true")
     args = ap.parse_args()
 
     if args.selftest_tiny:
@@ -390,7 +544,20 @@ def main() -> None:
         return
 
     assert args.model and args.out_dir, "--model and --out-dir are required"
-    assert args.kl_corpus is not None and args.kl_corpus.is_file(), f"Missing --kl-corpus: {args.kl_corpus}"
+    ds_list = [x.strip() for x in args.datasets.split(",") if x.strip()]
+    assert ds_list, "--datasets must be non-empty"
+
+    enforce_no_overwrite = _validate_caa_frozen_guards(
+        datasets=ds_list,
+        out_dir=args.out_dir,
+        frozen_vector_file=args.frozen_vector_file,
+        allow_sealed_final=bool(args.allow_sealed_final),
+        no_overwrite=bool(args.no_overwrite),
+        expected_vector_sha256=args.expected_vector_sha256,
+    )
+
+    if not args.skip_kl:
+        assert args.kl_corpus is not None and args.kl_corpus.is_file(), f"Missing --kl-corpus: {args.kl_corpus}"
     args.out_dir.mkdir(parents=True, exist_ok=True)
     t0 = time.time()
 
@@ -403,6 +570,75 @@ def main() -> None:
     a_id, b_id = B1L.readout_token_ids(tok, "Final:", "A", "B")
     c_id, d_id = B1L.readout_token_ids(tok, "Final:", "C", "D")
     opt_ids = {"A": int(a_id), "B": int(b_id), "C": int(c_id), "D": int(d_id)}
+
+    # =========================================================================
+    # FROZEN-VECTOR MODE (Stage 7 sealed evaluation or reproducible replay)
+    # =========================================================================
+    if args.frozen_vector_file is not None:
+        sel_mode = str(args.frozen_mode)
+        sel_layer = int(args.frozen_layer)
+        sel_alpha = float(args.frozen_alpha)
+        sel_vec, vec_sha, vec_l2 = load_frozen_caa_vector(
+            args.frozen_vector_file,
+            mode=sel_mode,
+            layer=sel_layer,
+            expected_sha256=args.expected_vector_sha256,
+            expected_l2=args.expected_vector_l2,
+        )
+        print(
+            f"[c35_eval_caa] FROZEN-VECTOR MODE: file={args.frozen_vector_file} sha256={vec_sha[:16]} "
+            f"mode={sel_mode} layer={sel_layer} alpha={sel_alpha:+.2f} l2={vec_l2:.4f}"
+        )
+        nt_dir = args.out_dir / "no_think"
+        nt_dir.mkdir(parents=True, exist_ok=True)
+        eval_arm_list = list(C1EV.EVAL_ARMS)
+        ds_summaries: dict[str, Any] = {}
+        ds_hashes: dict[str, str] = {}
+        with caa_steering_hook(model, sel_layer, sel_vec, sel_alpha):
+            for ds_name in ds_list:
+                ds_path = C3EV.C3_DATASETS[ds_name]
+                ds_hashes[ds_name] = _sha256_file(ds_path)
+                ds_rows = [json.loads(l) for l in ds_path.read_text(encoding="utf-8").splitlines() if l.strip()]
+                recs = C3EV.eval_nothink_dataset_batched(model, tok, a1_cfg, ds_rows, eval_arm_list, opt_ids, batch_size=args.batch_size)
+                rec_p = nt_dir / f"records_no_think_{ds_name}.jsonl"
+                rec_p.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in recs) + "\n", encoding="utf-8", newline="\n")
+                bm = S35.compute_base_metrics_v2(recs)
+                ds_summaries[ds_name] = S35.summarize_v2(bm)
+                print(f"  [CAA frozen] {ds_name}: n={len(ds_rows)} 4C={ds_summaries[ds_name]['four_cell_family_weighted']*100:.2f}%")
+
+        kl_on = None
+        if not args.skip_kl and args.kl_corpus is not None:
+            kl_lines = [l.strip() for l in args.kl_corpus.read_text(encoding="utf-8").splitlines() if l.strip()][:200]
+            kl_texts = [json.loads(l)["text"] if l.startswith("{") else l for l in kl_lines]
+            kl_on = compute_steered_wikitext_kl(model, tok, kl_texts, layer_idx=sel_layer, direction=sel_vec, alpha=sel_alpha)
+
+        eval_sum = {
+            "schema": "cedar.acl_exp_c35.caa_frozen_eval_summary.v1",
+            "alias": "caa_steering_frozen",
+            "model": args.model,
+            "regime": "no_think",
+            "backend": "hf_caa_frozen_hook",
+            "selected": {
+                "contrast_mode": sel_mode,
+                "layer": sel_layer,
+                "alpha": sel_alpha,
+                "vector_l2_norm": vec_l2,
+                "intervention_position": "all_positions_layer_output_residual_addition",
+            },
+            "provenance": {
+                "frozen_vector_file": str(args.frozen_vector_file),
+                "frozen_vector_sha256": vec_sha,
+                "datasets_sha256": ds_hashes,
+                "allow_sealed_final": bool(args.allow_sealed_final),
+                "no_overwrite_enforced": enforce_no_overwrite,
+            },
+            "reference_kl": kl_on,
+            "datasets_summary": ds_summaries,
+            "elapsed_seconds": round(time.time() - t0, 1),
+        }
+        (nt_dir / "eval_summary_no_think.json").write_text(json.dumps(eval_sum, indent=2) + "\n", encoding="utf-8", newline="\n")
+        print(f"[c35_eval_caa] FROZEN EVAL DONE in {eval_sum['elapsed_seconds']}s -> {nt_dir}")
+        return
 
     layers = [int(x.strip()) for x in args.layers.split(",") if x.strip()]
     alphas = [float(x.strip()) for x in args.alphas.split(",") if x.strip()]

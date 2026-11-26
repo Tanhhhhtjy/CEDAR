@@ -1,0 +1,536 @@
+{
+  "schema": "cedar.acl_exp_c35.stage7_sealed_config.v1",
+  "status": "SIGNED_PRE_REGISTRATION",
+  "id_dataset_name": "c1_test_id",
+  "ood_dataset_name": "c1_test_ood",
+  "id_bases_file": "experiments/ACL-exp-c1/data/c1_test_id_bases.jsonl",
+  "ood_bases_file": "experiments/ACL-exp-c1/data/c1_test_ood_bases.jsonl",
+  "expected_dataset_sha256": {
+    "c1_test_id_bases.jsonl": "8c0349f9adf8d7316814e4a46920fde83cc848643d6c781c903ac2fb5337e771",
+    "c1_test_ood_bases.jsonl": "796d4f23d2ebcd11d82978c37674bed15d7f8473c842666b8e9e2ae25576b76b"
+  },
+  "require_exact_60_60": true,
+  "scales": {
+    "qwen3_14b": {
+      "base_model": "/mnt/kcl/devuser/ckpts/Qwen3-14B",
+      "components_file": "experiments/ACL-exp-c3.5/data/c35_components_frozen.json",
+      "m0": {
+        "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/14b/s7_14b_m0"
+      },
+      "m0_regimes": [
+        "no_think",
+        "think"
+      ],
+      "arms": [
+        {
+          "model_group": "M0",
+          "seed": 42,
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/14b/s7_14b_m0",
+          "regimes": [
+            "no_think",
+            "think"
+          ]
+        },
+        {
+          "tag": "s7_14b_s42_u1_base",
+          "model_group": "u1_base",
+          "seed": 42,
+          "arch": "Uniform-LoRA",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/14b/s7_14b_s42_u1_base",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/selected_14b/s5_14b_s42_u1_base/selected_adapter_state.pt",
+          "expected_adapter_sha256": "3a54206be40a6b6864ba115cc370a6b4bf7aabb3cad9aa5d2a1cce9a591b4e05",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/peft_14b/s5_14b_s42_u1_base",
+          "expected_peft_sha256": "aba872fd52c4e0e077ad2bf5b82073e2ed428b2b400a9a3290db98d8d363c474"
+        },
+        {
+          "tag": "s7_14b_s1024_u1_base",
+          "model_group": "u1_base",
+          "seed": 1024,
+          "arch": "Uniform-LoRA",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/14b/s7_14b_s1024_u1_base",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/selected_14b/s6_14b_s1024_u1_base/selected_adapter_state.pt",
+          "expected_adapter_sha256": "b36db5b030bddab8715ddd4cb85d8e5d0d76f357055483170bfdfaabc23d946d",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/peft_14b/s6_14b_s1024_u1_base",
+          "expected_peft_sha256": "15d56253ca967d9139286550ab41c7f2110d71d87ad748a95fddefd04e58c5c9"
+        },
+        {
+          "tag": "s7_14b_s42_u2_corridor",
+          "model_group": "u2_corridor",
+          "seed": 42,
+          "arch": "Uniform-LoRA",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/14b/s7_14b_s42_u2_corridor",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/selected_14b/s5_14b_s42_u2_corridor/selected_adapter_state.pt",
+          "expected_adapter_sha256": "0847b7d1ae77b86455c3bc4197c04e6f58478a5f8a1d796ec6810fdbd2ac2cc8",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/peft_14b/s5_14b_s42_u2_corridor",
+          "expected_peft_sha256": "3d6203a4ba391213ce08ba2fdf492092c2b27005818473256591bfd03d322065"
+        },
+        {
+          "tag": "s7_14b_s1024_u2_corridor",
+          "model_group": "u2_corridor",
+          "seed": 1024,
+          "arch": "Uniform-LoRA",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/14b/s7_14b_s1024_u2_corridor",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/selected_14b/s6_14b_s1024_u2_corridor/selected_adapter_state.pt",
+          "expected_adapter_sha256": "dbf14008eeb8f08fcb09bb1a3e4aa494988d203cbb2fcf71f1fe56963d58e405",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/peft_14b/s6_14b_s1024_u2_corridor",
+          "expected_peft_sha256": "4aa713601d344b6ef85201c585fc0ae5e161f0eabf4eda0bfef8bf084b9fc0d5"
+        },
+        {
+          "tag": "s7_14b_s42_v4_mlpplus",
+          "model_group": "M3-v4-PureMid-MLP+",
+          "seed": 42,
+          "arch": "M3-v4-PureMid-MLP+",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/14b/s7_14b_s42_v4_mlpplus",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/selected_14b/s5_14b_s42_v4_mlpplus/selected_adapter_state.pt",
+          "expected_adapter_sha256": "cb3fde2d9773243023494691b001c6be8e1a7815c0e9c636bd2cbaa8ad48809b",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/peft_14b/s5_14b_s42_v4_mlpplus",
+          "expected_peft_sha256": "5344b0e6683ccfd59ad5054da23f02c38799d12c6879aadb08def8c3bc999d42"
+        },
+        {
+          "tag": "s7_14b_s1024_v4_mlpplus",
+          "model_group": "M3-v4-PureMid-MLP+",
+          "seed": 1024,
+          "arch": "M3-v4-PureMid-MLP+",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/14b/s7_14b_s1024_v4_mlpplus",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/selected_14b/s6_14b_s1024_v4_mlpplus/selected_adapter_state.pt",
+          "expected_adapter_sha256": "0c3a9c0c404a02b27c0a4fcbf8362a6c14215542122894672cbf15098e8ed8d5",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/peft_14b/s6_14b_s1024_v4_mlpplus",
+          "expected_peft_sha256": "fd1d14027addf01f023be0c5451deb577bfce15cccd0db10026009f0af8cd5b1"
+        },
+        {
+          "tag": "s7_14b_s42_v4_randmask",
+          "model_group": "M3-v4-PureMid-MLP+-Random-Mask",
+          "seed": 42,
+          "arch": "M3-v4-PureMid-MLP+-Random-Mask",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/14b/s7_14b_s42_v4_randmask",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/selected_14b/s5_14b_s42_v4_randmask/selected_adapter_state.pt",
+          "expected_adapter_sha256": "a62ad947c985442d74c3750ffdcdef651b880d0816389b567d6be975481a8628",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/peft_14b/s5_14b_s42_v4_randmask",
+          "expected_peft_sha256": "69cad29a22a2f154dbb89c58fe14aea01b8e0461dc6c7542a293e66fab9df32d"
+        },
+        {
+          "tag": "s7_14b_s1024_v4_randmask",
+          "model_group": "M3-v4-PureMid-MLP+-Random-Mask",
+          "seed": 1024,
+          "arch": "M3-v4-PureMid-MLP+-Random-Mask",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/14b/s7_14b_s1024_v4_randmask",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/selected_14b/s6_14b_s1024_v4_randmask/selected_adapter_state.pt",
+          "expected_adapter_sha256": "71c82f5fcb5cc83cb398e71e0f0cd0b2ca5bd075038c11107efde7b900103404",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/peft_14b/s6_14b_s1024_v4_randmask",
+          "expected_peft_sha256": "37ae90d71fe811e738347301184010cd48a645a6f32c86e7d843b11905fb85a7"
+        }
+      ],
+      "comparisons": [
+        {
+          "name": "14B_v4_vs_u2",
+          "tier": "primary",
+          "model_a": "M3-v4-PureMid-MLP+",
+          "model_b": "u2_corridor"
+        },
+        {
+          "name": "14B_v4_vs_RandMask",
+          "tier": "primary",
+          "model_a": "M3-v4-PureMid-MLP+",
+          "model_b": "M3-v4-PureMid-MLP+-Random-Mask"
+        },
+        {
+          "name": "14B_u2_vs_u1",
+          "tier": "secondary",
+          "model_a": "u2_corridor",
+          "model_b": "u1_base"
+        },
+        {
+          "name": "14B_RandMask_vs_u2",
+          "tier": "secondary",
+          "model_a": "M3-v4-PureMid-MLP+-Random-Mask",
+          "model_b": "u2_corridor"
+        }
+      ]
+    },
+    "qwen3_8b": {
+      "base_model": "/mnt/kcl/devuser/ckpts/Qwen3-8B",
+      "components_file": "experiments/ACL-exp-c3.5/data/c35_stage6_components_frozen.json",
+      "m0": {
+        "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_m0"
+      },
+      "m0_regimes": [
+        "no_think",
+        "think"
+      ],
+      "arms": [
+        {
+          "model_group": "M0",
+          "seed": 42,
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_m0",
+          "regimes": [
+            "no_think",
+            "think"
+          ]
+        },
+        {
+          "tag": "s7_8b_s42_u1_base",
+          "model_group": "u1_base",
+          "seed": 42,
+          "arch": "Uniform-LoRA",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_s42_u1_base",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3/showdown-8438e5e2/selected_42/u1_base/selected_adapter_state.pt",
+          "expected_adapter_sha256": "7f46eaae1ec1ad9ad80534c9b9068c00840bf99c1bd5091a03fbcded45016349",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3/showdown-8438e5e2/peft_42/u1_base",
+          "expected_peft_sha256": "af946fdb3b5700e2f3b71ba3655bdf92b7baeda551cd8f08bc933f3a89ac2cfc"
+        },
+        {
+          "tag": "s7_8b_s1024_u1_base",
+          "model_group": "u1_base",
+          "seed": 1024,
+          "arch": "Uniform-LoRA",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_s1024_u1_base",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/selected/s4_s1024_u1_base/selected_adapter_state.pt",
+          "expected_adapter_sha256": "c8e547b2831eb4ce751a3fab20469330977a2549852370377b9073dfed1c4a6b",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/peft/s4_s1024_u1_base",
+          "expected_peft_sha256": "5086037e045e0a8841a60dd5c9cb7cce7d1335d6cb71378d0d7c5df883ed07ae"
+        },
+        {
+          "tag": "s7_8b_s42_u2_corridor",
+          "model_group": "u2_corridor",
+          "seed": 42,
+          "arch": "Uniform-LoRA",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_s42_u2_corridor",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3/showdown-8438e5e2/selected_42/u2_corridor/selected_adapter_state.pt",
+          "expected_adapter_sha256": "cefc89b572ec17e5c20301546d587ceb8e88bec2677cc2660504ecac613a92eb",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3/showdown-8438e5e2/peft_42/u2_corridor",
+          "expected_peft_sha256": "795bbb7cb04695dfca929ad398f89319350bd4fde0b207710e7520074af8ea00"
+        },
+        {
+          "tag": "s7_8b_s1024_u2_corridor",
+          "model_group": "u2_corridor",
+          "seed": 1024,
+          "arch": "Uniform-LoRA",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_s1024_u2_corridor",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/selected/s4_s1024_u2_corridor/selected_adapter_state.pt",
+          "expected_adapter_sha256": "c1f899ff7a2705189d36f8023e081a351e1255227bd4a57d34473a64b049c3ea",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/peft/s4_s1024_u2_corridor",
+          "expected_peft_sha256": "05372f6969ebb2ab58b1591d2ae03fd995e9bddea288f797a7a4dec57ea1ed47"
+        },
+        {
+          "tag": "s7_8b_s42_v4_mlpplus",
+          "model_group": "M3-v4-PureMid-MLP+",
+          "seed": 42,
+          "arch": "M3-v4-PureMid-MLP+",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_s42_v4_mlpplus",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/selected/s4_s42_v4_mlpplus/selected_adapter_state.pt",
+          "expected_adapter_sha256": "4c845da030948e38652d57cc0a8b83fe164a9322ab8b7d4ce7e4ed81d001d45c",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/peft/s4_s42_v4_mlpplus",
+          "expected_peft_sha256": "3d4ce5bea37f0eef93b0791ed42ec274d05c30513c9e448be588eda8a9d75558"
+        },
+        {
+          "tag": "s7_8b_s1024_v4_mlpplus",
+          "model_group": "M3-v4-PureMid-MLP+",
+          "seed": 1024,
+          "arch": "M3-v4-PureMid-MLP+",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_s1024_v4_mlpplus",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/selected/s4_s1024_v4_mlpplus/selected_adapter_state.pt",
+          "expected_adapter_sha256": "dfb6b292e4df83c5e604e484dfb7c843349befe597b5c7c0c1a713b0ddafd6f7",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage4-fb5c03cb/peft/s4_s1024_v4_mlpplus",
+          "expected_peft_sha256": "4eca665a30e3be02f33d69bd1f58a98ae3f5b5931a1dc406999c6056885dd6f8"
+        },
+        {
+          "tag": "s7_8b_s42_v4_randmask1",
+          "model_group": "M3-v4-PureMid-MLP+-Random-Mask",
+          "seed": 42,
+          "arch": "M3-v4-PureMid-MLP+-Random-Mask",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_s42_v4_randmask1",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/selected_8b/s5_8b_s42_v4_randmask1/selected_adapter_state.pt",
+          "expected_adapter_sha256": "704463404e250c49f2036deb407430b42e472604eb455ca57a86be9d4b93304a",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/peft_8b/s5_8b_s42_v4_randmask1",
+          "expected_peft_sha256": "e396e9a8add536eae5e84e5a1b2a1de5b47b8b9563b27ccda7fa2afcbdd9f792"
+        },
+        {
+          "tag": "s7_8b_s1024_v4_randmask1",
+          "model_group": "M3-v4-PureMid-MLP+-Random-Mask",
+          "seed": 1024,
+          "arch": "M3-v4-PureMid-MLP+-Random-Mask",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_s1024_v4_randmask1",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/selected_8b/s5_8b_s1024_v4_randmask1/selected_adapter_state.pt",
+          "expected_adapter_sha256": "9109856f1c2b4b72c97873ed8644f83450abdcecf99de308acd9344614d615c5",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/peft_8b/s5_8b_s1024_v4_randmask1",
+          "expected_peft_sha256": "1b8696683e6cd6515cfdcdad516d2dd0f356b6390889ea75d311060abf8e1d82"
+        },
+        {
+          "tag": "s7_8b_s42_v4_randmask2",
+          "model_group": "M3-v4-PureMid-MLP+-Random-Mask2",
+          "seed": 42,
+          "arch": "M3-v4-PureMid-MLP+-Random-Mask2",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_s42_v4_randmask2",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/selected_8b/s5_8b_s42_v4_randmask2/selected_adapter_state.pt",
+          "expected_adapter_sha256": "63ae6b31fc3316f297b7f48a797cca9ac180e58b857045a7fec8d1f3eff25021",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/peft_8b/s5_8b_s42_v4_randmask2",
+          "expected_peft_sha256": "0ed05489bddffd9bbdfe90cc8be1befd9bb12c74ddd506a70cc4ad68d6c94edd"
+        },
+        {
+          "tag": "s7_8b_s1024_v4_randmask2",
+          "model_group": "M3-v4-PureMid-MLP+-Random-Mask2",
+          "seed": 1024,
+          "arch": "M3-v4-PureMid-MLP+-Random-Mask2",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_s1024_v4_randmask2",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/selected_8b/s5_8b_s1024_v4_randmask2/selected_adapter_state.pt",
+          "expected_adapter_sha256": "4d99abb01e94ce9c1c1af3e50f2048319434317ebe5281961008dc0d249b3424",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage5-45ba5fd0/peft_8b/s5_8b_s1024_v4_randmask2",
+          "expected_peft_sha256": "816e5fee2618581235a9c390c55c937960a357f9609a3ccd14f78986c2968a3a"
+        },
+        {
+          "tag": "s7_8b_s42_pinpoint_dla_corridor",
+          "model_group": "Pinpoint-DLA-Corridor",
+          "seed": 42,
+          "arch": "Pinpoint-DLA-HeadsOnly",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_s42_pinpoint_dla_corridor",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/selected_8b/s6_8b_s42_pinpoint_dla_corridor/selected_adapter_state.pt",
+          "expected_adapter_sha256": "aefbca07ad95b177d2b7c5f2824aeab9259e6b06a2f0f5f8b57867294a133410",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_bf16_merged",
+          "server_merged_model": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/merged_8b/s6_8b_s42_pinpoint_dla_corridor",
+          "expected_merged_shards_sha256": {
+            "model-00001-of-00004.safetensors": "c0dc64934ae0f730ddc80d99af44968d01a89e8454df07d762096ea1356446bc",
+            "model-00002-of-00004.safetensors": "01d612b828ef1af2150b0bb330c6fa2c1e8b72609bddc8f14045d4732050c56a",
+            "model-00003-of-00004.safetensors": "ac16f37291b7d29415bc6d87cebf586ed10916f4ae365b118c2a20a614475236",
+            "model-00004-of-00004.safetensors": "a804c18246ad3a20efe3f503f9258d5a7abcaa0853a0e2f7d15ae4b28dac3c79"
+          }
+        },
+        {
+          "tag": "s7_8b_s42_pinpoint_dla_sft",
+          "model_group": "Pinpoint-DLA-SFT",
+          "seed": 42,
+          "arch": "Pinpoint-DLA-HeadsOnly",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_s42_pinpoint_dla_sft",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/selected_8b/s6_8b_s42_pinpoint_dla_sft/selected_adapter_state.pt",
+          "expected_adapter_sha256": "ffc1a8fad6c5169076e307f82b6fc6e861b738801e12bb018d4750f968fd80a2",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/peft_8b/s6_8b_s42_pinpoint_dla_sft",
+          "expected_peft_sha256": "3eba632ed8a1fcd45712109902ba3ef6f907f3670e6c01faa45d2fc0ca75a22e"
+        },
+        {
+          "tag": "s7_8b_s42_joint_dpo_best",
+          "model_group": "Joint-DPO",
+          "seed": 42,
+          "arch": "Uniform-LoRA",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_s42_joint_dpo_best",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/selected_8b/s6_8b_s42_joint_dpo_best/selected_adapter_state.pt",
+          "expected_adapter_sha256": "286cb06cba7ac0fff12ae609622652f992aa3912bc194c1f85fed7442fb10d65",
+          "regimes": [
+            "no_think"
+          ],
+          "think_backend": "excluded_due_to_vllm_parity_fail"
+        },
+        {
+          "tag": "s7_8b_s42_u2_corridor_only",
+          "model_group": "u2_corridor_only",
+          "seed": 42,
+          "arch": "Uniform-LoRA",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_s42_u2_corridor_only",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/selected_8b/s6_8b_s42_u2_corridor_only/selected_adapter_state.pt",
+          "expected_adapter_sha256": "bbe84d817c34eea13c045b8c0a6337ad08be3a4016cc1df818dfa36f31c2ea56",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/peft_8b/s6_8b_s42_u2_corridor_only",
+          "expected_peft_sha256": "cdc537835f71e3f752f6f4701146b3575a37bc867c0612d1e95a07e512b32ef4"
+        },
+        {
+          "tag": "s7_8b_s42_u2_tone_inv_only",
+          "model_group": "u2_tone_inv_only",
+          "seed": 42,
+          "arch": "Uniform-LoRA",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_s42_u2_tone_inv_only",
+          "server_adapter_state": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/selected_8b/s6_8b_s42_u2_tone_inv_only/selected_adapter_state.pt",
+          "expected_adapter_sha256": "efb637d1c8fae60f12cc1acad8c1f62f4423da9d6029496278d2e0a61872e24d",
+          "regimes": [
+            "no_think",
+            "think"
+          ],
+          "think_backend": "vllm_native_lora",
+          "server_peft_lora_dir": "/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5/stage6-runtime/peft_8b/s6_8b_s42_u2_tone_inv_only",
+          "expected_peft_sha256": "36a8680bfd7ba0a0b43d0a9d6328422502931e1c2802f2fccd75ed3e3872b934"
+        },
+        {
+          "tag": "s7_8b_caa_steering",
+          "model_group": "CAA-Steering",
+          "seed": 42,
+          "arch": "CAA-Frozen-Hook",
+          "dir": "experiments/ACL-exp-c3.5/results/stage7_sealed/8b/s7_8b_caa_steering",
+          "regimes": [
+            "no_think"
+          ],
+          "think_backend": "excluded_nothink_steering_only",
+          "caa_frozen_spec": {
+            "contrast_mode": "anti_syco",
+            "layer": 22,
+            "alpha": 1.0,
+            "expected_vector_l2": 42.4911,
+            "intervention_position": "all_positions_layer_output_residual_addition",
+            "server_vector_file_default": "experiments/ACL-exp-c3.5/results/stage6/external_8b/s6_8b_caa_steering/caa_directions_train.pt"
+          }
+        }
+      ],
+      "comparisons": [
+        {
+          "name": "8B_v4_vs_u2",
+          "tier": "secondary",
+          "model_a": "M3-v4-PureMid-MLP+",
+          "model_b": "u2_corridor"
+        },
+        {
+          "name": "8B_v4_vs_RandMask1",
+          "tier": "secondary",
+          "model_a": "M3-v4-PureMid-MLP+",
+          "model_b": "M3-v4-PureMid-MLP+-Random-Mask"
+        },
+        {
+          "name": "8B_v4_vs_RandMask2",
+          "tier": "secondary",
+          "model_a": "M3-v4-PureMid-MLP+",
+          "model_b": "M3-v4-PureMid-MLP+-Random-Mask2"
+        },
+        {
+          "name": "8B_u2_vs_u1",
+          "tier": "secondary",
+          "model_a": "u2_corridor",
+          "model_b": "u1_base"
+        },
+        {
+          "name": "8B_u2_tone_inv_only_vs_u1",
+          "tier": "secondary",
+          "model_a": "u2_tone_inv_only",
+          "model_b": "u1_base"
+        },
+        {
+          "name": "8B_u2_corridor_only_vs_u1",
+          "tier": "secondary",
+          "model_a": "u2_corridor_only",
+          "model_b": "u1_base"
+        },
+        {
+          "name": "8B_v4_vs_Pinpoint_Corridor",
+          "tier": "secondary",
+          "model_a": "M3-v4-PureMid-MLP+",
+          "model_b": "Pinpoint-DLA-Corridor"
+        },
+        {
+          "name": "8B_v4_vs_Pinpoint_SFT",
+          "tier": "secondary",
+          "model_a": "M3-v4-PureMid-MLP+",
+          "model_b": "Pinpoint-DLA-SFT"
+        },
+        {
+          "name": "8B_v4_vs_Joint_DPO",
+          "tier": "secondary",
+          "model_a": "M3-v4-PureMid-MLP+",
+          "model_b": "Joint-DPO"
+        },
+        {
+          "name": "8B_v4_vs_CAA",
+          "tier": "secondary",
+          "model_a": "M3-v4-PureMid-MLP+",
+          "model_b": "CAA-Steering"
+        }
+      ]
+    }
+  }
+}
