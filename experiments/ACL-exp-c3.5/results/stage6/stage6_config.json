@@ -1,0 +1,138 @@
+{
+  "scale_14b": {
+    "v3_file": "experiments/ACL-exp-c3.5/data/c3_blind_confirm_v3_bases.jsonl",
+    "ifeval_m0": 461,
+    "gsm8k_m0": 638,
+    "arms": {
+      "u1_base": {
+        "42": "experiments/ACL-exp-c3.5/results/stage5_14b/s5_14b_s42_u1_base",
+        "1024": "experiments/ACL-exp-c3.5/results/stage6/14b_s1024/s6_14b_s1024_u1_base"
+      },
+      "u2_corridor": {
+        "42": "experiments/ACL-exp-c3.5/results/stage5_14b/s5_14b_s42_u2_corridor",
+        "1024": "experiments/ACL-exp-c3.5/results/stage6/14b_s1024/s6_14b_s1024_u2_corridor"
+      },
+      "M3-v4-PureMid-MLP+": {
+        "42": "experiments/ACL-exp-c3.5/results/stage5_14b/s5_14b_s42_v4_mlpplus",
+        "1024": "experiments/ACL-exp-c3.5/results/stage6/14b_s1024/s6_14b_s1024_v4_mlpplus"
+      },
+      "M3-v4-PureMid-MLP+-Random-Mask": {
+        "42": "experiments/ACL-exp-c3.5/results/stage5_14b/s5_14b_s42_v4_randmask",
+        "1024": "experiments/ACL-exp-c3.5/results/stage6/14b_s1024/s6_14b_s1024_v4_randmask"
+      }
+    },
+    "pair_specs": [
+      [
+        "v4_vs_u2",
+        "M3-v4-PureMid-MLP+",
+        "u2_corridor"
+      ],
+      [
+        "v4_vs_randmask",
+        "M3-v4-PureMid-MLP+",
+        "M3-v4-PureMid-MLP+-Random-Mask"
+      ]
+    ]
+  },
+  "fixed_step200": {
+    "v3_file": "experiments/ACL-exp-c3.5/data/c3_blind_confirm_v3_bases.jsonl",
+    "entries": [
+      {
+        "name": "u2_corridor",
+        "seed": 42,
+        "dir": "experiments/ACL-exp-c3.5/results/stage6/fixed_step200/s5_14b_s42_u2_corridor_step200"
+      },
+      {
+        "name": "M3-v4-PureMid-MLP+-Random-Mask",
+        "seed": 42,
+        "dir": "experiments/ACL-exp-c3.5/results/stage6/fixed_step200/s5_14b_s42_v4_randmask_step200"
+      },
+      {
+        "name": "u2_corridor",
+        "seed": 1024,
+        "dir": "experiments/ACL-exp-c3.5/results/stage6/fixed_step200/s6_14b_s1024_u2_corridor_step200"
+      },
+      {
+        "name": "M3-v4-PureMid-MLP+",
+        "seed": 1024,
+        "dir": "experiments/ACL-exp-c3.5/results/stage6/fixed_step200/s6_14b_s1024_v4_mlpplus_step200"
+      },
+      {
+        "name": "M3-v4-PureMid-MLP+-Random-Mask",
+        "seed": 1024,
+        "dir": "experiments/ACL-exp-c3.5/results/stage6/fixed_step200/s6_14b_s1024_v4_randmask_step200"
+      },
+      {
+        "name": "M3-v4-PureMid-MLP+",
+        "seed": 42,
+        "dir": "experiments/ACL-exp-c3.5/results/stage5_14b/s5_14b_s42_v4_mlpplus"
+      }
+    ]
+  },
+  "entity_balanced": {
+    "file": "experiments/ACL-exp-c3.5/data/c3_entity_balanced_v1_bases.jsonl",
+    "entries": [
+      {
+        "name": "s6_entity_8b_s42_M0",
+        "records": "experiments/ACL-exp-c3.5/results/stage6/entity_balanced/s6_entity_8b_s42_M0/no_think/records_no_think_c3_entity_balanced_v1.jsonl"
+      },
+      {
+        "name": "s6_entity_8b_s42_u2_corridor",
+        "records": "experiments/ACL-exp-c3.5/results/stage6/entity_balanced/s6_entity_8b_s42_u2_corridor/no_think/records_no_think_c3_entity_balanced_v1.jsonl"
+      },
+      {
+        "name": "s6_entity_8b_s42_v4_mlpplus",
+        "records": "experiments/ACL-exp-c3.5/results/stage6/entity_balanced/s6_entity_8b_s42_v4_mlpplus/no_think/records_no_think_c3_entity_balanced_v1.jsonl"
+      },
+      {
+        "name": "s5_8b_s42_v4_randmask1",
+        "records": "experiments/ACL-exp-c3.5/results/stage6/entity_balanced/s5_8b_s42_v4_randmask1/no_think/records_no_think_c3_entity_balanced_v1.jsonl"
+      },
+      {
+        "name": "s6_entity_14b_s42_M0",
+        "records": "experiments/ACL-exp-c3.5/results/stage6/entity_balanced/s6_entity_14b_s42_M0/no_think/records_no_think_c3_entity_balanced_v1.jsonl"
+      },
+      {
+        "name": "s5_14b_s42_u2_corridor",
+        "records": "experiments/ACL-exp-c3.5/results/stage6/entity_balanced/s5_14b_s42_u2_corridor/no_think/records_no_think_c3_entity_balanced_v1.jsonl"
+      },
+      {
+        "name": "s5_14b_s42_v4_mlpplus",
+        "records": "experiments/ACL-exp-c3.5/results/stage6/entity_balanced/s5_14b_s42_v4_mlpplus/no_think/records_no_think_c3_entity_balanced_v1.jsonl"
+      },
+      {
+        "name": "s5_14b_s42_v4_randmask",
+        "records": "experiments/ACL-exp-c3.5/results/stage6/entity_balanced/s5_14b_s42_v4_randmask/no_think/records_no_think_c3_entity_balanced_v1.jsonl"
+      }
+    ]
+  },
+  "external_8b": {
+    "v3_file": "experiments/ACL-exp-c3.5/data/c3_blind_confirm_v3_bases.jsonl",
+    "entries": [
+      {
+        "name": "s6_8b_s42_pinpoint_dla_corridor",
+        "dir": "experiments/ACL-exp-c3.5/results/stage6/external_8b/s6_8b_s42_pinpoint_dla_corridor"
+      },
+      {
+        "name": "s6_8b_s42_pinpoint_dla_sft",
+        "dir": "experiments/ACL-exp-c3.5/results/stage6/external_8b/s6_8b_s42_pinpoint_dla_sft"
+      },
+      {
+        "name": "s6_8b_s42_u2_corridor_only",
+        "dir": "experiments/ACL-exp-c3.5/results/stage6/external_8b/s6_8b_s42_u2_corridor_only"
+      },
+      {
+        "name": "s6_8b_s42_u2_tone_inv_only",
+        "dir": "experiments/ACL-exp-c3.5/results/stage6/external_8b/s6_8b_s42_u2_tone_inv_only"
+      },
+      {
+        "name": "s6_8b_s42_joint_dpo_best",
+        "dir": "experiments/ACL-exp-c3.5/results/stage6/external_8b/s6_8b_s42_joint_dpo_best"
+      },
+      {
+        "name": "caa_dev_selected_pos",
+        "dir": "experiments/ACL-exp-c3.5/results/stage6/external_8b/s6_8b_caa_steering"
+      }
+    ]
+  }
+}
