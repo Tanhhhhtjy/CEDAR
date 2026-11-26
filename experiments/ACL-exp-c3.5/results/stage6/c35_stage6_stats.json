@@ -776,9 +776,9 @@
         "fc802": 2.31,
         "jt900": 1.39,
         "wiki_kl": 0.000794,
-        "ifeval": 438,
-        "gsm8k": 542,
-        "exfever": "31.8% / 78.71% / 46.91"
+        "ifeval": 440,
+        "gsm8k": 551,
+        "exfever": "32.91% / 78.98% / 46.07"
       },
       "s6_8b_s42_pinpoint_dla_sft": {
         "fc900": 1.72,
@@ -829,59 +829,47 @@
   },
   "backend_parity_8b": {
     "s6_8b_s42_pinpoint_dla_corridor": {
-      "passed": false,
-      "option_match_rate": 0.9375,
-      "du_abs_mean": 0.10873,
-      "thresholds": {
-        "max_abs_mean_du": 0.25,
-        "max_abs_du_mean": 0.5,
-        "min_option_match": 0.95,
-        "required_u_coverage": 1.0
-      }
+      "generative_backend_used": "vllm_bf16_merged",
+      "lora_passed": false,
+      "lora_option_match_rate": 0.9375,
+      "lora_du_abs_mean": 0.10873,
+      "merged_passed": true,
+      "merged_option_match_rate": 0.9625,
+      "merged_du_abs_mean": 0.08125,
+      "effective_passed": true
     },
     "s6_8b_s42_pinpoint_dla_sft": {
-      "passed": true,
-      "option_match_rate": 0.9625,
-      "du_abs_mean": 0.08864,
-      "thresholds": {
-        "max_abs_mean_du": 0.25,
-        "max_abs_du_mean": 0.5,
-        "min_option_match": 0.95,
-        "required_u_coverage": 1.0
-      }
+      "generative_backend_used": "vllm_native_lora",
+      "lora_passed": true,
+      "lora_option_match_rate": 0.9625,
+      "lora_du_abs_mean": 0.08864,
+      "effective_passed": true
     },
     "s6_8b_s42_u2_corridor_only": {
-      "passed": true,
-      "option_match_rate": 1.0,
-      "du_abs_mean": 0.15887,
-      "thresholds": {
-        "max_abs_mean_du": 0.25,
-        "max_abs_du_mean": 0.5,
-        "min_option_match": 0.95,
-        "required_u_coverage": 1.0
-      }
+      "generative_backend_used": "vllm_native_lora",
+      "lora_passed": true,
+      "lora_option_match_rate": 1.0,
+      "lora_du_abs_mean": 0.15887,
+      "effective_passed": true
     },
     "s6_8b_s42_u2_tone_inv_only": {
-      "passed": true,
-      "option_match_rate": 0.9625,
-      "du_abs_mean": 0.43462,
-      "thresholds": {
-        "max_abs_mean_du": 0.25,
-        "max_abs_du_mean": 0.5,
-        "min_option_match": 0.95,
-        "required_u_coverage": 1.0
-      }
+      "generative_backend_used": "vllm_native_lora",
+      "lora_passed": true,
+      "lora_option_match_rate": 0.9625,
+      "lora_du_abs_mean": 0.43462,
+      "effective_passed": true
     },
     "s6_8b_s42_joint_dpo_best": {
-      "passed": false,
-      "option_match_rate": 0.9875,
-      "du_abs_mean": 1.75271,
-      "thresholds": {
-        "max_abs_mean_du": 0.25,
-        "max_abs_du_mean": 0.5,
-        "min_option_match": 0.95,
-        "required_u_coverage": 1.0
-      }
+      "generative_backend_used": "vllm_native_lora",
+      "lora_passed": false,
+      "lora_option_match_rate": 0.9875,
+      "lora_du_abs_mean": 1.75271,
+      "lora_du_signed_mean": 0.12582,
+      "merged_passed": false,
+      "merged_option_match_rate": 0.7625,
+      "merged_du_abs_mean": 26.62148,
+      "effective_passed": false,
+      "note": "no_think (v2/v3/eb/KL) runs natively in exact HF BF16; generative evals use 98.75%-match vLLM native LoRA with parity caveat due to uncapped +/-67 logit explosion."
     }
   }
 }

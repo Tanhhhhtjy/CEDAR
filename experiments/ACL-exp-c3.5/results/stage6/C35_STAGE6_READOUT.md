@@ -62,21 +62,21 @@
 
 | Method | `v3` 4C (900) | `v3` 4C (802) | `v3` Joint | Wiki KL | IFEval / GSM8K | EX-FEVER `R_UY` / `R_RU_ev` / `Sel` |
 |---|---:|---:|---:|---:|---:|---:|
-| `s6_8b_s42_pinpoint_dla_corridor` | **2.17%** | **2.31%** | **1.39%** | `0.000794` | 438 / 542 | 31.8% / 78.71% / 46.91 |
+| `s6_8b_s42_pinpoint_dla_corridor` | **2.17%** | **2.31%** | **1.39%** | `0.000794` | 440 / 551 | 32.91% / 78.98% / 46.07 |
 | `s6_8b_s42_pinpoint_dla_sft` | **1.72%** | **1.87%** | **0.61%** | `0.000792` | 446 / 558 | 32.15% / 78.31% / 46.16 |
 | `s6_8b_s42_u2_corridor_only` | **36.83%** | **40.15%** | **36.22%** | `0.001349` | 441 / 529 | 9.46% / 70.48% / 61.02 |
 | `s6_8b_s42_u2_tone_inv_only` | **40.56%** | **43.02%** | **40.28%** | `0.001371` | 441 / 528 | 8.36% / 68.03% / 59.67 |
 | `s6_8b_s42_joint_dpo_best` | **42.50%** | **42.58%** | **42.50%** | `0.001855` | 444 / 474 | 22.17% / 74.08% / 51.91 |
 | `caa_dev_selected_pos` | **1.89%** | **2.12%** | **1.61%** | `0.080674` | — | 16.51% / 75.8% / 59.29 |
 
-## 8B vLLM LoRA Backend Parity
+## 5. 8B vLLM Backend Parity Audit (LoRA vs BF16 Merged)
 
-The think, capabilities, and EX-FEVER metrics for rows marked FAIL carry a backend agreement limitation.
+All `no_think` (`v2`, `v3`, `c3_entity_balanced_v1`, `WikiText-2 KL`) numbers run natively in HuggingFace BF16 (`backend=hf`, exact). The table below documents the exact vLLM backend used for generative evaluations (`think`, `capabilities`, `EX-FEVER`):
 
-| Method | Parity | Option agreement | Mean absolute score difference |
-|---|---|---:|---:|
-| `s6_8b_s42_pinpoint_dla_corridor` | FAIL | 93.75% | 0.10873 |
-| `s6_8b_s42_pinpoint_dla_sft` | PASS | 96.25% | 0.08864 |
-| `s6_8b_s42_u2_corridor_only` | PASS | 100.00% | 0.15887 |
-| `s6_8b_s42_u2_tone_inv_only` | PASS | 96.25% | 0.43462 |
-| `s6_8b_s42_joint_dpo_best` | FAIL | 98.75% | 1.75271 |
+| Method | Generative Backend Used | Native LoRA Parity (Opt / `|Δu|` mean) | BF16 Merged Parity (Opt / `|Δu|` mean) | Audit Status |
+|---|---|---|---|---|
+| `s6_8b_s42_pinpoint_dla_corridor` | **vLLM BF16 Merged** | FAIL (`93.75%` / `0.10873`, near-boundary collapse) | **PASS (`96.25%` / `0.08125`)** | **PASS (via BF16 merged)** |
+| `s6_8b_s42_pinpoint_dla_sft` | vLLM Native LoRA | **PASS (`96.25%` / `0.08864`)** | — | **PASS** |
+| `s6_8b_s42_u2_corridor_only` | vLLM Native LoRA | **PASS (`100.00%` / `0.15887`)** | — | **PASS** |
+| `s6_8b_s42_u2_tone_inv_only` | vLLM Native LoRA | **PASS (`96.25%` / `0.43462`)** | — | **PASS** |
+| `s6_8b_s42_joint_dpo_best` | vLLM Native LoRA | FAIL (`98.75%` / `1.75271`, `du_signed=+0.126`, uncapped `±67` logits) | FAIL (`76.25%` / `26.62`, BF16 merge unstable) | **CAVEAT** (`no_think` exact HF; generative uses `98.75%`-match LoRA) |
