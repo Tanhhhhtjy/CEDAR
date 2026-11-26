@@ -78,6 +78,11 @@ def _find_caa_vector(explicit_path: Path | None, default_rel: str) -> Path | Non
     for p in cands:
         if p.is_file():
             return p
+    work_root = Path("/mnt/kcl/tjy/projects/CEDAR-work/ACL-exp-c3.5")
+    if work_root.is_dir():
+        for p in sorted(work_root.glob("stage6*/**/caa_directions_train.pt")):
+            if p.is_file():
+                return p
     return None
 
 
@@ -247,8 +252,19 @@ def verify_server_assets(
                     errors.append(f"Missing CAA frozen vector file (pass --caa-vector-file): default={cspec['server_vector_file_default']}")
                 else:
                     v_sha = sha256_file(vec_p)
-                    report["caa_vector"] = {"path": str(vec_p), "sha256": v_sha}
-                    print(f"  [OK] CAA vector: {vec_p} sha256={v_sha}")
+                    try:
+                        import torch
+                        pl = torch.load(vec_p, map_location="cpu", weights_only=False)
+                        lmap = pl["dirs"][cspec["contrast_mode"]]
+                        v_t = lmap[cspec["layer"]] if cspec["layer"] in lmap else lmap[str(cspec["layer"])]
+                        v_l2 = round(float(v_t.detach().float().norm().item()), 4)
+                        if abs(v_l2 - float(cspec["expected_vector_l2"])) > 0.02:
+                            errors.append(f"CAA vector L2 mismatch: actual={v_l2} != expected={cspec['expected_vector_l2']}")
+                        else:
+                            report["caa_vector"] = {"path": str(vec_p), "sha256": v_sha, "vector_l2_norm": v_l2}
+                            print(f"  [OK] CAA vector: {vec_p} sha256={v_sha} L2={v_l2}")
+                    except Exception as exc:
+                        errors.append(f"Failed inspecting CAA vector {vec_p}: {exc}")
                 continue
 
             ap = Path(arm["server_adapter_state"])
